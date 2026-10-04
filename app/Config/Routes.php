@@ -223,13 +223,6 @@ $routes->group('notification', ['filter' => 'auth'], function ($routes) {
  * @datetime   12 July 2024
  * @purpose    for redirecting to the report page
  */
-$routes->group('syncing', ['filter' => ['auth', 'acl']], function ($routes) {
-    $routes->get('redminesync', 'SyncRedmineController::index');
-    // $routes->get('sync', 'SyncRedmineController::syncProduct');
-    $routes->post('syncall', 'SyncRedmineController::syncAll');
-    // $routes->get('usersync', 'SyncRedmineController::syncProductMembers');
-});
-
 // for accesssing all the urls
 $routes->get('/(:any)', 'AuthController::index', ['filter' => ['auth', 'loginpage']]);
 

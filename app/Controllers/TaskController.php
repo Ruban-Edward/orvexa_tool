@@ -141,15 +141,7 @@ class TaskController extends BaseController
              'updated_date' => date("Y-m-d H:i:s"), // Task update date
          ];
      
-         // Insert the task into the external system (Redmine)
-         $tasksData = service('issues');
-         $customField = service('customValue');
-         $redmineId = $tasksData->insertTasks($task);
-         $task['external_task_id'] = $redmineId['id'];
-     
-         // Insert custom field values related to the task in Redmine
-         $customField->insertCustomValue($redmineId['id'], CUSTOM_FIELD['user_story_id'], $userStoryId);
-         $customField->insertCustomValue($redmineId['id'], CUSTOM_FIELD['customer'], $customer);
+         // Tasks are managed locally; no external external issue is created.
      
          // Prepare task data for validation and storage in the local system
          $task_data = $this->request->getpost();
@@ -162,7 +154,7 @@ class TaskController extends BaseController
          $task_data['updated_date'] = date("Y-m-d H:i:s");
          $task_data['start_date'] = $startDate;
          $task_data['end_date'] = $endDate;
-         $task_data['external_reference_task_id'] = $redmineId['id'];
+         $task_data['external_reference_task_id'] = null;
          $task_data['r_user_story_id'] = $userStoryId;
          $task_data['completed_percentage'] = $completedPercentage;
          $task_data['assignee_id'] = $assigneeId;
@@ -187,7 +179,7 @@ class TaskController extends BaseController
          $result = $this->taskModel->insertTasks($task_data);
          if ($result) {
              // Log the action of task creation
-             $actionData = 'Task of Redmine ID : ' . $redmineId['id'] . " is added";
+             $actionData = 'Task ID : ' . $result . " is added";
              $action = formActionData(__FUNCTION__, $pblid, $pId, $actionData);
              Events::trigger('log_actions', $action);
              return $this->response->setJSON(['success' => true, 'message' => 'Task Created Successfully']);
@@ -250,9 +242,7 @@ class TaskController extends BaseController
             'updated_date' => date("Y-m-d H:i:s"),
         ];
 
-        // Update the task in the external system (e.g., Redmine)
-        $tasksData = service('issues');
-        $tasksData->updateTasks($updateTask);
+        // Tasks are managed locally; no external external issue is updated.
 
         // Prepare data for validation and updating in the database
         $task_data = $this->request->getPost();
@@ -358,14 +348,13 @@ class TaskController extends BaseController
 
      public function deleteTasks($pid, $pblid, $tId): Response
      {
-         // Delete the task from the 'scrum_task' table based on the task ID ($tId)
-         // Also delete the external reference of the task in the system using 'external_reference_task_id'
-         $res = $this->backlogItemModel->deleteItem($tId, ['scrum_task', 'external_reference_task_id']);
+         // Delete the task from the local orvexa_task table.
+         $res = $this->backlogItemModel->deleteItem($tId, ['orvexa_task', 'external_reference_task_id']);
      
          // Check if the deletion was successful
          if ($res) {
              // Prepare action data to log the deletion event
-             $actionData = 'Task of Redmine ID: ' . $tId . ' is deleted';
+             $actionData = 'Task ID: ' . $tId . ' is deleted';
              
              // Format the action data for logging
              $action = formActionData(__FUNCTION__, $pblid, $pid, $actionData);

@@ -12,45 +12,38 @@ Updated Date: 16 July 2024
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Title of the page -->
-    <title>Infiniti Scrum Master Portal</title>
+    <title>Orvexa Portal</title>
 
     <!-- favicon for this page -->
-    <link rel="shortcut icon" href="<?= ASSERT_PATH ?>support/compiled/svg/favicon.svg" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= ASSERT_PATH ?>support/compiled/png/fav_icon.png" type="image/x-icon">
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/bootstrap/css/bootstrap.min.css">
     
     <!-- Custom compiled CSS -->
-    <link rel="stylesheet" href="<?= ASSERT_PATH ?>support/compiled/css/app.css">
+    <link rel="stylesheet" href="<?= ASSERT_PATH ?>support/compiled/css/app.css?v=2">
     
     <!-- Login specific CSS -->
-    <link href="<?= ASSERT_PATH ?>assets/css/login/login.css" rel="stylesheet">
+    <link href="<?= ASSERT_PATH ?>assets/css/login/login.css?v=6" rel="stylesheet">
     
     <!-- jQuery library -->
     <script src="<?= ASSERT_PATH ?>support/extensions/jquery/jquery.min.js"></script>
 </head>
 <body>
-    <!-- Header section with Infiniti logo -->
+    <!-- Header section with Orvexa logo -->
     <header>
         <div class="cls-login-logo">
-        <img src="<?= ASSERT_PATH ?>assets/images/infiniti_logo.png" alt="Infiniti Logo">
+        <img src="<?= ASSERT_PATH ?>assets/images/logo/header_logo.png" alt="Orvexa Logo">
         </div>
     </header>
     
     <!-- Main content area with login form -->
-    <div class="row cls-login-form">
-        <div class="cls-left col-md-7">
-            <!-- Scrum process image with background color overlay -->
-            <div class="cls-scrum-img">
-                <img src="<?= ASSERT_PATH ?>assets/images/login/scrum_img.jpeg" alt="Scrum Process">
-                <div class="cls-background-col"></div>
-            </div>
-        </div>
-        <div class="cls-right col-md-5">
+    <main class="cls-login-form">
+        <div class="cls-right col-12">
             <div class="cls-form">
                 <!-- Login header message -->
                 <h2 id="login-or-signup-msg">Get started</h2>
-                <p>Welcome back to scrum master portal</p>
+                <p>Welcome back to Orvexa</p>
                 
                 <!-- Error message display for wrong username/password -->
                 <div class="cls-wrong-username-password">
@@ -99,11 +92,11 @@ Updated Date: 16 July 2024
                 </form>
             </div>
         </div>
-    </div>
+    </main>
     
     <!-- Footer section -->
     <footer>
-        <p>Powered by Infiniti Software Solutions | All rights reserved <?= date('Y',strtotime('now'))?></p>
+        <p>Powered by Orvexa | All rights reserved <?= date('Y',strtotime('now'))?></p>
     </footer>
     
     <!-- Custom JS for login page -->

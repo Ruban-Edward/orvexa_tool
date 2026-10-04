@@ -25,7 +25,7 @@ class UserModel extends BaseModel
         'lastname',
         'username',
         'password',
-        'redmine_api_key'
+        'api_key'
     ];
 
 
@@ -44,7 +44,7 @@ class UserModel extends BaseModel
                     r_role_id,
                     external_api_key
                 FROM 
-                    scrum_user 
+                    orvexa_user 
                 WHERE 
                     external_username=:username: 
                 AND 
@@ -75,7 +75,7 @@ class UserModel extends BaseModel
     public function insertOrUpdatetUser($userData)
     {
         $query = "
-                INSERT INTO scrum_user (
+                INSERT INTO orvexa_user (
                     external_username,
                     external_employee_id,
                     external_api_key,

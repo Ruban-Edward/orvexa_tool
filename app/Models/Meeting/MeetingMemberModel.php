@@ -17,7 +17,7 @@ class MeetingMemberModel extends Model
 {
 
     // Table name for insertion
-    protected $table = "scrum_meeting_members";
+    protected $table = "orvexa_meeting_members";
 
     //setting the primary key to insert 
     protected $primaryKey = "meeting_members_id";
@@ -72,7 +72,7 @@ class MeetingMemberModel extends Model
     public function insertMeetingMembers($data): bool
     {
         //insert the meeting members with the meeting Id to the table
-        $sql = "INSERT INTO scrum_meeting_members(
+        $sql = "INSERT INTO orvexa_meeting_members(
                     r_meeting_details_id, r_user_id
                     ) 
                 VALUES 
@@ -99,7 +99,7 @@ class MeetingMemberModel extends Model
         $sql = "SELECT 
                     r_user_id 
                 FROM 
-                    scrum_meeting_members 
+                    orvexa_meeting_members 
                 WHERE 
                     r_user_id=:r_user_id:
                     AND r_meeting_details_id=:r_meeting_details_id:
@@ -113,7 +113,7 @@ class MeetingMemberModel extends Model
             return 0; //returns the boolean value false if the user is already in the table
         } else {
             $sql = "INSERT INTO 
-                    scrum_meeting_members 
+                    orvexa_meeting_members 
                     (
                         r_meeting_details_id,
                         r_user_id
@@ -141,7 +141,7 @@ class MeetingMemberModel extends Model
     {
         //removing the meeting members 
         $sql = "DELETE FROM 
-                    scrum_meeting_members 
+                    orvexa_meeting_members 
                 WHERE 
                     r_meeting_details_id=:r_meeting_details_id: 
                     AND 
@@ -165,7 +165,7 @@ class MeetingMemberModel extends Model
     {
 
         $sql = " UPDATE 
-                    scrum_meeting_members 
+                    orvexa_meeting_members 
                 SET 
                     meeting_members_duration = :meeting_members_duration: 
                 WHERE
@@ -187,9 +187,9 @@ class MeetingMemberModel extends Model
         $sql = "SELECT 
                     su.first_name 
                 FROM 
-                    scrum_meeting_members AS mm 
+                    orvexa_meeting_members AS mm 
                 INNER JOIN 
-                    scrum_user AS su 
+                    orvexa_user AS su 
                     ON su.external_employee_id = mm.r_user_id 
                 WHERE 
                     r_meeting_details_id = :meet_id:";
@@ -210,9 +210,9 @@ class MeetingMemberModel extends Model
                     mm.meeting_members_id,
                     mm.r_user_id
                 FROM 
-                    scrum_meeting_members AS mm
+                    orvexa_meeting_members AS mm
                 INNER JOIN
-                    scrum_user AS su
+                    orvexa_user AS su
                     ON su.external_employee_id = mm.r_user_id
                 WHERE  
                     r_meeting_details_id = :meetId:

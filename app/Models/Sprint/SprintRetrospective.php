@@ -17,7 +17,7 @@ class SprintRetrospective extends Model
 {
 
     // Setting the Table Name for insertion
-    protected $table = "scrum_sprint_retrospective";
+    protected $table = "orvexa_sprint_retrospective";
 
     //Declaring the Primary Key for the table
     protected $primaryKey = "sprint_retrospective_id";
@@ -78,13 +78,13 @@ class SprintRetrospective extends Model
         return $this->validationMessages;
     }
     /**
-     * Function which contains the query to insert the details entered in the create sprint retrospetive to the table scrum_sprint_retrospective by mapping with the data from the scrum_notes table.
+     * Function which contains the query to insert the details entered in the create sprint retrospetive to the table orvexa_sprint_retrospective by mapping with the data from the orvexa_notes table.
      * @return array
      */
 
     public function insertSprintRetrospective($data)
      {
-          $query = "INSERT INTO scrum_sprint_retrospective(
+          $query = "INSERT INTO orvexa_sprint_retrospective(
 				r_sprint_id,
 				challenge,
 				r_notes_id,

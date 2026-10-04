@@ -8,14 +8,14 @@
     <h1>Hello World!</h1>
     <p><?php echo 'We are running PHP, version: ' . phpversion(); ?></p>
     <?
-    $database = "scrum_tool";
+    $database = "orvexa";
     $user = "root";
     $password = "root";
     $host = "mysql";
 
     $conn = new PDO("mysql:host={$host};dbname={$database};charset=utf8", $user, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $stmt = $conn->prepare("SELECT first_name, last_name, email_id FROM scrum_user");
+    $stmt = $conn->prepare("SELECT first_name, last_name, email_id FROM orvexa_user");
     $stmt->execute(); // Executing the query
     
     // Fetching all the results as an associative array

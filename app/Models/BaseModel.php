@@ -68,7 +68,7 @@ class BaseModel extends Model
      */
     public function getUserId($id)
     {
-        $sql = "select user_id from scrum_user where external_employee_id=:Id:";
+        $sql = "select user_id from orvexa_user where external_employee_id=:Id:";
         $query = $this->query($sql, ['Id' => $id]);
 
         if ($query->getNumRows() > 0) {

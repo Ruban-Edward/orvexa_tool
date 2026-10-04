@@ -6,7 +6,7 @@
  * @author   rubanedward.r <email>
  * @category Models
  * 
- * This model handles the interaction with the 'scrum_email_jobs' database table,
+ * This model handles the interaction with the 'orvexa_email_jobs' database table,
  * including validation, insertion, and other CRUD operations related to email jobs.
  */
 
@@ -17,7 +17,7 @@ use CodeIgniter\Model;
 class EmailJobModel extends Model
 {
     // The name of the table associated with this model
-    protected $table = 'scrum_email_jobs';
+    protected $table = 'orvexa_email_jobs';
 
     // The primary key field of the table
     protected $primaryKey = "id";
@@ -67,7 +67,7 @@ class EmailJobModel extends Model
     public function insertMailJobs($emailJobData){
         // SQL query to insert a new email job
         $sql = 'INSERT INTO
-                    scrum_email_jobs
+                    orvexa_email_jobs
                     (
                         email_id, file_name,
                         contents, status

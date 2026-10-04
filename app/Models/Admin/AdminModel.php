@@ -30,8 +30,8 @@ class AdminModel extends BaseModel
                     role.role_id, 
                     role.role_name 
                 FROM 
-                    scrum_user AS user 
-                    INNER JOIN scrum_role AS role 
+                    orvexa_user AS user 
+                    INNER JOIN orvexa_role AS role 
                     ON role.role_id = user.r_role_id
                 WHERE 
                     user.is_deleted = :is_deleted:
@@ -59,8 +59,8 @@ class AdminModel extends BaseModel
                     p.permission_name, 
                     m.module_name 
                 FROM 
-                    scrum_permission as p 
-                    INNER JOIN scrum_module AS m ON m.module_id = p.r_module_id 
+                    orvexa_permission as p 
+                    INNER JOIN orvexa_module AS m ON m.module_id = p.r_module_id 
                 WHERE 
                     p.is_deleted = :is_deleted: 
                 ORDER BY 
@@ -84,7 +84,7 @@ class AdminModel extends BaseModel
     {
         // SQL query to update user role
         $sql = "UPDATE 
-                    scrum_user 
+                    orvexa_user 
                 SET 
                     r_role_id = :r_role_id: 
                 WHERE 
@@ -116,8 +116,8 @@ class AdminModel extends BaseModel
                     role.role_id, 
                     role.role_name 
                 FROM 
-                    scrum_user AS user 
-                    INNER JOIN scrum_role AS role ON role.role_id = user.r_role_id 
+                    orvexa_user AS user 
+                    INNER JOIN orvexa_role AS role ON role.role_id = user.r_role_id 
                 WHERE 
                     user.is_deleted = :is_deleted: 
                     AND LOWER(user.first_name) LIKE '%$searchQuery%' 
@@ -148,7 +148,7 @@ class AdminModel extends BaseModel
         $sql = "SELECT 
                     sync_datetime 
                 FROM 
-                    scrum_sync_activities 
+                    orvexa_sync_activities 
                 WHERE 
                     sync_type = :sync_type: 
                 ORDER BY 
@@ -176,7 +176,7 @@ class AdminModel extends BaseModel
                     module_id, 
                     module_name 
                 FROM 
-                    scrum_module 
+                    orvexa_module 
                 WHERE 
                     is_deleted = :is_deleted:";
 

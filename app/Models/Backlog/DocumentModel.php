@@ -16,7 +16,7 @@ class DocumentModel extends BaseModel
     public function insertDocument($documentDetails):int
     {
         $sql = "INSERT INTO 
-                    scrum_document(
+                    orvexa_document(
                         r_module_id,
                         r_document_type_id,
                         reference_id,
@@ -67,9 +67,9 @@ class DocumentModel extends BaseModel
                     d.created_date,
                     us.first_name,
                     us.last_name
-                    FROM scrum_document d
-                    INNER JOIN scrum_document_type dt ON dt.document_type_id = d.r_document_type_id
-                    INNER JOIN scrum_user us ON us.external_employee_id = d.r_user_id_created ";
+                    FROM orvexa_document d
+                    INNER JOIN orvexa_document_type dt ON dt.document_type_id = d.r_document_type_id
+                    INNER JOIN orvexa_user us ON us.external_employee_id = d.r_user_id_created ";
 
                         if ($docId) {
                             $sql .= "WHERE document_id = :docId:
@@ -107,7 +107,7 @@ class DocumentModel extends BaseModel
         $sql = "SELECT 
                     document_type 
                 FROM 
-                    scrum_document_type 
+                    orvexa_document_type 
                 WHERE 
                     document_type_id =:id:";
         $res = $this->query($sql, [

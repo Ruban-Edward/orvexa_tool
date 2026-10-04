@@ -43,7 +43,7 @@ class SettingsControllerTest extends CIUnitTestCase
     public function testAdminSettingsPage()
     {
         // Set the URI for the request
-        $result = $this->withURI('http://localhost/scrum_tool/public/admin/adminSettings')
+        $result = $this->withURI('http://localhost/orvexa_tool/public/admin/adminSettings')
             ->controller(\App\Controllers\SettingsController::class)
             ->execute('adminSettingsPage');
 

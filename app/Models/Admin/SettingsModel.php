@@ -23,7 +23,7 @@ class SettingsModel extends BaseModel
                     external_project_id, 
                     product_name 
                 FROM 
-                    scrum_product
+                    orvexa_product
                 ORDER BY
                     product_name ASC";
 
@@ -40,7 +40,7 @@ class SettingsModel extends BaseModel
                     external_project_id, 
                     product_name 
                 FROM 
-                    scrum_product
+                    orvexa_product
                 WHERE
                     parent_id IS NULL
                 ORDER BY

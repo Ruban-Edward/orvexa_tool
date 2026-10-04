@@ -15,7 +15,7 @@ class HistoryModel extends BaseModel
     public function logActions($action)
     {
         $date = date('Y-m-d H:i:s');
-        $sql = "INSERT INTO scrum_user_action(r_user_id,r_action_type_id,r_module_id,r_product_id,reference_id,action_data,action_date,is_deleted)
+        $sql = "INSERT INTO orvexa_user_action(r_user_id,r_action_type_id,r_module_id,r_product_id,reference_id,action_data,action_date,is_deleted)
         VALUES(:r_user_id:,:r_action_type_id:,:r_module_id:,:r_product_id:,:reference_id:,:action_data:,:action_date:,:delete:)";
 
         $query = $this->query($sql, [
@@ -29,7 +29,7 @@ class HistoryModel extends BaseModel
             'delete' => "N"
         ]);
         if ($query) {
-            $sql = "UPDATE scrum_product 
+            $sql = "UPDATE orvexa_product 
                     SET updated_date = :action_date:
                     WHERE external_project_id = :product_id:";
             $query = $this->query($sql, [

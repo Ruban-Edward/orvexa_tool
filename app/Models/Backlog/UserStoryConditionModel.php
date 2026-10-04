@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class UserStoryConditionModel extends BaseModel
 {
     // Table for insertion
-    protected $table = "scrum_user_story_condition";
+    protected $table = "orvexa_user_story_condition";
 
     protected $primaryKey = "condition_id";
 
@@ -51,7 +51,7 @@ class UserStoryConditionModel extends BaseModel
 
     public function insertUserStoryCondition($data)
     {
-        $sql = "INSERT INTO scrum_user_story_condition(
+        $sql = "INSERT INTO orvexa_user_story_condition(
                                 r_user_story_id,condition_text)
                 VALUES
                     (:r_user_story_id:,:condition_text:)";
@@ -68,7 +68,7 @@ class UserStoryConditionModel extends BaseModel
 
     public function updateCondition($data)
     {
-        $sql = "UPDATE scrum_user_story_condition
+        $sql = "UPDATE orvexa_user_story_condition
                 SET condition_text = :condition_text:
                 WHERE r_user_story_id = :r_user_story_id:";
         

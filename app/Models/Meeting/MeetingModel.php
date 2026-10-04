@@ -27,7 +27,7 @@ class MeetingModel extends BaseModel
         $sql = "SELECT
                     *
                 FROM
-                    scrum_meeting_type where  is_deleted = 'N'";
+                    orvexa_meeting_type where  is_deleted = 'N'";
         $query = $this->query($sql);
         return $query->getResultArray(); //returns result as an array format
     }
@@ -43,7 +43,7 @@ class MeetingModel extends BaseModel
         $sql = "SELECT
                     *
                 FROM
-                    scrum_meeting_location";
+                    orvexa_meeting_location";
         $query = $this->query($sql);
         return $query->getResultArray(); //returns result as an array format
     }
@@ -90,16 +90,16 @@ class MeetingModel extends BaseModel
         }
 
         $sql .= " FROM
-                scrum_meeting_details AS details
-                INNER JOIN scrum_product AS products ON products.external_project_id = details.r_product_id
-                INNER JOIN scrum_user AS users ON users.external_employee_id = details.r_user_id ";
+                orvexa_meeting_details AS details
+                INNER JOIN orvexa_product AS products ON products.external_project_id = details.r_product_id
+                INNER JOIN orvexa_user AS users ON users.external_employee_id = details.r_user_id ";
 
         if ($meetType != 1 && $meetType != 2) {
-            $sql .= "INNER JOIN scrum_sprint AS sprint ON sprint.sprint_id = details.r_sprint_id";
+            $sql .= "INNER JOIN orvexa_sprint AS sprint ON sprint.sprint_id = details.r_sprint_id";
         }
 
         if ($meetType == 2) {
-            $sql .= "INNER JOIN scrum_brainstorm_meeting_details AS brainstorm ON brainstorm.r_meeting_details_id = details.meeting_details_id";
+            $sql .= "INNER JOIN orvexa_brainstorm_meeting_details AS brainstorm ON brainstorm.r_meeting_details_id = details.meeting_details_id";
         }
 
         $sql .= " WHERE
@@ -123,10 +123,10 @@ class MeetingModel extends BaseModel
                     external_project_id,
                     product_name
                 FROM
-                    scrum_product
-                    INNER JOIN scrum_product_user ON scrum_product.external_project_id = scrum_product_user.r_product_id
+                    orvexa_product
+                    INNER JOIN orvexa_product_user ON orvexa_product.external_project_id = orvexa_product_user.r_product_id
                 WHERE
-                    scrum_product_user.r_user_id = :id:";
+                    orvexa_product_user.r_user_id = :id:";
         $query = $this->query($sql, ["id" => $id]);
         return $query->getResultArray(); //returns result as an array format
     }
@@ -142,7 +142,7 @@ class MeetingModel extends BaseModel
                     sprint_duration_id,
                     sprint_duration_value
                 FROM
-                    scrum_sprint_duration";
+                    orvexa_sprint_duration";
         $query = $this->query($sql);
         return $query->getResultArray(); //returns result as an array format
     }
@@ -161,9 +161,9 @@ class MeetingModel extends BaseModel
                 ms.module_status_id,
                 st.status_name
             FROM
-                scrum_module_status AS ms
+                orvexa_module_status AS ms
             INNER JOIN
-                scrum_status AS st
+                orvexa_status AS st
             ON
                 ms.r_status_id = st.status_id
             WHERE
@@ -183,37 +183,37 @@ class MeetingModel extends BaseModel
     public function ShowSprint($id): array
     {
         $sql = "SELECT
-                    DISTINCT scrum_sprint.sprint_id,
-                    scrum_sprint.sprint_name,
-                    scrum_product.product_name,
-                    scrum_sprint.start_date,
-                    scrum_sprint.end_date,
-                    scrum_status.status_name,
-                    scrum_sprint_duration.sprint_duration_value,
-                    scrum_customer.customer_name,
-                    scrum_user.first_name
+                    DISTINCT orvexa_sprint.sprint_id,
+                    orvexa_sprint.sprint_name,
+                    orvexa_product.product_name,
+                    orvexa_sprint.start_date,
+                    orvexa_sprint.end_date,
+                    orvexa_status.status_name,
+                    orvexa_sprint_duration.sprint_duration_value,
+                    orvexa_customer.customer_name,
+                    orvexa_user.first_name
                 FROM
-                    scrum_sprint
-                INNER JOIN scrum_product
-                    ON scrum_sprint.r_product_id = scrum_product.external_project_id
-                INNER JOIN scrum_module_status
-                    ON scrum_sprint.r_module_status_id = scrum_module_status.module_status_id
-                INNER JOIN scrum_sprint_duration
-                    ON scrum_sprint.r_sprint_duration_id = scrum_sprint_duration.sprint_duration_id
-                INNER JOIN scrum_customer
-                    ON scrum_sprint.r_customer_id = scrum_customer.customer_id
-                INNER JOIN scrum_user
-                    ON scrum_sprint.r_user_id_created = scrum_user.external_employee_id
-                INNER JOIN scrum_status
-                    ON scrum_module_status.r_status_id = scrum_status.status_id
-                INNER JOIN scrum_module
-                    ON scrum_module_status.r_module_id = scrum_module.module_id
-                INNER JOIN scrum_sprint_user
-                    ON scrum_sprint_user.r_sprint_id = scrum_sprint.sprint_id
+                    orvexa_sprint
+                INNER JOIN orvexa_product
+                    ON orvexa_sprint.r_product_id = orvexa_product.external_project_id
+                INNER JOIN orvexa_module_status
+                    ON orvexa_sprint.r_module_status_id = orvexa_module_status.module_status_id
+                INNER JOIN orvexa_sprint_duration
+                    ON orvexa_sprint.r_sprint_duration_id = orvexa_sprint_duration.sprint_duration_id
+                INNER JOIN orvexa_customer
+                    ON orvexa_sprint.r_customer_id = orvexa_customer.customer_id
+                INNER JOIN orvexa_user
+                    ON orvexa_sprint.r_user_id_created = orvexa_user.external_employee_id
+                INNER JOIN orvexa_status
+                    ON orvexa_module_status.r_status_id = orvexa_status.status_id
+                INNER JOIN orvexa_module
+                    ON orvexa_module_status.r_module_id = orvexa_module.module_id
+                INNER JOIN orvexa_sprint_user
+                    ON orvexa_sprint_user.r_sprint_id = orvexa_sprint.sprint_id
                 WHERE
-                    scrum_module_status.module_status_id IN (19, 20, 23)
-                    AND scrum_sprint_user.r_user_id = :id:
-                    AND scrum_sprint.start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+                    orvexa_module_status.module_status_id IN (19, 20, 23)
+                    AND orvexa_sprint_user.r_user_id = :id:
+                    AND orvexa_sprint.start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
         $result = $this->query($sql, ["id" => $id]);
         return $result->getResultArray(); //returns result as an array format
     }
@@ -228,10 +228,10 @@ class MeetingModel extends BaseModel
         $sql = "SELECT DISTINCT
                     su.first_name
                 FROM
-                    scrum_user AS su
-                INNER JOIN scrum_product_user AS pu
+                    orvexa_user AS su
+                INNER JOIN orvexa_product_user AS pu
                     ON pu.r_user_id = su.external_employee_id
-                INNER JOIN scrum_product AS sp
+                INNER JOIN orvexa_product AS sp
                     ON sp.external_project_id = pu.r_product_id";
         $result = $this->query($sql);
         return $result->getResultArray(); //returns result as an array format
@@ -247,10 +247,10 @@ class MeetingModel extends BaseModel
         $sql = "SELECT DISTINCT
                     su.first_name
                 FROM
-                    scrum_user AS su
-                INNER JOIN scrum_product_user AS pu
+                    orvexa_user AS su
+                INNER JOIN orvexa_product_user AS pu
                     ON pu.r_user_id = su.external_employee_id
-                INNER JOIN scrum_product AS sp
+                INNER JOIN orvexa_product AS sp
                     ON sp.external_project_id = pu.r_product_id
                 WHERE
                     sp.external_project_id = :id:";
@@ -269,47 +269,47 @@ class MeetingModel extends BaseModel
     public function getSprintById($id): array
     {
         $sql = "SELECT
-                    scrum_sprint.sprint_id,
-                    scrum_sprint.sprint_name,
-                    scrum_product.product_name,
-                    scrum_sprint.start_date,
-                    scrum_sprint.end_date,
-                    scrum_sprint_duration.sprint_duration_value,
-                    scrum_customer.customer_name,
-                    scrum_status.status_name,
-                    scrum_user.first_name
+                    orvexa_sprint.sprint_id,
+                    orvexa_sprint.sprint_name,
+                    orvexa_product.product_name,
+                    orvexa_sprint.start_date,
+                    orvexa_sprint.end_date,
+                    orvexa_sprint_duration.sprint_duration_value,
+                    orvexa_customer.customer_name,
+                    orvexa_status.status_name,
+                    orvexa_user.first_name
                 FROM
-                    scrum_sprint
+                    orvexa_sprint
                 INNER JOIN
-                    scrum_product
+                    orvexa_product
                 ON
-                    scrum_sprint.r_product_id = scrum_product.external_project_id
+                    orvexa_sprint.r_product_id = orvexa_product.external_project_id
                 INNER JOIN
-                    scrum_sprint_duration
+                    orvexa_sprint_duration
                 ON
-                    scrum_sprint.r_sprint_duration_id = scrum_sprint_duration.sprint_duration_id
+                    orvexa_sprint.r_sprint_duration_id = orvexa_sprint_duration.sprint_duration_id
                 INNER JOIN
-                    scrum_customer
+                    orvexa_customer
                 ON
-                    scrum_sprint.r_customer_id = scrum_customer.customer_id
+                    orvexa_sprint.r_customer_id = orvexa_customer.customer_id
                 INNER JOIN
-                    scrum_user
+                    orvexa_user
                 ON
-                    scrum_sprint.r_user_id_created = scrum_user.external_employee_id
+                    orvexa_sprint.r_user_id_created = orvexa_user.external_employee_id
                 INNER JOIN
-                    scrum_module_status
+                    orvexa_module_status
                 ON
-                    scrum_module_status.module_status_id = scrum_sprint.r_module_status_id
+                    orvexa_module_status.module_status_id = orvexa_sprint.r_module_status_id
                 INNER JOIN
-                    scrum_status
+                    orvexa_status
                 ON
-                    scrum_module_status.r_status_id = scrum_status.status_id
+                    orvexa_module_status.r_status_id = orvexa_status.status_id
                 INNER JOIN
-                    scrum_module
+                    orvexa_module
                 ON
-                    scrum_module_status.r_module_id = scrum_module.module_id
+                    orvexa_module_status.r_module_id = orvexa_module.module_id
                 WHERE
-                     scrum_sprint.sprint_id = :id:";
+                     orvexa_sprint.sprint_id = :id:";
 
         //using Bind Param for executing the query
         $result = $this->query($sql, ['id' => $id]);
@@ -328,9 +328,9 @@ class MeetingModel extends BaseModel
                     s.sprint_id,
                     s.sprint_name
                 FROM
-                    scrum_sprint as s
+                    orvexa_sprint as s
                 INNER JOIN
-                    scrum_product as p
+                    orvexa_product as p
                 ON
                     s.r_product_id = p.external_project_id
                 WHERE
@@ -353,7 +353,7 @@ class MeetingModel extends BaseModel
                     external_employee_id,
                     email_id
                 FROM
-                    scrum_user
+                    orvexa_user
                 WHERE
                     first_name IN ({$placeholders})";
         $query = $this->query($sql, $membersArray);
@@ -372,12 +372,12 @@ class MeetingModel extends BaseModel
                 d.meeting_start_time,
                 d.meeting_end_time
             FROM
-                scrum_meeting_members AS m
+                orvexa_meeting_members AS m
             INNER JOIN
-                scrum_meeting_details AS d
+                orvexa_meeting_details AS d
                 ON d.meeting_details_id = m.r_meeting_details_id
             INNER JOIN
-                scrum_user AS u
+                orvexa_user AS u
                 ON u.external_employee_id = m.r_user_id
             WHERE
                 d.meeting_start_date = :meeting_start_date:
@@ -409,7 +409,7 @@ class MeetingModel extends BaseModel
         $sql = "SELECT
                     meeting_team_id
                 FROM
-                    scrum_meeting_team
+                    orvexa_meeting_team
                 WHERE
                     meeting_team_name = :groupName:";
 
@@ -421,7 +421,7 @@ class MeetingModel extends BaseModel
             $sql1 = "SELECT
                         r_external_employee_id
                     FROM
-                        scrum_meeting_team_members
+                        orvexa_meeting_team_members
                     WHERE
                         r_meeting_team_id = :groupId:
                         AND is_deleted = :is_deleted:";
@@ -449,7 +449,7 @@ class MeetingModel extends BaseModel
         $sql = "SELECT
                     first_name
                 FROM
-                    scrum_user
+                    orvexa_user
                 WHERE
                     external_employee_id IN ({$placeholders})";
         $query = $this->query($sql, $userId);
@@ -471,9 +471,9 @@ class MeetingModel extends BaseModel
                     us.r_epic_id,
                     us.user_story_id
                 FROM
-                    scrum_user_story AS us
+                    orvexa_user_story AS us
                 INNER JOIN
-                    scrum_epic AS e
+                    orvexa_epic AS e
                     ON e.epic_id = us.r_epic_id
                 WHERE
                     user_story_id IN ({$placeholders})";
@@ -496,9 +496,9 @@ class MeetingModel extends BaseModel
                 st.meeting_team_name,
                 st.r_product_id
             FROM
-                scrum_meeting_team_members as sm
-            INNER JOIN scrum_user as u on sm.r_external_employee_id=u.external_employee_id
-            INNER JOIN scrum_meeting_team as st on st.meeting_team_id=sm.r_meeting_team_id
+                orvexa_meeting_team_members as sm
+            INNER JOIN orvexa_user as u on sm.r_external_employee_id=u.external_employee_id
+            INNER JOIN orvexa_meeting_team as st on st.meeting_team_id=sm.r_meeting_team_id
             WHERE
                 r_meeting_team_id=:r_meeting_team_id:
             AND
@@ -526,8 +526,8 @@ class MeetingModel extends BaseModel
                         su.email_id ,
                         su.external_employee_id
                     FROM
-                        scrum_sprint_user AS ssu
-                    JOIN scrum_user AS su
+                        orvexa_sprint_user AS ssu
+                    JOIN orvexa_user AS su
                     ON ssu.r_user_id = su.external_employee_id
                     WHERE
                         ssu.r_sprint_id = ?
@@ -549,7 +549,7 @@ class MeetingModel extends BaseModel
         $sql = "SELECT
                     product_id
                 FROM
-                    scrum_product
+                    orvexa_product
                 WHERE
                     product_name LIKE :name:";
 
@@ -572,13 +572,13 @@ class MeetingModel extends BaseModel
                     u.external_employee_id,
                     u.first_name
                 FROM
-                    scrum_product_user AS pu
+                    orvexa_product_user AS pu
                 INNER JOIN
-                    scrum_product AS p
+                    orvexa_product AS p
                 ON
                     pu.r_product_id = p.external_project_id
                 INNER JOIN
-                    scrum_user AS u
+                    orvexa_user AS u
                 ON
                     pu.r_user_id = u.external_employee_id
                 WHERE
@@ -605,9 +605,9 @@ class MeetingModel extends BaseModel
                     b.backlog_item_id,
                     b.backlog_item_name
                 FROM
-                    scrum_backlog_item as b
+                    orvexa_backlog_item as b
                 INNER JOIN
-                    scrum_product as p
+                    orvexa_product as p
                 ON
                     b.r_product_id = p.external_project_id
                 WHERE
@@ -633,12 +633,12 @@ class MeetingModel extends BaseModel
                     md.meeting_end_time,
                     md.cancel_reason
                 FROM
-                    scrum_user AS su
-                INNER JOIN scrum_meeting_members AS mm
+                    orvexa_user AS su
+                INNER JOIN orvexa_meeting_members AS mm
                     ON su.external_employee_id = mm.r_user_id
-                INNER JOIN scrum_meeting_details AS md
+                INNER JOIN orvexa_meeting_details AS md
                     ON md.meeting_details_id = mm.r_meeting_details_id
-                INNER JOIN scrum_product AS sp
+                INNER JOIN orvexa_product AS sp
                     ON sp.external_project_id = md.r_product_id
                 WHERE
                     md.meeting_details_id = :id:';
@@ -669,11 +669,11 @@ class MeetingModel extends BaseModel
                         details.meeting_link,
                         meetType.meeting_type_name
                     FROM
-                        scrum_meeting_members AS members
-                        INNER JOIN scrum_meeting_details AS details ON members.r_meeting_details_id = details.meeting_details_id
-                        INNER JOIN scrum_user AS user ON members.r_user_id = user.external_employee_id
-                        INNER JOIN scrum_product AS product ON details.r_product_id = product.product_id
-                        INNER JOIN scrum_meeting_type AS meetType ON details.r_meeting_type_id = meetType.meeting_type_id
+                        orvexa_meeting_members AS members
+                        INNER JOIN orvexa_meeting_details AS details ON members.r_meeting_details_id = details.meeting_details_id
+                        INNER JOIN orvexa_user AS user ON members.r_user_id = user.external_employee_id
+                        INNER JOIN orvexa_product AS product ON details.r_product_id = product.product_id
+                        INNER JOIN orvexa_meeting_type AS meetType ON details.r_meeting_type_id = meetType.meeting_type_id
                     WHERE
                         details.meeting_start_date = '$currentDate'
                         AND details.meeting_start_time >= '$currentTime'
@@ -692,8 +692,8 @@ class MeetingModel extends BaseModel
         $sql="SELECT 
                     SU.first_name
                 FROM
-                    scrum_user AS SU
-                INNER JOIN scrum_sprint_user as SS ON SS.r_user_id=SU.external_employee_id
+                    orvexa_user AS SU
+                INNER JOIN orvexa_sprint_user as SS ON SS.r_user_id=SU.external_employee_id
                 WHERE
                 SS.r_sprint_id=:sprintId: AND SS.is_deleted='N'
             ";

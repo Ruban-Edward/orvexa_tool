@@ -12,7 +12,7 @@ use CodeIgniter\Model;
 
 class PermissionModel extends Model
 {
-    protected $table = 'scrum_permission';
+    protected $table = 'orvexa_permission';
     protected $primaryKey = 'permission_id';
     protected $allowedFields = [
         'permission_name',
@@ -75,7 +75,7 @@ class PermissionModel extends Model
     {
         // SQL query to insert a new permission
         $sql = "INSERT INTO
-                    scrum_permission
+                    orvexa_permission
                     (permission_name,
                     r_module_id,
                     routes_url)
@@ -106,7 +106,7 @@ class PermissionModel extends Model
                     permission_id, 
                     permission_name 
                 FROM 
-                    scrum_permission
+                    orvexa_permission
                 WHERE 
                     is_deleted = :is_deleted:
                 ORDER BY 
@@ -127,7 +127,7 @@ class PermissionModel extends Model
     public function deletePermission($id): bool
     {
         $sql = "UPDATE 
-                    scrum_permission 
+                    orvexa_permission 
                 SET 
                     is_deleted = :is_deleted: 
                 WHERE 
@@ -153,7 +153,7 @@ class PermissionModel extends Model
                     r_module_id, 
                     routes_url 
                 FROM 
-                    scrum_permission 
+                    orvexa_permission 
                 WHERE 
                     permission_id = :permission_id:
                     AND is_deleted = :is_deleted:";
@@ -177,7 +177,7 @@ class PermissionModel extends Model
     public function updatePermissionById($permissionId): bool
     {
         $sql = "UPDATE 
-                    scrum_permission 
+                    orvexa_permission 
                 SET 
                     permission_name = :permission_name:, 
                     r_module_id = :r_module_id:, 

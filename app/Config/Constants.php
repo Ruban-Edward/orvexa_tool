@@ -144,7 +144,7 @@ define('LOGOUT_ACTION', 'logout');
 //Get CustomField id of issues
 define('CUSTOM_FIELD', ['designation' => 10, 'customer' => 16, 'team' => 20, 'phase' => 21, 'current_status' => 22, 'airline' => 23, 'assign_team' => 24, 'main_activity' => 37, 'module_category' => 38, 'user_story_id' => 52]);
 
-//Get API key for users in redmine user model
+//User API key label
 define('USER_API', 'api');
 
 define('FIBONACCI_LIMIT', 10);

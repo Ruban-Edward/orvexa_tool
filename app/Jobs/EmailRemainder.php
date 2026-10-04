@@ -38,11 +38,11 @@ class EmailRemainder
                         details.meeting_link, 
                         meetType.meeting_type_name 
                     FROM 
-                        scrum_meeting_members AS members 
-                        INNER JOIN scrum_meeting_details AS details ON members.r_meeting_details_id = details.meeting_details_id 
-                        INNER JOIN scrum_user AS user ON members.r_user_id = user.external_employee_id 
-                        INNER JOIN scrum_product AS product ON details.r_product_id = product.product_id 
-                        INNER JOIN scrum_meeting_type AS meetType ON details.r_meeting_type_id = meetType.meeting_type_id 
+                        orvexa_meeting_members AS members 
+                        INNER JOIN orvexa_meeting_details AS details ON members.r_meeting_details_id = details.meeting_details_id 
+                        INNER JOIN orvexa_user AS user ON members.r_user_id = user.external_employee_id 
+                        INNER JOIN orvexa_product AS product ON details.r_product_id = product.product_id 
+                        INNER JOIN orvexa_meeting_type AS meetType ON details.r_meeting_type_id = meetType.meeting_type_id 
                     WHERE 
                         details.meeting_start_date = '$currentDate'
                         AND details.meeting_start_time >= '$currentTime' 

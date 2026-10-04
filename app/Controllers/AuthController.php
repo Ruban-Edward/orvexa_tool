@@ -5,9 +5,9 @@ use Config\SprintModelConfig;
 use CodeIgniter\Events\Events;
 
 /**
- * @author Infiniti <infiniti@infinitisoftware.net>
+ * @author Orvexa <orvexa@infinitisoftware.net>
  * 
- * @modified-by Infiniti <infiniti@infinitisoftware.net>
+ * @modified-by Orvexa <orvexa@infinitisoftware.net>
  * @created-date 13-06-2024
  * @modified-date 13-06-2024
  * 
@@ -47,8 +47,8 @@ class AuthController extends BaseController
      * @author Stervin Richard 
      * AuthController::loginValidate()
      *
-     * Check user login authentication with scrum DB and the redmine DB
-     * if the user is valid then allowed to scrum master portal
+     * Check user login authentication with the scrum database.
+     * If the user is valid then allow access to the scrum master portal.
      */ 
     public function loginValidate()
     {
@@ -91,52 +91,11 @@ class AuthController extends BaseController
             $firstName = $user[0]->first_name;
             $employeeId = $user[0]->external_employee_id;
             $roleId = $user[0]->r_role_id;
-            // $redmineApiKey = $user[0]->external_api_key;
         }
         else{
-            // check login details with redmine database
-            $userService = service("users");
-            $user = $userService->getUser($username);
-            //check invalid user
-            if (empty($user)) {
-                $errorMessage = "Invalid username or password";
-                session()->setFlashdata('error', $errorMessage);
-                return redirect()->to(ASSERT_PATH.'/login');
-                        
-            }
-            // for checking valid password or not
-            if (! $userService->isValidPassword(
-                $password, 
-                $user[0]->hashed_password, 
-                $user[0]->salt
-            )) {
-                $errorMessage = "Invalid username or password";
-                session()->setFlashdata('error', $errorMessage);
-                return redirect()->to(ASSERT_PATH.'/login');
-            }
-            // for user role setting 
-            $roleConfig = new SprintModelConfig();
-            $userRoles = $roleConfig->userRoles;
-            $userRoleId = $roleConfig->userRoleId;            
-            // Determine role based on admin status
-            if ($user[0]->admin > 0) {
-                $roleId = $userRoleId['scrum_admin'];
-            } else {
-                $roleId = $this->userRoleSet($user[0]->role,$userRoles,$userRoleId);
-            }
-            //for valid users           
-            $userData = [
-                'username' => $username,
-                'password' => $password,
-                'employee_id' => $user[0]->id,
-                'api_key' => $user[0]->value,
-                'first_name' => $user[0]->firstname,
-                'last_name' => $user[0]->lastname,
-                'email_id' => $user[0]->address,
-                'role_id' => $roleId,
-            ];
-            // insert or update user data into scrum database
-            $this->userModel->insertOrUpdatetUser([$userData]);
+            $errorMessage = "Invalid username or password";
+            session()->setFlashdata('error', $errorMessage);
+            return redirect()->to(ASSERT_PATH.'/login');
         }
         $url = $this->session->get('url');
         //Set User details in session
@@ -145,7 +104,6 @@ class AuthController extends BaseController
             'employee_id' => $userData['employee_id'] ?? $employeeId,
             'role_id' => $roleId,
             'is_user_logged' => true
-            // 'redmine_api_key' => $userData['api_key'] ??  $redmineApiKey
         ];
         $this->session->set($user_session);
         // set the user login action in scrum db

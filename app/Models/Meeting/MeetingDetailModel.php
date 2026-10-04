@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class MeetingDetailModel extends Model
 {
     // Table name for insertion
-    protected $table = "scrum_meeting_details";
+    protected $table = "orvexa_meeting_details";
 
     //setting the primary key to insert
     protected $primaryKey = "meeting_details_id";
@@ -169,7 +169,7 @@ class MeetingDetailModel extends Model
     public function insertMeetingDetails($data): int
     {
         //insert the meeting details to the table
-        $sql = "INSERT INTO scrum_meeting_details (
+        $sql = "INSERT INTO orvexa_meeting_details (
                     meeting_title, r_meeting_type_id,
                     r_user_id, r_product_id,r_sprint_id, r_meeting_location_id,
                     meeting_description, meeting_start_date,
@@ -258,7 +258,7 @@ class MeetingDetailModel extends Model
 
         if ($data['update_as_series'] && $data['recurrance_meeting_id']) {
             $sql = "UPDATE
-                        scrum_meeting_details
+                        orvexa_meeting_details
                     SET
                         $updateClause
                     WHERE
@@ -266,7 +266,7 @@ class MeetingDetailModel extends Model
             $bindParams['recurrance_meeting_id'] = $data['recurrance_meeting_id'];
         } else {
             $sql = "UPDATE
-                        scrum_meeting_details
+                        orvexa_meeting_details
                     SET
                         $updateClause,
                     meeting_start_date = :meeting_start_date:,
@@ -294,7 +294,7 @@ class MeetingDetailModel extends Model
     public function updateMeetingDetailsExternal($data)
     {
         $sql = "UPDATE
-                    scrum_meeting_details
+                    orvexa_meeting_details
                 SET
                     external_issue_id = :external_issue_id:
                 WHERE
@@ -320,7 +320,7 @@ class MeetingDetailModel extends Model
     public function timeLogisLogged($data)
     {
         $sql = " UPDATE
-                    scrum_meeting_details
+                    orvexa_meeting_details
                 SET
                     is_logged =:is_logged:
                 WHERE
@@ -357,7 +357,7 @@ class MeetingDetailModel extends Model
     {
 
         $sql = "UPDATE
-                    scrum_meeting_details
+                    orvexa_meeting_details
                 SET
                     external_issue_id = $taskId
                 WHERE
@@ -385,10 +385,10 @@ class MeetingDetailModel extends Model
             md.is_deleted,
             md.is_logged
         FROM
-            scrum_meeting_details as md
-        INNER JOIN scrum_meeting_type as mt
+            orvexa_meeting_details as md
+        INNER JOIN orvexa_meeting_type as mt
             ON md.r_meeting_type_id = mt.meeting_type_id
-        INNER JOIN scrum_meeting_members AS mm
+        INNER JOIN orvexa_meeting_members AS mm
             ON mm.r_meeting_details_id = md.meeting_details_id
         WHERE
             mm.r_user_id = :user_name:
@@ -410,7 +410,7 @@ class MeetingDetailModel extends Model
     public function CancelMeetingsReason($args): bool
     {
         $sql = 'UPDATE
-                    scrum_meeting_details
+                    orvexa_meeting_details
                 SET
                     cancel_reason = :cancel_reason:,
                     is_deleted = :is_deleted:
@@ -437,7 +437,7 @@ class MeetingDetailModel extends Model
         $sql = "SELECT
                     external_issue_id
                 FROM
-                    scrum_meeting_details
+                    orvexa_meeting_details
                 WHERE
                     r_sprint_id = :r_sprint_id:
                 AND
@@ -466,11 +466,11 @@ class MeetingDetailModel extends Model
                         sp.product_name,
                         st.meeting_type_name
                     FROM
-                        scrum_meeting_details AS md
+                        orvexa_meeting_details AS md
                     JOIN
-                        scrum_product AS sp ON md.r_product_id = sp.external_project_id
+                        orvexa_product AS sp ON md.r_product_id = sp.external_project_id
                     JOIN
-                        scrum_meeting_type AS st ON md.r_meeting_type_id = st.meeting_type_id
+                        orvexa_meeting_type AS st ON md.r_meeting_type_id = st.meeting_type_id
                     WHERE
                         md.r_meeting_type_id = :meetType:
                         AND md.r_product_id = :product:';

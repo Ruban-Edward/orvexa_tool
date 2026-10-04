@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class RolePermissionModel extends Model
 {
     // Table name for insertion
-    protected $table = "scrum_role_permission";
+    protected $table = "orvexa_role_permission";
 
     //setting the primary key to insert 
     protected $primaryKey = "role_permission_id";
@@ -73,7 +73,7 @@ class RolePermissionModel extends Model
         $columns = ['r_role_id', 'r_permission_id'];
 
         // Using the insertBatch method to insert multiple data
-        $result = $this->db->table('scrum_role_permission')->insertBatch($data);
+        $result = $this->db->table('orvexa_role_permission')->insertBatch($data);
 
         return $result;
     }
@@ -88,7 +88,7 @@ class RolePermissionModel extends Model
         $roleId = $data[0]['r_role_id'];
         $permissionIds = array_column($data, 'r_permission_id');
 
-        $result = $this->db->table('scrum_role_permission')
+        $result = $this->db->table('orvexa_role_permission')
             ->where('r_role_id', $roleId)
             ->whereIn('r_permission_id', $permissionIds)
             ->delete();
@@ -106,7 +106,7 @@ class RolePermissionModel extends Model
         $sql = "SELECT 
                     r_permission_id
                 FROM 
-                    scrum_role_permission
+                    orvexa_role_permission
                 WHERE 
                     r_role_id = :role_id: AND
                     is_deleted = :is_deleted:";

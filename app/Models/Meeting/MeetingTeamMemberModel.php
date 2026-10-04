@@ -6,7 +6,7 @@
  * @category   Model
  * @author     Hari Sankar R
  * @created   
- * @purpose    To insert the team members details into scrum_meeting_team_memebers table       
+ * @purpose    To insert the team members details into orvexa_meeting_team_memebers table       
  */
 
 namespace App\Models\Meeting;
@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class MeetingTeamMemberModel extends Model
 {
     // Table name for insertion
-    protected $table = "scrum_meeting_team_members";
+    protected $table = "orvexa_meeting_team_members";
 
     //setting the primary key to insert 
     protected $primaryKey = "meeting_team_member_id";
@@ -55,14 +55,14 @@ class MeetingTeamMemberModel extends Model
     }
 
     /**
-     * Inserting group members to the scrum_meeting_team_members table.
+     * Inserting group members to the orvexa_meeting_team_members table.
      * @author Hari Sankar R
      * @param array $data
      * @return integer
      */
     public function insertGroupMembers($data)
     {
-        $sql = "INSERT INTO scrum_meeting_team_members (
+        $sql = "INSERT INTO orvexa_meeting_team_members (
                     r_meeting_team_id, 
                     r_external_employee_id
                 ) 
@@ -82,7 +82,7 @@ class MeetingTeamMemberModel extends Model
         }
     }
     /**
-     * Editing the group members in the scrum_meeting_team_members table.
+     * Editing the group members in the orvexa_meeting_team_members table.
      * @author Hari Sankar R
      * @param array $data
      * @return integer
@@ -92,7 +92,7 @@ class MeetingTeamMemberModel extends Model
         $sql = "SELECT 
                     r_meeting_team_id,r_external_employee_id
                 FROM 
-                    scrum_meeting_team_members 
+                    orvexa_meeting_team_members 
                 WHERE
                     r_external_employee_id=:r_external_employee_id:
                 AND
@@ -106,7 +106,7 @@ class MeetingTeamMemberModel extends Model
             return 0;
         } else {
             $sql = "INSERT INTO 
-                    scrum_meeting_team_members 
+                    orvexa_meeting_team_members 
                     (
                         r_meeting_team_id,
                         r_external_employee_id
@@ -132,7 +132,7 @@ class MeetingTeamMemberModel extends Model
     public function deletingGroupMembers($data): bool
     {
         $sql = "DELETE FROM 
-                    scrum_meeting_team_members
+                    orvexa_meeting_team_members
                 WHERE
                     r_meeting_team_id=:r_meeting_team_id:
                 AND
@@ -156,7 +156,7 @@ class MeetingTeamMemberModel extends Model
         $sql = "SELECT 
                     r_external_employee_id
                 FROM
-                    scrum_meeting_team_members
+                    orvexa_meeting_team_members
                 WHERE
                     r_meeting_team_id=:r_meeting_team_id:";
         $result = $this->query($sql, ['r_meeting_team_id' => $data['r_meeting_team_id']]);
@@ -175,7 +175,7 @@ class MeetingTeamMemberModel extends Model
     public function deleteGroupMembersDetails($data)
     {
         $sql = "DELETE FROM
-                    scrum_meeting_team_members 
+                    orvexa_meeting_team_members 
                 WHERE 
                     r_meeting_team_id=:r_meeting_team_id:";
         $result = $this->query($sql, [

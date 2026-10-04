@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class SettingConfigModel extends Model
 {
     // Table name for insertion
-    protected $table = "scrum_settings";
+    protected $table = "orvexa_settings";
 
     //setting the primary key to insert 
     protected $primaryKey = "settings_id";
@@ -60,7 +60,7 @@ class SettingConfigModel extends Model
      */
     public function pokerConfig($data)
     {
-        $sql = "UPDATE scrum_settings
+        $sql = "UPDATE orvexa_settings
                 SET
                     settings_value = :settings_value:
                 WHERE
@@ -77,7 +77,7 @@ class SettingConfigModel extends Model
         $sql = "SELECT 
                     settings_value 
                 FROM 
-                    scrum_settings 
+                    orvexa_settings 
                 WHERE 
                     settings_name = :settings_name:";
 

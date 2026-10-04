@@ -282,7 +282,7 @@ class BacklogController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Backlog in sprint cannot be deleted']);
         }
         // If the backlog item is not in a sprint, proceed with deletion
-        $this->backlogItemModel->deleteItem($pblId, ['scrum_backlog_item', 'backlog_item_id']);
+        $this->backlogItemModel->deleteItem($pblId, ['orvexa_backlog_item', 'backlog_item_id']);
 
         // Log the action of deleting the backlog item
         $actionData = $data['backlog_item_name'] . ' is deleted';
@@ -643,7 +643,7 @@ class BacklogController extends BaseController
         $document = ($this->documentModel->getDocumentDetails(0, 0, $docId))[0];
 
         // Attempt to delete the document from the database
-        $res = $this->backlogItemModel->deleteItem($docId, ['scrum_document', 'document_id']);
+        $res = $this->backlogItemModel->deleteItem($docId, ['orvexa_document', 'document_id']);
 
         // If the document was successfully deleted, log the action and return a success response
         if ($res) {

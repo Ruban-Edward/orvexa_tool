@@ -6,7 +6,7 @@
  * @category   Model
  * @author     Hari Sankar R
  * @created   
- * @purpose    To insert the team details into scrum_meeting_team table       
+ * @purpose    To insert the team details into orvexa_meeting_team table       
  */
 
 namespace App\Models\Meeting;
@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class MeetingTeamModel extends Model
 {
     // Table name for insertion
-    protected $table = "scrum_meeting_team";
+    protected $table = "orvexa_meeting_team";
 
     //setting the primary key to insert 
     protected $primaryKey = "meeting_team_id";
@@ -82,7 +82,7 @@ class MeetingTeamModel extends Model
      */
     public function createGroup($data)
     {
-        $sql = "INSERT INTO scrum_meeting_team (
+        $sql = "INSERT INTO orvexa_meeting_team (
                     meeting_team_name, r_product_id,
                     r_external_employee_id, created_date
                 ) 
@@ -114,7 +114,7 @@ class MeetingTeamModel extends Model
     public function editTeamDetails($data)
     {
         $sql = "UPDATE 
-                scrum_meeting_team
+                orvexa_meeting_team
             SET
                 meeting_team_name=:meeting_team_name:,
                 r_product_id=:r_product_id:,
@@ -143,7 +143,7 @@ class MeetingTeamModel extends Model
     public function deleteGroupDetails($data)
     {
         $sql = "DELETE FROM 
-                    scrum_meeting_team 
+                    orvexa_meeting_team 
                 WHERE 
                     meeting_team_id=:meeting_team_id:";
         $result = $this->query($sql, [
@@ -164,7 +164,7 @@ class MeetingTeamModel extends Model
                     t.meeting_team_id,
                     t.meeting_team_name
                 FROM 
-                    scrum_meeting_team AS t
+                    orvexa_meeting_team AS t
                 WHERE
                     t.r_external_employee_id = :employee_id:
                     AND t.is_deleted = :is_deleted:";

@@ -71,15 +71,15 @@ class SprintModelConfig extends BaseConfig
           'project_manager' => 2,
           'product_manager' => 3,
           'business_analyst' => 6,
-          'scrum_admin' => 1
+          'orvexa_admin' => 1
      ];
 
-     //Ongoing Sprint Status for Sync Redmine Controller
+     //Ongoing sprint status
      public $sprintStatus = [
           'ongoing' => [20]
      ];
 
-     //Customer type and name for Sync Redmine Controller
+     //Customer type and name
      public $customers = [
           "type" => "IssueCustomField",
           "name" => "Customer"
@@ -91,10 +91,10 @@ class SprintModelConfig extends BaseConfig
      //Pending task status for Dashboard Controller
      public $pendingTaskStatuses = [1, 2, 4, 8, 16];
 
-     //Priorities for Sync Redmine Controller
+     //Task priorities
      public $priorities = [1, 2, 3];
 
-     //Custom Field id for Sync Redmine Controller in task sync
+     //User story custom field id
      public $customFieldId = 52;
 
      public $statusNames = [

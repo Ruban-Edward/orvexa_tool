@@ -10,7 +10,7 @@ use LDAP\Result;
 class UserStoryModel extends BaseModel
 {
     // Table for insertion
-    protected $table = "scrum_user_story";
+    protected $table = "orvexa_user_story";
 
     protected $primaryKey = "user_story_id";
 
@@ -114,7 +114,7 @@ class UserStoryModel extends BaseModel
     public function insertUserStory($data)
     {
         $sql = "INSERT INTO 
-                    scrum_user_story(
+                    orvexa_user_story(
                     r_epic_id,as_a_an,i_want,so_that,given,us_when,us_then,r_module_status_id,r_user_id_created,r_user_id_updated,created_date,updated_date)
                 VALUES
                     (:epicName:,:asA/An:,:iWant:,:soThat:,:given:,:usWhen:,:usThen:,:statusId:,:userId:,:userId:,NOW(),NOW())";
@@ -143,7 +143,7 @@ class UserStoryModel extends BaseModel
     public function updateUserStory($data)
     {
         $sql = "UPDATE 
-                    scrum_user_story 
+                    orvexa_user_story 
                 SET 
                     r_epic_id = :epicName:,
                     as_a_an = :asA/An:,
@@ -183,7 +183,7 @@ class UserStoryModel extends BaseModel
      */
     public function updateUserStoryStatus($data){
         $sql = 'UPDATE
-                    scrum_user_story
+                    orvexa_user_story
                 SET
                     r_module_status_id = :module_status:
                 WHERE
@@ -204,11 +204,11 @@ class UserStoryModel extends BaseModel
         $sql = "SELECT 
                     COUNT(us.user_story_id) AS number_of_user_stories
                 FROM 
-                    scrum_backlog_item bi
+                    orvexa_backlog_item bi
                 INNER JOIN 
-                    scrum_epic e ON bi.backlog_item_id = e.r_backlog_item_id
+                    orvexa_epic e ON bi.backlog_item_id = e.r_backlog_item_id
                 INNER JOIN 
-                    scrum_user_story us ON e.epic_id = us.r_epic_id
+                    orvexa_user_story us ON e.epic_id = us.r_epic_id
                 WHERE 
                     bi.backlog_item_id = :pbl_id: AND 
                     us.is_deleted = 'N'";
@@ -248,13 +248,13 @@ class UserStoryModel extends BaseModel
                 u.estimated_hours,
                 uc.condition_text,
                 COUNT(t.task_id) as count_task
-                FROM scrum_user_story AS u
-                LEFT JOIN scrum_epic se ON se.epic_id = u.r_epic_id AND se.is_deleted = 'N'
-                LEFT JOIN scrum_backlog_item bi ON bi.backlog_item_id = se.r_backlog_item_id AND bi.is_deleted = 'N'
-                LEFT JOIN scrum_task t ON t.r_user_story_id = u.user_story_id AND t.is_deleted = 'N'
-                LEFT JOIN scrum_user_story_condition uc ON uc.r_user_story_id = u.user_story_id AND uc.is_deleted = 'N'
-                INNER JOIN scrum_module_status ms ON ms.module_status_id = bi.r_module_status_id AND ms.is_deleted = 'N'
-                INNER JOIN scrum_status s ON s.status_id = ms.r_status_id AND s.is_deleted = 'N'
+                FROM orvexa_user_story AS u
+                LEFT JOIN orvexa_epic se ON se.epic_id = u.r_epic_id AND se.is_deleted = 'N'
+                LEFT JOIN orvexa_backlog_item bi ON bi.backlog_item_id = se.r_backlog_item_id AND bi.is_deleted = 'N'
+                LEFT JOIN orvexa_task t ON t.r_user_story_id = u.user_story_id AND t.is_deleted = 'N'
+                LEFT JOIN orvexa_user_story_condition uc ON uc.r_user_story_id = u.user_story_id AND uc.is_deleted = 'N'
+                INNER JOIN orvexa_module_status ms ON ms.module_status_id = bi.r_module_status_id AND ms.is_deleted = 'N'
+                INNER JOIN orvexa_status s ON s.status_id = ms.r_status_id AND s.is_deleted = 'N'
                 WHERE bi.backlog_item_id =:pblId: AND u.is_deleted = 'N'
                 GROUP BY u.user_story_id
             ORDER BY u.updated_date DESC";
@@ -290,12 +290,12 @@ class UserStoryModel extends BaseModel
                     u.us_when,
                     u.us_then,
                     c.condition_text 
-                FROM scrum_user_story AS u
-                INNER JOIN scrum_epic AS e ON u.r_epic_id = e.epic_id 
-                INNER JOIN scrum_backlog_item AS bt ON e.r_backlog_item_id = bt.backlog_item_id
-                INNER JOIN scrum_module_status AS ms ON u.r_module_status_id = ms.module_status_id
-                INNER JOIN scrum_status AS s ON s.status_id = ms.r_status_id
-                LEFT JOIN scrum_user_story_condition AS c ON c.r_user_story_id = u.user_story_id
+                FROM orvexa_user_story AS u
+                INNER JOIN orvexa_epic AS e ON u.r_epic_id = e.epic_id 
+                INNER JOIN orvexa_backlog_item AS bt ON e.r_backlog_item_id = bt.backlog_item_id
+                INNER JOIN orvexa_module_status AS ms ON u.r_module_status_id = ms.module_status_id
+                INNER JOIN orvexa_status AS s ON s.status_id = ms.r_status_id
+                LEFT JOIN orvexa_user_story_condition AS c ON c.r_user_story_id = u.user_story_id
                 WHERE u.is_deleted = 'N' AND user_story_id = :id:";
         $result = $this->query($sql, ['id' => $id]);
         if ($result->getNumRows() > 0) {
@@ -314,7 +314,7 @@ class UserStoryModel extends BaseModel
         $sql = "SELECT 
                     MAX(user_story_id) as usCount
                 FROM 
-                    scrum_user_story";
+                    orvexa_user_story";
 
         $query = $this->query($sql);
         if ($query->getNumRows() > 0) {
@@ -351,13 +351,13 @@ class UserStoryModel extends BaseModel
                  u.estimated_hours,
                  uc.condition_text,
                  COUNT(DISTINCT t.task_id) as count_task
-                 FROM scrum_user_story AS u
-                 LEFT JOIN scrum_epic se ON se.epic_id = u.r_epic_id AND se.is_deleted = 'N'
-                 LEFT JOIN scrum_backlog_item bi ON bi.backlog_item_id = se.r_backlog_item_id AND bi.is_deleted = 'N'
-                 LEFT JOIN scrum_task t ON t.r_user_story_id = u.user_story_id AND t.is_deleted = 'N'
-                 LEFT JOIN scrum_user_story_condition uc ON uc.r_user_story_id = u.user_story_id AND uc.is_deleted = 'N'
-                 INNER JOIN scrum_module_status ms ON ms.module_status_id = bi.r_module_status_id AND ms.is_deleted = 'N'
-                 INNER JOIN scrum_status s ON s.status_id = ms.r_status_id AND s.is_deleted = 'N'
+                 FROM orvexa_user_story AS u
+                 LEFT JOIN orvexa_epic se ON se.epic_id = u.r_epic_id AND se.is_deleted = 'N'
+                 LEFT JOIN orvexa_backlog_item bi ON bi.backlog_item_id = se.r_backlog_item_id AND bi.is_deleted = 'N'
+                 LEFT JOIN orvexa_task t ON t.r_user_story_id = u.user_story_id AND t.is_deleted = 'N'
+                 LEFT JOIN orvexa_user_story_condition uc ON uc.r_user_story_id = u.user_story_id AND uc.is_deleted = 'N'
+                 INNER JOIN orvexa_module_status ms ON ms.module_status_id = bi.r_module_status_id AND ms.is_deleted = 'N'
+                 INNER JOIN orvexa_status s ON s.status_id = ms.r_status_id AND s.is_deleted = 'N'
                  WHERE bi.backlog_item_id =:pblId: AND u.is_deleted = 'N' ";
          $params = [];
  
@@ -418,9 +418,9 @@ class UserStoryModel extends BaseModel
         $sql = "SELECT 
                     us.user_story_id AS count
                 FROM 
-                    scrum_user_story us
+                    orvexa_user_story us
                 INNER JOIN 
-                    scrum_epic e ON e.epic_id = us.r_epic_id
+                    orvexa_epic e ON e.epic_id = us.r_epic_id
                 WHERE 
                     e.r_backlog_item_id = ? AND 
                     us.user_story_id = ? AND 
@@ -443,9 +443,9 @@ class UserStoryModel extends BaseModel
     public function changeStatus($before, $after, $id): bool
     {
         $sql = "UPDATE 
-                    scrum_user_story us
+                    orvexa_user_story us
                 INNER JOIN 
-                    scrum_epic e ON e.epic_id = us.r_epic_id
+                    orvexa_epic e ON e.epic_id = us.r_epic_id
                 SET 
                     us.r_module_status_id = :after:
                 WHERE
@@ -472,7 +472,7 @@ class UserStoryModel extends BaseModel
     public function userStoryStatus($statusId, $id): bool
     {
         $sql = "UPDATE 
-                    scrum_user_story
+                    orvexa_user_story
                 SET 
                     r_module_status_id = :status_id:
                 WHERE
@@ -498,9 +498,9 @@ class UserStoryModel extends BaseModel
                     user_story_id,
                     CONCAT(as_a_an ,' ', i_want) AS story_name
                 FROM 
-                    scrum_epic AS e
+                    orvexa_epic AS e
                 INNER JOIN 
-                    scrum_user_story AS us 
+                    orvexa_user_story AS us 
                 ON 
                     us.r_epic_id = e.epic_id
                 WHERE 
@@ -525,11 +525,11 @@ class UserStoryModel extends BaseModel
         $sql = "SELECT 
                     count(user_story_id) AS count 
                 FROM 
-                    scrum_user_story sus 
+                    orvexa_user_story sus 
                 JOIN 
-                    scrum_epic se ON sus.r_epic_id= se.epic_id 
+                    orvexa_epic se ON sus.r_epic_id= se.epic_id 
                 JOIN 
-                    scrum_backlog_item sbi ON sbi.backlog_item_id= se.r_backlog_item_id 
+                    orvexa_backlog_item sbi ON sbi.backlog_item_id= se.r_backlog_item_id 
                 WHERE 
                     r_backlog_item_id=:id:";
                     

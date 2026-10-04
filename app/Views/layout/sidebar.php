@@ -95,19 +95,9 @@
                         </li>
                     <?php endif; ?>
 
-                    <!-- redmine sync -->
-                    <?php if (has_permission('syncing/redminesync')): ?>
-                        <li class="sidebar-item">
-                            <a href="<?= ASSERT_PATH ?>syncing/redminesync" class='sidebar-link'>
-                                <i class="icon-refresh-ccw"></i>
-                                <span>Redmine sync</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
                     <?php if (has_permission('userGuide')): ?>
                     <li class="sidebar-item">
-                        <a href="https://scrumguide.infinitisoftware.net/docs/" target="_blank"
+                        <a href="https://www.orvexa.com/docs/" target="_blank"
                         class='sidebar-link'>
                             <i class="icon-book-open"></i> 
                             <span>User guide</span>
@@ -122,7 +112,7 @@
                 <div class="cpy-rights">
                     <div class="sidebar-footer">
                         <p>Powered by <a href="https://www.infinitisoftware.net/" target="_blank">
-                                <img src="<?= ASSERT_PATH ?>assets/images/infiniti_logo.png" alt="Logo"></a></p>
+                                <img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_08_monochrome_light.png" alt="Orvexa"></a></p>
                     </div>
                 </div>
             </div>
@@ -130,6 +120,4 @@
     </div>
 </aside>
 
-<button id="sidebar-toggle" class="sidebar-toggle">
-    
-</button>
+<button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="Collapse navigation" title="Collapse navigation" aria-expanded="true"></button>

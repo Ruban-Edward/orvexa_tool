@@ -1,0 +1,6 @@
+.git
+writable/cache/*
+writable/logs/*
+writable/session/*
+writable/debugbar/*
+docker/mysql/data

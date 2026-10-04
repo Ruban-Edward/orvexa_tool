@@ -16,7 +16,7 @@ class NoteModel extends Model
 {
 
     // Setting the Table Name for insertion
-    protected $table = "scrum_notes";
+    protected $table = "orvexa_notes";
 
     //Declaring the Primary Key for the table
     protected $primaryKey = "notes_id";
@@ -69,13 +69,13 @@ class NoteModel extends Model
         return $this->validationMessages;
     }
     /**
-     * It is a common function to insert notes for the scrum diary, sprint review, sprint retrospective pages to the table scrum_notes.
+     * It is a common function to insert notes for the scrum diary, sprint review, sprint retrospective pages to the table orvexa_notes.
      * @return int
      */
 
     public function insertNotes($data)
      {
-          $query = "INSERT INTO scrum_notes(notes,
+          $query = "INSERT INTO orvexa_notes(notes,
 				r_user_id,
 				created_date)
               		VALUES (:notes:,

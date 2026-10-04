@@ -10,7 +10,7 @@ use App\Models\BaseModel;
 class BacklogFibonacci extends BaseModel
 {
     // Table for insertion
-    protected $table = "scrum_fibonacci_settings";
+    protected $table = "orvexa_fibonacci_settings";
 
     protected $primaryKey = "fibonacci_settings_id";
 
@@ -55,7 +55,7 @@ class BacklogFibonacci extends BaseModel
 
     public function saveFibonacci($data)
     {
-        $sql = "INSERT INTO scrum_fibonacci_settings (
+        $sql = "INSERT INTO orvexa_fibonacci_settings (
                                 r_user_story_id,fibonacci_limit)
                 VALUES
                     (:r_user_story_id:,:fibonacci_limit:)";

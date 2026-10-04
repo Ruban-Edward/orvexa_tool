@@ -204,46 +204,8 @@ class AdminController extends BaseController
      */
     public function userSync(): bool
     {
-
-        // Initialize services and models
-        $this->users = service('users');
-        $sync = model(\App\Models\SyncRedmineModel::class);
-        $this->userModelObj = model(\App\Models\User\UserModel::class);
-
-        // Synchronize users
-        $users = $this->users->userSync();
-
-        // Get role configurations
-        $roleConfig = new SprintModelConfig();
-        $userRoles = $roleConfig->userRoles;
-        $userRoleId = $roleConfig->userRoleId;
-
-        // Iterate through synchronized users and update roles
-        foreach ($users as $user) {
-            if ($user['admin'] > 0) {
-                $roleId = $userRoleId['scrum_admin'];
-            } else {
-                $roleId = $this->userRoleSet($user['role'], $userRoles, $userRoleId);
-            }
-
-            // Prepare user data
-            $userData = [
-                'username' => $user['login'],
-                'password' => $user['hashed_password'],
-                'employee_id' => $user['id'],
-                'api_key' => $user['value'],
-                'first_name' => $user['firstname'],
-                'last_name' => $user['lastname'],
-                'email_id' => $user['address'],
-                'role_id' => $roleId
-            ];
-
-            $totalUserData[] = $userData;
-
-        }
-        // Insert or update user data in the database
-        $result = $this->userModelObj->insertOrUpdatetUser($totalUserData);
-        return $result;
+        // External external user synchronization is disabled.
+        return false;
     }
 
     /**

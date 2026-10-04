@@ -10,7 +10,7 @@ use App\Models\BaseModel;
 class BacklogPoker extends BaseModel
 {
     // Table for insertion
-    protected $table = "scrum_poker_planning";
+    protected $table = "orvexa_poker_planning";
 
     protected $primaryKey = "poker_planning_id";
 
@@ -72,7 +72,7 @@ class BacklogPoker extends BaseModel
 
     public function savePoker($data)
     {
-        $sql = "INSERT INTO scrum_poker_planning (
+        $sql = "INSERT INTO orvexa_poker_planning (
                                 r_user_story_id,r_user_id,card_points,reason, added_date)
                 VALUES
                     (:r_user_story_id:,:r_user_id:,:card_points:,:reason:,:added_date:)";
@@ -96,7 +96,7 @@ class BacklogPoker extends BaseModel
         $query = "SELECT 
                     reveal
                   FROM 
-                    scrum_poker_planning
+                    orvexa_poker_planning
                   WHERE 
                     r_user_story_id = :r_user_story_id:
                   GROUP BY r_user_story_id";
@@ -117,13 +117,13 @@ class BacklogPoker extends BaseModel
                 reason,
                 added_date,
                 reveal
-                FROM scrum_poker_planning
-                INNER JOIN scrum_user uc ON
-                scrum_poker_planning.r_user_id = uc.external_employee_id
-                WHERE scrum_poker_planning.r_user_story_id = :r_user_story_id:
-                AND scrum_poker_planning.is_deleted = :is_deleted:";
+                FROM orvexa_poker_planning
+                INNER JOIN orvexa_user uc ON
+                orvexa_poker_planning.r_user_id = uc.external_employee_id
+                WHERE orvexa_poker_planning.r_user_story_id = :r_user_story_id:
+                AND orvexa_poker_planning.is_deleted = :is_deleted:";
         if ($user != null) {
-            $query .= "AND scrum_poker_planning.r_user_id = :r_user_id:";
+            $query .= "AND orvexa_poker_planning.r_user_id = :r_user_id:";
             $result = $this->query($query, [
                 "r_user_story_id" => $userStory,
                 "is_deleted" => 'N',
@@ -146,7 +146,7 @@ class BacklogPoker extends BaseModel
 
     public function updatePokerRevealStatus($userStoryId)
     {
-        $sql = "UPDATE scrum_poker_planning
+        $sql = "UPDATE orvexa_poker_planning
                 SET reveal = :status:
                 WHERE r_user_story_id = :r_user_story_id:";
         return $this->query($sql, [

@@ -3,12 +3,8 @@
 namespace Config;
 
 use App\Services\AuthService;
-use App\Services\RedmineService;
-use App\Services\SyncService;
 use CodeIgniter\Config\BaseService;
-use App\Services\EmailService;
 use App\Services\GenerateReport;
-use Generator;
 
 /**
  * Services Configuration file.
@@ -41,15 +37,6 @@ class Services extends BaseService
       return new AuthService();
    }
 
-   public static function redmine($getShared = true)
-   {
-      if ($getShared) {
-         return static::getSharedInstance('redmine');
-      }
-
-      return new RedmineService();
-   }
-
    public static function generateReport($getShared = true)
    {
        if ($getShared) {
@@ -57,13 +44,6 @@ class Services extends BaseService
        }
 
        return new GenerateReport();
-   }
-   public static function syncService($getShared=true){
-      if($getShared){
-         return static::getSharedInstance('syncService');
-      }
-      return new SyncService();
-
    }
 }
 

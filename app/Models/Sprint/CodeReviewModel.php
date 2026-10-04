@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class CodeReviewModel extends Model
 {
     // Setting the Table Name for insertion
-    protected $table = "scrum_code_review_users";
+    protected $table = "orvexa_code_review_users";
 
     //Declaring the Primary Key for the table
     protected $primaryKey = "code_review_users_id";
@@ -61,14 +61,14 @@ class CodeReviewModel extends Model
         return $this->validationMessages;
     }
     /**
-     * Function to execute query to insert the details entered for code review members to the table scrum_code_review_users selected at the time checking the status of the code review .
+     * Function to execute query to insert the details entered for code review members to the table orvexa_code_review_users selected at the time checking the status of the code review .
      * @return int|bool
      */
 
     public function insertCodeReviewUsers($data)
     {
         if (!empty($data)) {
-            $query = "INSERT INTO scrum_code_review_users (r_sprint_id, r_user_id)
+            $query = "INSERT INTO orvexa_code_review_users (r_sprint_id, r_user_id)
                       		VALUES (:r_sprint_id:, :r_user_id:)";
             $result = $this->db->query($query, [
                 "r_sprint_id" => $data['r_sprint_id'],

@@ -678,7 +678,6 @@ class MeetingController extends BaseController
      */
     private function getOrCreateMeetingIssue($data)
     {
-        $issueService = service('issues');
         $meetingDetails = $this->MeetingDetailModelObj->getMeetingDetails($data['meetingId']);
         $configObject = new SprintModelConfig();
         $externalIssueId = null;
@@ -691,21 +690,7 @@ class MeetingController extends BaseController
         }
 
         if (!$externalIssueId) {
-            $issueData = [
-                'project_id' => $data['productId'],
-                'task_title' => $meetingDetails['meeting_title'] ?? "N/A",
-                'task_subject' => "Time logging issue for " . $this->getMeetingTypeString($data['meetType']),
-                'task_description' => "Time logging issue for meeting: {$meetingDetails['meeting_description']}",
-                'task_assignee' => session()->get('employee_id'),
-                'task_priority' => $configObject->taskDatas['task_priority'],
-                'task_statuses' => $configObject->taskDatas['task_statuses'],
-                'task_tracker' => $configObject->taskDatas['task_tracker'],
-                'author_id' => session()->get('employee_id'),
-                'created_on' => date("Y-m-d H:i:s"),
-                'updated_on' => date("Y-m-d H:i:s"),
-            ];
-
-            $externalIssueId = $issueService->insertTasksId($issueData);
+            $externalIssueId = null;
         }
 
         $this->MeetingDetailModelObj->updateMeetingDetailsExternal([

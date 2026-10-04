@@ -37,12 +37,12 @@ class CustomReportModel extends BaseModel
             md.meeting_end_time  AS "End Time",
             md.meeting_description AS "Meeting Description"
         FROM 
-            scrum_meeting_details AS md
-        INNER JOIN scrum_meeting_type AS mt 
+            orvexa_meeting_details AS md
+        INNER JOIN orvexa_meeting_type AS mt 
             ON mt.meeting_type_id = md.r_meeting_type_id AND mt.is_deleted = "N"
-        INNER JOIN scrum_user AS ut 
+        INNER JOIN orvexa_user AS ut 
             ON ut.external_employee_id = md.r_user_id AND ut.is_deleted = "N"
-        INNER JOIN scrum_product AS pt 
+        INNER JOIN orvexa_product AS pt 
             ON pt.external_project_id = md.r_product_id AND pt.is_deleted = "N"
         WHERE 
             md.is_deleted = "N"
@@ -88,21 +88,21 @@ class CustomReportModel extends BaseModel
             SELECT 
                 $selectFields
             FROM 
-                scrum_meeting_details AS md
+                orvexa_meeting_details AS md
             INNER JOIN 
-                scrum_meeting_type AS mt ON mt.meeting_type_id = md.r_meeting_type_id AND mt.is_deleted = 'N'
+                orvexa_meeting_type AS mt ON mt.meeting_type_id = md.r_meeting_type_id AND mt.is_deleted = 'N'
             INNER JOIN 
-                scrum_user AS ut ON ut.external_employee_id = md.r_user_id AND ut.is_deleted = 'N'
+                orvexa_user AS ut ON ut.external_employee_id = md.r_user_id AND ut.is_deleted = 'N'
             INNER JOIN 
-                scrum_product AS pt ON pt.external_project_id = md.r_product_id AND pt.is_deleted = 'N'";
+                orvexa_product AS pt ON pt.external_project_id = md.r_product_id AND pt.is_deleted = 'N'";
 
         // Append additional joins for team members if download is true
         if ($download) {
             $query .= "
             LEFT JOIN 
-                scrum_meeting_members AS mm ON mm.r_meeting_details_id = md.meeting_details_id AND mm.is_deleted = 'N'
+                orvexa_meeting_members AS mm ON mm.r_meeting_details_id = md.meeting_details_id AND mm.is_deleted = 'N'
             LEFT JOIN 
-                scrum_user AS su ON su.external_employee_id = mm.r_user_id AND su.is_deleted = 'N'";
+                orvexa_user AS su ON su.external_employee_id = mm.r_user_id AND su.is_deleted = 'N'";
         }
 
         // Append the WHERE clause
@@ -172,13 +172,13 @@ class CustomReportModel extends BaseModel
             tsd.sprint_duration_value AS "Sprint Duration",
             ts.created_date As "Created Date",
             tc.customer_name AS "Customer Name",
-            scrum_status.status_name AS "Status"
-        FROM scrum_sprint AS ts
-        INNER JOIN scrum_sprint_duration AS tsd ON tsd.sprint_duration_id = ts.r_sprint_duration_id AND tsd.is_deleted = "N"
-        INNER JOIN scrum_customer AS tc ON tc.customer_id = ts.r_customer_id AND tc.is_deleted = "N"
-        INNER JOIN scrum_module_status AS tms ON tms.module_status_id = ts.r_module_status_id AND tms.is_deleted = "N"
-        INNER JOIN scrum_product AS pt ON pt.external_project_id = ts.r_product_id AND pt.is_deleted = "N"
-        INNER JOIN scrum_status AS scrum_status ON scrum_status.status_id = tms.r_status_id AND scrum_status.is_deleted = "N"
+            orvexa_status.status_name AS "Status"
+        FROM orvexa_sprint AS ts
+        INNER JOIN orvexa_sprint_duration AS tsd ON tsd.sprint_duration_id = ts.r_sprint_duration_id AND tsd.is_deleted = "N"
+        INNER JOIN orvexa_customer AS tc ON tc.customer_id = ts.r_customer_id AND tc.is_deleted = "N"
+        INNER JOIN orvexa_module_status AS tms ON tms.module_status_id = ts.r_module_status_id AND tms.is_deleted = "N"
+        INNER JOIN orvexa_product AS pt ON pt.external_project_id = ts.r_product_id AND pt.is_deleted = "N"
+        INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = tms.r_status_id AND orvexa_status.is_deleted = "N"
         WHERE ts.is_deleted = "N"
         ORDER BY ts.created_date DESC
     ';
@@ -207,7 +207,7 @@ class CustomReportModel extends BaseModel
             tsd.sprint_duration_value AS "Sprint Duration",
             ts.created_date AS "Created Date",
             tc.customer_name AS "Customer Name",
-            scrum_status.status_name AS "Status"';
+            orvexa_status.status_name AS "Status"';
 
         if ($download) {
             $query .= ',
@@ -220,16 +220,16 @@ class CustomReportModel extends BaseModel
         }
 
         $query .= '
-        FROM scrum_sprint AS ts
-            INNER JOIN scrum_sprint_duration AS tsd ON tsd.sprint_duration_id = ts.r_sprint_duration_id AND tsd.is_deleted = "N"
-            INNER JOIN scrum_customer AS tc ON tc.customer_id = ts.r_customer_id AND tc.is_deleted = "N"
-            INNER JOIN scrum_module_status AS tms ON tms.module_status_id = ts.r_module_status_id AND tms.is_deleted = "N"
-            INNER JOIN scrum_product AS pt ON pt.external_project_id = ts.r_product_id AND pt.is_deleted = "N"
-            INNER JOIN scrum_user AS su ON su.external_employee_id = ts.r_user_id_created AND su.is_deleted = "N"
-            INNER JOIN scrum_user AS su_updated ON su_updated.external_employee_id = ts.r_user_id_updated AND su_updated.is_deleted = "N"
-            INNER JOIN scrum_status AS scrum_status ON scrum_status.status_id = tms.r_status_id AND scrum_status.is_deleted = "N"
-            LEFT JOIN scrum_sprint_task AS sst ON ts.sprint_id = sst.r_sprint_id AND sst.is_deleted = "N"
-            LEFT JOIN scrum_task AS st ON st.task_id = sst.r_task_id AND st.is_deleted = "N"
+        FROM orvexa_sprint AS ts
+            INNER JOIN orvexa_sprint_duration AS tsd ON tsd.sprint_duration_id = ts.r_sprint_duration_id AND tsd.is_deleted = "N"
+            INNER JOIN orvexa_customer AS tc ON tc.customer_id = ts.r_customer_id AND tc.is_deleted = "N"
+            INNER JOIN orvexa_module_status AS tms ON tms.module_status_id = ts.r_module_status_id AND tms.is_deleted = "N"
+            INNER JOIN orvexa_product AS pt ON pt.external_project_id = ts.r_product_id AND pt.is_deleted = "N"
+            INNER JOIN orvexa_user AS su ON su.external_employee_id = ts.r_user_id_created AND su.is_deleted = "N"
+            INNER JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = ts.r_user_id_updated AND su_updated.is_deleted = "N"
+            INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = tms.r_status_id AND orvexa_status.is_deleted = "N"
+            LEFT JOIN orvexa_sprint_task AS sst ON ts.sprint_id = sst.r_sprint_id AND sst.is_deleted = "N"
+            LEFT JOIN orvexa_task AS st ON st.task_id = sst.r_task_id AND st.is_deleted = "N"
             WHERE ts.is_deleted = "N"';
 
         $data = [];
@@ -256,7 +256,7 @@ class CustomReportModel extends BaseModel
 
         if (!empty($params['status'])) {
             $statuses = implode(',', array_map(fn($item) => $this->db->escape($item), $params['status']));
-            $query .= " AND scrum_status.status_name IN ($statuses)";
+            $query .= " AND orvexa_status.status_name IN ($statuses)";
         }
 
         $query .= " GROUP BY ts.sprint_id";
@@ -285,15 +285,15 @@ class CustomReportModel extends BaseModel
             bi.priority AS "Priority",
             bi.backlog_description AS "Description",
             sts.t_size_name AS "T_Shirt_Size",
-            scrum_status.status_name AS "Status"
-        FROM scrum_backlog_item AS bi
-        INNER JOIN scrum_trackers AS bt ON bt.tracker_id = bi.r_tracker_id
-        INNER JOIN scrum_product AS pt ON pt.external_project_id = bi.r_product_id AND pt.is_deleted = "N"
-        INNER JOIN scrum_customer AS ct ON ct.customer_id = bi.r_customer_id AND ct.is_deleted = "N"
-        INNER JOIN scrum_status AS scrum_status ON scrum_status.status_id = bi.r_module_status_id AND scrum_status.is_deleted = "N"
-        INNER JOIN scrum_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
-        INNER JOIN scrum_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
-        INNER JOIN scrum_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
+            orvexa_status.status_name AS "Status"
+        FROM orvexa_backlog_item AS bi
+        INNER JOIN orvexa_trackers AS bt ON bt.tracker_id = bi.r_tracker_id
+        INNER JOIN orvexa_product AS pt ON pt.external_project_id = bi.r_product_id AND pt.is_deleted = "N"
+        INNER JOIN orvexa_customer AS ct ON ct.customer_id = bi.r_customer_id AND ct.is_deleted = "N"
+        INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = bi.r_module_status_id AND orvexa_status.is_deleted = "N"
+        INNER JOIN orvexa_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
+        INNER JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
+        INNER JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
         WHERE bi.is_deleted = "N"
         ';
 
@@ -320,7 +320,7 @@ class CustomReportModel extends BaseModel
             bi.priority AS "Priority",
             bi.backlog_description AS "Description",
             sts.t_size_name AS "T_Shirt_Size",
-            scrum_status.status_name AS "Status"';
+            orvexa_status.status_name AS "Status"';
 
         if ($download == true) {
             $query .= ',
@@ -333,16 +333,16 @@ class CustomReportModel extends BaseModel
         ';
         }
         $query .= '
-    FROM scrum_backlog_item AS bi
-            INNER JOIN scrum_trackers AS bt ON bt.tracker_id = bi.r_tracker_id 
-            INNER JOIN scrum_product AS pt ON pt.external_project_id = bi.r_product_id AND pt.is_deleted = "N"
-            INNER JOIN scrum_customer AS ct ON ct.customer_id = bi.r_customer_id AND ct.is_deleted = "N"
-            INNER JOIN scrum_status AS scrum_status ON scrum_status.status_id = bi.r_module_status_id AND scrum_status.is_deleted = "N"
-            INNER JOIN scrum_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
-            INNER JOIN scrum_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
-            LEFT JOIN scrum_epic e ON bi.backlog_item_id = e.r_backlog_item_id AND e.is_deleted = "N"
-            LEFT JOIN scrum_user_story us ON bi.backlog_item_id = us.r_epic_id AND us.is_deleted = "N"
-            INNER JOIN scrum_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
+    FROM orvexa_backlog_item AS bi
+            INNER JOIN orvexa_trackers AS bt ON bt.tracker_id = bi.r_tracker_id 
+            INNER JOIN orvexa_product AS pt ON pt.external_project_id = bi.r_product_id AND pt.is_deleted = "N"
+            INNER JOIN orvexa_customer AS ct ON ct.customer_id = bi.r_customer_id AND ct.is_deleted = "N"
+            INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = bi.r_module_status_id AND orvexa_status.is_deleted = "N"
+            INNER JOIN orvexa_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
+            INNER JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
+            LEFT JOIN orvexa_epic e ON bi.backlog_item_id = e.r_backlog_item_id AND e.is_deleted = "N"
+            LEFT JOIN orvexa_user_story us ON bi.backlog_item_id = us.r_epic_id AND us.is_deleted = "N"
+            INNER JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
             WHERE bi.is_deleted = "N"';
 
         if (!empty($params['product'])) {
@@ -357,7 +357,7 @@ class CustomReportModel extends BaseModel
 
         if (!empty($params['status'])) {
             $statuses = implode(',', array_map(fn($item) => $this->db->escape($item), $params['status']));
-            $query .= " AND scrum_status.status_name IN ($statuses)";
+            $query .= " AND orvexa_status.status_name IN ($statuses)";
         }
         if(!empty($params["trackername"])){
             $trackers=implode(',',array_map(fn($item)=>$this->db->escape($item),$params['trackername']));
@@ -380,22 +380,22 @@ class CustomReportModel extends BaseModel
 
         // Define dropdown queries
         $dropdownQueries = [
-            "product_result" => "SELECT DISTINCT product_name FROM scrum_product",
-            "user_result" => "SELECT DISTINCT first_name FROM scrum_user",
-            "meeting_type_result" => "SELECT DISTINCT meeting_type_name FROM scrum_meeting_type",
-            "sprint_name_result" => "SELECT DISTINCT sprint_name FROM scrum_sprint",
-            "sprint_version_result" => "SELECT DISTINCT sprint_version FROM scrum_sprint",
-            "sprint_duration_result" => "SELECT DISTINCT sprint_duration_value FROM scrum_sprint_duration",
-            "customer_name_result" => "SELECT DISTINCT customer_name FROM scrum_customer",
+            "product_result" => "SELECT DISTINCT product_name FROM orvexa_product",
+            "user_result" => "SELECT DISTINCT first_name FROM orvexa_user",
+            "meeting_type_result" => "SELECT DISTINCT meeting_type_name FROM orvexa_meeting_type",
+            "sprint_name_result" => "SELECT DISTINCT sprint_name FROM orvexa_sprint",
+            "sprint_version_result" => "SELECT DISTINCT sprint_version FROM orvexa_sprint",
+            "sprint_duration_result" => "SELECT DISTINCT sprint_duration_value FROM orvexa_sprint_duration",
+            "customer_name_result" => "SELECT DISTINCT customer_name FROM orvexa_customer",
             "status_result" => "
             SELECT 
             ss.status_name as status_name
-            FROM scrum_module_status as sms
-            INNER JOIN scrum_module as sm on sm.module_id=sms.r_module_id
-            INNER JOIN scrum_status as ss on ss.status_id=sms.r_status_id
+            FROM orvexa_module_status as sms
+            INNER JOIN orvexa_module as sm on sm.module_id=sms.r_module_id
+            INNER JOIN orvexa_status as ss on ss.status_id=sms.r_status_id
             WHERE sms.r_module_id = ?
         ",
-            "backlog_item_result" => "SELECT DISTINCT tracker  FROM scrum_trackers"
+            "backlog_item_result" => "SELECT DISTINCT tracker  FROM orvexa_trackers"
         ];
 
         // Initialize the final result array

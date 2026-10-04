@@ -48,7 +48,7 @@ function getModuleAndAction($funcName)
 function getActionType($name)
 {
     $db = \Config\Database::connect(); // Connect to the database
-    $sql = "SELECT action_type_id FROM scrum_action_type WHERE action_type_name = :name:";
+    $sql = "SELECT action_type_id FROM orvexa_action_type WHERE action_type_name = :name:";
     $query = $db->query($sql, ['name' => $name]);
 
     if ($query) {
@@ -66,7 +66,7 @@ function getActionType($name)
 function getModuleId($name)
 {
     $db = \Config\Database::connect(); // Connect to the database
-    $sql = "SELECT module_id FROM scrum_module WHERE module_name = :name:";
+    $sql = "SELECT module_id FROM orvexa_module WHERE module_name = :name:";
     $query = $db->query($sql, ['name' => $name]);
 
     if ($query) {

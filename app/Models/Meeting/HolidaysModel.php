@@ -6,7 +6,7 @@
  * @category   Model
  * @author     Hari Sankar R, Ruban Edward
  * @created   
- * @purpose    To insert the holidays details into scrum_holidays table       
+ * @purpose    To insert the holidays details into orvexa_holidays table       
  */
 
 namespace App\Models\Meeting;
@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class HolidaysModel extends Model
 {
     // Table name for insertion
-    protected $table = "scrum_holidays";
+    protected $table = "orvexa_holidays";
 
     //setting the primary key to insert 
     protected $primaryKey = "holiday_id";
@@ -62,7 +62,7 @@ class HolidaysModel extends Model
 
     public function insertHolidayDetails($data)
     {
-        $sql = "INSERT INTO scrum_holidays(
+        $sql = "INSERT INTO orvexa_holidays(
             holiday_start_date,holiday_title,
             created_date
             )
@@ -93,7 +93,7 @@ class HolidaysModel extends Model
                     holiday_start_date,
                     holiday_title
                 FROM
-                    scrum_holidays
+                    orvexa_holidays
                     ";
         $result = $this->query($sql);
         return $result->getResultArray(); //returns result as an array format
@@ -107,7 +107,7 @@ class HolidaysModel extends Model
         $sql = "SELECT 
                     holiday_start_date 
                 FROM 
-                    scrum_holidays 
+                    orvexa_holidays 
                 WHERE 
                     holiday_start_date = :holiday_date:";
 
@@ -125,7 +125,7 @@ class HolidaysModel extends Model
      */
     public function insertHoliday($holidayData)
     {
-        $sql = "INSERT INTO scrum_holidays(
+        $sql = "INSERT INTO orvexa_holidays(
                     holiday_title, holiday_start_date, 
                     holiday_end_date
                 ) 
@@ -145,7 +145,7 @@ class HolidaysModel extends Model
 
     public function insertBatchHoliday($data)
     {
-        $result = $this->db->table('scrum_holidays')->insertBatch($data);
+        $result = $this->db->table('orvexa_holidays')->insertBatch($data);
         return $result;
     }
 }

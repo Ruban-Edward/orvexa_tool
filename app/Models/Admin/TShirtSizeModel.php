@@ -15,7 +15,7 @@ use CodeIgniter\Model;
 
 class TShirtSizeModel extends Model
 {
-    protected $table = "scrum_t_shirt_size";
+    protected $table = "orvexa_t_shirt_size";
     protected $primaryKey = "t_shirt_size_id";
 
     protected $allowedFields = [
@@ -59,7 +59,7 @@ class TShirtSizeModel extends Model
      */
     public function insertTShirtSize($data): bool
     {
-        $result = $this->db->table('scrum_t_shirt_size')->insertBatch($data);
+        $result = $this->db->table('orvexa_t_shirt_size')->insertBatch($data);
         return true;
     }
 
@@ -75,7 +75,7 @@ class TShirtSizeModel extends Model
                     t_size_name, 
                     t_size_values 
                 FROM 
-                    scrum_t_shirt_size 
+                    orvexa_t_shirt_size 
                 WHERE 
                     r_product_id = :r_product_id:
                 ORDER BY 
@@ -96,7 +96,7 @@ class TShirtSizeModel extends Model
     public function deleteTShirtSize($data): bool
     {
         $tSizeNames = array_column($data, 't_size_name');
-        $result = $this->db->table('scrum_t_shirt_size')->whereIn('t_size_name', $tSizeNames)->delete();
+        $result = $this->db->table('orvexa_t_shirt_size')->whereIn('t_size_name', $tSizeNames)->delete();
         return true;
     }
 }

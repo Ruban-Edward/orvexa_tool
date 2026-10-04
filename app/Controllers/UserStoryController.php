@@ -580,7 +580,7 @@ class UserStoryController extends BaseController
         }
 
         // Attempt to delete the user story from the backlog item model
-        $res = $this->backlogItemModel->deleteItem($usId, ['scrum_user_story', 'user_story_id']);
+        $res = $this->backlogItemModel->deleteItem($usId, ['orvexa_user_story', 'user_story_id']);
 
         // Prepare action data for logging the delete action
         $actionData = "User Story ID {$usId} is deleted";

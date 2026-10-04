@@ -1621,7 +1621,7 @@ body {
 /* .sidebar-item {
     padding: 0.7rem 1rem;
     display: block;
-    color: #25396f;
+    color: #123f2c;
     text-decoration: none;
     transition: all 0.5s;
 } */
@@ -1633,7 +1633,7 @@ body {
 .sidebar-link {
   display: flex;
   align-items: center;
-  color: #25396f;
+  color: #123f2c;
   text-decoration: none;
 }
 
@@ -1642,7 +1642,7 @@ body {
 }
 
 .sidebar-link.active {
-  background-color: #435ebe;
+  background-color: #175738;
   color: #fff;
 }
 
@@ -1676,12 +1676,12 @@ body {
 }
 
 .submenu-item a {
-  color: #25396f;
+  color: #123f2c;
   text-decoration: none;
 }
 
 .submenu-item a:hover {
-  color: #435ebe;
+  color: #175738;
 }
 
 /* @media (max-width: 768px) {
@@ -1822,3 +1822,167 @@ body {
 
 
 } */
+
+/* Pistachio Dream theme overrides */
+:root {
+  --pistachio-bg: #f7fbef;
+  --pistachio-surface: #ffffff;
+  --pistachio-soft: #e8f5d6;
+  --pistachio: #b8dc8f;
+  --pistachio-deep: #5f8f55;
+  --pistachio-ink: #243626;
+  --pistachio-muted: #6f7f69;
+  --pistachio-mint: #d9f1dd;
+  --pistachio-blush: #f7d9cf;
+  --pistachio-cream: #fff7df;
+  --bs-body-bg: var(--pistachio-bg);
+  --bs-body-color: var(--pistachio-ink);
+  --bs-primary: var(--pistachio-deep);
+  --bs-primary-rgb: 95, 143, 85;
+  --bs-link-color: var(--pistachio-deep);
+  --bs-link-hover-color: #466f3d;
+}
+
+body,
+#main,
+#main-content {
+  background: linear-gradient(180deg, var(--pistachio-bg) 0%, #eef8df 100%);
+  color: var(--pistachio-ink);
+}
+
+.sidebar-wrapper,
+.layout-horizontal .header-top,
+.navbar-top,
+.card,
+.modal .modal-content,
+.dropdown-menu,
+.table,
+.dataTable-table,
+.form-control,
+.form-select,
+.dataTable-input {
+  background-color: var(--pistachio-surface) !important;
+  color: var(--pistachio-ink);
+}
+
+.sidebar-wrapper {
+  border-right: 1px solid rgba(95, 143, 85, .14);
+  box-shadow: 12px 0 32px rgba(95, 143, 85, .08);
+}
+
+.sidebar-wrapper .menu .sidebar-title,
+.sidebar-wrapper .menu .sidebar-link,
+.sidebar-wrapper .menu .submenu .submenu-item a,
+.page-heading h3,
+.page-title-headings h3,
+.card-title,
+.table thead th,
+.dataTable-table thead th {
+  color: var(--pistachio-ink) !important;
+}
+
+.sidebar-wrapper .menu .sidebar-link i,
+.sidebar-wrapper .menu .sidebar-link svg {
+  color: var(--pistachio-deep) !important;
+}
+
+.sidebar-wrapper .menu .sidebar-link:hover,
+.sidebar-wrapper .menu .submenu .submenu-item a:hover,
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--pistachio-soft) !important;
+  color: var(--pistachio-deep) !important;
+}
+
+.sidebar-wrapper .menu .sidebar-item.active > .sidebar-link,
+.btn-primary,
+.page-item.active .page-link,
+.nav-pills .nav-link.active,
+.badge.bg-primary,
+.bg-primary {
+  background-color: var(--pistachio-deep) !important;
+  border-color: var(--pistachio-deep) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(95, 143, 85, .22) !important;
+}
+
+.btn-outline-primary {
+  border-color: var(--pistachio-deep) !important;
+  color: var(--pistachio-deep) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-primary:hover {
+  background-color: #466f3d !important;
+  border-color: #466f3d !important;
+  color: #fff !important;
+}
+
+.card,
+.modal .modal-content,
+.dropdown-menu {
+  border: 1px solid rgba(95, 143, 85, .14) !important;
+  box-shadow: 0 14px 34px rgba(95, 143, 85, .10) !important;
+}
+
+.form-control,
+.form-select,
+.dataTable-input,
+.dataTable-selector {
+  border-color: rgba(95, 143, 85, .24) !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+.dataTable-input:focus {
+  border-color: var(--pistachio-deep) !important;
+  box-shadow: 0 0 0 .18rem rgba(95, 143, 85, .18) !important;
+}
+
+.table thead,
+.dataTable-table thead,
+.bg-light-primary {
+  background-color: var(--pistachio-soft) !important;
+  color: var(--pistachio-ink) !important;
+}
+
+.table tbody tr:hover,
+.dataTable-table tbody tr:hover {
+  background-color: rgba(232, 245, 214, .55) !important;
+}
+
+.stats-icon.green,
+.progress.progress-success .progress-bar,
+.bg-success {
+  background-color: var(--pistachio-deep) !important;
+}
+
+.stats-icon.blue,
+.bg-info,
+.progress.progress-info .progress-bar {
+  background-color: #7fb7a0 !important;
+}
+
+.stats-icon.red,
+.bg-danger,
+.progress.progress-danger .progress-bar {
+  background-color: #d78470 !important;
+}
+
+.stats-icon.purple,
+.bg-warning,
+.progress.progress-warning .progress-bar {
+  background-color: #d5b85f !important;
+}
+
+.alert-primary,
+.badge.bg-light-primary {
+  background-color: var(--pistachio-mint) !important;
+  color: var(--pistachio-ink) !important;
+}
+
+.breadcrumb a,
+a {
+  color: var(--pistachio-deep);
+}
+

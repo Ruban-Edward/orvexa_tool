@@ -10,7 +10,7 @@ use App\Models\BaseModel;
 class BacklogItemModel extends BaseModel
 {
     // Table for insertion
-    protected $table = "scrum_backlog_item";
+    protected $table = "orvexa_backlog_item";
 
     protected $primaryKey = "backlog_item_id";
 
@@ -88,7 +88,7 @@ class BacklogItemModel extends BaseModel
 
     public function insertData($data)
     {
-        $sql = "INSERT INTO scrum_backlog_item (
+        $sql = "INSERT INTO orvexa_backlog_item (
                     backlog_item_name,
                     r_tracker_id,
                     r_product_id,
@@ -138,7 +138,7 @@ class BacklogItemModel extends BaseModel
     public function updatebacklogById($data)
     {
         $sql = "UPDATE 
-                    scrum_backlog_item 
+                    orvexa_backlog_item 
                 SET 
                     backlog_item_name = :backlog_item_name:, 
                     r_tracker_id = :tracker_id:, 
@@ -172,10 +172,10 @@ class BacklogItemModel extends BaseModel
         $sql = "SELECT backlog_item_id, 
                        backlog_order
                 FROM 
-                    scrum_backlog_item
+                    orvexa_backlog_item
                 WHERE backlog_item_id = (
                     SELECT MAX(backlog_item_id)
-                    FROM scrum_backlog_item
+                    FROM orvexa_backlog_item
                     WHERE is_deleted = 'N' AND r_product_id = :pid:
                 ) AND is_deleted = 'N' AND r_product_id = :pid:;";
         $query = $this->query($sql, ["pid" => $pid]);
@@ -213,16 +213,16 @@ class BacklogItemModel extends BaseModel
                     COUNT(DISTINCT us.user_story_id) AS total_user_stories,
                     COUNT(t.task_id) AS total_tasks,
                     COUNT(CASE WHEN t.task_status = 7 THEN 1 END) AS completed_tasks
-                FROM scrum_backlog_item AS bi
-                LEFT JOIN scrum_epic e ON e.r_backlog_item_id = bi.backlog_item_id AND e.is_deleted = 'N'
-                LEFT JOIN scrum_user_story us ON us.r_epic_id = e.epic_id AND us.is_deleted = 'N'
-                LEFT JOIN scrum_task t ON t.r_user_story_id = us.user_story_id AND t.is_deleted = 'N'
-                LEFT JOIN scrum_product p ON p.external_project_id = bi.r_product_id AND p.is_deleted = 'N'
-                INNER JOIN scrum_t_shirt_size tss ON tss.t_shirt_size_id = bi.backlog_t_shirt_size
-                INNER JOIN scrum_customer sc ON sc.customer_id = bi.r_customer_id 
-                INNER JOIN scrum_trackers st ON st.tracker_id = bi.r_tracker_id
-                INNER JOIN scrum_module_status bms ON bms.module_status_id = bi.r_module_status_id AND bms.is_deleted = 'N'
-                INNER JOIN scrum_status bst ON bst.status_id = bms.r_status_id AND bst.is_deleted = 'N'
+                FROM orvexa_backlog_item AS bi
+                LEFT JOIN orvexa_epic e ON e.r_backlog_item_id = bi.backlog_item_id AND e.is_deleted = 'N'
+                LEFT JOIN orvexa_user_story us ON us.r_epic_id = e.epic_id AND us.is_deleted = 'N'
+                LEFT JOIN orvexa_task t ON t.r_user_story_id = us.user_story_id AND t.is_deleted = 'N'
+                LEFT JOIN orvexa_product p ON p.external_project_id = bi.r_product_id AND p.is_deleted = 'N'
+                INNER JOIN orvexa_t_shirt_size tss ON tss.t_shirt_size_id = bi.backlog_t_shirt_size
+                INNER JOIN orvexa_customer sc ON sc.customer_id = bi.r_customer_id 
+                INNER JOIN orvexa_trackers st ON st.tracker_id = bi.r_tracker_id
+                INNER JOIN orvexa_module_status bms ON bms.module_status_id = bi.r_module_status_id AND bms.is_deleted = 'N'
+                INNER JOIN orvexa_status bst ON bst.status_id = bms.r_status_id AND bst.is_deleted = 'N'
                 WHERE bi.backlog_item_id = :pblId: AND bi.is_deleted = 'N'";
 
         $query = $this->db->query($sql, ['pblId' => $id]);
@@ -244,7 +244,7 @@ class BacklogItemModel extends BaseModel
                     customer_id,
                     customer_name
                 FROM 
-                    scrum_customer";
+                    orvexa_customer";
         $query = $this->query($sql);
         if ($query->getNumRows() > 0) {
             return $query->getResultArray();
@@ -278,15 +278,15 @@ class BacklogItemModel extends BaseModel
                     COUNT(CASE WHEN ust.status_name = 'Ready for Sprint' THEN us.user_story_id END) AS ready_for_sprint,
                     COUNT(CASE WHEN ust.status_name = 'Brainstorming completed' THEN us.user_story_id END) AS brainstorming_completed,
                     COUNT(us.user_story_id) AS total
-                    FROM scrum_backlog_item AS bi
-                    LEFT JOIN scrum_epic e ON e.r_backlog_item_id = bi.backlog_item_id AND e.is_deleted = 'N'
-                    LEFT JOIN scrum_user_story us ON us.r_epic_id = e.epic_id AND us.is_deleted = 'N'
-                    INNER JOIN scrum_customer sc ON sc.customer_id = bi.r_customer_id AND sc.is_deleted = 'N'
-                    INNER JOIN scrum_trackers st ON st.tracker_id = bi.r_tracker_id
-                    INNER JOIN scrum_module_status bms ON bms.module_status_id = bi.r_module_status_id AND bms.is_deleted = 'N'
-                    LEFT JOIN scrum_module_status ums ON ums.module_status_id = us.r_module_status_id AND ums.is_deleted = 'N'
-                    INNER JOIN scrum_status bst ON bst.status_id = bms.r_status_id AND bst.is_deleted = 'N'
-                    LEFT JOIN scrum_status ust ON ust.status_id = ums.r_status_id AND ust.is_deleted = 'N'
+                    FROM orvexa_backlog_item AS bi
+                    LEFT JOIN orvexa_epic e ON e.r_backlog_item_id = bi.backlog_item_id AND e.is_deleted = 'N'
+                    LEFT JOIN orvexa_user_story us ON us.r_epic_id = e.epic_id AND us.is_deleted = 'N'
+                    INNER JOIN orvexa_customer sc ON sc.customer_id = bi.r_customer_id AND sc.is_deleted = 'N'
+                    INNER JOIN orvexa_trackers st ON st.tracker_id = bi.r_tracker_id
+                    INNER JOIN orvexa_module_status bms ON bms.module_status_id = bi.r_module_status_id AND bms.is_deleted = 'N'
+                    LEFT JOIN orvexa_module_status ums ON ums.module_status_id = us.r_module_status_id AND ums.is_deleted = 'N'
+                    INNER JOIN orvexa_status bst ON bst.status_id = bms.r_status_id AND bst.is_deleted = 'N'
+                    LEFT JOIN orvexa_status ust ON ust.status_id = ums.r_status_id AND ust.is_deleted = 'N'
                     WHERE bi.r_product_id = :pid: AND bi.is_deleted = 'N' ";
 
         $params = [];
@@ -400,7 +400,7 @@ class BacklogItemModel extends BaseModel
         $sql = "SELECT 
                     COUNT(*) AS count 
                 FROM 
-                    scrum_backlog_item
+                    orvexa_backlog_item
                 WHERE 
                     r_product_id = ? AND 
                     backlog_item_id = ? AND 
@@ -414,7 +414,7 @@ class BacklogItemModel extends BaseModel
     public function backlogStatus($statusId, $id): bool
     {
         $sql = "UPDATE 
-                    scrum_backlog_item bi
+                    orvexa_backlog_item bi
                 SET 
                     bi.r_module_status_id = :status_id:
                 WHERE
@@ -431,8 +431,8 @@ class BacklogItemModel extends BaseModel
     {
         $sql = "SELECT t_shirt_size_id,t_size_name,t_size_values
                 FROM 
-                            scrum_t_shirt_size ts
-                JOIN scrum_product p on p.parent_id = ts.r_product_id
+                            orvexa_t_shirt_size ts
+                JOIN orvexa_product p on p.parent_id = ts.r_product_id
                 WHERE p.external_project_id = :pid:
                 ORDER BY 
                     CAST(SUBSTRING_INDEX(t_size_values, ' ', 1) AS UNSIGNED);";
@@ -444,7 +444,7 @@ class BacklogItemModel extends BaseModel
         } else {
             $sql = "SELECT t_shirt_size_id,t_size_name,t_size_values
                 FROM 
-                            scrum_t_shirt_size ts
+                            orvexa_t_shirt_size ts
                 WHERE ts.r_product_id = 0";
             $query = $this->query($sql, [
                 'pid' => $id
@@ -460,7 +460,7 @@ class BacklogItemModel extends BaseModel
     public function changeBacklogStatus($before, $after, $pblId)
     {
         $sql = "UPDATE 
-                    scrum_backlog_item
+                    orvexa_backlog_item
                 SET 
                     r_module_status_id = :after:
                 WHERE 
@@ -479,7 +479,7 @@ class BacklogItemModel extends BaseModel
         $sql = "SELECT
                 count(backlog_item_id) AS count
                 FROM
-                scrum_backlog_item
+                orvexa_backlog_item
                 WHERE is_deleted='N' AND
                 r_product_id=:id:";
         $query = $this->query($sql, ["id" => $pId]);

@@ -29,41 +29,41 @@ class DashboardModel extends BaseModel
         $statusParams = $params['sprintStatus'];
         // Base query
         $query = "SELECT 
-                    scrum_sprint.sprint_id,
-                    scrum_sprint.sprint_name,
-                    scrum_sprint.start_date,
-                    scrum_sprint.end_date,
-                    ROUND(AVG(IFNULL(scrum_task.completed_percentage, 0)), 0) as sprint_completed,
-                    scrum_status.status_name as sprint_status,
-                    scrum_sprint.sprint_version,
-                    scrum_sprint_duration.sprint_duration_value as sprint_duration
+                    orvexa_sprint.sprint_id,
+                    orvexa_sprint.sprint_name,
+                    orvexa_sprint.start_date,
+                    orvexa_sprint.end_date,
+                    ROUND(AVG(IFNULL(orvexa_task.completed_percentage, 0)), 0) as sprint_completed,
+                    orvexa_status.status_name as sprint_status,
+                    orvexa_sprint.sprint_version,
+                    orvexa_sprint_duration.sprint_duration_value as sprint_duration
                 FROM 
-                    scrum_sprint
+                    orvexa_sprint
                 INNER JOIN
-                    scrum_product ON scrum_sprint.r_product_id = scrum_product.product_id
+                    orvexa_product ON orvexa_sprint.r_product_id = orvexa_product.product_id
                 INNER JOIN 
-                    scrum_sprint_duration ON scrum_sprint.r_sprint_duration_id = scrum_sprint_duration.sprint_duration_id
+                    orvexa_sprint_duration ON orvexa_sprint.r_sprint_duration_id = orvexa_sprint_duration.sprint_duration_id
                 INNER JOIN 
-                    scrum_module_status ON scrum_sprint.r_module_status_id = scrum_module_status.module_status_id
+                    orvexa_module_status ON orvexa_sprint.r_module_status_id = orvexa_module_status.module_status_id
                 INNER JOIN 
-                    scrum_status ON scrum_module_status.r_status_id = scrum_status.status_id
+                    orvexa_status ON orvexa_module_status.r_status_id = orvexa_status.status_id
                 INNER JOIN 
-                    scrum_sprint_task ON scrum_sprint.sprint_id = scrum_sprint_task.r_sprint_id
+                    orvexa_sprint_task ON orvexa_sprint.sprint_id = orvexa_sprint_task.r_sprint_id
                 INNER JOIN 
-                    scrum_task ON scrum_task.task_id = scrum_sprint_task.r_task_id
+                    orvexa_task ON orvexa_task.task_id = orvexa_sprint_task.r_task_id
                 WHERE 
-                    scrum_sprint.r_product_id = ? ";
+                    orvexa_sprint.r_product_id = ? ";
 
         // Add status conditions
         $statusConditions = [];
         if (isset($statusParams['ongoing'])) {
-            $statusConditions[] = "scrum_sprint.r_module_status_id IN (" . implode(",", $statusParams['ongoing']) . ")";
+            $statusConditions[] = "orvexa_sprint.r_module_status_id IN (" . implode(",", $statusParams['ongoing']) . ")";
         }
         if (isset($statusParams['upcoming'])) {
-            $statusConditions[] = "scrum_sprint.r_module_status_id = " . $statusParams['upcoming'];
+            $statusConditions[] = "orvexa_sprint.r_module_status_id = " . $statusParams['upcoming'];
         }
         if (isset($statusParams['completed'])) {
-            $statusConditions[] = "scrum_sprint.r_module_status_id = " . $statusParams['completed'];
+            $statusConditions[] = "orvexa_sprint.r_module_status_id = " . $statusParams['completed'];
         }
         if (!empty($statusConditions)) {
             $query .= " AND (" . implode(" OR ", $statusConditions) . ")";
@@ -71,8 +71,8 @@ class DashboardModel extends BaseModel
 
         // Add group by and order by 
         $query .= "
-            GROUP BY scrum_sprint.sprint_id
-            ORDER BY scrum_sprint.sprint_version, scrum_sprint.start_date ASC
+            GROUP BY orvexa_sprint.sprint_id
+            ORDER BY orvexa_sprint.sprint_version, orvexa_sprint.start_date ASC
         ";
 
         $result = $this->query($query, $params['productId']);
@@ -94,7 +94,7 @@ class DashboardModel extends BaseModel
         $query = "SELECT 
                     sprint_id, sprint_version, sprint_name
                 FROM 
-                    scrum_sprint
+                    orvexa_sprint
                 WHERE 
                     r_product_id = ? 
                     AND r_module_status_id IN ($statusParams)";
@@ -126,7 +126,7 @@ class DashboardModel extends BaseModel
                         END AS status_category,
                         COUNT(*) AS count
                     FROM
-                        scrum_backlog_item b
+                        orvexa_backlog_item b
                     WHERE
                         b.is_deleted = 'N' AND b.r_product_id = ?
                     GROUP BY 
@@ -166,11 +166,11 @@ class DashboardModel extends BaseModel
                     SUM(CASE WHEN us.r_module_status_id = ? THEN 1 ELSE 0 END) AS completed_stories,
                     SUM(CASE WHEN us.r_module_status_id != ? THEN 1 ELSE 0 END) AS remaining_stories
                 FROM 
-                    scrum_user_story us
+                    orvexa_user_story us
                 INNER JOIN 
-                    scrum_epic e ON us.r_epic_id = e.epic_id
+                    orvexa_epic e ON us.r_epic_id = e.epic_id
                 INNER JOIN 
-                    scrum_backlog_item b ON e.r_backlog_item_id = b.backlog_item_id
+                    orvexa_backlog_item b ON e.r_backlog_item_id = b.backlog_item_id
                 WHERE 
                     us.is_deleted = 'N' AND b.r_product_id = ? ";
 
@@ -193,11 +193,11 @@ class DashboardModel extends BaseModel
     {
         $query = "SELECT st.external_reference_task_id
               FROM
-                 scrum_task st
+                 orvexa_task st
               JOIN 
-                scrum_sprint_task sst ON sst.r_task_id = st.task_id
+                orvexa_sprint_task sst ON sst.r_task_id = st.task_id
               JOIN 
-                scrum_sprint ss ON sst.r_sprint_id = ss.sprint_id
+                orvexa_sprint ss ON sst.r_sprint_id = ss.sprint_id
               WHERE 
                 ss.sprint_id = ?
                 AND ss.r_product_id = ?
@@ -222,11 +222,11 @@ class DashboardModel extends BaseModel
                         ss.sprint_version,
                         GROUP_CONCAT(st.r_user_story_id) AS user_story_ids
                     FROM 
-                        scrum_sprint ss
+                        orvexa_sprint ss
                     JOIN 
-                        scrum_sprint_task sst ON ss.sprint_id = sst.r_sprint_id
+                        orvexa_sprint_task sst ON ss.sprint_id = sst.r_sprint_id
                     JOIN 
-                        scrum_task st ON sst.r_task_id = st.task_id
+                        orvexa_task st ON sst.r_task_id = st.task_id
                     WHERE 
                         ss.r_product_id = ?
                         AND ss.is_deleted = 'N' ";
@@ -290,11 +290,11 @@ class DashboardModel extends BaseModel
                     END as priority,
                     COUNT(*) as pending_tasks
                 FROM 
-                    scrum_task st
+                    orvexa_task st
                 JOIN 
-                    scrum_sprint_task sst ON st.task_id = sst.r_task_id
+                    orvexa_sprint_task sst ON st.task_id = sst.r_task_id
                 JOIN 
-                    scrum_sprint ss ON sst.r_sprint_id = ss.sprint_id
+                    orvexa_sprint ss ON sst.r_sprint_id = ss.sprint_id
                 WHERE 
                     ss.r_product_id = ?
                     AND ss.sprint_id = ?
@@ -333,15 +333,15 @@ class DashboardModel extends BaseModel
                     st.priority,
                     concat_ws(' ',su.first_name,su.last_name) as Assignee
                 FROM 
-                    scrum_task st
+                    orvexa_task st
                 JOIN 
-                    scrum_sprint_task sst ON st.task_id = sst.r_task_id
+                    orvexa_sprint_task sst ON st.task_id = sst.r_task_id
                 JOIN 
-                    scrum_sprint ss ON sst.r_sprint_id = ss.sprint_id
+                    orvexa_sprint ss ON sst.r_sprint_id = ss.sprint_id
                 JOIN
-                    scrum_task_status sts ON sts.id = st.task_status
+                    orvexa_task_status sts ON sts.id = st.task_status
                 LEFT JOIN
-                    scrum_user su ON su.external_employee_id = st.assignee_id
+                    orvexa_user su ON su.external_employee_id = st.assignee_id
                 WHERE 
                     ss.r_product_id = ?
                     AND ss.sprint_id = ?
@@ -364,11 +364,11 @@ class DashboardModel extends BaseModel
     {
         $query = "SELECT sum(st.estimated_hours) AS estimated_hours
               FROM
-                 scrum_task st
+                 orvexa_task st
               JOIN 
-                scrum_sprint_task sst ON sst.r_task_id = st.task_id
+                orvexa_sprint_task sst ON sst.r_task_id = st.task_id
               JOIN 
-                scrum_sprint ss ON sst.r_sprint_id = ss.sprint_id
+                orvexa_sprint ss ON sst.r_sprint_id = ss.sprint_id
               WHERE 
                 ss.sprint_id = ?
                 AND ss.r_product_id = ?
@@ -396,13 +396,13 @@ class DashboardModel extends BaseModel
                     p.product_name,
                     d.meeting_link
                 FROM 
-                    scrum_meeting_details d
+                    orvexa_meeting_details d
                 INNER JOIN 
-                    scrum_meeting_type t 
+                    orvexa_meeting_type t 
                 ON 
                     d.r_meeting_type_id = t.meeting_type_id
                 INNER JOIN 
-                    scrum_product p 
+                    orvexa_product p 
                 ON 
                     p.external_project_id = d.r_product_id
                 WHERE 
@@ -442,7 +442,7 @@ class DashboardModel extends BaseModel
                     priority, 
                     count(*) AS pblsCount
                 FROM 
-                    scrum_backlog_item 
+                    orvexa_backlog_item 
                 WHERE 
                     r_product_id IN :product_id:
                 AND
@@ -490,13 +490,13 @@ class DashboardModel extends BaseModel
                         ELSE 0 
                     END AS delay
                 FROM 
-                    scrum_sprint s
+                    orvexa_sprint s
                 LEFT JOIN 
-                    scrum_sprint_task st
+                    orvexa_sprint_task st
                 ON 
                     s.sprint_id = st.r_sprint_id
                 LEFT JOIN 
-                    scrum_task t
+                    orvexa_task t
                 ON 
                     t.task_id = st.r_task_id
                 WHERE 
@@ -535,7 +535,7 @@ class DashboardModel extends BaseModel
                     SUM(CASE WHEN end_date >= :currentDate: THEN 1 ELSE 0 END) AS on_track,
                     SUM(CASE WHEN end_date < :currentDate: THEN 1 ELSE 0 END) AS delay
                 FROM 
-                    scrum_sprint 
+                    orvexa_sprint 
                 WHERE 
                     r_module_status_id IN :module_status_id:
                 AND 
@@ -572,17 +572,17 @@ class DashboardModel extends BaseModel
                     p.product_name,
                     sa.activity
                 FROM 
-                    scrum_sprint s 
+                    orvexa_sprint s 
                 INNER JOIN 
-                    scrum_sprint_planning sp 
+                    orvexa_sprint_planning sp 
                 ON 
                     sp.r_sprint_id = s.sprint_id 
                 INNER JOIN 
-                    scrum_product p 
+                    orvexa_product p 
                 ON 
                     s.r_product_id = p.external_project_id 
                 INNER JOIN 
-                    scrum_sprint_activity sa 
+                    orvexa_sprint_activity sa 
                 ON 
                     sa.sprint_activity_id = sp.r_sprint_activity_id
                 WHERE 

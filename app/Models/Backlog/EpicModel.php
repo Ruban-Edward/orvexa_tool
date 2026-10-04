@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 
 class EpicModel extends BaseModel {
     // Table for insertion
-    protected $table = "scrum_epic";
+    protected $table = "orvexa_epic";
 
     protected $primaryKey = "epic_id";
 
@@ -56,7 +56,7 @@ class EpicModel extends BaseModel {
      */
     public function insertData($data):int
     {
-        $sql = "INSERT INTO scrum_epic 
+        $sql = "INSERT INTO orvexa_epic 
                 (r_backlog_item_id, epic_name, epic_description, r_user_id_created, r_user_id_updated, created_date, updated_date)
                 VALUES (:pbl_id:,'epicname',:descripition:,:user_id:,:user_id:,NOW(),NOW())";
         
@@ -82,7 +82,7 @@ class EpicModel extends BaseModel {
     public function getOrCreateEpicId($description,$id)
     {
         // First, try to select the existing epic
-        $selectSql = "SELECT epic_id FROM scrum_epic WHERE epic_description = :description: AND r_backlog_item_id = :pblID:";
+        $selectSql = "SELECT epic_id FROM orvexa_epic WHERE epic_description = :description: AND r_backlog_item_id = :pblID:";
         $query = $this->query($selectSql, [
             'description' => $description,
             'pblID' => $id]);
@@ -119,7 +119,7 @@ class EpicModel extends BaseModel {
                     epic_name,
                     epic_description
                 FROM 
-                    scrum_epic 
+                    orvexa_epic 
                 WHERE 
                     r_backlog_item_id = :pblId: AND 
                     is_deleted = 'N'";
@@ -144,9 +144,9 @@ class EpicModel extends BaseModel {
                     (e.epic_id),
                     e.epic_description
                 FROM 
-                    scrum_epic as e
+                    orvexa_epic as e
                 INNER JOIN 
-                    scrum_user_story AS us ON us.r_epic_id = e.epic_id
+                    orvexa_user_story AS us ON us.r_epic_id = e.epic_id
                 WHERE 
                     e.r_backlog_item_id = :pblId: AND 
                     e.is_deleted = 'N' AND 

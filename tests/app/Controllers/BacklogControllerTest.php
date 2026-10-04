@@ -131,7 +131,7 @@ class BacklogControllerTest extends CIUnitTestCase
             'addBackLog' => 'insert',
             'pId' => 24,
             'productname' => 'Amal product',
-            'backlog_item_name' => 'infiniti',
+            'backlog_item_name' => 'orvexa',
             'priority' => 'L',
             'r_tracker_id' => 11,
             'r_customer_id' => 16,

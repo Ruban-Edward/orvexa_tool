@@ -41,7 +41,6 @@ class Autoload extends AutoloadConfig
      */
     public $psr4 = [
         APP_NAMESPACE => APPPATH,
-        'Redmine' => ROOTPATH . 'modules/redmine',
         'CodeIgniter\Queue' => APPPATH . 'ThirdParty/queue/src',
     ];
 

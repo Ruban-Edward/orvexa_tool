@@ -16,7 +16,7 @@ use CodeIgniter\Model;
 class SprintUser extends Model
 {
     // Setting the Table Name for insertion
-    protected $table = "scrum_sprint_user";
+    protected $table = "orvexa_sprint_user";
 
     //Declaring the Primary Key for the table
     protected $primaryKey = "sprint_users_id";
@@ -61,14 +61,14 @@ class SprintUser extends Model
         return $this->validationMessages;
     }
     /**
-     * Function to execute query to insert the details entered for sprint members to the table scrum_sprint_user selected at the time of creating the sprint.
+     * Function to execute query to insert the details entered for sprint members to the table orvexa_sprint_user selected at the time of creating the sprint.
      * @return int|bool
      */
 
     public function insertSelectedMembers($data)
     {
         if (!empty($data)) {
-            $query = "INSERT INTO scrum_sprint_user (r_sprint_id, r_user_id)
+            $query = "INSERT INTO orvexa_sprint_user (r_sprint_id, r_user_id)
                       		VALUES (:r_sprint_id:, :r_user_id:)";
             $result = $this->db->query($query, [
                 "r_sprint_id" => $data['r_sprint_id'],

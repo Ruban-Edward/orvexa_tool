@@ -23,7 +23,6 @@ declare (strict_types = 1);
 namespace Config;
 
 use App\Services\EmailRemainder;
-use App\Services\SyncService;
 use CodeIgniter\Tasks\Config\Tasks as BaseTasks;
 use CodeIgniter\Tasks\Scheduler;
 
@@ -62,14 +61,5 @@ class Tasks extends BaseTasks
             echo $result;
         })->everyFifteenMinutes();
 
-        $schedule->call(function () {
-            $sync = new SyncService();
-            $sync->syncProducts();
-            $sync->syncProductUsers();
-            $sync->syncTasks();
-            $sync->syncCustomers();
-            $sync->syncMembers();
-            echo "Sync Success";
-        })->cron("00 14 * * *");
     }
 }

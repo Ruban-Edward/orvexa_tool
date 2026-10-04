@@ -22,13 +22,13 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-white">
 
                 <div class="container-fluid cls-navbar-links">
-                    <a class="navbar-brand" href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>assets/images/infiniti_logo.png" alt="Logo" style="height: 28px;"></a>
+                    <a class="navbar-brand" href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_08_monochrome_light.png" alt="Orvexa" style="height: 48px;"></a>
                     
                     <div id="home-icon" style="height: 25px; width: 25px;">
                         <a href="#"><img src="<?= ASSERT_PATH ?>support/compiled/svg/home.svg" alt="home" height="100%" width="100%"></a>
                     </div> 
 
-                    <div class="cls-hamburger" id="hamburger-icon">
+                    <div class="cls-hamburger" id="hamburger-icon" role="button" tabindex="0" aria-label="Open navigation" aria-expanded="false">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -51,12 +51,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="<?= ASSERT_PATH ?>dashboard/dashboardView">Home</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="<?= ASSERT_PATH ?>backlog/productbacklogs">Products</a>
                                 </li>
                                 <div class="dropdown">
                                     <button class="btn btn-link dropdown-toggle text-white"  type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="display: flex;text-decoration: none;">

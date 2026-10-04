@@ -21,7 +21,7 @@ class RemainderJobModel extends Model
     public function insertRemainderJob($data)
     {
         $sql = "INSERT INTO
-                    scrum_remainder_jobs
+                    orvexa_remainder_jobs
                     (
                         email_id,
                         remainder_date_time
@@ -42,7 +42,7 @@ class RemainderJobModel extends Model
     public function deleteJob()
     {
         $sql = "DELETE FROM
-                    scrum_remainder_jobs
+                    orvexa_remainder_jobs
                 WHERE
                     remainder_date_time < NOW() - INTERVAL 2 DAY";
         $this->db->query($sql);

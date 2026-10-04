@@ -8,7 +8,7 @@ use App\Models\BaseModel;
 class TaskModel extends BaseModel
 {
     // Table for insertion
-    protected $table = "scrum_task";
+    protected $table = "orvexa_task";
 
     protected $primaryKey = "task_id";
 
@@ -136,14 +136,14 @@ class TaskModel extends BaseModel
 
     public function insertTasks($args)
     {
-        $sql = "INSERT INTO scrum_task (r_user_story_id,task_title,task_description,external_reference_task_id,assignee_id,priority,tracker_id,start_date,end_date,estimated_hours,completed_percentage,task_status,r_user_id_created,r_user_id_updated,created_date,updated_date)
+        $sql = "INSERT INTO orvexa_task (r_user_story_id,task_title,task_description,external_reference_task_id,assignee_id,priority,tracker_id,start_date,end_date,estimated_hours,completed_percentage,task_status,r_user_id_created,r_user_id_updated,created_date,updated_date)
                 VALUES (:user_story_id:,:title:,:description:,:reference_task_id:,:assignee:,:priority:,:tracker_id:,:start_date:,:end_date:,:estimated_hours:,:completed_percentage:,:status:,:author_id:,:author_id:,:created_on:,:updated_on:)  
                 ";
         $this->db->query($sql, [
             'user_story_id' => $args['r_user_story_id'],
             'title' => $args['task_title'],
             'description' => $args['task_description'],
-            'reference_task_id' => $args['external_reference_task_id'],
+            'reference_task_id' => $args['external_reference_task_id'] ?? null,
             'assignee' => $args['assignee_id'],
             'priority' => $args['priority'],
             'status' => $args['task_status'],
@@ -168,8 +168,8 @@ class TaskModel extends BaseModel
     
         public function updateTaskById($args)
         {
-            $sql = "UPDATE scrum_task SET task_title=:task_title:,task_description=:description:,assignee_id=:assignee:,priority=:priority:,task_status=:status:,tracker_id=:tracker_id:,completed_percentage=:completed_percentage:,estimated_hours=:estimated_time:,start_date=:start_date:,end_date=:end_date: 
-                    WHERE external_reference_task_id=:task_id:";
+            $sql = "UPDATE orvexa_task SET task_title=:task_title:,task_description=:description:,assignee_id=:assignee:,priority=:priority:,task_status=:status:,tracker_id=:tracker_id:,completed_percentage=:completed_percentage:,estimated_hours=:estimated_time:,start_date=:start_date:,end_date=:end_date: 
+                    WHERE task_id=:task_id: OR external_reference_task_id=:task_id:";
             $this->query($sql, [
                 'task_id' => $args['task_id'],
                 'task_title' => $args['task_title'],
@@ -201,7 +201,7 @@ class TaskModel extends BaseModel
          $sql = "SELECT 
                      COUNT(task_id) as count
                  FROM 
-                     scrum_task 
+                     orvexa_task 
                  WHERE 
                      r_user_story_id=:id: AND 
                      is_deleted = 'N'";
@@ -226,7 +226,7 @@ class TaskModel extends BaseModel
                     tracker_id,
                     tracker
                 FROM 
-                    scrum_trackers";
+                    orvexa_trackers";
         $query = $this->query($sql);
         if ($query) {
             return $query->getResultArray();
@@ -245,7 +245,7 @@ class TaskModel extends BaseModel
                     id AS status_id,
                     name AS status_name
                 FROM 
-                    scrum_task_status";
+                    orvexa_task_status";
         $query = $this->query($sql);
         if ($query) {
             return $query->getResultArray();
@@ -264,7 +264,7 @@ class TaskModel extends BaseModel
          $sql = "SELECT 
                      * 
                  From 
-                     scrum_task 
+                     orvexa_task 
                  Where 
                      external_reference_task_id = :id:";
  
@@ -296,15 +296,15 @@ class TaskModel extends BaseModel
                     tr.tracker as tracker_name,
                     i.estimated_hours
                 FROM 
-                    scrum_task i
+                    orvexa_task i
                 INNER JOIN 
-                    scrum_user u ON i.assignee_id = u.external_employee_id 
+                    orvexa_user u ON i.assignee_id = u.external_employee_id 
                 INNER JOIN 
-                    scrum_task_status ts ON i.task_status = ts.id
+                    orvexa_task_status ts ON i.task_status = ts.id
                 INNER JOIN 
-                    scrum_trackers tr ON i.tracker_id = tr.tracker_id
+                    orvexa_trackers tr ON i.tracker_id = tr.tracker_id
                 INNER JOIN 
-                    scrum_user_story us ON i.r_user_story_id = us.user_story_id
+                    orvexa_user_story us ON i.r_user_story_id = us.user_story_id
                 WHERE 
                     i.r_user_story_id = :id: AND i.is_deleted = 'N'";
 
@@ -373,11 +373,11 @@ class TaskModel extends BaseModel
                     a.completed_percentage,
                     a.estimated_hours 
                 FROM 
-                    scrum_task a 
-                JOIN scrum_trackers b on a.tracker_id= b.tracker_id 
-                JOIN scrum_task_status c on c.id= a.task_status 
-                JOIN scrum_user d on d.external_employee_id =a.assignee_id 
-                WHERE external_reference_task_id=:id: AND a.is_deleted='N'";
+                    orvexa_task a 
+                JOIN orvexa_trackers b on a.tracker_id= b.tracker_id 
+                JOIN orvexa_task_status c on c.id= a.task_status 
+                JOIN orvexa_user d on d.external_employee_id =a.assignee_id 
+                WHERE (a.task_id=:id: OR a.external_reference_task_id=:id:) AND a.is_deleted='N'";
 
         $query = $this->query($sql, [
             'id' => $id
@@ -399,7 +399,7 @@ class TaskModel extends BaseModel
         $sql = "SELECT 
                     r_tracker_id 
                 FROM 
-                    scrum_backlog_item 
+                    orvexa_backlog_item 
                 WHERE 
                     backlog_item_id = :pblId:";
         $query = $this->query($sql, [

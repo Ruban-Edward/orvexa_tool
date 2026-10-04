@@ -18,7 +18,7 @@ class ScrumSprintModel extends Model
 {
 
     // Setting the Table Name for insertion
-    protected $table = "scrum_sprint";
+    protected $table = "orvexa_sprint";
 
     //Declaring the Primary Key for the table
     protected $primaryKey = "sprint_id";
@@ -127,13 +127,13 @@ class ScrumSprintModel extends Model
         return $this->validationMessages;
     }
     /**
-     * Function which contains the query to insert the details entered in the create sprint page to the table scrum_sprint
+     * Function which contains the query to insert the details entered in the create sprint page to the table orvexa_sprint
      * @return int
      */
 
     public function insertSprintDetails($data): int
     {
-        $query = "INSERT INTO scrum_sprint (
+        $query = "INSERT INTO orvexa_sprint (
 		    sprint_name,
 		    sprint_version,
 		    r_product_id,
@@ -179,12 +179,12 @@ class ScrumSprintModel extends Model
     }
 
     /**
-     * Function which contains the query to update/edit the details entered in the create sprint page to the table scrum_sprint
+     * Function which contains the query to update/edit the details entered in the create sprint page to the table orvexa_sprint
      * @return int
      */
     public function updateSprint($data)
     {
-        $query = "UPDATE scrum_sprint
+        $query = "UPDATE orvexa_sprint
                     SET
                     sprint_name = :sprint_name:,
                     sprint_version = :sprint_version:,

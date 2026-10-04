@@ -7,7 +7,7 @@
 * @package    App\Models
 * @author     Jeril
 * @created    27 August 2024
-* @purpose    Manages interactions with the `scrum_notes` table in the database.
+* @purpose    Manages interactions with the `orvexa_notes` table in the database.
 *             Handles CRUD operations for notes, including insertion and retrieval of notes.
 *             Defines validation rules and messages for note data.
 */
@@ -19,7 +19,7 @@ use App\Models\BaseModel;
 class NotesModel extends BaseModel {
 
     // Setting the Table Name for insertion
-    protected $table = 'scrum_notes';
+    protected $table = 'orvexa_notes';
 
     //Declaring the Primary Key for the table
     protected $primaryKey = 'notes_id';
@@ -79,12 +79,12 @@ class NotesModel extends BaseModel {
         return $this->validationMessages;
     }
     /**
-    * It is a common function to insert notes for the scrum diary, sprint review, sprint retrospective pages to the table scrum_notes.
+    * It is a common function to insert notes for the scrum diary, sprint review, sprint retrospective pages to the table orvexa_notes.
     * @return array
     */
 
     public function insertNotes($data) {
-        $query = "INSERT INTO scrum_notes
+        $query = "INSERT INTO orvexa_notes
                     (
                     notes,
                     r_user_id,
@@ -105,17 +105,17 @@ class NotesModel extends BaseModel {
 
     public function getNotes( $data ): array {
         $query = "SELECT
-                scrum_notes.notes,
-                scrum_notes.created_date as added_date,
+                orvexa_notes.notes,
+                orvexa_notes.created_date as added_date,
                 r_notes_type_id";
         if ( isset( $data[ 'dailyScrum' ] ) ) {
-            $query .= ",scrum_task.task_title
+            $query .= ",orvexa_task.task_title
                         FROM
-                        scrum_notes
-                        INNER JOIN scrum_sprint_task sst ON scrum_notes.reference_id = sst.r_task_id
-                        INNER JOIN scrum_task ON scrum_notes.reference_id = scrum_task.task_id
+                        orvexa_notes
+                        INNER JOIN orvexa_sprint_task sst ON orvexa_notes.reference_id = sst.r_task_id
+                        INNER JOIN orvexa_task ON orvexa_notes.reference_id = orvexa_task.task_id
                         WHERE sst.r_sprint_id = :sprintid:
-                        AND scrum_notes.is_deleted = 'N'
+                        AND orvexa_notes.is_deleted = 'N'
                         AND sst.is_deleted = 'N'
                         ORDER BY added_date DESC";
             $result = $this->query( $query, [ 'sprintid' => $data[ 'sprintId' ] ] );
@@ -124,12 +124,12 @@ class NotesModel extends BaseModel {
             }
             return [];
         }
-        $query .= " FROM scrum_notes
+        $query .= " FROM orvexa_notes
                     WHERE r_notes_type_id
                     IN :r_notes_type_id:
                     AND reference_id
                     = :reference_id:
-                    AND scrum_notes.is_deleted = 'N'
+                    AND orvexa_notes.is_deleted = 'N'
                     ORDER BY added_date DESC";
         $result = $this->query( $query, [
             'r_notes_type_id' => $data[ 'notes_type' ],
@@ -143,9 +143,9 @@ class NotesModel extends BaseModel {
 
     public function getDailyScrumNotes( $sprintid ): array {
         $query = "SELECT sn.notes, sn.r_user_id, sn.created_date, sn.r_notes_type_id,task_title
-        FROM scrum_notes sn
-        INNER JOIN scrum_sprint_task sst ON sn.reference_id = sst.r_task_id
-        INNER JOIN scrum_task ON sn.reference_id = scrum_task.task_id
+        FROM orvexa_notes sn
+        INNER JOIN orvexa_sprint_task sst ON sn.reference_id = sst.r_task_id
+        INNER JOIN orvexa_task ON sn.reference_id = orvexa_task.task_id
         WHERE sst.r_sprint_id = :sprintid:
         AND sn.is_deleted = 'N'
           AND sst.is_deleted = 'N'";

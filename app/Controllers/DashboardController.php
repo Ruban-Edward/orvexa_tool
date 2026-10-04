@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-use Redmine\Services\IssuesService;
 use Config\SprintModelConfig;
 use App\Helpers\CustomHelpers;
 /**
@@ -11,7 +10,7 @@ use App\Helpers\CustomHelpers;
  * @author     Rahul S,Stervin Richard
  * @created    09 July 2024
  * @purpose    Manages user profiles, dashboards, and related functionalities, including handling backlog and 
- *             meeting data. Interacts with the Redmine service to retrieve task and burndown chart data.
+ *             meeting data for local scrum dashboards.
  */
 
 
@@ -26,7 +25,6 @@ class DashboardController extends BaseController
     protected $dashboardModel;
     protected $backlogModel;
     protected $sprintModel;
-    protected $redmineModel;
     protected $reportModel;
     protected $config;
     protected $productId;
@@ -40,8 +38,6 @@ class DashboardController extends BaseController
         $this->sprintModel = model('SprintModel');
         $this->reportModel = model('CustomReportModel');
         $this->config = new SprintModelConfig();
-        $this->redmineModel=new IssuesService();
-
         $this->userId  = session()->get('employee_id');
         $this->products = $this->backlogModel->getUserProduct($this->userId);
         $this->productId = array_column($this->products,'product_id');
@@ -204,7 +200,7 @@ class DashboardController extends BaseController
             'productId'=> $productId,
             'status' => $sprintStatus['completed']
         ]); 
-        $totalTaskHoursPerSprint = $this->redmineModel->getTotalTaskHours($userStoryIds);
+        $totalTaskHoursPerSprint = json_encode([]);
          
         // Retrieves sum of task hours in each user story of a sprint for a product
         if(!empty($sprintId) ){
@@ -215,10 +211,7 @@ class DashboardController extends BaseController
             ]);  
 
             if(!empty($userStories[0]['user_story_ids'])) {
-                $userStoryCompletionHours = $this->redmineModel->getUserStoryTaskHours([
-                    'productId' => $productId,
-                    'userStoryIds' => $userStories[0]['user_story_ids'] 
-                ]); 
+                $userStoryCompletionHours = json_encode([]); 
             }
             else {
                 $userStoryCompletionHours = json_encode([]);
@@ -233,14 +226,13 @@ class DashboardController extends BaseController
             'productId' => $productId,
             'sprintId' => $sprintId
         ]);
-        $sprintHours = $this->redmineModel->getDailySpentHours($issueIds);
+        $sprintHours = json_encode([]);
        
         // // Fetch data for the burndown chart for the current sprint
         // $issueIds=$this->dashboardModel->getSprintTasksId([
         //     'productId' => $productId,
         //     'sprintId' => $sprintId
         // ]);
-        // $sprintHours = $this->redmineModel->getBurndownChartData($issueIds);
         // $estimatedSprintHours=$this->dashboardModel->getEstimatedSprintHours([
         //     'productId' => $productId,
         //     'sprintId' => $sprintId

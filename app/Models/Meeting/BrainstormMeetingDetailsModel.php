@@ -15,7 +15,7 @@ use CodeIgniter\Model;
 
 class BrainstormMeetingDetailsModel extends Model
 {
-    protected $table = "scrum_brainstorm_meeting_details";
+    protected $table = "orvexa_brainstorm_meeting_details";
 
     protected $primaryKey = "brainstorm_meeting_id";
 
@@ -77,7 +77,7 @@ class BrainstormMeetingDetailsModel extends Model
      * @return void
      */
     public function insertBrainstormDetails($data){
-        $sql = "INSERT INTO scrum_brainstorm_meeting_details(
+        $sql = "INSERT INTO orvexa_brainstorm_meeting_details(
                     r_meeting_details_id, r_backlog_item_id, 
                     r_epic_id, r_user_story_id
                     ) 
@@ -103,9 +103,9 @@ class BrainstormMeetingDetailsModel extends Model
         $sql = "SELECT DISTINCT 
                     md.external_issue_id
                 FROM 
-                    scrum_meeting_details md
-                JOIN scrum_brainstorm_meeting_details bmd1 ON md.meeting_details_id = bmd1.r_meeting_details_id
-                JOIN scrum_brainstorm_meeting_details bmd2 ON bmd1.r_backlog_item_id = bmd2.r_backlog_item_id
+                    orvexa_meeting_details md
+                JOIN orvexa_brainstorm_meeting_details bmd1 ON md.meeting_details_id = bmd1.r_meeting_details_id
+                JOIN orvexa_brainstorm_meeting_details bmd2 ON bmd1.r_backlog_item_id = bmd2.r_backlog_item_id
                 WHERE 
                     bmd2.r_meeting_details_id =:r_meeting_details_id:
                 AND md.r_meeting_type_id = 2

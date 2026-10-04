@@ -12,7 +12,7 @@ use CodeIgniter\Model;
 
 class ProductOwnerModel extends Model
 {
-    protected $table = "scrum_product_owners";
+    protected $table = "orvexa_product_owners";
     protected $primaryKey = "product_owners_id";
 
     protected $allowedFields = [
@@ -51,7 +51,7 @@ class ProductOwnerModel extends Model
      */
     public function setProductOwner($productOwnerData): bool
     {
-        $sql = "INSERT INTO scrum_product_owners (
+        $sql = "INSERT INTO orvexa_product_owners (
                     r_product_id, r_user_id, created_date
                 ) 
                 VALUES 
@@ -80,7 +80,7 @@ class ProductOwnerModel extends Model
         $sql = "SELECT 
                     r_user_id 
                 FROM 
-                    scrum_product_owners 
+                    orvexa_product_owners 
                 WHERE 
                     r_product_id = :r_product_id:";
 

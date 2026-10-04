@@ -17,10 +17,10 @@ class DailyScrumModel extends Model
 {
 
     // Setting the Table Name for insertion
-    protected $table = "scrum_daily_scrum";
+    protected $table = "orvexa_daily_scrum";
 
     //Declaring the Primary Key for the table
-    protected $primaryKey = "daily_scrum_id";
+    protected $primaryKey = "daily_orvexa_id";
 
     //Defining the fields to insert
     protected $allowedFields = [
@@ -88,12 +88,12 @@ class DailyScrumModel extends Model
         return $this->validationMessages;
     }
     /**
-     * Function which executes the query to insert the details entered by the user in the daily scrum page to the table scrum_daily_scrum by mapping with the data from the scrum_notes table.
+     * Function which executes the query to insert the details entered by the user in the daily scrum page to the table orvexa_daily_scrum by mapping with the data from the orvexa_notes table.
      * @return array
      */
     public function insertScrumDiary($data)
     {
-        $query = "INSERT INTO scrum_daily_scrum (
+        $query = "INSERT INTO orvexa_daily_scrum (
 				r_sprint_id,
 				challenges,
 				added_date,

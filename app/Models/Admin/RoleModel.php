@@ -3,7 +3,7 @@
  * RoleModel.php
  * @author Ruban Edward
  * 
- * @performs action in the scrum_role table
+ * @performs action in the orvexa_role table
  */
 
 namespace App\Models\Admin;
@@ -12,7 +12,7 @@ use CodeIgniter\Model;
 
 class RoleModel extends Model
 {
-    protected $table = 'scrum_role';
+    protected $table = 'orvexa_role';
     protected $primaryKey = 'role_id';
     protected $allowedFields = [
         'role_name'
@@ -52,7 +52,7 @@ class RoleModel extends Model
                     role_id,	
                     role_name
                 FROM
-                    scrum_role
+                    orvexa_role
                 WHERE
                     is_deleted = :is_deleted:";
 
@@ -72,7 +72,7 @@ class RoleModel extends Model
      */
     public function insertRole($name)
     {
-        $sql = "INSERT INTO scrum_role
+        $sql = "INSERT INTO orvexa_role
                     (role_name)
                 VALUES
                     (:role_name:)";
@@ -92,7 +92,7 @@ class RoleModel extends Model
     public function deleteRole($roleId)
     {
         $sql = "UPDATE 
-                    scrum_role
+                    orvexa_role
                 SET
                     is_deleted = :is_deleted:
                 WHERE 

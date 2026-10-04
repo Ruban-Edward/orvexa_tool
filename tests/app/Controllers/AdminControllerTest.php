@@ -50,7 +50,7 @@ class AdminControllerTest extends CIUnitTestCase
     public function testManageUserPage()
     {
         // Set the URI for the request
-        $result = $this->withURI('http://localhost/scrum_tool/public/admin/manageUser')
+        $result = $this->withURI('http://localhost/orvexa_tool/public/admin/manageUser')
             ->controller(\App\Controllers\AdminController::class)
             ->execute('userList');
 
@@ -67,7 +67,7 @@ class AdminControllerTest extends CIUnitTestCase
     public function testManagePermissionPage()
     {
         // Set the URI for the request
-        $result = $this->withURI('http://localhost/scrum_tool/public/admin/setPermissionPage')
+        $result = $this->withURI('http://localhost/orvexa_tool/public/admin/setPermissionPage')
             ->controller(\App\Controllers\AdminController::class)
             ->execute('setPermissionPage');
 
@@ -89,7 +89,7 @@ class AdminControllerTest extends CIUnitTestCase
         ];
 
         // creating the POST form Data to send to controller
-        $uri = new URI('http://localhost/scrum_tool/public/admin/manageUser');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/manageUser');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -119,7 +119,7 @@ class AdminControllerTest extends CIUnitTestCase
         ];
 
         // creating the POST form Data to send to controller
-        $uri = new URI('http://localhost/scrum_tool/public/admin/manageUser');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/manageUser');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -154,7 +154,7 @@ class AdminControllerTest extends CIUnitTestCase
         ];
 
         // Creating the POST form data to send to controller
-        $uri = new URI('http://localhost/scrum_tool/public/admin/setPermissionPage');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/setPermissionPage');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -188,7 +188,7 @@ class AdminControllerTest extends CIUnitTestCase
         ];
 
         // Creating the POST form data to send to controller
-        $uri = new URI('http://localhost/scrum_tool/public/admin/setPermissions');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/setPermissions');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -221,7 +221,7 @@ class AdminControllerTest extends CIUnitTestCase
         ];
 
         // Creating the POST form data to send to controller
-        $uri = new URI('http://localhost/scrum_tool/public/admin/setPermissionPage');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/setPermissionPage');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -306,7 +306,7 @@ class AdminControllerTest extends CIUnitTestCase
             ->willReturn(true);  // Simulate successful permission addition
 
         // Simulate the request
-        $uri = new URI('http://localhost/scrum_tool/public/admin/setNewPermission');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/setNewPermission');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -337,7 +337,7 @@ class AdminControllerTest extends CIUnitTestCase
             ->willReturn(false);
 
         // Simulate the request
-        $uri = new URI('http://localhost/scrum_tool/public/admin/setNewPermission');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/setNewPermission');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');
@@ -364,7 +364,7 @@ class AdminControllerTest extends CIUnitTestCase
         ];
 
         // Simulate the request
-        $uri = new URI('http://localhost/scrum_tool/public/admin/getSpecificPermissions');
+        $uri = new URI('http://localhost/orvexa_tool/public/admin/getSpecificPermissions');
         $config = new App();
         $request = new IncomingRequest($config, $uri, null, new UserAgent());
         $request->withMethod('post');

@@ -17,7 +17,7 @@ class SprintPlanning extends Model
 {
 
     // Setting the Table Name for insertion
-    protected $table = "scrum_sprint_planning";
+    protected $table = "orvexa_sprint_planning";
 
     //Declaring the Primary Key for the table
     protected $primaryKey = "sprint_planning_id";
@@ -80,14 +80,14 @@ class SprintPlanning extends Model
         return $this->validationMessages;
     }
     /**
-     * Function to execute query to insert the details entered for sprint planning to the table scrum_sprint_planning done at the time of creating the sprint.  
+     * Function to execute query to insert the details entered for sprint planning to the table orvexa_sprint_planning done at the time of creating the sprint.  
      * @return int|bool
      */
 
     public function insertSprintPlanning($settingsData)
     {
         if (!empty($settingsData)) {
-            $query = "INSERT INTO scrum_sprint_planning (r_sprint_id,
+            $query = "INSERT INTO orvexa_sprint_planning (r_sprint_id,
                     r_sprint_activity_id,
                     start_date, 
                     end_date,

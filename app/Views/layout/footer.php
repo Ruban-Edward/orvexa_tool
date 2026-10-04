@@ -40,23 +40,63 @@
     document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('hamburger-icon');
+    const desktopSidebarToggle = document.getElementById('sidebar-toggle');
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     const hasSubItems = document.querySelectorAll('.has-sub');
 
-    var sidebarToggleStatus = true;
-    const sidebarNav = document.querySelector('.sidebar-wrapper .sidebar-menu');
-    // Toggle sidebar on mobile
-    sidebarToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-        
-        if(sidebarToggleStatus){
-            sidebarNav.style.display="block";
-            sidebarToggleStatus = false;
+    const closeMobileSidebar = () => {
+        sidebar?.classList.remove('active');
+        document.body.classList.remove('sidebar-mobile-open');
+        document.querySelector('.sidebar-backdrop')?.remove();
+        sidebarToggle?.setAttribute('aria-expanded', 'false');
+        sidebarToggle?.setAttribute('aria-label', 'Open navigation');
+    };
+
+    const toggleMobileSidebar = () => {
+        const isOpen = !document.body.classList.contains('sidebar-mobile-open');
+        sidebar?.classList.toggle('active', isOpen);
+        document.body.classList.toggle('sidebar-mobile-open', isOpen);
+        sidebarToggle?.setAttribute('aria-expanded', String(isOpen));
+        sidebarToggle?.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+
+        if (isOpen) {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'sidebar-backdrop';
+            backdrop.addEventListener('click', closeMobileSidebar, { once: true });
+            document.body.appendChild(backdrop);
         } else {
-            sidebarNav.style.display="none";
-            sidebarToggleStatus = true;
+            document.querySelector('.sidebar-backdrop')?.remove();
         }
-        
+    };
+
+    sidebarToggle?.addEventListener('click', toggleMobileSidebar);
+    sidebarToggle?.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleMobileSidebar();
+        }
+    });
+
+    desktopSidebarToggle?.addEventListener('click', () => {
+        const isExpanded = document.body.classList.toggle('sidebar-collapsed') === false;
+        desktopSidebarToggle.setAttribute('aria-expanded', String(isExpanded));
+        desktopSidebarToggle.setAttribute('aria-label', isExpanded ? 'Collapse navigation' : 'Expand navigation');
+        desktopSidebarToggle.setAttribute('title', isExpanded ? 'Collapse navigation' : 'Expand navigation');
+    });
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && document.body.classList.contains('sidebar-mobile-open')) {
+            closeMobileSidebar();
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1200) {
+            closeMobileSidebar();
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+            desktopSidebarToggle?.setAttribute('aria-expanded', 'true');
+        }
     });
 
     // Handle active state and dropdowns
@@ -91,16 +131,36 @@
     });
 });
     document.addEventListener('DOMContentLoaded', function() {
-    const sidebarLinks = document.querySelectorAll('#sidebar .sidebar-link');
-    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('#sidebar .sidebar-link, #sidebar .submenu-item a');
+    const normalizePath = path => path.replace(/\/+$/, '') || '/';
+    const currentPath = normalizePath(window.location.pathname);
 
     sidebarLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
+        const href = link.getAttribute('href');
+        if (href && href !== '#') {
+            const targetPath = normalizePath(new URL(href, window.location.origin).pathname);
+            const selected = currentPath === targetPath;
+            const nestedRoute = targetPath !== '/' && currentPath.startsWith(`${targetPath}/`);
+
+            if (selected || nestedRoute) {
+                link.classList.add('active');
+                if (selected) {
+                    link.setAttribute('aria-current', 'page');
+                }
+
+                link.closest('.sidebar-item')?.classList.add('active');
+                const parentMenu = link.closest('.has-sub');
+                if (parentMenu) {
+                    parentMenu.classList.add('active', 'open');
+                    const parentLink = parentMenu.querySelector(':scope > .sidebar-link');
+                    parentLink?.classList.add('active');
+                    parentLink?.setAttribute('aria-expanded', 'true');
+                }
+            }
         }
 
         link.addEventListener('click', function() {
-            sidebarLinks.forEach(l => l.classList.remove('active'));
+            sidebarLinks.forEach(sidebarLink => sidebarLink.classList.remove('active'));
             this.classList.add('active');
         });
     });
