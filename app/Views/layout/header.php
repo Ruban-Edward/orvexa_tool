@@ -10,8 +10,7 @@
 <body>
     <div id="loader">
         <div class="app-loader-mark">
-            <span class="app-loader-ring"></span>
-            <img src="<?= ASSERT_PATH ?>support/compiled/svg/favicon.svg" alt="Orvexa">
+            <img src="<?= ASSERT_PATH ?>assets/images/orvexa-loader.png" alt="Orvexa">
         </div>
         <span class="app-loader-label">Loading</span>
     </div>

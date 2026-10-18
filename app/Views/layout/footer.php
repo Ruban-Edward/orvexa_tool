@@ -342,7 +342,27 @@
             const loader = document.getElementById('loader');
             if (loader) {
                 loader.classList.add('is-loaded');
-                setTimeout(() => loader.remove(), 260);
+            }
+
+            const showLoader = () => loader?.classList.remove('is-loaded');
+            const hideLoader = () => loader?.classList.add('is-loaded');
+
+            document.querySelectorAll('a[href], form').forEach(element => {
+                if (element.matches('a[href]')) {
+                    element.addEventListener('click', event => {
+                        const href = element.getAttribute('href');
+                        if (event.defaultPrevented || !href || href.startsWith('#') || href.startsWith('javascript:') || element.target === '_blank' || element.hasAttribute('data-bs-toggle')) return;
+                        showLoader();
+                    });
+                } else {
+                    element.addEventListener('submit', () => showLoader());
+                }
+            });
+
+            window.addEventListener('pageshow', hideLoader);
+            window.addEventListener('beforeunload', showLoader);
+            if (window.jQuery) {
+                $(document).ajaxStart(showLoader).ajaxStop(hideLoader);
             }
 
             // Function to remove the base URL from a given path

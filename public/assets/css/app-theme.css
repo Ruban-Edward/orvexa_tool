@@ -74,26 +74,18 @@ body {
 .app-loader-mark {
     position: relative;
     display: grid;
-    width: 72px;
-    height: 72px;
+    width: 160px;
+    height: 160px;
     place-items: center;
 }
 
 .app-loader-mark img {
     position: relative;
     z-index: 1;
-    width: 38px;
-    height: 38px;
-}
-
-.app-loader-ring {
-    position: absolute;
-    inset: 0;
-    border: 3px solid rgba(23, 87, 56, .15);
-    border-top-color: var(--primary-color);
-    border-right-color: var(--accent-color);
-    border-radius: 50%;
-    animation: app-loader-spin .9s linear infinite;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    animation: app-loader-breathe 1.4s ease-in-out infinite;
 }
 
 .app-loader-label {
@@ -104,8 +96,9 @@ body {
     text-transform: uppercase;
 }
 
-@keyframes app-loader-spin {
-    to { transform: rotate(360deg); }
+@keyframes app-loader-breathe {
+    0%, 100% { transform: scale(.94); opacity: .82; }
+    50% { transform: scale(1); opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
