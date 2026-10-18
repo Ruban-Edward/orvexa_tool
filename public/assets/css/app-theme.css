@@ -1031,11 +1031,9 @@ body {
     top: 80px;
     left: calc(var(--sidebar-width) - 34px);
     width: 34px;
-    height: 38px;
     padding: 0;
-    border: 1px solid rgba(196, 239, 205, 0.24);
     border-radius: 10px 0 0 10px;
-    background: var(--app-green-current);
+    background: transparent;
     color: #ffffff;
     box-shadow: 0 4px 12px rgba(13, 52, 36, 0.22);
     cursor: pointer;
@@ -1046,10 +1044,6 @@ body {
     content: "\2039";
     font-size: 28px;
     line-height: 1;
-}
-
-#sidebar-toggle:hover {
-    background: var(--app-green-hover);
 }
 
 body.sidebar-collapsed #sidebar {

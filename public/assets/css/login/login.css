@@ -12,7 +12,7 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(120deg, rgba(4, 23, 16, 0.5), rgba(9, 64, 36, 0.34)), url("../../images/login/login_form.png");
+    background-image: linear-gradient(120deg, rgba(4, 23, 16, 0), rgba(9, 64, 36, 0.34)), url("../../images/login/login_form.png");
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
