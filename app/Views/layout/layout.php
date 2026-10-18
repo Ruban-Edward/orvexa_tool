@@ -1,4 +1,19 @@
 <?= $this->include('layout/header') ?>
+<?php if (session()->getFlashdata('success') || session()->getFlashdata('error')): ?>
+    <div id="globalFlashMessage" class="global-flash-message alert <?= session()->getFlashdata('success') ? 'alert-success' : 'alert-danger' ?>" role="alert">
+        <?= esc(session()->getFlashdata('success') ?: session()->getFlashdata('error')) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <script>
+        setTimeout(function () {
+            const alert = document.getElementById('globalFlashMessage');
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }
+        }, 3000);
+    </script>
+<?php endif; ?>
 <?= $this->include('layout/sidebar') ?>
 <div id="main" class="main-content">
     <?php if(isset($breadcrumbs)): ?>

@@ -340,8 +340,10 @@
         //remove the loader when the DOM loaded
         document.addEventListener("DOMContentLoaded", function() {
             const loader = document.getElementById('loader');
-            
-            loader.style.display = 'none';
+            if (loader) {
+                loader.classList.add('is-loaded');
+                setTimeout(() => loader.remove(), 260);
+            }
 
             // Function to remove the base URL from a given path
             function stripBaseUrl(url, baseUrl) {

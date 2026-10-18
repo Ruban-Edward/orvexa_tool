@@ -4,6 +4,43 @@
     width: 500px;
 }
 
+.backlog-card {
+    position: relative;
+}
+
+.product-actions {
+    position: absolute;
+    top: 68px;
+    right: 28px;
+    z-index: 20;
+}
+
+.product-actions-button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #527063;
+    background: transparent;
+    box-shadow: none;
+    transition: background-color .2s ease, transform .2s ease;
+}
+
+.product-actions-button:hover,
+.product-actions-button:focus {
+    color: #fff;
+    background: #1f513e;
+    transform: scale(1.06);
+}
+
+.product-actions .dropdown-menu {
+    min-width: 145px;
+    border: 1px solid rgba(18, 63, 44, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(18, 63, 44, 0.16);
+}
+
 .product-card:hover {  
     
     z-index: 10;
@@ -164,6 +201,7 @@ display: block;
     /* background : linear-gradient(90deg, rgba(185,179,245,1) 0%,rgba(139,47,148,1)0%,rgba(225,72,128,1)100%); */
     background: linear-gradient(to right,#3949AB,#038fD1);
     padding: 14px 10px;
+    padding-right: 52px;
 }
 
 .title-product h4{

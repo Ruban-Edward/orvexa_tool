@@ -6,6 +6,47 @@ use App\Models\BaseModel;
 
 class BacklogModel extends BaseModel
 {
+    public function productNameExists(string $productName, ?int $excludeProductId = null): bool
+    {
+        $sql = 'SELECT 1 FROM orvexa_product WHERE LOWER(product_name) = LOWER(?) AND is_deleted = ?';
+        $params = [$productName, 'N'];
+        if ($excludeProductId !== null) {
+            $sql .= ' AND external_project_id <> ?';
+            $params[] = $excludeProductId;
+        }
+        $query = $this->db->query($sql, $params);
+
+        return $query->getNumRows() > 0;
+    }
+
+    public function createProduct(string $productName, int $userId): int
+    {
+        $this->db->transStart();
+        $nextExternalId = (int) ($this->db->table('orvexa_product')->selectMax('external_project_id')->get()->getRow()->external_project_id ?? 0) + 1;
+        $this->db->table('orvexa_product')->insert(['external_project_id' => $nextExternalId, 'r_owner_id' => $userId, 'product_name' => $productName, 'created_date' => date('Y-m-d H:i:s'), 'updated_date' => date('Y-m-d H:i:s'), 'is_deleted' => 'N']);
+        $this->db->table('orvexa_product_user')->insert(['r_product_id' => $nextExternalId, 'r_user_id' => $userId, 'r_role_id' => 8, 'is_deleted' => 'N']);
+        $this->db->transComplete();
+        return $this->db->transStatus() ? $nextExternalId : 0;
+    }
+
+    public function updateProduct(int $productId, string $productName): bool
+    {
+        return $this->db->table('orvexa_product')
+            ->where('external_project_id', $productId)
+            ->where('is_deleted', 'N')
+            ->update(['product_name' => $productName, 'updated_date' => date('Y-m-d H:i:s')]);
+    }
+
+    public function deleteProduct(int $productId, int $userId): bool
+    {
+        return $this->db->table('orvexa_product')
+            ->where('external_project_id', $productId)
+            ->where('is_deleted', 'N')
+            ->whereIn('external_project_id', function ($builder) use ($userId) {
+                $builder->select('r_product_id')->from('orvexa_product_user')->where('r_user_id', $userId)->where('is_deleted', 'N');
+            })
+            ->update(['is_deleted' => 'Y', 'updated_date' => date('Y-m-d H:i:s')]);
+    }
     /**
      * @author Murugadass
      * @return string
@@ -46,7 +87,7 @@ class BacklogModel extends BaseModel
                 INNER JOIN 
                     orvexa_user u ON u.external_employee_id = pu.r_user_id
                 WHERE 
-                    u.external_employee_id = :u_id:";
+                    u.external_employee_id = :u_id: AND p.is_deleted = 'N'";
         $query = $this->query($sql, [
             'u_id' => $user_id
         ]);
@@ -85,6 +126,7 @@ class BacklogModel extends BaseModel
                     orvexa_module_status ms ON ms.module_status_id = bi.r_module_status_id AND ms.is_deleted = 'N'
                 WHERE 
                     pu.r_user_id = :u_id:
+                    AND p.is_deleted = 'N'
                 GROUP BY 
                     pu.r_product_id
                 ORDER BY

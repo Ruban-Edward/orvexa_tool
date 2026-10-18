@@ -64,9 +64,6 @@ class BacklogController extends BaseController
         ];
 
         $productDetails = $this->backlogModel->getUserProductDetails(session('employee_id'));
-        if (count($productDetails) == 0) {
-            return $this->template_view('dashboard/NodataView', 'Product', 'No Products');
-        }
         $data['product_details'] = $productDetails;
 
         foreach ($data['product_details'] as $key => $value) {
@@ -74,6 +71,36 @@ class BacklogController extends BaseController
         }
 
         return $this->template_view('backlog/products', $data, 'Products', $breadcrumbs);
+    }
+
+    public function addProduct(): Response
+    {
+        $productName = trim((string) $this->request->getPost('product_name'));
+        if ($productName === '' || mb_strlen($productName) > 50) return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'Product name is required and must be 50 characters or fewer.');
+        if ($this->backlogModel->productNameExists($productName)) return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'A product with this name already exists.');
+        $productId = $this->backlogModel->createProduct($productName, (int) session('employee_id'));
+        return redirect()->to(base_url('backlog/productbacklogs'))->with($productId ? 'success' : 'error', $productId ? 'Product created successfully.' : 'The product could not be created. Please try again.');
+    }
+
+    public function editProduct(): Response
+    {
+        $productId = (int) $this->request->getPost('product_id');
+        $productName = trim((string) $this->request->getPost('product_name'));
+        if ($productId < 1 || $productName === '' || mb_strlen($productName) > 50) {
+            return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'Product name is required and must be 50 characters or fewer.');
+        }
+        if ($this->backlogModel->productNameExists($productName, $productId)) {
+            return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'A product with this name already exists.');
+        }
+        $updated = $this->backlogModel->updateProduct($productId, $productName);
+        return redirect()->to(base_url('backlog/productbacklogs'))->with($updated ? 'success' : 'error', $updated ? 'Product updated successfully.' : 'Product could not be updated.');
+    }
+
+    public function deleteProduct(): Response
+    {
+        $productId = (int) $this->request->getPost('product_id');
+        $deleted = $productId > 0 && $this->backlogModel->deleteProduct($productId, (int) session('employee_id'));
+        return redirect()->to(base_url('backlog/productbacklogs'))->with($deleted ? 'success' : 'error', $deleted ? 'Product deleted successfully.' : 'Product could not be deleted.');
     }
 
     /**

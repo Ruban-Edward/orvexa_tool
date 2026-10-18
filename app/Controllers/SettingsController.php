@@ -43,10 +43,31 @@ class SettingsController extends BaseController
         $productData = [
             'products' => $this->settingsModelObj->getAllProduct(),
             'parentProduct' => $this->settingsModelObj->getAllParentProduct(),
+            'customers' => $this->settingsModelObj->getAllCustomer(),
         ];
 
         // Return the view for managing users with the users data
         return $this->template_view("admin/adminSettings", $productData, "Admin Settings", $breadcrumbs);
+    }
+
+    public function addCustomer()
+    {
+        $customerName = trim((string) $this->request->getPost('customer_name'));
+        if ($customerName === '' || mb_strlen($customerName) > 50) {
+            return redirect()->to(base_url('admin/adminSettings'))->with('error', 'Customer name is required and must be 50 characters or fewer.');
+        }
+        if ($this->settingsModelObj->customerExists($customerName)) {
+            return redirect()->to(base_url('admin/adminSettings'))->with('error', 'This customer already exists.');
+        }
+        $saved = $this->settingsModelObj->addCustomer($customerName);
+        return redirect()->to(base_url('admin/adminSettings'))->with($saved ? 'success' : 'error', $saved ? 'Customer added successfully.' : 'Customer could not be added.');
+    }
+
+    public function toggleCustomer()
+    {
+        $customerId = (int) $this->request->getPost('customer_id');
+        $updated = $customerId > 0 && $this->settingsModelObj->toggleCustomer($customerId);
+        return redirect()->to(base_url('admin/adminSettings'))->with($updated ? 'success' : 'error', $updated ? 'Customer status updated.' : 'Customer status could not be updated.');
     }
 
     /**

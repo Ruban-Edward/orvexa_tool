@@ -55,6 +55,9 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('documents/view/(:any)', 'BacklogController::view/$1');
 
     $routes->get('productbacklogs', 'BacklogController::products');
+    $routes->post('addproduct', 'BacklogController::addProduct');
+    $routes->post('editproduct', 'BacklogController::editProduct');
+    $routes->post('deleteproduct', 'BacklogController::deleteProduct');
 
     $routes->get('refinement', 'RefinementController::refinement');
     $routes->post('backlogGrooming/(:num)', 'RefinementController::backlogGrooming/$1');
@@ -195,6 +198,8 @@ $routes->group('admin', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('getPermissionDetails/(:num)', 'AdminController::getPermissionDetails/$1');
     $routes->post('updatePermission', 'AdminController::updatePermission');
     $routes->get('adminSettings', 'SettingsController::adminSettingsPage');
+    $routes->post('addCustomer', 'SettingsController::addCustomer');
+    $routes->post('toggleCustomer', 'SettingsController::toggleCustomer');
     $routes->post('getRoles', 'SettingsController::getRoles');
     $routes->post('addRole', 'SettingsController::addRole');
     $routes->post('deleteRole', 'SettingsController::deleteRole');

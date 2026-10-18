@@ -244,7 +244,11 @@ class BacklogItemModel extends BaseModel
                     customer_id,
                     customer_name
                 FROM 
-                    orvexa_customer";
+                    orvexa_customer
+                WHERE
+                    is_deleted = 'N'
+                ORDER BY
+                    customer_name ASC";
         $query = $this->query($sql);
         if ($query->getNumRows() > 0) {
             return $query->getResultArray();

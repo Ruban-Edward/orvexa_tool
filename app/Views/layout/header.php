@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">     
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <?= $this->include('layout/headerLinks') ?>
 </head>
-     
+
 <body>
     <div id="loader">
-        <div class="spinner-border text-info" role="status">
-            <span class="sr-only">Loading...</span>
+        <div class="app-loader-mark">
+            <span class="app-loader-ring"></span>
+            <img src="<?= ASSERT_PATH ?>support/compiled/svg/favicon.svg" alt="Orvexa">
         </div>
-        <h4 class="text-info mb-0">
-            Loading...
-        </h4>
+        <span class="app-loader-label">Loading</span>
     </div>
         <!-- Header -->
         <header>
@@ -23,17 +22,17 @@
 
                 <div class="container-fluid cls-navbar-links">
                     <a class="navbar-brand" href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_08_monochrome_light.png" alt="Orvexa" style="height: 48px;"></a>
-                    
+
                     <div id="home-icon" style="height: 25px; width: 25px;">
                         <a href="#"><img src="<?= ASSERT_PATH ?>support/compiled/svg/home.svg" alt="home" height="100%" width="100%"></a>
-                    </div> 
+                    </div>
 
                     <div class="cls-hamburger" id="hamburger-icon" role="button" tabindex="0" aria-label="Open navigation" aria-expanded="false">
                         <span></span>
                         <span></span>
                         <span></span>
-                    </div>  
-                                 
+                    </div>
+
                     <div id="menu-items" class="cls-menu-items">
                         <div class="menu-item-list">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -74,4 +73,4 @@
 
             </nav>
 
-        </header>    
+        </header>

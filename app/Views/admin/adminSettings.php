@@ -43,8 +43,47 @@
                 <h6>T-shirt size</h6>
             </div>
         </button>
+        <button class="cls-btn" data-div="customerDiv">
+            <div class="cls-settings">
+                <div class="tick-icon"><i class="fas fa-check"></i></div>
+                <h2><i class="bi bi-building"></i></h2>
+                <h6>Customers</h6>
+            </div>
+        </button>
     </div>
     <div class="cls-sidebarContent">
+        <div id="customerDiv">
+            <h4>Customer Management</h4><br>
+            <form class="row g-3" method="post" action="<?= base_url('admin/addCustomer') ?>">
+                <?= csrf_field() ?>
+                <div class="col-md-8">
+                    <label for="customer_name" class="form-label">Customer name</label>
+                    <input type="text" id="customer_name" name="customer_name" class="form-control" maxlength="50" required>
+                </div>
+                <div class="col-md-4 d-flex align-items-end"><button type="submit" class="btn primary_button"><i class="bi bi-plus-circle"></i> Add customer</button></div>
+            </form>
+            <hr>
+            <h5>Customers</h5>
+            <div class="list-group">
+                <?php foreach ($data['customers'] as $customer): ?>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><?= esc($customer['customer_name']) ?></span>
+                        <form method="post" action="<?= base_url('admin/toggleCustomer') ?>" class="m-0">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="customer_id" value="<?= (int) $customer['customer_id'] ?>">
+                            <?php if ($customer['is_deleted'] === 'N'): ?>
+                                <span class="badge bg-success me-2">Active</span>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Set inactive</button>
+                            <?php else: ?>
+                                <span class="badge bg-secondary me-2">Inactive</span>
+                                <button type="submit" class="btn btn-sm btn-outline-success">Set active</button>
+                            <?php endif; ?>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (empty($data['customers'])): ?><p class="text-muted">No active customers found.</p><?php endif; ?>
+            </div>
+        </div>
         <!-- Manage product owner -->
         <div id="productUserDiv">
             <h4>Manage Product Owner</h4><br>
