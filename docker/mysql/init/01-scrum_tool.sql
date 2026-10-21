@@ -22,7 +22,7 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`, `batch`) VALUES
-(1,	'2021-07-04-041948',	'CodeIgniter\\Settings\\Database\\Migrations\\CreateSettingsTable',	'default',	'CodeIgniter\\Settings',	1724662092,	1),
+(1,	'2021-07-04-041948',	'CodeIgniter\\Settings\\Database\\Migrations\\CreateSettingsTable',	'default',	'CodeIgniter\\Settings',	1),
 (2,	'2021-11-14-143905',	'CodeIgniter\\Settings\\Database\\Migrations\\AddContextColumn',	'default',	'CodeIgniter\\Settings',	1724662092,	1),
 (3,	'2023-10-12-112040',	'CodeIgniter\\Queue\\Database\\Migrations\\AddQueueTables',	'default',	'CodeIgniter\\Queue',	1724937243,	2),
 (4,	'2023-11-05-064053',	'CodeIgniter\\Queue\\Database\\Migrations\\AddPriorityField',	'default',	'CodeIgniter\\Queue',	1724937243,	2);
@@ -223,7 +223,7 @@ CREATE TABLE `orvexa_epic` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 INSERT INTO `orvexa_epic` (`epic_id`, `r_backlog_item_id`, `epic_name`, `epic_description`, `r_user_id_created`, `r_user_id_updated`, `created_date`, `updated_date`, `is_deleted`) VALUES
-(1,	1,	'epicname',	'epic 1\r\n',	36,	36,	'2024-08-24 15:44:19',	'2024-08-24 15:44:19',	'N');
+(1,	1,	'epicname',	'epic 1\r\n',	36,	'2024-08-24 15:44:19',	'2024-08-24 15:44:19',	'N');
 
 DROP TABLE IF EXISTS `orvexa_fibonacci_settings`;
 CREATE TABLE `orvexa_fibonacci_settings` (
@@ -6461,7 +6461,6 @@ CREATE TABLE `orvexa_task` (
   `r_user_story_id` int DEFAULT NULL,
   `task_title` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `task_description` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `external_reference_task_id` int NOT NULL,
   `assignee_id` int DEFAULT NULL,
   `priority` enum('L','M','H') CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'L',
   `task_status` int DEFAULT NULL,
@@ -6475,20 +6474,19 @@ CREATE TABLE `orvexa_task` (
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
   `is_deleted` enum('N','Y') CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'N',
-  PRIMARY KEY (`task_id`),
-  UNIQUE KEY `external_reference_task_id` (`external_reference_task_id`)
+  PRIMARY KEY (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
-INSERT INTO `orvexa_task` (`task_id`, `r_user_story_id`, `task_title`, `task_description`, `external_reference_task_id`, `assignee_id`, `priority`, `task_status`, `completed_percentage`, `tracker_id`, `start_date`, `end_date`, `estimated_hours`, `r_user_id_created`, `r_user_id_updated`, `created_date`, `updated_date`, `is_deleted`) VALUES
-(1,	2,	'bh,jh ',	'bkj.b.k',	21317,	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-12 19:14:57',	'2024-08-12 19:14:57',	'N'),
-(2,	2,	'bh,jh ',	'bkj.b.k',	21316,	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-12 19:14:40',	'2024-08-12 19:14:40',	'N'),
-(3,	2,	'bh,jh ',	'bkj.b.k',	21315,	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-12 19:14:36',	'2024-08-12 19:14:36',	'N'),
-(4,	6,	'scrum sample_sam',	'hello siva',	21310,	NULL,	'L',	1,	100,	4,	'2024-07-09 00:00:00',	NULL,	NULL,	36,	NULL,	'2024-07-09 18:17:43',	'2024-07-09 18:17:43',	'N'),
-(5,	16,	'title',	'ruban ',	21312,	42,	'M',	2,	90,	4,	NULL,	NULL,	0,	1,	42,	'2024-07-26 15:10:08',	'2024-07-26 15:10:08',	'N'),
-(12,	1,	'abcd',	'abcd',	21325,	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:49:49',	'2024-08-28 19:49:49',	'N'),
-(13,	1,	'efgh',	'efgh',	21326,	36,	'L',	1,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:50:17',	'2024-08-28 19:50:17',	'N'),
-(14,	1,	'ijkl',	'ijkl',	21327,	36,	'L',	1,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:50:37',	'2024-08-28 19:50:37',	'N'),
-(18,	1,	'mnop',	'mnop',	21328,	36,	'L',	1,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:52:07',	'2024-08-28 19:52:07',	'N');
+INSERT INTO `orvexa_task` (`task_id`, `r_user_story_id`, `task_title`, `task_description`, `assignee_id`, `priority`, `task_status`, `completed_percentage`, `tracker_id`, `start_date`, `end_date`, `estimated_hours`, `r_user_id_created`, `r_user_id_updated`, `created_date`, `updated_date`, `is_deleted`) VALUES
+(1,	2,	'bh,jh ',	'bkj.b.k',	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-12 19:14:57',	'2024-08-12 19:14:57',	'N'),
+(2,	2,	'bh,jh ',	'bkj.b.k',	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-12 19:14:40',	'2024-08-12 19:14:40',	'N'),
+(3,	2,	'bh,jh ',	'bkj.b.k',	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-12 19:14:36',	'2024-08-12 19:14:36',	'N'),
+(4,	6,	'scrum sample_sam',	'hello siva',	NULL,	'L',	1,	100,	4,	'2024-07-09 00:00:00',	NULL,	NULL,	36,	NULL,	'2024-07-09 18:17:43',	'2024-07-09 18:17:43',	'N'),
+(5,	16,	'title',	'ruban ',	42,	'M',	2,	90,	4,	NULL,	NULL,	0,	1,	42,	'2024-07-26 15:10:08',	'2024-07-26 15:10:08',	'N'),
+(12,	1,	'abcd',	'abcd',	36,	'L',	2,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:49:49',	'2024-08-28 19:49:49',	'N'),
+(13,	1,	'efgh',	'efgh',	36,	'L',	1,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:50:17',	'2024-08-28 19:50:17',	'N'),
+(14,	1,	'ijkl',	'ijkl',	36,	'L',	1,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:50:37',	'2024-08-28 19:50:37',	'N'),
+(18,	1,	'mnop',	'mnop',	36,	'L',	1,	0,	2,	NULL,	NULL,	NULL,	36,	36,	'2024-08-28 19:52:07',	'2024-08-28 19:52:07',	'N');
 
 DROP TABLE IF EXISTS `orvexa_task_status`;
 CREATE TABLE `orvexa_task_status` (

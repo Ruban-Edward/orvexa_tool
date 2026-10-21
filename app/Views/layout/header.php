@@ -22,8 +22,8 @@
                 <div class="container-fluid cls-navbar-links">
                     <a class="navbar-brand" href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_08_monochrome_light.png" alt="Orvexa" style="height: 48px;"></a>
 
-                    <div id="home-icon" style="height: 25px; width: 25px;">
-                        <a href="#"><img src="<?= ASSERT_PATH ?>support/compiled/svg/home.svg" alt="home" height="100%" width="100%"></a>
+                    <div id="home-icon" aria-label="Home">
+                        <a href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>support/compiled/svg/home.svg" alt="home" height="100%" width="100%"></a>
                     </div>
 
                     <div class="cls-hamburger" id="hamburger-icon" role="button" tabindex="0" aria-label="Open navigation" aria-expanded="false">

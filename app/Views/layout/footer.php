@@ -106,10 +106,17 @@
             
             if (isSubMenu) {
                 e.preventDefault();
-                this.parentElement.classList.toggle('open');
+                const item = this.parentElement;
+                item.classList.toggle('open');
+                // A menu group is a container, not a destination page.
+                this.classList.remove('active');
+                this.removeAttribute('aria-current');
+                this.parentElement.classList.remove('active');
             } else {
                 sidebarLinks.forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('#sidebar .sidebar-item').forEach(item => item.classList.remove('active'));
                 this.classList.add('active');
+                this.closest('.sidebar-item')?.classList.add('active');
             }
         });
 
@@ -159,9 +166,17 @@
             }
         }
 
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function(event) {
+            const isSubMenu = this.nextElementSibling?.classList.contains('submenu');
+            if (isSubMenu) {
+                event.preventDefault();
+                this.classList.remove('active');
+                return;
+            }
             sidebarLinks.forEach(sidebarLink => sidebarLink.classList.remove('active'));
+            document.querySelectorAll('#sidebar .sidebar-item').forEach(item => item.classList.remove('active'));
             this.classList.add('active');
+            this.closest('.sidebar-item')?.classList.add('active');
         });
     });
 });

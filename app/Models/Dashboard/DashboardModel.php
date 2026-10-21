@@ -191,7 +191,7 @@ class DashboardModel extends BaseModel
      */
     public function getSprintTasksId(array $params): array
     {
-        $query = "SELECT st.external_reference_task_id
+        $query = "SELECT st.task_id
               FROM
                  orvexa_task st
               JOIN 
@@ -201,8 +201,7 @@ class DashboardModel extends BaseModel
               WHERE 
                 ss.sprint_id = ?
                 AND ss.r_product_id = ?
-                AND st.is_deleted = 'N'
-                AND st.external_reference_task_id IS NOT NULL";
+                AND st.is_deleted = 'N'";
 
         $result = $this->query($query, [
             $params['sprintId'],

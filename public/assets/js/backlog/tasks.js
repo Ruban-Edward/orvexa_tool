@@ -335,6 +335,7 @@ if (typeof m_tasks !== 'undefined') {
             $.ajax({
                 url: assertPath + "backlog/filterTasks",
                 type: "POST",
+                headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
                 data: JSON.stringify({ filter: filter }),
                 contentType: "application/json",
                 dataType: "json",

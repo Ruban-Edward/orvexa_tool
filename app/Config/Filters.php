@@ -76,7 +76,7 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf',
+            'csrf' => ['except' => ['backlog/updatebacklog', 'backlog/filterUserStories', 'backlog/getpoker', 'backlog/filterTasks']],
             // 'invalidchars',
         ],
         'after' => [

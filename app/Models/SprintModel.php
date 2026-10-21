@@ -989,7 +989,7 @@ class SprintModel extends BaseModel
      public function getSprintId($taskId)
      {
           $query = "select orvexa_sprint_task.r_sprint_id from orvexa_sprint_task inner join orvexa_task on orvexa_sprint_task.r_task_id=orvexa_task.task_id where 
-           external_reference_task_id=:task_id:";
+           task_id=:task_id:";
           $result = $this->query($query, ["task_id" => $taskId]);
           if ($result->getNumRows() > 0) {
                $sprintId = $result->getResultArray();

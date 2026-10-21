@@ -83,6 +83,7 @@
       </div>
       <div class="modal-body form-container">
         <form class="row g-3 needs-validation" id="addbacklogform" method="POST" enctype="multipart/form-data" novalidate>
+          <?= csrf_field() ?>
           <input type="hidden" id="addBackLog" name="addBackLog" value="insert">
           <input type="hidden" id="pId" name="pId" value="<?=$data['p_id']?>">
           <div class="col-md-6">

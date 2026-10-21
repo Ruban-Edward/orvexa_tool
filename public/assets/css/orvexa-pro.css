@@ -20,6 +20,9 @@
     --pro-shadow-lg: 0 18px 40px rgba(18, 63, 44, .16), 0 4px 10px rgba(18, 63, 44, .06);
     --pro-ring: 0 0 0 3px rgba(47, 143, 88, .22);
     --pro-ease: cubic-bezier(.2, .7, .2, 1);
+    --pro-accent: #7c5cff;
+    --pro-accent-soft: #f0edff;
+    --pro-header-height: 72px;
 }
 
 html { scroll-behavior: smooth; }
@@ -29,6 +32,12 @@ body {
     color: var(--pro-ink);
     font-feature-settings: "cv11", "ss01";
     text-rendering: optimizeLegibility;
+}
+
+/* Shared SaaS visual language for every module and page. */
+body::before {
+    content: ""; position: fixed; inset: 0 0 auto; height: 3px; z-index: 1100;
+    background: linear-gradient(90deg, #b8f36b, var(--secondary-color));
 }
 
 ::selection { background: rgba(168, 231, 120, .55); color: var(--app-green-deep, #0d3424); }
@@ -41,8 +50,24 @@ body {
 
 /* ---------- Header & sidebar --------------------------------------------- */
 .navbar {
-    box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 4px 14px rgba(13, 52, 36, .22);
+    min-height: var(--pro-header-height);
+    border-bottom: 1px solid rgba(196, 239, 205, .18);
+    box-shadow: 0 4px 20px rgba(13, 52, 36, .18);
+    background: var(--app-green-dark, #123f2c) !important;
+    backdrop-filter: blur(12px);
 }
+.navbar .notification-icon, .navbar .notification-icon i { color: #f2fff5 !important; }
+.navbar #home-icon img { filter: brightness(0) invert(1) !important; opacity: .86; }
+.navbar .dropdown-toggle { color: #f2fff5 !important; }
+.navbar .cls-hamburger span { background-color: #f2fff5 !important; }
+.navbar .navbar-brand img { filter: none; }
+.navbar-brand img { height: 38px !important; width: auto; }
+.cls-navbar-links { gap: 1rem; }
+#home-icon { opacity: .65; transition: opacity .18s ease, transform .18s ease; }
+#home-icon:hover { opacity: 1; transform: translateY(-1px); }
+.notification-icon { color: var(--primary-color); cursor: pointer; }
+.notification-icon:hover { color: var(--pro-accent); }
+.avatar { box-shadow: 0 0 0 4px var(--pro-accent-soft); }
 
 #sidebar .sidebar-wrapper { box-shadow: 1px 0 0 rgba(255, 255, 255, .05) inset, 6px 0 18px rgba(13, 52, 36, .10); }
 
@@ -54,7 +79,7 @@ body {
 #sidebar .sidebar-link:hover { transform: translateX(2px); }
 
 /* ---------- Page chrome --------------------------------------------------- */
-.main-content { background: var(--pro-canvas); }
+.main-content { background: var(--pro-canvas); min-height: calc(100vh - var(--pro-header-height)); padding-top: 1.5rem; }
 
 .bread, .bread a {
     font-size: .78rem;
@@ -85,6 +110,8 @@ body {
     transition: box-shadow .2s var(--pro-ease), transform .2s var(--pro-ease), border-color .2s var(--pro-ease);
 }
 .card:hover { box-shadow: var(--pro-shadow-md); border-color: #d3e0d7; }
+.card-header { background: rgba(248, 251, 249, .8); border-bottom: 1px solid var(--pro-border); padding: .9rem 1.1rem; font-weight: 700; color: var(--primary-color); }
+.card-body { padding: 1.15rem; }
 
 /* Dashboard KPI cards: remove the empty icon column and align label/value rows */
 #card-row .card { height: 100%; overflow: hidden; }
@@ -177,6 +204,17 @@ body {
 }
 .form-check-input:checked { background-color: var(--secondary-color); border-color: var(--secondary-color); }
 .form-check-input:focus { box-shadow: var(--pro-ring); border-color: var(--secondary-color); }
+
+/* Data-heavy modules scan like a modern workbench. */
+.table-responsive { background: var(--pro-surface); border: 1px solid var(--pro-border); box-shadow: var(--pro-shadow-xs); }
+.table td a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+.table td a:hover { color: var(--pro-accent); }
+.input-group-text { border-color: #d5e0d9; background: #f8fbf9; color: var(--pro-muted); }
+.alert { border: 0; border-radius: var(--pro-radius); box-shadow: var(--pro-shadow-sm); }
+.global-flash-message { position: fixed; top: 86px; right: 1.25rem; z-index: 1050; min-width: 280px; }
+.no-data, .nodata, .empty-state { border: 1px dashed #cbdacf; border-radius: var(--pro-radius); background: rgba(255,255,255,.62); color: var(--pro-muted); padding: 2.5rem 1.5rem; text-align: center; }
+
+@media (max-width: 767.98px) { .main-content { padding: 1rem .75rem; } .cls-h2 { font-size: 1.35rem; } .navbar-brand img { height: 32px !important; } .card-body { padding: .95rem; } .global-flash-message { left: .75rem; right: .75rem; min-width: 0; } }
 
 /* ---------- Modals / dropdowns / toasts ----------------------------------- */
 .modal-content {

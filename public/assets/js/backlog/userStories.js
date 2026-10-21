@@ -918,6 +918,7 @@ if (typeof m_userStories !== "undefined") {
       $.ajax({
         url: assert_path + "backlog/getpoker",
         type: "POST",
+        headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
         data: {
           product_id: pId,
           userStory: filteredStories.map((item) => item.user_story_id),
@@ -1021,6 +1022,7 @@ if (typeof m_userStories !== "undefined") {
       $.ajax({
         url: assert_path + "backlog/filterUserStories",
         type: "POST",
+        headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
         data: JSON.stringify({
           filter: filter,
         }),

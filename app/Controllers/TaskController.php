@@ -154,7 +154,6 @@ class TaskController extends BaseController
          $task_data['updated_date'] = date("Y-m-d H:i:s");
          $task_data['start_date'] = $startDate;
          $task_data['end_date'] = $endDate;
-         $task_data['external_reference_task_id'] = null;
          $task_data['r_user_story_id'] = $userStoryId;
          $task_data['completed_percentage'] = $completedPercentage;
          $task_data['assignee_id'] = $assigneeId;
@@ -349,7 +348,7 @@ class TaskController extends BaseController
      public function deleteTasks($pid, $pblid, $tId): Response
      {
          // Delete the task from the local orvexa_task table.
-         $res = $this->backlogItemModel->deleteItem($tId, ['orvexa_task', 'external_reference_task_id']);
+         $res = $this->backlogItemModel->deleteItem($tId, ['orvexa_task']);
      
          // Check if the deletion was successful
          if ($res) {

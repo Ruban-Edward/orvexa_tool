@@ -16,7 +16,6 @@ class TaskModel extends BaseModel
         "r_user_story_id",
         "task_title",
         "task_description",
-        "external_reference_task_id",
         "assignee_id",
         "priority",
         "task_status",
@@ -36,7 +35,6 @@ class TaskModel extends BaseModel
         'r_user_story_id' => 'permit_empty|integer',
         'task_title' => 'required|min_length[3]|max_length[1000]',
         'task_description' => 'required|min_length[3]|max_length[1000]',
-        'external_reference_task_id' => 'permit_empty|integer',
         'assignee_id' => 'permit_empty|integer',
         'priority' => 'required|in_list[L,M,H]',
         'task_status' => 'required|integer',
@@ -136,14 +134,13 @@ class TaskModel extends BaseModel
 
     public function insertTasks($args)
     {
-        $sql = "INSERT INTO orvexa_task (r_user_story_id,task_title,task_description,external_reference_task_id,assignee_id,priority,tracker_id,start_date,end_date,estimated_hours,completed_percentage,task_status,r_user_id_created,r_user_id_updated,created_date,updated_date)
-                VALUES (:user_story_id:,:title:,:description:,:reference_task_id:,:assignee:,:priority:,:tracker_id:,:start_date:,:end_date:,:estimated_hours:,:completed_percentage:,:status:,:author_id:,:author_id:,:created_on:,:updated_on:)  
+        $sql = "INSERT INTO orvexa_task (r_user_story_id,task_title,task_description,assignee_id,priority,tracker_id,start_date,end_date,estimated_hours,completed_percentage,task_status,r_user_id_created,r_user_id_updated,created_date,updated_date)
+                VALUES (:user_story_id:,:title:,:description:,:assignee:,:priority:,:tracker_id:,:start_date:,:end_date:,:estimated_hours:,:completed_percentage:,:status:,:author_id:,:author_id:,:created_on:,:updated_on:)  
                 ";
         $this->db->query($sql, [
             'user_story_id' => $args['r_user_story_id'],
             'title' => $args['task_title'],
             'description' => $args['task_description'],
-            'reference_task_id' => $args['external_reference_task_id'] ?? null,
             'assignee' => $args['assignee_id'],
             'priority' => $args['priority'],
             'status' => $args['task_status'],
@@ -169,7 +166,7 @@ class TaskModel extends BaseModel
         public function updateTaskById($args)
         {
             $sql = "UPDATE orvexa_task SET task_title=:task_title:,task_description=:description:,assignee_id=:assignee:,priority=:priority:,task_status=:status:,tracker_id=:tracker_id:,completed_percentage=:completed_percentage:,estimated_hours=:estimated_time:,start_date=:start_date:,end_date=:end_date: 
-                    WHERE task_id=:task_id: OR external_reference_task_id=:task_id:";
+                    WHERE task_id=:task_id:";
             $this->query($sql, [
                 'task_id' => $args['task_id'],
                 'task_title' => $args['task_title'],
@@ -265,8 +262,7 @@ class TaskModel extends BaseModel
                      * 
                  From 
                      orvexa_task 
-                 Where 
-                     external_reference_task_id = :id:";
+                 Where ";
  
          $query = $this->query($sql, ['id' => $id]);
          if ($query) {
@@ -285,7 +281,6 @@ class TaskModel extends BaseModel
         $sql = "SELECT 
                     i.task_id,
                     i.task_title,
-                    i.external_reference_task_id as external_id,
                     i.task_description,
                     i.start_date,
                     i.end_date,
@@ -377,7 +372,7 @@ class TaskModel extends BaseModel
                 JOIN orvexa_trackers b on a.tracker_id= b.tracker_id 
                 JOIN orvexa_task_status c on c.id= a.task_status 
                 JOIN orvexa_user d on d.external_employee_id =a.assignee_id 
-                WHERE (a.task_id=:id: OR a.external_reference_task_id=:id:) AND a.is_deleted='N'";
+                WHERE (a.task_id=:id:) AND a.is_deleted='N'";
 
         $query = $this->query($sql, [
             'id' => $id

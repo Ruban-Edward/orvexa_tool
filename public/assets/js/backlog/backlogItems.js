@@ -267,6 +267,7 @@ if (typeof m_backlogItems !== 'undefined') {
         $.ajax({
             url: assert_path + "backlog/filterBacklogItem",
             type: "POST",
+            headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
             data: JSON.stringify({
                 filter: filter
             }),
@@ -275,9 +276,8 @@ if (typeof m_backlogItems !== 'undefined') {
             success: function (response) {
                 console.log("Server Response:", response);
                 if (response && response.data) {
-                    if (response.data.length === 0) {
-                        $("#tableBody").html("<tr><td colspan='100%' class='text-center'>No Data Found</td></tr>");
-                    } else {
+                    if (response.data.length === 0) {                        $("#tableBody").html("<tr><td colspan='100%' class='text-center'>No Data Found</td></tr>");                        $("#mainPage").hide();                        $("#empty").show();
+                    } else {                        $("#mainPage").show();                        $("#empty").hide();
                         // To call generatetable to display the array
                         generateTableBody(response.data);
                         // To Update the pagination 
@@ -649,6 +649,7 @@ if (typeof m_backlogItems !== 'undefined') {
 
                         fetch(form.action, {
                             method: form.method,
+                            headers: { "X-CSRF-TOKEN": form.querySelector("input[name=csrf_test_name]")?.value || "" },
                             body: formData
                         })
                             .then(response => response.json())
