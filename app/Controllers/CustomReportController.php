@@ -23,8 +23,26 @@ class CustomReportController extends BaseController
      * @param string $reportType Type of the report to download
      * @return mixed
      */
+    /** Report types that may be requested from the URL */
+    private const REPORT_TYPES = ['Meet', 'Sprint', 'Backlog'];
+
+    /**
+     * Normalises "meet", "MeetReport", "Meetreport" … to a whitelisted type
+     * ("Meet", "Sprint", "Backlog") or throws a 404. The value from the URL
+     * is used to build model method names, so it must never be trusted as-is.
+     */
+    private function resolveReportType($raw): string
+    {
+        $type = ucfirst(strtolower(preg_replace('/report$/i', '', (string) $raw)));
+        if (! in_array($type, self::REPORT_TYPES, true)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        return $type;
+    }
+
     public function downloadFilterAllData($reportType)
     {
+        $reportType = $this->resolveReportType($reportType) . 'Report';
         // Get POST data
         $params = $this->request->getPost();
         $method = "getFilter{$reportType}View";
@@ -54,7 +72,7 @@ class CustomReportController extends BaseController
     {
 
 
-        $reportType = ucfirst($reportType);
+        $reportType = $this->resolveReportType($reportType);
         $method = "get{$reportType}ReportView";
         $dropdowns = $this->model->reportDropDowns($reportType);
         $details = call_user_func_array([$this->model, $method], []);
@@ -97,7 +115,7 @@ class CustomReportController extends BaseController
      */
     public function getFilterReport($filterType)
     {
-        $filterType = ucfirst($filterType);
+        $filterType = $this->resolveReportType($filterType) . 'Report';
         $method = "getFilter{$filterType}View";
         $params = $this->request->getPost();
         $result = call_user_func_array([$this->model, $method], [$params]);
@@ -116,7 +134,7 @@ class CustomReportController extends BaseController
             'message' => $message
         ];
 
-        return json_encode($data);
+        return $this->response->setJSON($data);
     }
 
 

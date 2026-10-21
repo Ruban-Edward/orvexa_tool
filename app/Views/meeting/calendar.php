@@ -1,15 +1,95 @@
 <?php
+// Sprint ids (kept for the included modals) – previously overwritten on every iteration
 $sprintId = $data['sprintDetails'];
-$id = [];
+$id = ['sprint_id' => []];
 if (!empty($sprintId)) {
     foreach ($sprintId as $value) {
-        $id['sprint_id'] = $value['sprint_id'];
+        $id['sprint_id'][] = $value['sprint_id'];
     }
 }
 ?>
 
-<!-- Calendar Display Section -->
-<div id='calendar' class="calendar"></div>
+<!-- ===================== Calendar workspace ===================== -->
+<div class="ox-cal" id="oxCal">
+
+    <!-- Left rail: quick create, mini calendar, filters -->
+    <aside class="ox-cal-side" aria-label="Calendar filters">
+        <?php if (has_permission('meeting/scheduleMeeting')): ?>
+            <button type="button" class="btn btn-primary ox-new-btn" id="oxNewMeeting">
+                <i class="fas fa-plus"></i> New meeting
+            </button>
+        <?php endif; ?>
+
+        <div class="ox-side-card ox-mini-wrap">
+            <div id="oxMini" aria-label="Jump to date"></div>
+        </div>
+
+        <div class="ox-side-card">
+            <div class="ox-side-title">Show</div>
+            <div class="ox-seg ox-seg-full" role="tablist" aria-label="Event kind">
+                <button type="button" class="ox-seg-btn active" data-kind="Meeting" role="tab" aria-selected="true"><i class="fas fa-users"></i> Meetings</button>
+                <button type="button" class="ox-seg-btn" data-kind="Sprint" role="tab" aria-selected="false"><i class="fas fa-tachometer-alt"></i> Sprints</button>
+            </div>
+        </div>
+
+        <div class="ox-side-card" id="oxTypeFilter">
+            <div class="ox-side-title">Meeting type</div>
+            <div class="ox-chips" id="oxTypeChips"></div>
+        </div>
+
+        <div class="ox-side-card" id="oxProductFilter" hidden>
+            <div class="ox-side-title">Product</div>
+            <select class="form-select form-select-sm" id="oxProductSelect" aria-label="Filter sprints by product"></select>
+        </div>
+
+        <div class="ox-side-card">
+            <div class="ox-side-title">Status</div>
+            <div class="ox-chips ox-chips-col" id="oxStatusChips"></div>
+        </div>
+    </aside>
+
+    <!-- Main: toolbar + calendar -->
+    <section class="ox-cal-main" aria-label="Calendar">
+        <div class="ox-toolbar">
+            <div class="ox-toolbar-left">
+                <button type="button" class="btn ox-btn-today" id="oxToday">Today</button>
+                <div class="ox-nav">
+                    <button type="button" class="ox-icon-btn" id="oxPrev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+                    <button type="button" class="ox-icon-btn" id="oxNext" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <h2 class="ox-title" id="oxTitle" aria-live="polite"></h2>
+            </div>
+            <div class="ox-toolbar-right">
+                <div class="ox-seg" role="tablist" aria-label="Calendar view">
+                    <button type="button" class="ox-seg-btn" data-view="dayGridMonth" role="tab" title="Month (M)">Month</button>
+                    <button type="button" class="ox-seg-btn" data-view="timeGridWeek" role="tab" title="Week (W)">Week</button>
+                    <button type="button" class="ox-seg-btn" data-view="timeGridDay" role="tab" title="Day (D)">Day</button>
+                    <button type="button" class="ox-seg-btn" data-view="listMonth" role="tab" title="Agenda (A)">Agenda</button>
+                </div>
+                <?php if (has_permission('meeting/createGroupDetails')): ?>
+                    <div class="dropdown">
+                        <button class="ox-icon-btn ox-icon-btn-lg" type="button" id="oxGroupMenu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Meeting groups" title="Meeting groups">
+                            <i class="fas fa-user-friends"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="oxGroupMenu">
+                            <button class="dropdown-item" type="button" id="createGroupButton" onclick="createGroup();"><i class="fas fa-plus me-2"></i>Create group</button>
+                            <button class="dropdown-item" type="button" id="GroupEditbutton" onclick="editGroup();"><i class="fas fa-pen me-2"></i>Edit group</button>
+                            <button class="dropdown-item" type="button" id="GroupDeletebutton" onclick="DeleteGroup();"><i class="fas fa-trash me-2"></i>Delete group</button>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <button type="button" class="ox-icon-btn ox-icon-btn-lg" id="helpButton" onclick="showEventDetailsModal();" aria-label="How to use the calendar" title="How to use the calendar (?)">
+                    <i class="fas fa-question"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="ox-legend" id="oxLegend" aria-label="Legend"></div>
+
+        <!-- Calendar Display Section -->
+        <div id="calendar" class="calendar"></div>
+    </section>
+</div>
 
 <!-- Modal for Scheduling Meeting -->
 <div class="modal fade text-left" id="meetingModal" tabindex="-1" role="dialog" aria-labelledby="myMeetingModal"
@@ -98,7 +178,7 @@ if (!empty($sprintId)) {
                             <select class="form-select" id="product_div" name="r_product_id" required>
                                 <option value="" disabled selected>Select the product</option>
                                 <?php foreach ($data['product'] as $value) {
-    echo "<option value='{$value['external_project_id']}'>{$value['product_name']}</option>";
+    echo '<option value="' . esc($value['external_project_id'], 'attr') . '">' . esc($value['product_name']) . '</option>';
 }?>
                             </select>
                             <div class="valid-feedback">Looks good!</div>
@@ -111,7 +191,7 @@ if (!empty($sprintId)) {
                             <select class="form-select" id="meeting_type" name="r_meeting_type_id" required>
                                 <option value="" disabled selected>Select the meeting type</option>
                                 <?php foreach ($data['meetingType'] as $value) {
-    echo "<option value='{$value['meeting_type_id']}'>{$value['meeting_type_name']}</option>";
+    echo '<option value="' . esc($value['meeting_type_id'], 'attr') . '">' . esc($value['meeting_type_name']) . '</option>';
 }?>
                             </select>
                             <div class="valid-feedback">Looks good!</div>
@@ -254,7 +334,7 @@ if (!empty($sprintId)) {
                             <select class="form-select" id="meeting_location" name="r_meeting_location_id" required>
                                 <option value="">Select the meeting location</option>
                                 <?php foreach ($data['meetingLocation'] as $value) {
-    echo "<option value='{$value['meeting_location_id']}'>{$value['meeting_location_name']}</option>";
+    echo '<option value="' . esc($value['meeting_location_id'], 'attr') . '">' . esc($value['meeting_location_name']) . '</option>';
 }?>
                             </select>
                             <div class="valid-feedback">Looks good!</div>
@@ -446,8 +526,8 @@ if (!empty($sprintId)) {
                         <input type="hidden" id="groupProductId" name="r_product_id" value="">
                         <input type="hidden" id="groupIdByName" name="meeting_team_id" value="">
                         <input type="hidden" name="selectedMembers" id="selectedMembers">
-                        <input type="hidden" id="groupData" value='<?=json_encode($data['groupName']);?>'>
-                        <input type="hidden" id="productData" value='<?=json_encode($data['product']);?>'>
+                        <input type="hidden" id="groupData" value="<?= esc(json_encode($data['groupName']), 'attr') ?>">
+                        <input type="hidden" id="productData" value="<?= esc(json_encode($data['product']), 'attr') ?>">
 
                         <div class="modal-footer">
                             <button class="btn btn-primary me-1 mb-2" type="submit" name="groupbutton" id="groupbutton"
@@ -504,15 +584,15 @@ if (!empty($sprintId)) {
 
 <script>
 // JavaScript variables for meeting details and base URL
-var meetingDetails = <?=json_encode($data['showMeeting'])?>;
-var productList = <?=json_encode($data['product'])?>;
-var sprintDetails = <?=json_encode($data['sprintDetails'])?>;
-var meetType = <?=json_encode($data['meetingType'])?>;
-var duration = <?=json_encode($data['sprintDuration'])?>;
-var sprintStatus = <?=json_encode($data['sprintStatus'])?>;
-var holidayDetails = <?=json_encode($data['holidays'])?>;
-var sessionId = <?=session()->get('employee_id')?>;
-var baseUrl = '<?=base_url()?>';
+var meetingDetails = <?=json_encode($data['showMeeting'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var productList = <?=json_encode($data['product'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var sprintDetails = <?=json_encode($data['sprintDetails'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var meetType = <?=json_encode($data['meetingType'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var duration = <?=json_encode($data['sprintDuration'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var sprintStatus = <?=json_encode($data['sprintStatus'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var holidayDetails = <?=json_encode($data['holidays'], JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?>;
+var sessionId = <?= (int) session()->get('employee_id') ?>;
+var baseUrl = <?= json_encode(base_url(), JSON_UNESCAPED_SLASHES) ?>;
 var permissions = {
     'groupButton': <?=json_encode(has_permission('meeting/createGroupDetails'))?>,
     'scheduleMeeting': <?=json_encode(has_permission('meeting/scheduleMeeting'))?>,

@@ -62,7 +62,7 @@ class Security extends BaseConfig
      *
      * Defaults to two hours (in seconds).
      */
-    public int $expires = 7200;
+    public int $expires = 28800; // 8 hours – a working day without a stale token
 
     /**
      * --------------------------------------------------------------------------
@@ -71,7 +71,9 @@ class Security extends BaseConfig
      *
      * Regenerate CSRF Token on every submission.
      */
-    public bool $regenerate = true;
+    // Keep the token stable for its lifetime: the app fires many parallel AJAX calls and a
+    // token that rotates on every request would make all but the first one fail.
+    public bool $regenerate = false;
 
     /**
      * --------------------------------------------------------------------------
@@ -82,7 +84,8 @@ class Security extends BaseConfig
      *
      * @see https://codeigniter4.github.io/userguide/libraries/security.html#redirection-on-failure
      */
-    public bool $redirect = (ENVIRONMENT === 'production');
+    // Never bounce an AJAX call to another page: answer with a plain 403 instead.
+    public bool $redirect = false;
 
     /**
      * --------------------------------------------------------------------------

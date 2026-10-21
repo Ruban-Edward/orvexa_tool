@@ -596,8 +596,8 @@ class BacklogModel extends BaseModel
                 ,bi.backlog_order ASC
         ";
 
-        if (!empty($filter['sort'])) {
-            $sql .= ',' . $filter['sort'];
+        if (!empty($filter['sort']) && ($orderBy = $this->sanitizeOrderBy($filter['sort'])) !== '') {
+            $sql .= ',' . $orderBy;
         }
 
         $sql .= ' LIMIT :limit:';

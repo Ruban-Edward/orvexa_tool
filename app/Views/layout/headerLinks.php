@@ -1,3 +1,4 @@
+<?= view("layout/csrf") ?>
 <link rel="shortcut icon" href="<?= ASSERT_PATH ?>support/compiled/png/fav_icon.png" type="image/x-icon">
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>support/compiled/css/app.css?v=2">
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>support/extensions/@fortawesome/fontawesome-free/css/all.min.css">
@@ -11,6 +12,7 @@
         echo "<link rel='stylesheet' href='"  . CSS_PATH . $view .  ".css'>";
     } ?>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/app-theme.css?v=15">
+    <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-pro.css?v=1">
    
     <script src="<?=ASSERT_PATH?>assets/js/dashboard/exceljs.min.js"> </script>
 

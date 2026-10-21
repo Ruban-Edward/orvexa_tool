@@ -332,17 +332,15 @@ class BacklogItemModel extends BaseModel
                 $sql .= " AND sc.customer_id in($data)";
             }
 
-            $sql .= "GROUP BY bi.backlog_item_id
+            $sql .= " GROUP BY bi.backlog_item_id
                     ORDER BY
                     CASE
                         WHEN bst.status_name = 'in sprint' THEN 0
                     ELSE 1
                     END ASC ,bi.backlog_order asc";
 
-            if (!empty($filter['sort'])) {
-                $sql .= ",";
-                $data = $filter['sort'];
-                $sql .= $data;
+            if (!empty($filter['sort']) && ($orderBy = $this->sanitizeOrderBy($filter['sort'])) !== '') {
+                $sql .= "," . $orderBy;
             }
 
             if (!empty($filter['limit'])) {

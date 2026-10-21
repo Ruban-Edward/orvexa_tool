@@ -142,6 +142,9 @@ class MeetingController extends BaseController
      * @param array $data An array containing meeting details and selected members
      * @return Response
      */
+    /** Roles allowed to manage meetings hosted by someone else (Super Admin, Project/Product Manager, Scrum Master) */
+    private const MANAGER_ROLES = [1, 2, 3, 9];
+
     public function meetingUpdation(): Response
     {
         // Loading the necessary models for meeting details and members.
@@ -149,61 +152,82 @@ class MeetingController extends BaseController
 
         if ($this->request->getPost('Schedulebutton')) {
             $data = $this->request->getPost();
+            $meeting = $this->MeetingDetailModelObj->getMeetingDetails((int) ($data['meeting_id'] ?? 0));
+            if (empty($meeting)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Meeting not found.']);
+            }
+            if ($meeting['is_deleted'] === 'Y') {
+                return $this->response->setJSON(['success' => false, 'message' => 'A cancelled meeting cannot be edited.']);
+            }
+            if (($meeting['is_logged'] ?? 'N') === 'Y') {
+                return $this->response->setJSON(['success' => false, 'message' => 'Time has already been logged for this meeting, so it can no longer be edited.']);
+            }
+            if (! $this->canManageMeeting($meeting)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Only the meeting host or a manager can edit this meeting.']);
+            }
+
             $data['r_meeting_type_id'] = $this->request->getPost('r_meeting_type_id');
             $data['meeting_start_time'] = $this->convertMinutesToDateTime($data['meeting_start_time']);
             $data['meeting_end_time'] = $this->convertMinutesToDateTime($data['meeting_end_time']);
             $data['meeting_duration'] = $this->convertHoursAndMinutesToDuration($data['meeting_duration_hours'], $data['meeting_duration_minutes']);
-            $data['r_user_id'] = $data['r_user_id_updated'] = session()->get('employee_id');
+            // The host never changes just because somebody else edits the meeting
+            $data['r_user_id'] = $meeting['r_user_id'];
+            $data['r_user_id_updated'] = session()->get('employee_id');
             $data['updated_date'] = date("Y-m-d H:i:s");
             $data['r_sprint_id'] = $this->request->getPost('r_sprint_id');
 
             //Recurrance Details
             $updateAsSeries = $this->request->getPost('updateAsSeries');
-            $data['recurrance_meeting_id'] = $this->request->getPost('recurranceId');
+            $data['recurrance_meeting_id'] = $meeting['recurrance_meeting_id'] ?: $this->request->getPost('recurranceId');
             $data['update_as_series'] = ($updateAsSeries == "1" && $data['recurrance_meeting_id']) ? true : false;
             //Checking the Validations for the meeting
             $validationErrors = $this->hasInvalidInput($this->MeetingDetailModelObj, $data);
             if ($validationErrors !== true) {
                 return $this->response->setJSON(['errors' => $validationErrors]);
             }
-            // Handle member selection
-            if (array_key_exists('addgroup', $data)) {
-                $totalMembers = $this->handleMembersSelections($data['selectedEmails'], $data['addgroup']);
-            } else {
-                $data['addgroup'] = [];
-                $totalMembers = $this->handleMembersSelections($data['selectedEmails'], $data['addgroup']);
+            if ($scheduleErrors = $this->validateSchedule($data, false)) {
+                return $this->response->setJSON(['errors' => $scheduleErrors]);
             }
+            // Handle member selection
+            $data['addgroup'] = $data['addgroup'] ?? [];
+            $totalMembers = $this->handleMembersSelections($data['selectedEmails'] ?? '', $data['addgroup']);
 
             if (empty($totalMembers)) {
                 return $this->response->setJSON(['success' => true, 'members' => true]);
             }
-            $existData = ['meet_id' => $data['meeting_id']];
-            $Existing_members = $this->MeetingMemberModelObj->getExistingMeetingMembers($existData);
-            $existing_member_names = [];
-            $existing_member_names = array_column($Existing_members, 'external_employee_id');
-            $UpdateConflict = array_diff($totalMembers, $existing_member_names);
 
-            $conflictMembers = $this->checkConflicts($UpdateConflict, $data);
-            if (!empty($conflictMembers)) {
-                if (!session()->get('toast_shown')) {
-                    session()->set('toast_shown', true);
-                    return $this->response->setJSON(['conflict' => true, 'conflictMembers' => implode(", ", $conflictMembers)]);
+            // Everyone who will attend = selected members + the (unchanged) host
+            $memberIds = array_column($this->meetingModelObj->getUserId($totalMembers), 'external_employee_id');
+            $allIds    = array_values(array_unique(array_merge(array_map('intval', $memberIds), [(int) $meeting['r_user_id']])));
+
+            // Which meetings does this edit touch?
+            $targets = [['meeting_details_id' => (int) $meeting['meeting_details_id'], 'meeting_start_date' => $meeting['meeting_start_date']]];
+            if ($data['update_as_series']) {
+                $series = $this->MeetingDetailModelObj->getUpcomingSeriesMeetings($data['recurrance_meeting_id']);
+                if (! empty($series)) {
+                    $targets = $series;
                 }
             }
+            $targetIds = array_map('intval', array_column($targets, 'meeting_details_id'));
+
+            // Conflict check across every affected date, ignoring the meetings being edited
+            $dayOffset = (new DateTime($data['meeting_start_date']))->diff(new DateTime($data['meeting_end_date']))->days;
+            $dates     = $data['update_as_series'] ? array_column($targets, 'meeting_start_date') : [$data['meeting_start_date']];
+            $warnings  = $this->conflictMessages($allIds, $dates, $data['meeting_start_time'], $data['meeting_end_time'], $data['update_as_series'] ? 0 : $dayOffset, $targetIds);
+            $warnings  = array_merge($warnings, $this->holidayWarnings($dates));
+            if ($ack = $this->requireAcknowledgement($warnings, $data)) {
+                return $ack;
+            }
+
             $result = $this->MeetingDetailModelObj->UpdateMeetingDetails($data);
             if ($result) {
-                $totalMembers = $this->addHostToMembers($UpdateConflict);
-                $meetingMembers = $this->meetingModelObj->getUserId($totalMembers);
-                $membersId = array_column($meetingMembers, 'external_employee_id');
-                // If update was successful, prepare data for updating meeting members
-                $memberData = [
-                    'meeting_id' => $data['meeting_id'],
-                    'selected_members' => $membersId,
-                ];
-                $this->meetingMembersUpdate($memberData);
+                // Keep the attendee list identical on every meeting that was updated
+                foreach ($targetIds as $tid) {
+                    $this->meetingMembersUpdate(['meeting_id' => $tid, 'selected_members' => $allIds]);
+                }
             }
-            session()->remove('toast_shown');
-            return $this->response->setJSON(['success' => true, 'mail' => true]);
+            session()->remove('warning_ack');
+            return $this->response->setJSON(['success' => (bool) $result, 'mail' => true]);
         }
         return $this->response->setJSON(['success' => false]);
 
@@ -244,35 +268,49 @@ class MeetingController extends BaseController
             if ($validationErrors !== true) {
                 return $this->response->setJSON(['errors' => $validationErrors]);
             }
-            // Handle member selection
-            if (array_key_exists('addgroup', $data)) {
-                $totalMembers = $this->handleMembersSelections($data['selectedEmails'], $data['addgroup']);
-            } else {
-                $data['addgroup'] = [];
-                $totalMembers = $this->handleMembersSelections($data['selectedEmails'], $data['addgroup']);
+            if ($scheduleErrors = $this->validateSchedule($data, true)) {
+                return $this->response->setJSON(['errors' => $scheduleErrors]);
             }
+            // A brainstorming meeting is about user stories: refuse it BEFORE anything is saved
+            if (($data['r_meeting_type_id'] ?? null) == 2 && trim((string) ($data['userstoryHidden'] ?? '')) === '') {
+                return $this->response->setJSON(['errors' => ['userstoryHidden' => 'Please select at least one user story for a brainstorming meeting.']]);
+            }
+            // Handle member selection
+            $data['addgroup'] = $data['addgroup'] ?? [];
+            $totalMembers = $this->handleMembersSelections($data['selectedEmails'] ?? '', $data['addgroup']);
 
             if (empty($totalMembers)) {
                 return $this->response->setJSON(['success' => true, 'members' => true]);
             }
-            // Check for conflicts
-            $conflictMembers = $this->checkConflicts($totalMembers, $data);
-            if (!empty($conflictMembers)) {
-                if (!session()->get('toast_shown')) {
-                    session()->set('toast_shown', true);
-                    return $this->response->setJSON(['conflict' => true, 'conflictMembers' => implode(", ", $conflictMembers)]);
-                }
+
+            // Work out every date this meeting will occupy (recurring sprint meetings skip Sundays & holidays)
+            $dates = $this->buildMeetingDates($data);
+            if (empty($dates)) {
+                return $this->response->setJSON(['errors' => ['meeting_start_date' => 'There are no working days left in the selected period.']]);
             }
+
+            // Check conflicts for attendees AND the host, on every occurrence (not just the first one)
+            $memberRows = $this->meetingModelObj->getUserId($totalMembers);
+            $allIds     = array_values(array_unique(array_merge(
+                array_map('intval', array_column($memberRows, 'external_employee_id')),
+                [(int) session()->get('employee_id')]
+            )));
+            $dayOffset = $data['r_meeting_type_id'] == 3 ? 0 : (new DateTime($data['meeting_start_date']))->diff(new DateTime($data['meeting_end_date']))->days;
+            $warnings  = $this->conflictMessages($allIds, $dates, $data['meeting_start_time'], $data['meeting_end_time'], $dayOffset, []);
+            if ($data['r_meeting_type_id'] != 3) {
+                $warnings = array_merge($warnings, $this->holidayWarnings($dates));
+            }
+            if ($ack = $this->requireAcknowledgement($warnings, $data)) {
+                return $ack;
+            }
+
             // Handle recurrence
-            $recurrenceResult = $this->handleRecurrence($data);
+            $recurrenceResult = $this->handleRecurrence($data, $dates);
             if ($recurrenceResult) {
                 if ($data['r_meeting_type_id'] == 2) {
                     $this->brainstormMeetingDetails($recurrenceResult, $data);
                 }
-                $totalMembers = $this->addHostToMembers($totalMembers);
-                $meetingMembers = $this->meetingModelObj->getUserId($totalMembers);
-                $membersId = array_column($meetingMembers, 'external_employee_id');
-                $membersEmail = array_column($meetingMembers, 'email_id');
+                $membersId = $allIds;
 
                 //If meeting is recurrence, meeting members can be inserted for the recurrance dates.
                 if (is_array($recurrenceResult)) {
@@ -282,14 +320,135 @@ class MeetingController extends BaseController
                 } else {
                     $this->meetingMembersInsert($recurrenceResult, $membersId);
                 }
-                //$emailData = $this->prepareEmailData($membersEmail, $data);
-                session()->remove('toast_shown');
-                //$this->emailService->sendMail($emailData);
+                session()->remove('warning_ack');
                 return $this->response->setJSON(['success' => true, 'mail' => true]);
             }
         }
         return $this->response->setJSON(['success' => false]);
     }
+
+    /**
+     * Can the logged-in user change/cancel/log this meeting? (host or a manager role)
+     */
+    private function canManageMeeting(array $meeting): bool
+    {
+        return (int) $meeting['r_user_id'] === (int) session()->get('employee_id')
+            || in_array((int) session()->get('role_id'), self::MANAGER_ROLES, true);
+    }
+
+    private function isRealDate($value, string $format = 'Y-m-d'): bool
+    {
+        $dt = is_string($value) ? DateTime::createFromFormat($format, $value) : false;
+        return $dt && $dt->format($format) === $value;
+    }
+
+    /**
+     * Server-side schedule rules the form validation cannot express.
+     * @return array<string,string> field => message (empty when everything is fine)
+     */
+    private function validateSchedule(array $data, bool $isNew): array
+    {
+        $errors = [];
+        foreach (['meeting_start_date', 'meeting_end_date'] as $field) {
+            if (! $this->isRealDate($data[$field] ?? null)) {
+                $errors[$field] = 'Please enter a valid date.';
+            }
+        }
+        if ($errors) {
+            return $errors;
+        }
+        if ($data['meeting_end_date'] < $data['meeting_start_date']) {
+            $errors['meeting_end_date'] = 'The end date cannot be before the start date.';
+        } elseif ($data['meeting_end_date'] === $data['meeting_start_date'] && $data['meeting_end_time'] <= $data['meeting_start_time']) {
+            $errors['meeting_end_time'] = 'The meeting must end after it starts.';
+        }
+        // Sprint meetings (type 3) legitimately start in the past of a running sprint – past dates are skipped later
+        if ($isNew && ($data['r_meeting_type_id'] ?? null) != 3 && $data['meeting_start_date'] < date('Y-m-d')) {
+            $errors['meeting_start_date'] = 'A meeting cannot be scheduled in the past.';
+        }
+        return $errors;
+    }
+
+    /**
+     * Every date a new meeting will occupy.
+     * Recurring sprint meetings skip Sundays, holidays and days that are already over.
+     */
+    private function buildMeetingDates(array $data): array
+    {
+        if (($data['r_meeting_type_id'] ?? null) != 3) {
+            return [$data['meeting_start_date']];
+        }
+        $dates = $this->calculateRecurrenceDates($data['sprint_start_date'], $data['sprint_end_date'], $this->request->getPost('recurrance_meeting_id'));
+        $holidayModel = model(\App\Models\Meeting\HolidaysModel::class);
+        $today = date('Y-m-d');
+        return array_values(array_filter($dates, function ($date) use ($holidayModel, $today) {
+            return $date >= $today
+                && $this->checkSundays($date) == 1
+                && empty($holidayModel->isHoliday($date));
+        }));
+    }
+
+    /**
+     * Attendee/host clashes for every date, as readable messages.
+     * Back-to-back meetings (one ends exactly when the next starts) are NOT a clash.
+     */
+    private function conflictMessages(array $userIds, array $dates, string $startTime, string $endTime, int $dayOffset, array $excludeIds): array
+    {
+        $messages = [];
+        foreach ($dates as $date) {
+            $endDate = (new DateTime($date))->modify("+{$dayOffset} day")->format('Y-m-d');
+            $rows = $this->meetingModelObj->getMeetingMembersConflict([
+                'user_ids'    => $userIds,
+                'start'       => $date . ' ' . $startTime,
+                'end'         => $endDate . ' ' . $endTime,
+                'exclude_ids' => $excludeIds,
+            ]);
+            foreach ($rows as $row) {
+                $messages[] = $row['first_name'] . ' is already booked on ' . date('d M', strtotime($row['meeting_start_date']))
+                    . ' from ' . CustomHelpers::convertTo12HourFormat($row['meeting_start_time'])
+                    . ' to ' . CustomHelpers::convertTo12HourFormat($row['meeting_end_time']);
+            }
+        }
+        return array_values(array_unique($messages));
+    }
+
+    private function holidayWarnings(array $dates): array
+    {
+        $holidayModel = model(\App\Models\Meeting\HolidaysModel::class);
+        $messages = [];
+        foreach ($dates as $date) {
+            foreach ($holidayModel->isHoliday($date) as $holiday) {
+                $messages[] = date('d M', strtotime($date)) . ' is a holiday (' . $holiday['holiday_title'] . ')';
+            }
+        }
+        return array_values(array_unique($messages));
+    }
+
+    /**
+     * Warnings (conflicts, holidays) must be acknowledged: the first submit shows them, and an
+     * identical second submit goes through. The acknowledgement is tied to this exact meeting, so
+     * it can no longer be reused to wave a different meeting past the check.
+     */
+    private function requireAcknowledgement(array $warnings, array $data): ?Response
+    {
+        if (empty($warnings)) {
+            return null;
+        }
+        $members = $data['selectedEmails'] ?? '';
+        $fingerprint = md5(json_encode([
+            $data['meeting_id'] ?? null, $data['r_meeting_type_id'] ?? null, $data['r_product_id'] ?? null,
+            $data['meeting_start_date'] ?? null, $data['meeting_end_date'] ?? null,
+            $data['meeting_start_time'] ?? null, $data['meeting_end_time'] ?? null,
+            $data['update_as_series'] ?? null, $members, $data['addgroup'] ?? null,
+        ]));
+        if (session()->get('warning_ack') === $fingerprint) {
+            session()->remove('warning_ack');
+            return null;
+        }
+        session()->set('warning_ack', $fingerprint);
+        return $this->response->setJSON(['conflict' => true, 'conflictMembers' => implode('; ', $warnings) . '. Submit again to schedule anyway.']);
+    }
+
     /**
      * Retrieves the selected members' emails and group members' names..
      * @author Gokul
@@ -317,49 +476,21 @@ class MeetingController extends BaseController
         return $totalMembers;
     }
     /**
-     * Checks for scheduling conflicts among selected members based on meeting data.
-     * @author Ruban Edward
-     * @param array $totalMembers An array of selected members' names.
-     * @param array $data         An associative array containing the meeting details (start date, start time, and end time).
-     * @return array An array of conflict descriptions, listing members with overlapping meetings and the corresponding time slots.
+     * Inserts the meeting (one row per date for recurring sprint meetings).
+     * @param array $data  meeting details
+     * @param array $dates dates produced by buildMeetingDates()
+     * @return int|array|false inserted id (single) or list of ids (recurring)
      */
-    private function checkConflicts($totalMembers, $data)
-    {
-        $meetData = [
-            'meeting_start_date' => $data['meeting_start_date'],
-            'meeting_start_time' => $data['meeting_start_time'],
-            'meeting_end_time' => $data['meeting_end_time'],
-        ];
-        $Conflict = $this->meetingModelObj->getMeetingMembersConflict($meetData);
-        $conflictNames = [];
-
-        foreach ($Conflict as $value) {
-            if (in_array($value['first_name'], $totalMembers)) {
-                $conflictNames[] = $value['first_name'] . " from " . CustomHelpers::convertTo12HourFormat($value['meeting_start_time']) . " to " . CustomHelpers::convertTo12HourFormat($value['meeting_end_time']);
-            }
-        }
-        return array_unique($conflictNames);
-    }
-    /**
-     * Handles the recurrence of meetings by generating and inserting meeting details for each recurrence date.
-     * @author Rama Selvan
-     * @param array $data An associative array containing the meeting details and recurrence information.
-     * @return array An array of results from the insertion of each meeting detail, or a single result if not recurring.
-     */
-    private function handleRecurrence($data)
+    private function handleRecurrence($data, array $dates = [])
     {
         if ($data['r_meeting_type_id'] == 3) {
-            $dates = $this->calculateRecurrenceDates($data['sprint_start_date'], $data['sprint_end_date'], $this->request->getPost('recurrance_meeting_id'));
             $recurrance_meeting_id = $this->generateUUID();
             $result = [];
             foreach ($dates as $date) {
-                $checkdate = $this->checkSundays($date);
-                if ($checkdate == 1) {
-                    $data['meeting_start_date'] = $date;
-                    $data['meeting_end_date'] = $date;
-                    $data['recurrance_meeting_id'] = $recurrance_meeting_id;
-                    $result[] = $this->MeetingDetailModelObj->insertMeetingDetails($data);
-                }
+                $data['meeting_start_date'] = $date;
+                $data['meeting_end_date'] = $date;
+                $data['recurrance_meeting_id'] = $recurrance_meeting_id;
+                $result[] = $this->MeetingDetailModelObj->insertMeetingDetails($data);
             }
         } else {
             $result = $this->MeetingDetailModelObj->insertMeetingDetails($data);
@@ -587,14 +718,27 @@ class MeetingController extends BaseController
      */
     public function cancelMeetings($id)
     {
-        // Check if the reason for cancellation is provided in the POST request
-        if ($this->request->getPost('reason')) {
-            // Get the cancellation reason from the POST request
-            $reason = $this->request->getPost('reason');
-            // Call the model method to log the cancellation reason for the specified meeting ID
-            $this->MeetingDetailModelObj->CancelMeetingsReason(['id' => $id, 'reason' => $reason]);
-            $getMail = $this->meetingModelObj->getCancelEmailId($id);
+        $meeting = $this->MeetingDetailModelObj->getMeetingDetails((int) $id);
+        if (empty($meeting)) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Meeting not found.']);
+        }
+        if ($meeting['is_deleted'] === 'Y') {
+            return $this->response->setJSON(['success' => false, 'message' => 'This meeting is already cancelled.']);
+        }
+        if (! $this->canManageMeeting($meeting)) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Only the meeting host or a manager can cancel this meeting.']);
+        }
+        if (strtotime($meeting['meeting_end_date'] . ' ' . $meeting['meeting_end_time']) < time()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'A meeting that has already finished cannot be cancelled.']);
+        }
+        $reason = trim((string) $this->request->getPost('reason'));
+        if ($reason === '') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Please enter a reason for the cancellation.']);
+        }
+        $this->MeetingDetailModelObj->CancelMeetingsReason(['id' => (int) $id, 'reason' => mb_substr($reason, 0, 500)]);
 
+        $getMail = $this->meetingModelObj->getCancelEmailId((int) $id);
+        if (! empty($getMail)) {
             $mailId = array_column($getMail, "email_id");
             $emailData = [
                 'email_id' => $mailId,
@@ -612,6 +756,7 @@ class MeetingController extends BaseController
             ];
             //$this->emailService->sendMail($emailData);
         }
+        return $this->response->setJSON(['success' => true]);
     }
 
     /**
@@ -622,52 +767,98 @@ class MeetingController extends BaseController
     public function logMeetingTimes()
     {
         $timeLog = service('timeEntry');
+        $this->MeetingMemberModelObj = model(\App\Models\Meeting\MeetingMemberModel::class);
         $post = $this->request->getPost();
-        if ($post) {
-            $dateTime = DateTime::createFromFormat('d-m-Y', $post['sdate']);
-            $issue = $this->getOrCreateMeetingIssue([
-                'meetingId' => $post['meetingId'],
-                'productId' => $post['product'],
-                'sprintId' => $post['sprintId'],
-                'meetType' => $post['mtype'],
-            ]);
-
-            $meetTypes = [
-                3 => 'Daily Stand up Meeting',
-                4 => 'Sprint Review',
-                'default' => 'Team Meeting',
-            ];
-            $activityId = $timeLog->activityId(['name' => $meetTypes[$post['mtype']] ?? $meetTypes['default']]);
-
-            foreach ($post['attendees'] as $attendee) {
-                try {
-                    $timeLog->timeEntryLog([
-                        'project_id' => $post['product'],
-                        'author_id' => session()->get('employee_id'),
-                        'user_id' => $attendee['id'],
-                        'issue_id' => $issue,
-                        'hours' => $attendee['hours'],
-                        'comments' => $post['comments'],
-                        'activity_id' => $activityId,
-                        'spent_on' => $dateTime->format('Y-m-d'),
-                        'tyear' => $dateTime->format('Y'),
-                        'tmonth' => $dateTime->format('m'),
-                        'tweek' => $dateTime->format('W'),
-                        'created_on' => date('Y-m-d H:i:s'),
-                        'updated_on' => date('Y-m-d H:i:s'),
-                    ]);
-                } catch (\Exception $e) {
-                    log_message('error', "Exception while logging time for attendee ID: {$attendee['id']} - " . $e->getMessage());
-                }
-            }
-
-            $updateResult = $this->MeetingDetailModelObj->timeLogisLogged(['meeting_details_id' => $post['meetingId']]);
-
-            return $this->response->setJSON(['success' => $updateResult]);
-        } else {
-            return $this->response->setJSON(['success' => false]);
+        if (empty($post) || empty($post['meetingId'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Nothing to log.']);
         }
 
+        // Everything that matters comes from the database, not from the browser
+        $meeting = $this->MeetingDetailModelObj->getMeetingDetails((int) $post['meetingId']);
+        if (empty($meeting)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Meeting not found.']);
+        }
+        if ($meeting['is_deleted'] === 'Y') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Time cannot be logged for a cancelled meeting.']);
+        }
+        if (($meeting['is_logged'] ?? 'N') === 'Y') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Time has already been logged for this meeting.']);
+        }
+        if (! $this->canManageMeeting($meeting)) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Only the meeting host or a manager can log time.']);
+        }
+        if (strtotime($meeting['meeting_start_date'] . ' ' . $meeting['meeting_start_time']) > time()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Time can only be logged once the meeting has started.']);
+        }
+
+        // Only real attendees, and never more hours than the meeting lasted
+        $memberIds = array_map('intval', array_column($this->MeetingMemberModelObj->getMeetingMembersEdit(['meetId' => $meeting['meeting_details_id']]) ?: [], 'r_user_id'));
+        [$dh, $dm] = array_map('intval', array_slice(explode(':', (string) $meeting['meeting_duration']), 0, 2)) + [0, 0];
+        $maxHours  = $dh + $dm / 60;
+
+        $entries = [];
+        foreach ((array) ($post['attendees'] ?? []) as $attendee) {
+            $uid   = (int) ($attendee['id'] ?? 0);
+            $hours = $attendee['hours'] ?? null;
+            if (! in_array($uid, $memberIds, true)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'One of the selected people did not attend this meeting.']);
+            }
+            if (! is_numeric($hours) || (float) $hours < 0 || ($maxHours > 0 && (float) $hours > $maxHours + 0.01)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Logged hours must be between 0 and the meeting duration (' . round($maxHours, 2) . ' h).']);
+            }
+            if ((float) $hours > 0) {
+                $entries[] = ['id' => $uid, 'hours' => (float) $hours];
+            }
+        }
+        if (empty($entries)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Enter the hours for at least one attendee.']);
+        }
+
+        $dateTime = DateTime::createFromFormat('Y-m-d', $meeting['meeting_start_date']);
+        $issue = $this->getOrCreateMeetingIssue([
+            'meetingId' => $meeting['meeting_details_id'],
+            'productId' => $meeting['r_product_id'],
+            'sprintId'  => $meeting['r_sprint_id'],
+            'meetType'  => $meeting['r_meeting_type_id'],
+        ]);
+
+        $meetTypes = [
+            3 => 'Daily Stand up Meeting',
+            4 => 'Sprint Review',
+            'default' => 'Team Meeting',
+        ];
+        $activityId = $timeLog->activityId(['name' => $meetTypes[$meeting['r_meeting_type_id']] ?? $meetTypes['default']]);
+
+        $logged = 0;
+        foreach ($entries as $entry) {
+            try {
+                $timeLog->timeEntryLog([
+                    'project_id' => $meeting['r_product_id'],
+                    'author_id' => session()->get('employee_id'),
+                    'user_id' => $entry['id'],
+                    'issue_id' => $issue,
+                    'hours' => $entry['hours'],
+                    'comments' => (string) ($post['comments'] ?? ''),
+                    'activity_id' => $activityId,
+                    'spent_on' => $dateTime->format('Y-m-d'),
+                    'tyear' => $dateTime->format('Y'),
+                    'tmonth' => $dateTime->format('m'),
+                    'tweek' => $dateTime->format('W'),
+                    'created_on' => date('Y-m-d H:i:s'),
+                    'updated_on' => date('Y-m-d H:i:s'),
+                ]);
+                $logged++;
+            } catch (\Exception $e) {
+                log_message('error', "Exception while logging time for attendee ID: {$entry['id']} - " . $e->getMessage());
+            }
+        }
+
+        // Only flag the meeting as logged when at least one entry really was written
+        if ($logged === 0) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Time could not be logged. Please try again.']);
+        }
+        $updateResult = $this->MeetingDetailModelObj->timeLogisLogged(['meeting_details_id' => $meeting['meeting_details_id']]);
+        return $this->response->setJSON(['success' => (bool) $updateResult]);
     }
 
     /**
@@ -1050,7 +1241,17 @@ class MeetingController extends BaseController
         $date = $this->request->getGet('date');
 
         // Assuming you have a model method to check if a date is a holiday
+        if (! $this->isRealDate($date)) {
+            return $this->response->setJSON(['isHoliday' => []]);
+        }
         $isHoliday = $this->holidayModelObj->isHoliday($date);
+        // Existing front-end code compares holiday_start_date with the clicked day, so report
+        // the day that was asked about (multi-day holidays now match on every day of the range).
+        foreach ($isHoliday as &$h) {
+            $h['range_start'] = $h['holiday_start_date'];
+            $h['holiday_start_date'] = $date;
+        }
+        unset($h);
 
         return $this->response->setJSON(['isHoliday' => $isHoliday]);
     }

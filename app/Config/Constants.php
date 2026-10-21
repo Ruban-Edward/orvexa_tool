@@ -92,9 +92,28 @@ define('EVENT_PRIORITY_NORMAL', 100);
  */
 define('EVENT_PRIORITY_HIGH', 10);
 
-define('ASSERT_PATH', "http://localhost:8080/");
-define('CSS_PATH', "http://localhost:8080/assets/css/");
-define('JS_PATH', "http://localhost:8080/assets/js/");
+// Base URL is derived from the incoming request (or the APP_BASEURL / app.baseURL
+// environment variable) instead of being hard-coded to localhost:8080, so the
+// application works behind any host, port, proxy or sub-directory.
+(static function (): void {
+    $configured = getenv('app.baseURL') ?: getenv('APP_BASEURL') ?: '';
+    if ($configured === '') {
+        $https = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
+        // Only accept a syntactically valid host[:port] to avoid header injection
+        if (! preg_match('/^[A-Za-z0-9.\-]+(:\d{1,5})?$/', $host)) {
+            $host = 'localhost:8080';
+        }
+        $script = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+        $script = ($script === '/' || $script === '.') ? '' : rtrim($script, '/');
+        $configured = ($https ? 'https' : 'http') . '://' . $host . $script;
+    }
+    $configured = rtrim($configured, '/') . '/';
+    define('ASSERT_PATH', $configured);
+    define('CSS_PATH', $configured . 'assets/css/');
+    define('JS_PATH', $configured . 'assets/js/');
+})();
 
 //defing the owner id
 define('R_OWNER_ID', 1);

@@ -75,9 +75,6 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('changebacklogstatus', 'BacklogController::changeBacklogStatus');
     $routes->post('historydata', 'BacklogController::historyDataDetails');
 
-    $routes->get('documents/download/(:segment)', 'BacklogController::download/$1');
-    $routes->get('documents/view/(:any)', 'BacklogController::view/$1');
-
     $routes->get('userstories', 'UserStoryController::userStories');
     $routes->post('filterUserStories', 'UserStoryController::filterUserStories');
     $routes->post('addepic', 'BacklogController::addEpic');
@@ -143,7 +140,8 @@ $routes->group('sprint', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('changeSprintStatusById/(:num)', 'SprintController::changeSprintStatusById/$1');
     $routes->post('applySelection', 'SprintController::getSprintSelectionList');
 });
-$routes->post('applyFilters', 'SprintController::getSprintfilterList');
+// Same URL as before (the sprint-list JS posts here) but now behind the auth + ACL filters.
+$routes->post('applyFilters', 'SprintController::getSprintfilterList', ['filter' => ['auth', 'acl']]);
 
 // $routes->post('createsprint', 'SprintController::createSprint');
 

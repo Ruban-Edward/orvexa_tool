@@ -17,9 +17,11 @@ if (!function_exists('downloadSampleFile')) {
         // Get the instance of the CodeIgniter application
         $app = \Config\Services::response();
 
-        $reference_file = FCPATH . 'support/supportFiles/' . $fileName;
+        // Resolve inside the support-files directory only (blocks ../ traversal)
+        $baseDir        = realpath(FCPATH . 'support/supportFiles');
+        $reference_file = $baseDir !== false ? realpath($baseDir . DIRECTORY_SEPARATOR . basename($fileName)) : false;
 
-        if (file_exists($reference_file)) {
+        if ($reference_file !== false && is_file($reference_file)) {
             // Set headers for downloading the file
             $app->setHeader('Content-Description', 'File Transfer');
             $app->setHeader('Content-Type', 'application/octet-stream');

@@ -20,6 +20,9 @@ class AuthController extends BaseController
      * 
      * @return string
      */ 
+    private const MAX_LOGIN_ATTEMPTS = 5;
+    private const LOGIN_LOCK_SECONDS = 900;
+
     protected $backlogModel;
     protected $session;
     protected $userModel;
@@ -75,45 +78,60 @@ class AuthController extends BaseController
         if (!$this->validate($rules)) {
             $errorMessage = $this->validator->getErrors();
             session()->setFlashdata('validation', $errorMessage);
-            return redirect()->to(ASSERT_PATH.'/login');
+            return redirect()->to(ASSERT_PATH.'login');
         }
         $userdata = $this->request->getPost();
         $username = trim($userdata['username']);
-        $password = $userdata['password'];            
+        $password = $userdata['password'];
         $userData = [
             'username' => $username,
             'password' => $password
         ];
-        //Check user login details with scrum database 
-        $user = $this->userModel->getUser($userData); 
-        //check valid user
-        if(! empty($user) && isset($user[0]->first_name) && isset($user[0]->external_employee_id) && isset( $user[0]->external_api_key)) { 
+
+        // Brute-force protection: 5 failed attempts per username+IP lock the form for 15 minutes.
+        $throttleKey = 'login_' . md5(strtolower($username) . '|' . $this->request->getIPAddress());
+        $cache       = cache();
+        $failures    = (int) ($cache->get($throttleKey) ?? 0);
+        if ($failures >= self::MAX_LOGIN_ATTEMPTS) {
+            session()->setFlashdata('error', 'Too many failed attempts. Please try again in 15 minutes.');
+            return redirect()->to(ASSERT_PATH . 'login');
+        }
+
+        //Check user login details with scrum database
+        $user = $this->userModel->getUser($userData);
+        // A valid user only needs a name, an employee id and a role. The Redmine API key
+        // is optional (several accounts legitimately have none) and must not block login.
+        if (! empty($user) && isset($user[0]->first_name, $user[0]->external_employee_id, $user[0]->r_role_id)) {
             $firstName = $user[0]->first_name;
             $employeeId = $user[0]->external_employee_id;
             $roleId = $user[0]->r_role_id;
+            $cache->delete($throttleKey);
         }
         else{
+            $cache->save($throttleKey, $failures + 1, self::LOGIN_LOCK_SECONDS);
             $errorMessage = "Invalid username or password";
             session()->setFlashdata('error', $errorMessage);
-            return redirect()->to(ASSERT_PATH.'/login');
+            return redirect()->to(ASSERT_PATH . 'login');
         }
         $url = $this->session->get('url');
+        // Prevent session fixation: issue a fresh session id once authenticated
+        $this->session->regenerate(true);
         //Set User details in session
         $user_session = [
-            'first_name' => $userData['first_name'] ?? $firstName ,
-            'employee_id' => $userData['employee_id'] ?? $employeeId,
+            'first_name' => $firstName,
+            'employee_id' => $employeeId,
             'role_id' => $roleId,
             'is_user_logged' => true
         ];
         $this->session->set($user_session);
         // set the user login action in scrum db
         $this->addLogin(LOGIN_ACTION);
-        // redirect directly to the user entered url
-        if(isset($url)){
-            return redirect()->to(ASSERT_PATH.$url);
+        // redirect to the originally requested page – only to a local path (no open redirect)
+        if (is_string($url) && preg_match('#^[A-Za-z0-9_\-./?=&%]+$#', $url) && ! str_contains($url, '//')) {
+            return redirect()->to(ASSERT_PATH . ltrim($url, '/'));
         }
-        //Redirect to user dashboard page                    
-        return redirect()->to(ASSERT_PATH.'dashboard/dashboardView');
+        //Redirect to user dashboard page
+        return redirect()->to(ASSERT_PATH . 'dashboard/dashboardView');
     }
     
     /**

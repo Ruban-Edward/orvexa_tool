@@ -262,7 +262,9 @@ class MeetingDetailModel extends Model
                     SET
                         $updateClause
                     WHERE
-                        recurrance_meeting_id = :recurrance_meeting_id:";
+                        recurrance_meeting_id = :recurrance_meeting_id:
+                        AND is_deleted = 'N'
+                        AND meeting_start_date >= CURDATE()";
             $bindParams['recurrance_meeting_id'] = $data['recurrance_meeting_id'];
         } else {
             $sql = "UPDATE
@@ -359,10 +361,10 @@ class MeetingDetailModel extends Model
         $sql = "UPDATE
                     orvexa_meeting_details
                 SET
-                    external_issue_id = $taskId
+                    external_issue_id = :task_id:
                 WHERE
-                    meeting_details_id = $meetingId ";
-        $result = $this->db->query($sql);
+                    meeting_details_id = :meeting_id:";
+        $result = $this->db->query($sql, ['task_id' => (int) $taskId, 'meeting_id' => (int) $meetingId]);
         return $result;
     }
 
@@ -392,7 +394,7 @@ class MeetingDetailModel extends Model
             ON mm.r_meeting_details_id = md.meeting_details_id
         WHERE
             mm.r_user_id = :user_name:
-            AND md.meeting_start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+            AND md.meeting_start_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)";
 
         //using Bind Param for executing the query
         $result = $this->query($sql, [
@@ -480,5 +482,19 @@ class MeetingDetailModel extends Model
             'product' => $mailInfo['product'],
         ]);
         return $result->getResultArray();
+    }
+
+    /**
+     * Upcoming, non-cancelled meetings of a recurring series (id + date).
+     */
+    public function getUpcomingSeriesMeetings($recurrenceId): array
+    {
+        $sql = "SELECT meeting_details_id, meeting_start_date
+                FROM orvexa_meeting_details
+                WHERE recurrance_meeting_id = :rid:
+                  AND is_deleted = 'N'
+                  AND meeting_start_date >= CURDATE()
+                ORDER BY meeting_start_date";
+        return $this->db->query($sql, ['rid' => $recurrenceId])->getResultArray();
     }
 }

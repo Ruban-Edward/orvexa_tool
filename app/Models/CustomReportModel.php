@@ -32,7 +32,7 @@ class CustomReportModel extends BaseModel
             mt.meeting_type_name AS "Meeting Name",
             ut.first_name AS "Creator",
             pt.product_name AS "Product Name",
-            md.created_date AS "Meeting Date",
+            md.meeting_start_date AS "Meeting Date",
             md.meeting_start_time AS "Start Time",
             md.meeting_end_time  AS "End Time",
             md.meeting_description AS "Meeting Description"
@@ -47,9 +47,9 @@ class CustomReportModel extends BaseModel
         WHERE 
             md.is_deleted = "N"
         GROUP BY 
-            md.meeting_details_id, mt.meeting_type_name, ut.first_name, pt.product_name, md.created_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description
+            md.meeting_details_id, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description
         ORDER BY 
-            md.created_date DESC;
+            md.meeting_start_date DESC, md.meeting_start_time DESC;
       
     ';
 
@@ -71,7 +71,7 @@ class CustomReportModel extends BaseModel
             mt.meeting_type_name AS "Meeting Name",
             ut.first_name AS "Creator",
             pt.product_name AS "Product Name",
-            md.created_date AS "Meeting Date",
+            md.meeting_start_date AS "Meeting Date",
             md.meeting_start_time AS "Start Time",
             md.meeting_end_time AS "End Time",
             md.meeting_description AS "Meeting Description"';
@@ -113,14 +113,16 @@ class CustomReportModel extends BaseModel
         // Add filters
         $data = [];
 
-        if (!empty($params['fromdate'])) {
-            $query .= " AND DATE_FORMAT(md.created_date,'%d-%m-%Y') >= :fromdate:";
-            $data["fromdate"] = $params['fromdate'];
+        // Compare real DATE values (Y-m-d). The previous code compared dd-mm-YYYY strings,
+        // which sorts alphabetically and returned wrong ranges.
+        if (($from = $this->normaliseDate($params['fromdate'] ?? null)) !== null) {
+            $query .= " AND md.meeting_start_date >= :fromdate:";
+            $data["fromdate"] = $from;
         }
 
-        if (!empty($params['todate'])) {
-            $query .= " AND DATE_FORMAT(md.created_date,'%d-%m-%Y') <= :todate:";
-            $data["todate"] = $params['todate'];
+        if (($to = $this->normaliseDate($params['todate'] ?? null)) !== null) {
+            $query .= " AND md.meeting_start_date <= :todate:";
+            $data["todate"] = $to;
         }
 
         if (!empty($params['product'])) {
@@ -143,10 +145,10 @@ class CustomReportModel extends BaseModel
 
         // Group by necessary fields
         $query .= " GROUP BY 
-                        md.meeting_details_id, mt.meeting_type_name, ut.first_name, pt.product_name, md.created_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description";
+                        md.meeting_details_id, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description";
 
         // Order by date
-        $query .= " ORDER BY md.created_date DESC";
+        $query .= " ORDER BY md.meeting_start_date DESC, md.meeting_start_time DESC";
 
         // Execute the query and return the result
         $result = $this->db->query($query, $data);
@@ -234,14 +236,14 @@ class CustomReportModel extends BaseModel
 
         $data = [];
 
-        if (!empty($params['fromdate'])) {
+        if (($from = $this->normaliseDate($params['fromdate'] ?? null)) !== null) {
             $query .= " AND DATE(ts.start_date) >= :fromdate:";
-            $data["fromdate"] = date('Y-m-d', strtotime($params['fromdate']));
+            $data["fromdate"] = $from;
         }
 
-        if (!empty($params['todate'])) {
+        if (($to = $this->normaliseDate($params['todate'] ?? null)) !== null) {
             $query .= " AND DATE(ts.end_date) <= :todate:";
-            $data["todate"] = date('Y-m-d', strtotime($params['todate']));
+            $data["todate"] = $to;
         }
 
         if (!empty($params['product'])) {
@@ -292,8 +294,8 @@ class CustomReportModel extends BaseModel
         INNER JOIN orvexa_customer AS ct ON ct.customer_id = bi.r_customer_id AND ct.is_deleted = "N"
         INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = bi.r_module_status_id AND orvexa_status.is_deleted = "N"
         INNER JOIN orvexa_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
-        INNER JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
-        INNER JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
+        LEFT JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
+        LEFT JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
         WHERE bi.is_deleted = "N"
         ';
 
@@ -339,10 +341,10 @@ class CustomReportModel extends BaseModel
             INNER JOIN orvexa_customer AS ct ON ct.customer_id = bi.r_customer_id AND ct.is_deleted = "N"
             INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = bi.r_module_status_id AND orvexa_status.is_deleted = "N"
             INNER JOIN orvexa_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
-            INNER JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
+            LEFT JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
             LEFT JOIN orvexa_epic e ON bi.backlog_item_id = e.r_backlog_item_id AND e.is_deleted = "N"
             LEFT JOIN orvexa_user_story us ON bi.backlog_item_id = us.r_epic_id AND us.is_deleted = "N"
-            INNER JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
+            LEFT JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
             WHERE bi.is_deleted = "N"';
 
         if (!empty($params['product'])) {
@@ -376,7 +378,10 @@ class CustomReportModel extends BaseModel
     public function reportDropDowns($reportType): array
     {
         // Get the module ID from the constants
-        $moduleId = $this->constants->statusNames[$reportType];
+        $moduleId = $this->constants->statusNames[$reportType] ?? null;
+        if ($moduleId === null) {
+            return [];
+        }
 
         // Define dropdown queries
         $dropdownQueries = [
@@ -416,4 +421,21 @@ class CustomReportModel extends BaseModel
     }
 
 
+
+    /**
+     * Accepts Y-m-d or d-m-Y and returns Y-m-d, or null when empty/invalid.
+     */
+    private function normaliseDate($value): ?string
+    {
+        if (!is_string($value) || trim($value) === '') {
+            return null;
+        }
+        foreach (['Y-m-d', 'd-m-Y'] as $format) {
+            $dt = \DateTime::createFromFormat($format, trim($value));
+            if ($dt && $dt->format($format) === trim($value)) {
+                return $dt->format('Y-m-d');
+            }
+        }
+        return null;
+    }
 }

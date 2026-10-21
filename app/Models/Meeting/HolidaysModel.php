@@ -91,9 +91,12 @@ class HolidaysModel extends Model
         $sql = "SELECT
                     holiday_id,
                     holiday_start_date,
+                    COALESCE(holiday_end_date, holiday_start_date) AS holiday_end_date,
                     holiday_title
                 FROM
                     orvexa_holidays
+                ORDER BY
+                    holiday_start_date
                     ";
         $result = $this->query($sql);
         return $result->getResultArray(); //returns result as an array format
@@ -104,12 +107,15 @@ class HolidaysModel extends Model
      */
     public function isHoliday($date)
     {
+        // A holiday can span several days (start..end); match any day inside the range
         $sql = "SELECT 
-                    holiday_start_date 
+                    holiday_title,
+                    holiday_start_date,
+                    holiday_end_date
                 FROM 
                     orvexa_holidays 
                 WHERE 
-                    holiday_start_date = :holiday_date:";
+                    :holiday_date: BETWEEN holiday_start_date AND COALESCE(holiday_end_date, holiday_start_date)";
 
         $result = $this->query($sql, [
             "holiday_date" => $date

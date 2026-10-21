@@ -20,7 +20,7 @@
     <div >
         <p class="bread">
             <?php foreach($breadcrumbs as $key => $url): ?>
-                <a href="<?= $url ?>"><?= ucfirst($key) ?></a>
+                <a href="<?= esc($url, 'attr') ?>"><?= esc(ucfirst($key)) ?></a>
                 <?php if($url !== end($breadcrumbs)): ?> > <?php endif; ?>
             <?php endforeach; ?>
         </p>

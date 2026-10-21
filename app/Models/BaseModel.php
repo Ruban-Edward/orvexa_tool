@@ -77,4 +77,21 @@ class BaseModel extends Model
             return [];
         }
     }
+
+    /**
+     * Validate a client-supplied "column asc|desc" sort clause so it can safely be
+     * appended to an ORDER BY. Only a plain (optionally table-qualified) identifier
+     * followed by ASC/DESC is accepted; anything else returns an empty string.
+     */
+    protected function sanitizeOrderBy($sort): string
+    {
+        if (! is_string($sort)) {
+            return '';
+        }
+        if (! preg_match('/^\s*([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?)\s+(asc|desc)\s*$/i', $sort, $m)) {
+            return '';
+        }
+        $column = implode('.', array_map(static fn ($part) => '`' . $part . '`', explode('.', $m[1])));
+        return $column . ' ' . strtoupper($m[2]);
+    }
 }

@@ -120,12 +120,17 @@ class AdminModel extends BaseModel
                     INNER JOIN orvexa_role AS role ON role.role_id = user.r_role_id 
                 WHERE 
                     user.is_deleted = :is_deleted: 
-                    AND LOWER(user.first_name) LIKE '%$searchQuery%' 
-                    OR LOWER(user.last_name) LIKE '%$searchQuery%'";
+                    AND (
+                        LOWER(user.first_name) LIKE :search: ESCAPE '!'
+                        OR LOWER(user.last_name) LIKE :search: ESCAPE '!'
+                    )";
 
-        // Execute the query with parameter binding
+        // Bind the search term (escaping LIKE wildcards) instead of interpolating it into the SQL
+        $term  = strtolower(trim((string) $searchQuery));
+        $term  = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term);
         $query = $this->db->query($sql, [
-            "is_deleted" => "N"
+            "is_deleted" => "N",
+            "search"     => '%' . $term . '%',
         ]);
 
         // Check if any rows are returned

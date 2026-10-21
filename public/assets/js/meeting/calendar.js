@@ -35,350 +35,56 @@ if (typeof calendar !== "undefined") {
      * The FullCalendar instance initialized with configurations.
      * @type {FullCalendar.Calendar}
      */
+    // ---- Calendar state ----------------------------------------------------
+    const VIEW_KEY = "orvexa.calendar.view";
+    const VALID_VIEWS = ["dayGridMonth", "timeGridWeek", "timeGridDay", "listMonth"];
+    let savedView = null;
+    try { savedView = window.localStorage.getItem(VIEW_KEY); } catch (e) { /* storage unavailable */ }
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "dayGridMonth",
-      headerToolbar: {
-        start: "prev title next",
-        center: "",
-        end: "HelpButton GroupButton MeetingDropdown MeetTypeDropdown ProductDropdown StatusDropdown",
+      initialView: VALID_VIEWS.includes(savedView) ? savedView : "dayGridMonth",
+      // Toolbar is built in calendar.php (own markup) so views can be switched freely
+      headerToolbar: false,
+      height: "auto",
+      nowIndicator: true,
+      navLinks: true,
+      navLinkDayClick: "timeGridDay",
+      dayMaxEvents: 3,
+      moreLinkClick: "popover",
+      moreLinkText: function (n) { return "+" + n + " more"; },
+      fixedWeekCount: false,
+      stickyHeaderDates: true,
+      expandRows: true,
+      slotMinTime: "07:00:00",
+      slotMaxTime: "21:00:00",
+      slotDuration: "00:30:00",
+      snapDuration: "00:15:00",
+      scrollTime: "08:00:00",
+      allDayText: "All day",
+      eventMinHeight: 24,
+      eventInteractive: true,
+      eventDisplay: "block",
+      eventTimeFormat: { hour: "numeric", minute: "2-digit", omitZeroMinute: true, meridiem: "short" },
+      slotLabelFormat: { hour: "numeric", minute: "2-digit", meridiem: "short" },
+      dayHeaderFormat: { weekday: "short" },
+      views: {
+        dayGridMonth: { dayHeaderFormat: { weekday: "short" } },
+        timeGridWeek: { dayHeaderFormat: { weekday: "short", day: "numeric" }, dayMaxEvents: false },
+        timeGridDay: { dayHeaderFormat: { weekday: "long", day: "numeric" } },
+        listMonth: { listDayFormat: { weekday: "long", day: "numeric", month: "short" }, listDaySideFormat: false },
       },
-      dayMaxEventRows: true,
-      fixedWeekCount: true,
+      noEventsContent: "Nothing scheduled in this period",
 
-      //Custom buttons for the filters in the calendar.
-      customButtons: {
-        //Dropdown for filtering different types of meetings. Only if meetings is selected in Events
-        MeetTypeDropdown: {
-          /**
-           * Click handler for the MeetType dropdown button.
-           * @function
-           */
-          click: function () {
-            /**
-             * Populates the MeetType dropdown with items.
-             * @function
-             */
-            function populateMeetTypeDropdown() {
-              var meetTypeDropdown =
-                document.getElementById("meetTypeDropdown");
-              meetTypeDropdown.innerHTML = ""; // Clear previous items
-
-              // Create and append 'All' dropdown item
-              var allDropdownItem = createDropdownItem("All");
-              meetTypeDropdown.appendChild(allDropdownItem);
-
-              // Populate dropdown with meeting types
-              meetType.forEach(function (meetType) {
-                const MeetType = meetType.meeting_type_name;
-                const dropdownItem = createDropdownItem(MeetType);
-                //  dropdownItem.id = `meetTypeItem-${index}`; // Assigning a unique ID to each item
-                //  initializeTooltip(`#meetTypeItem-${index}`, `Click "${MeetType}" to see all "${MeetType}" meetings`);
-
-                meetTypeDropdown.appendChild(dropdownItem);
-              });
-
-              // Event listeners for the newly created dropdown items
-              document
-                .querySelectorAll(".dropdown-item.meetType")
-                .forEach((item) => {
-                  item.addEventListener("click", function (event) {
-                    event.preventDefault();
-                    filterEventsByEventType(this.textContent);
-                    document.getElementById("dropdownMenuButton4").innerHTML =
-                      "<b>MeetType</b>: " + this.innerText;
-                  });
-                });
-            }
-
-            /**
-             * Creates a dropdown item element.
-             *
-             * @param {string} text - The text content of the dropdown item.
-             * @returns {HTMLAnchorElement} The created dropdown item element.
-             */
-            function createDropdownItem(text) {
-              var dropdownItem = document.createElement("a");
-              dropdownItem.className = "dropdown-item meetType";
-              dropdownItem.href = "#";
-              var icon = document.createElement("i");
-              icon.className = getIconClass(text); // Function to get icon class based on meeting type
-              dropdownItem.appendChild(icon);
-              var textNode = document.createTextNode(" " + text); // Add a space between icon and text
-              dropdownItem.appendChild(textNode);
-              return dropdownItem;
-            }
-
-            /**
-             * Filters calendar events by event type.
-             *
-             * @param {string} MeetType - The type of event to filter by. If 'All', all events are shown.
-             */
-            function filterEventsByEventType(MeetType) {
-              calendar.getEvents().forEach((event) => {
-                let eventType = event.title.trim().split(" - ")[0];
-                let Meet = MeetType.trim();
-                var showEvent = eventType == Meet || Meet == "All";
-                event.setProp("display", showEvent ? "auto" : "none");
-              });
-            }
-
-            // Populate the dropdown menu initially
-            populateMeetTypeDropdown();
-          },
-        },
-
-        //Dropdown for filtering different types of Products. Only if sprint is selected in Events
-        ProductDropdown: {
-          /**
-           * Click handler for the Product dropdown button.
-           *
-           * @function
-           */
-          click: function () {
-            /**
-             * Populates the Product dropdown with items.
-             * @function
-             */
-            function populateProductDropdown() {
-              var productDropdown = document.getElementById("productDropdown");
-              productDropdown.innerHTML = ""; // Clear previous items
-
-              // Create and append 'All' dropdown item
-              var allDropdownItem = createProductDropdownItem("All");
-              productDropdown.appendChild(allDropdownItem);
-
-              // Populate dropdown with different products
-              productList.forEach(function (product) {
-                var ProductName = capitalizeFirstLetter(
-                  product["product_name"]
-                );
-                var dropdownItem = createProductDropdownItem(ProductName);
-                productDropdown.appendChild(dropdownItem);
-              });
-
-              // Ensure dropdown is scrollable if items exceed a certain number
-              if (productList.length > 5) {
-                productDropdown.style.overflowY = "auto";
-                productDropdown.style.maxHeight = "200px"; // Adjust as needed
-              } else {
-                productDropdown.style.overflowY = "hidden"; // Hide scrollbar if not needed
-              }
-
-              // Event listeners for the custom dropdown options for product
-              document
-                .querySelectorAll(".dropdown-item.product")
-                .forEach((item) => {
-                  item.addEventListener("click", function (event) {
-                    event.preventDefault();
-                    filterEventsByEventType(this.textContent);
-                    document.getElementById("dropdownMenuButton1").innerHTML =
-                      "<b>Product</b>: " + this.textContent;
-                  });
-                });
-            }
-
-            /**
-             * Creates a dropdown item element for products.
-             *
-             * @param {string} text - The text content of the dropdown item.
-             * @returns {HTMLAnchorElement} The created dropdown item element.
-             */
-            function createProductDropdownItem(text) {
-              var dropdownItem = document.createElement("a");
-              dropdownItem.className = "dropdown-item product";
-              dropdownItem.href = "#";
-              dropdownItem.textContent = text;
-              return dropdownItem;
-            }
-
-            /**
-             * Filters calendar events by product type.
-             *
-             * @param {string} product - The type of product to filter by. If 'All', all events are shown.
-             */
-            function filterEventsByEventType(product) {
-              calendar.getEvents().forEach((event) => {
-                var ProductName = getNameAfterHyphen(event._def.title);
-                var showEvent = ProductName === product || product === "All";
-                event.setProp("display", showEvent ? "auto" : "none");
-              });
-            }
-
-            /**
-             * Extracts the part of a string after the first hyphen.
-             *
-             * @param {string} str - The input string containing a hyphen.
-             * @returns {string} The part of the string after the hyphen, or an empty string if no hyphen is found.
-             */
-            function getNameAfterHyphen(str) {
-              const parts = str.split("->");
-
-              // Return the part after the hyphen, or an empty string if there's no hyphen
-              return parts.length > 1 ? parts[1].trim() : "";
-            }
-
-            // Add click event listener to the button
-            populateProductDropdown();
-          },
-        },
-
-        //Dropdown for filtering Meetings and Sprints with different status.
-        StatusDropdown: {
-          /**
-           * Click handler for the Status dropdown button.
-           * @function
-           */
-          click: function () {
-            /**
-             * Populates the Status dropdown with items.
-             * @function
-             */
-            function populateStatusDropdown() {
-              var statusDropdown = document.getElementById("statusDropdown");
-              statusDropdown.innerHTML = ""; // Clear previous items
-
-              // Create and append 'All' dropdown item
-              var statuses =
-                currentEventType === "Sprint"
-                  ? [
-                      "All",
-                      "Sprint Completed",
-                      "Sprint Running",
-                      "Sprint Planned",
-                      // "On Hold",
-                    ]
-                  : ["All", "Completed", "Ongoing", "Upcoming"];
-
-              // Populate dropdown with different Status
-              statuses.forEach(function (status) {
-                var dropdownItem = document.createElement("a");
-                dropdownItem.className = "dropdown-item status";
-                dropdownItem.href = "#";
-                var icon = document.createElement("i");
-                icon.className = getIconClass(status); // Function to get icon class based on status
-                dropdownItem.appendChild(icon);
-                // Create text node for status
-                var text = document.createTextNode(" " + status); // Add a space between icon and text
-                dropdownItem.appendChild(text);
-                statusDropdown.appendChild(dropdownItem);
-
-                // Add event listener to each dropdown item
-                dropdownItem.addEventListener("click", function (event) {
-                  event.preventDefault();
-                  filterEventsByStatus(status);
-                  document.getElementById("dropdownMenuButton3").innerHTML =
-                    "<b>Status</b>: " + status;
-                });
-              });
-
-              /**
-               * Filters calendar events based on status.
-               *
-               * @param {string} status - The status to filter events by ('All', 'Completed', 'Ongoing', 'Upcoming').
-               */
-              function filterEventsByStatus(status) {
-                calendar.getEvents().forEach((event) => {
-                  var showEvent = false;
-
-                  // Check if current event type is 'Sprint' to filter by status name
-                  if (currentEventType === "Sprint") {
-                    var statusName = capitalizeFirstLetter(
-                      event.extendedProps.statusName
-                    );
-                    showEvent = status === "All" || statusName === status;
-                  } else {
-                    // For other event types, filter events based on their start and end dates
-                    const currentDate = new Date();
-                    var eventStart = new Date(event.start);
-                    var eventEnd = event.end ? new Date(event.end) : null;
-
-                    if (status === "All") {
-                      showEvent = true;
-                    } else if (status === "Completed") {
-                      showEvent = eventEnd
-                        ? eventEnd < currentDate
-                        : eventStart < currentDate;
-                    } else if (status === "Ongoing") {
-                      showEvent = eventEnd
-                        ? eventStart <= currentDate && eventEnd >= currentDate
-                        : eventStart <= currentDate;
-                    } else if (status === "Upcoming") {
-                      showEvent = eventStart > currentDate;
-                    }
-                  }
-
-                  // Set the 'display' property of the event based on showEvent flag
-                  event.setProp("display", showEvent ? "auto" : "none");
-                });
-              }
-            }
-
-            // Add click event listener to the button
-            populateStatusDropdown();
-          },
-        },
+      // Keep the page and the calendar chrome in sync with whatever view/date is showing
+      datesSet: function (arg) {
+        onDatesSet(arg);
       },
 
-      /**
-       * Handle date click events.
-       * @param {Object} info - Information about the clicked date.
-       */
+      /** Click on an empty day (month) or time slot (week/day). */
       dateClick: function (info) {
-        $.ajax({
-          url: baseUrl + "meeting/checkHoliday",
-          method: "GET",
-          data: { date: info.dateStr },
-          success: function (response) {
-            if (response.isHoliday && response.isHoliday.length > 0) {
-              // Access the first holiday's start date
-              var holidayStartDate = response.isHoliday[0].holiday_start_date;
-            } else {
-              var holidayStartDate = "";
-            }
-
-            if (
-              permissions.scheduleMeeting &&
-              info.dateStr != holidayStartDate
-            ) {
-              const currentDate = new Date();
-              const clickedDate = new Date(info.dateStr);
-              document.getElementById("meeting_start_date").value =
-                info.dateStr;
-              document.getElementById("meeting_end_date").value = info.dateStr;
-
-              // Prevent scheduling meetings on past dates
-              if (
-                currentEventType === "Meeting" &&
-                clickedDate < currentDate.setHours(0, 0, 0, 0)
-              ) {
-                Swal.fire({
-                  icon: "warning",
-                  text: "You Can't Schedule the meeting on a past date",
-                });
-              } else if (currentEventType === "Meeting") {
-                // Show the modal for scheduling a meeting
-                $("#meetingModal").modal("show");
-                document.getElementById("modalTitle").innerText =
-                  "Schedule meeting";
-                $(
-                  "#eventDetails, #timeLogSection, #helpdetails, #groupdetails"
-                ).hide();
-                $("#scheduleMeetingForm").show();
-                document.getElementById("formOperation").value = "insert";
-              }
-            }
-          },
-        });
-      },
-
-      /**
-       * Handle the mounting of day cells to add tooltips.
-       * @param {Object} arg - Information about the cell.
-       */
-      dayCellDidMount: function (arg) {
-        const currentDate = new Date();
-        currentDate.setHours(0, 0, 0, 0);
-        const cellDate = arg.date;
+        const dateStr = info.dateStr.slice(0, 10);
+        const minutes = info.allDay ? null : info.date.getHours() * 60 + info.date.getMinutes();
+        handleSlotClick(dateStr, minutes);
       },
 
       /**
@@ -953,396 +659,383 @@ if (typeof calendar !== "undefined") {
         //
       },
 
-      /**
-       * Initialize the calendar with meeting and sprint events.
-       */
-      events: meetingDetails.map((meeting, index) => ({
-        id: meeting.meeting_details_id,
-        title: "Meeting",
-        start: meeting.meeting_start_time,
-        end: meeting.meeting_end_time,
-        extendedProps: {
-          eventType: "Meeting",
-        },
-      })),
-      /**
-       * Handle the rendering of calendar events with appropriate styles based on their properties.
-       * @param {Object} info - The event info object provided by FullCalendar.
-       */
-      eventDidMount: function (info) {
-        var currentDate = new Date();
-        var start = new Date(info.event.start);
-        var end = new Date(info.event.end);
-        // Apply styles based on event type and timing
-        if (info.event.extendedProps.eventType === "Meeting") {
-          if (info.event.extendedProps.deleted === "N") {
-            if (end < currentDate) {
-              if (info.event.extendedProps.logged === "N") {
-                info.el.style.backgroundColor = "red";
-                info.el.style.color = "white";
-              } else {
-                info.el.style.backgroundColor = "#34be34";
-                info.el.style.color = "white";
-              }
-            } else if (start <= currentDate && end >= currentDate) {
-              info.el.style.backgroundColor = "#d85733";
-              info.el.style.color = "white";
-            } else if (start > currentDate) {
-              info.el.style.backgroundColor = "#63a4ff";
-              info.el.style.color = "white";
-            }
-          } else {
-            info.el.style.backgroundColor = "#585858";
-            info.el.style.color = "#c2c2c2";
-            info.el.style.textDecoration = "line-through";
-            info.el.style.textDecorationColor = "white";
-          }
-        } else if (info.event.extendedProps.eventType === "Sprint") {
-          var statusName = info.event.extendedProps.statusName;
-          // Apply styles based on sprint status
-
-          if (statusName === "Sprint Completed") {
-            info.el.style.backgroundColor = "#34be34";
-            info.el.querySelector(".fc-event-title").style.color = "white";
-          } else if (statusName === "Sprint Running") {
-            info.el.style.backgroundColor = "#d85733";
-            info.el.querySelector(".fc-event-title").style.color = "white";
-          } else if (statusName === "Sprint Planned") {
-            info.el.style.backgroundColor = "#63a4ff";
-            info.el.querySelector(".fc-event-title").style.color = "white";
-          }
-        } else {
-          info.el.style.backgroundColor = "transparent";
-          info.el.querySelector(".fc-event-title").style.color = "black";
-          document
-            .querySelectorAll(".fc-event-title.fc-sticky")
-            .forEach(function (element) {
-              // Check if the icon is already present to avoid duplication
-              if (!element.querySelector(".bi")) {
-                // Create a new <i> element for the Bootstrap icon
-                var icon = document.createElement("i");
-                icon.classList.add("bi", "bi-emoji-sunglasses");
-                icon.style.marginRight = "5px";
-
-                // Insert the icon at the beginning of the event title
-                element.prepend(icon);
-              }
-            });
+      // ---- Event appearance ------------------------------------------------
+      events: [],
+      eventContent: function (arg) {
+        const p = arg.event.extendedProps;
+        const view = arg.view.type;
+        if (p.eventType === "HolidayBg") { return { html: "" }; }
+        if (p.eventType === "Holiday") {
+          return { html: '<span class="ox-evt-title"><i class="fas fa-umbrella-beach"></i> ' + esc(arg.event.title) + "</span>" };
         }
+        if (p.eventType === "Sprint") {
+          return { html: '<span class="ox-evt-title"><i class="fas fa-flag-checkered"></i> ' + esc(arg.event.title) + "</span>" };
+        }
+        const badge = p.state === "needslog" ? '<span class="ox-evt-flag" title="Time not logged yet"><i class="fas fa-clock"></i></span>' : "";
+        if (view === "listMonth") {
+          return { html: '<span class="ox-evt-title">' + esc(arg.event.title) + "</span>" + badge + '<span class="ox-evt-state">' + esc((STATE_META[p.state] || {}).label || "") + "</span>" };
+        }
+        if (view.indexOf("timeGrid") === 0) {
+          return { html: '<div class="ox-evt-inner"><div class="ox-evt-title">' + esc(arg.event.title) + badge + '</div><div class="ox-evt-time">' + esc(arg.timeText) + "</div></div>" };
+        }
+        return { html: '<div class="ox-evt-inner ox-evt-row"><span class="ox-evt-time">' + esc(arg.timeText) + '</span><span class="ox-evt-title">' + esc(arg.event.title) + "</span>" + badge + "</div>" };
+      },
+      eventDidMount: function (info) {
+        const p = info.event.extendedProps;
+        if (p.eventType === "HolidayBg") { return; }
+        const fmt = { hour: "numeric", minute: "2-digit", meridiem: "short" };
+        let when = "";
+        if (p.eventType === "Meeting" && info.event.start) {
+          when = calendar.formatDate(info.event.start, fmt) + (info.event.end ? " – " + calendar.formatDate(info.event.end, fmt) : "");
+        }
+        const label = p.eventType === "Meeting" ? (STATE_META[p.state] || {}).label : p.eventType === "Sprint" ? p.statusLabel : "Holiday";
+        info.el.setAttribute("aria-label", info.event.title + (when ? ", " + when : "") + (label ? ", " + label : ""));
+        if (window.tippy) {
+          tippy(info.el, {
+            content: "<strong>" + esc(info.event.title) + "</strong>" + (when ? "<div>" + esc(when) + "</div>" : "") + (label ? '<div class="ox-tip-state">' + esc(label) + "</div>" : ""),
+            allowHTML: true, placement: "top", delay: [350, 0], theme: "ox", appendTo: document.body,
+          });
+        }
+      },
+      eventWillUnmount: function (info) {
+        if (info.el && info.el._tippy) { info.el._tippy.destroy(); }
       },
     });
 
-
-    // Render the calendar
-    calendar.render();
-
-    // Custom buttons for Product and Meeting dropdowns
-    var customButtonEl1 = document.querySelector(".fc-ProductDropdown-button");
-    var customButtonEl2 = document.querySelector(".fc-MeetingDropdown-button");
-    var customButtonEl3 = document.querySelector(".fc-StatusDropdown-button");
-    var customButtonEl4 = document.querySelector(".fc-MeetTypeDropdown-button");
-    var customButtonEl5 = document.querySelector(".fc-HelpButton-button");
-
-    // Set HTML content for the dropdown buttons
-    customButtonEl1.innerHTML = `
-    <div class="btn-group">
-    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Product</button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="productDropdown"></div>      
-    </div>
-    `;
-
-    customButtonEl2.innerHTML = `
-    <div class="btn-group">
-    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Events: Meeting</button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-    <a class="dropdown-item events" href="#" id="meeting-anchor"><i class="fas fa-users" style="margin-right: 10px;"></i>Meeting</a>
-    <a class="dropdown-item events" href="#" id="sprint-dropdown"><i class="fas fa-tachometer-alt" style="margin-right: 10px;"></i>Sprint</a>
-    </div>
-    </div>
-    `;
-    // Initialize tooltips for the Meeting dropdown button and its items
-
-    initializeTooltip(
-      "#dropdownMenuButton2",
-      "Filter Events by Meetings and Sprint",
-      "top"
-    );
-    initializeTooltip("#meeting-anchor", "Filter by Meetings Schedules", "top");
-    initializeTooltip("#sprint-dropdown", "Filter by Sprints Status", "left");
-
-    customButtonEl3.innerHTML = `
-    <div class="btn-group">
-    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Status</button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3" id="statusDropdown">
-    <a class="dropdown-item status" href="#" id="">All</a>
-    <a class="dropdown-item status cls-complete" href="#" id="">Completed</a>
-    <a class="dropdown-item status cls-going" href="#" id="">Ongoing</a>
-    <a class="dropdown-item status cls-upcoming" href="#" id="">Upcoming</a>
-    </div>
-    </div>
-    `;
-    initializeTooltip("#dropdownMenuButton3", "Filter by Status", "top");
-
-    customButtonEl4.innerHTML = `
-    <div class="btn-group">
-    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">MeetType</button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4" id="meetTypeDropdown"></div>
-    </div>
-    `;
-
-    customButtonEl5.innerHTML = `
-    <div class="btn-group">
-    <button class="help-button" type="button" id="helpButton" onclick="showEventDetailsModal();"><i class="fas fa-question"></i></button>
-    </div>
-    `;
-    initializeTooltip("#helpButton", "How to use calendar", "top");
-    initializeTooltip("#dropdownMenuButton4", "Filter by MeetType", "top");
-
-    if (!permissions.groupButton) {
-      document.querySelector(
-        ".fc-GroupButton-button.fc-button.fc-button-primary"
-      ).style.display = "none";
-    }
-    if (permissions.groupButton) {
-      var customButtonEl6 = document.querySelector(".fc-GroupButton-button");
-
-      customButtonEl6.innerHTML = `
-            <div class="btn-group">
-            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton5" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Group</button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton5" id="groupDropdown">
-            <div class="btn-group">
-                <button class="dropdown-item" type="button" name="createGroupButton" id="createGroupButton" onclick="createGroup();"><i class="fas fa-user-friends"></i> Create group</button>
-            </div>
-            <div class="btn-group">
-                <button class="dropdown-item" type="button" name="GroupEditbutton" id="GroupEditbutton"  onclick="editGroup();"><i class="fas fa-pencil-alt"></i> Edit group</button>
-            </div>
-            <div class="btn-group">
-                <button class="dropdown-item" type="button" name="GroupDeletebutton" id="GroupDeletebutton"  onclick="DeleteGroup();"><i class="fas fa-times-circle"></i> Delete group</button>
-            </div>
-            </div>
-            </div>`;
-    }
-
-    initializeTooltip(
-      "#dropdownMenuButton5",
-      "Create / Edit Group for Meetings",
-      "top"
-    );
-
-    // Initial Visibility
-    // Hide the dropdown buttons
-    document.querySelector(".fc-ProductDropdown-button").style.display = "none";
-    document.querySelector(".fc-MeetTypeDropdown-button").style.display =
-      "block";
-
-    // Event Handlers
-    document
-      .getElementById("meeting-anchor")
-      .addEventListener("click", function () {
-        document.querySelector(".fc-ProductDropdown-button").style.display =
-          "none";
-        document.querySelector(".fc-MeetTypeDropdown-button").style.display =
-          "block";
-      });
-
-    document
-      .getElementById("sprint-dropdown")
-      .addEventListener("click", function () {
-        document.querySelector(".fc-ProductDropdown-button").style.display =
-          "block";
-        document.querySelector(".fc-MeetTypeDropdown-button").style.display =
-          "none";
-      });
-
-    // Event listeners for the custom dropdown options for product
-    document.querySelectorAll(".dropdown-item.meetType").forEach((item) => {
-      item.addEventListener("click", function (event) {
-        event.preventDefault();
-        document.getElementById("dropdownMenuButton4").innerHTML =
-          "<b>MeetType</b>: " + this.innerText;
-      });
-    });
-
-    // Event listeners for the custom dropdown options for product
-    document.querySelectorAll(".dropdown-item.product").forEach((item) => {
-      item.addEventListener("click", function (event) {
-        event.preventDefault();
-        document.getElementById("dropdownMenuButton1").innerHTML =
-          "<b>Product</b>: " + this.textContent;
-      });
-    });
-
-    // Event listeners for the custom dropdown options for status
-    document.querySelectorAll(".dropdown-item.status").forEach((item) => {
-      item.addEventListener("click", function (event) {
-        event.preventDefault();
-        document.getElementById("dropdownMenuButton3").innerHTML =
-          "<b>Status</b>: " + this.innerText;
-      });
-    });
-
-    // Event listeners for the custom dropdown options for events
-    document.querySelectorAll(".dropdown-item.events").forEach((item) => {
-      item.addEventListener("click", function (event) {
-        event.preventDefault();
-        document.getElementById("dropdownMenuButton2").innerHTML =
-          "<b>Events</b>: " + this.innerText;
-        currentEventType = this.innerText; // Update the currentEventType based on selection
-
-        if (this.innerText === "Sprint") {
-          showSprint(sprintDetails);
-        } else if (this.innerText === "Meeting") {
-          showMeetings(meetingDetails);
-        }
-      });
-    });
-
-    /**
-     * Show initial meetings on the calendar.
-     * @param {Array} meetingDetails - An array of meeting detail objects.
-     */
-    showMeetings(meetingDetails);
-    /**
-     * Functions to show meetings on the calendar.
-     * @param {Array} meetingDetails - An array of meeting detail objects.
-     */
-    function showMeetings(meetingDetails) {
-      // Remove all existing events from the calendar
-      calendar.removeAllEvents();
-
-      showHolidays(holidayDetails);
-
-      currentEventType = "Meeting";
-      for (let i = 0; i < meetingDetails.length; i++) {
-        const meeting = meetingDetails[i];
-        addEvent(
-          `meeting-event-${meeting.meeting_details_id}`,
-          meeting.meeting_type_name +
-            " - " +
-            formatToAmPm(meeting.meeting_start_time),
-          meeting.meeting_start_date + " " + meeting.meeting_start_time,
-          meeting.meeting_start_date + " " + meeting.meeting_end_time,
-          "Meeting",
-          meeting.r_meeting_type_id,
-          meeting.is_deleted,
-          meeting.is_logged
-        );
-      }
-    }
-
-    /**
-     * Functions to show sprint details on the calendar.
-     * @param {Array} sprintDetails - An array of sprint detail objects.
-     */
-    function showSprint(sprintDetails) {
-      calendar.removeAllEvents(); // Remove all existing events
-      currentEventType = "Sprint"; // Set the current event type to Sprint
-
-      sprintDetails.forEach((sprint) => {
-        const statusName = sprint.status_name;
-        const sprintName =
-          capitalizeFirstLetter(sprint.sprint_name) +
-          "->" +
-          capitalizeFirstLetter(sprint.product_name);
-        let startDate = new Date(sprint.start_date);
-        let endDate = new Date(sprint.end_date);
-        const eventType = "Sprint";
-
-        let currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-          if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
-            // Skip weekends
-            addEvent(
-              `sprint-event-${sprint.sprint_id}`, // Unique ID for each sprint
-              sprintName,
-              new Date(currentDate).toISOString(),
-              new Date(currentDate).toISOString(), // Same day event for each valid day
-              eventType,
-              statusName,
-              sprint.is_deleted,
-              sprint.is_logged
-            );
-          }
-          currentDate.setDate(currentDate.getDate() + 1); // Move to next day
-        }
+    // =========================================================================
+    // Toolbar, filters, mini calendar and rendering
+    // =========================================================================
+    function el(id) { return document.getElementById(id); }
+    function esc(v) {
+      return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
       });
     }
-    // showHolidays(holidayDetails);
-    function showHolidays(holidayDetails) {
-      // Remove all existing events from the calendar
-      for (let i = 0; i < holidayDetails.length; i++) {
-        const holiday = holidayDetails[i];
-        addEvent(
-          `holiday-event-${holiday.holiday_id}`,
-          holiday.holiday_title,
-          holiday.holiday_start_date,
-          holiday.holiday_start_date,
-          "Holiday",
-          "All",
-          "N",
-          "H"
-        );
-      }
+    function pad(n) { return String(n).padStart(2, "0"); }
+    function ymd(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+    function toDate(date, time) { return new Date(date + "T" + (time || "00:00:00")); }
+    function addDays(dateStr, n) {
+      const d = new Date(dateStr + "T00:00:00");
+      d.setDate(d.getDate() + n);
+      return ymd(d);
     }
 
-    /**
-     * Add events to the calendar.
-     * @param {string} id - Unique ID for the event.
-     * @param {string} title - Title of the event.
-     * @param {string} start - Start date and time of the event.
-     * @param {string} end - End date and time of the event.
-     * @param {string} eventType - Type of the event (e.g., "Meeting" or "Sprint").
-     * @param {string} [statusName] - Status name for the event (applicable for Sprint events).
-     */
-    function addEvent(
-      id,
-      title,
-      start,
-      end,
-      eventType,
-      statusName,
-      deleted,
-      logged
-    ) {
-      if (eventType === "Meeting") {
-        calendar.addEvent({
-          id: id,
-          title: title,
-          start: start,
-          end: end,
-          meetType: statusName,
-          deleted: deleted,
-          logged: logged,
-          extendedProps: {
-            eventType: eventType,
-          },
-        });
-      } else if (eventType === "Holiday") {
-        calendar.addEvent({
-          id: id,
-          title: title,
-          start: start,
-          end: end,
-          meetType: statusName,
-          deleted: deleted,
-          logged: logged,
-          extendedProps: {
-            eventType: eventType,
-          },
+    const STATE_META = {
+      upcoming: { label: "Upcoming", icon: "fa-calendar-alt" },
+      live: { label: "Ongoing", icon: "fa-spinner" },
+      done: { label: "Completed", icon: "fa-check-circle" },
+      needslog: { label: "Needs time log", icon: "fa-clock" },
+      cancelled: { label: "Cancelled", icon: "fa-ban" },
+    };
+
+    function meetingState(m, now) {
+      if (m.is_deleted === "Y") { return "cancelled"; }
+      const s = toDate(m.meeting_start_date, m.meeting_start_time);
+      const e = toDate(m.meeting_end_date || m.meeting_start_date, m.meeting_end_time);
+      if (e < now) { return m.is_logged === "Y" ? "done" : "needslog"; }
+      if (s <= now) { return "live"; }
+      return "upcoming";
+    }
+    function sprintState(statusName) {
+      if (statusName === "Sprint Completed") { return "done"; }
+      if (statusName === "Sprint Planned") { return "upcoming"; }
+      return "live";
+    }
+
+    // ---- Filters (they now combine instead of overriding each other) ------
+    const filters = { kind: "Meeting", type: "All", status: "All", product: "All" };
+
+    function statusMatches(state) {
+      if (filters.status === "All") { return true; }
+      if (filters.status === "Completed") { return state === "done" || state === "needslog"; }
+      return state === filters.status;
+    }
+    function meetingMatches(m, now, ignoreStatus) {
+      if (filters.type !== "All" && String(m.r_meeting_type_id) !== filters.type) { return false; }
+      return ignoreStatus ? true : statusMatches(meetingState(m, now));
+    }
+    function sprintMatches(sp, ignoreStatus) {
+      if (filters.product !== "All" && String(sp.product_name || "").toLowerCase() !== filters.product) { return false; }
+      return ignoreStatus ? true : (filters.status === "All" || sp.status_name === filters.status);
+    }
+
+    let mini = null;
+    let eventDays = new Set();
+
+    function buildEvents() {
+      const now = new Date();
+      const out = [];
+      const days = new Set();
+
+      if (filters.kind === "Meeting") {
+        meetingDetails.forEach(function (m) {
+          if (!meetingMatches(m, now, false)) { return; }
+          const state = meetingState(m, now);
+          out.push({
+            id: "meeting-event-" + m.meeting_details_id,
+            title: m.meeting_type_name,
+            start: m.meeting_start_date + "T" + m.meeting_start_time,
+            end: (m.meeting_end_date || m.meeting_start_date) + "T" + m.meeting_end_time,
+            classNames: ["ox-evt", "ox-" + state],
+            extendedProps: { eventType: "Meeting", meetType: m.r_meeting_type_id, deleted: m.is_deleted, logged: m.is_logged, state: state },
+          });
+          days.add(m.meeting_start_date);
         });
       } else {
-        calendar.addEvent({
-          id: id,
-          title: title,
-          start: start,
-          end: end,
-          statusName: statusName,
-          extendedProps: {
-            eventType: eventType,
-          },
+        sprintDetails.forEach(function (sp) {
+          if (!sprintMatches(sp, false)) { return; }
+          const state = sprintState(sp.status_name);
+          // One continuous bar per sprint (instead of one event per weekday)
+          out.push({
+            id: "sprint-event-" + sp.sprint_id,
+            title: capitalizeFirstLetter(sp.sprint_name || "") + " · " + capitalizeFirstLetter(sp.product_name || ""),
+            start: sp.start_date,
+            end: addDays(sp.end_date, 1),
+            allDay: true,
+            classNames: ["ox-evt", "ox-" + state],
+            extendedProps: { eventType: "Sprint", statusName: sp.status_name, statusLabel: String(sp.status_name || "").replace(/^Sprint /, "") },
+          });
+          for (let d = sp.start_date; d <= sp.end_date; d = addDays(d, 1)) { days.add(d); }
+        });
+      }
+
+      // Holidays: shade every day of the range and label it (multi-day holidays now show on every day)
+      (holidayDetails || []).forEach(function (h) {
+        const last = h.holiday_end_date || h.holiday_start_date;
+        out.push({ id: "holiday-bg-" + h.holiday_id, start: h.holiday_start_date, end: addDays(last, 1), allDay: true, display: "background", classNames: ["ox-holiday-bg"], extendedProps: { eventType: "HolidayBg" } });
+        out.push({ id: "holiday-event-" + h.holiday_id, title: h.holiday_title, start: h.holiday_start_date, end: addDays(last, 1), allDay: true, classNames: ["ox-holiday"], editable: false, extendedProps: { eventType: "Holiday" } });
+      });
+      return { events: out, days: days };
+    }
+
+    function renderEvents() {
+      const built = buildEvents();
+      calendar.batchRendering(function () {
+        calendar.removeAllEvents();
+        built.events.forEach(function (e) { calendar.addEvent(e); });
+      });
+      eventDays = built.days;
+      if (mini) { mini.redraw(); }
+      updateCounts();
+    }
+
+    // ---- Filter panel -------------------------------------------------------
+    function chipHtml(group, value, label, icon, active) {
+      return '<button type="button" class="ox-chip' + (active ? " active" : "") + '" data-group="' + group + '" data-value="' + esc(value) + '" aria-pressed="' + (active ? "true" : "false") + '">' +
+        (icon ? '<i class="fas ' + icon + '"></i>' : "") + '<span class="ox-chip-label">' + esc(label) + '</span><span class="ox-count" data-count="' + group + ":" + esc(value) + '"></span></button>';
+    }
+
+    function buildFilterPanel() {
+      const isMeeting = filters.kind === "Meeting";
+      el("oxTypeFilter").hidden = !isMeeting;
+      el("oxProductFilter").hidden = isMeeting;
+
+      if (isMeeting) {
+        let types = chipHtml("type", "All", "All types", "fa-list", filters.type === "All");
+        meetType.forEach(function (t) {
+          types += chipHtml("type", String(t.meeting_type_id), t.meeting_type_name, getIconClass(t.meeting_type_name).replace("fas ", ""), filters.type === String(t.meeting_type_id));
+        });
+        el("oxTypeChips").innerHTML = types;
+        el("oxStatusChips").innerHTML =
+          chipHtml("status", "All", "All", "fa-list", filters.status === "All") +
+          chipHtml("status", "upcoming", "Upcoming", "fa-calendar-alt", filters.status === "upcoming") +
+          chipHtml("status", "live", "Ongoing", "fa-spinner", filters.status === "live") +
+          chipHtml("status", "Completed", "Completed", "fa-check-circle", filters.status === "Completed") +
+          chipHtml("status", "needslog", "Needs time log", "fa-clock", filters.status === "needslog") +
+          chipHtml("status", "cancelled", "Cancelled", "fa-ban", filters.status === "cancelled");
+      } else {
+        const names = [];
+        sprintDetails.forEach(function (sp) { if (sp.status_name && names.indexOf(sp.status_name) === -1) { names.push(sp.status_name); } });
+        el("oxStatusChips").innerHTML = chipHtml("status", "All", "All", "fa-list", filters.status === "All") +
+          names.map(function (n) { return chipHtml("status", n, n.replace(/^Sprint /, ""), getIconClass(n).replace("fas ", ""), filters.status === n); }).join("");
+        const sel = el("oxProductSelect");
+        const seen = {};
+        let opts = '<option value="All">All products</option>';
+        sprintDetails.forEach(function (sp) {
+          const key = String(sp.product_name || "").toLowerCase();
+          if (key && !seen[key]) { seen[key] = true; opts += '<option value="' + esc(key) + '">' + esc(capitalizeFirstLetter(sp.product_name)) + "</option>"; }
+        });
+        sel.innerHTML = opts;
+        sel.value = filters.product;
+      }
+      buildLegend();
+      updateCounts();
+    }
+
+    function updateCounts() {
+      const now = new Date();
+      const counts = {};
+      const bump = function (k) { counts[k] = (counts[k] || 0) + 1; };
+      if (filters.kind === "Meeting") {
+        meetingDetails.forEach(function (m) {
+          const state = meetingState(m, now);
+          bump("type:All"); bump("type:" + m.r_meeting_type_id);
+          if (meetingMatches(m, now, true)) {
+            bump("status:All"); bump("status:" + state);
+            if (state === "done" || state === "needslog") { bump("status:Completed"); }
+          }
+        });
+      } else {
+        sprintDetails.forEach(function (sp) {
+          if (sprintMatches(sp, true)) { bump("status:All"); bump("status:" + sp.status_name); }
+        });
+      }
+      document.querySelectorAll(".ox-count").forEach(function (n) { n.textContent = counts[n.getAttribute("data-count")] || 0; });
+    }
+
+    function buildLegend() {
+      const items = filters.kind === "Meeting"
+        ? [["upcoming", "Upcoming"], ["live", "Ongoing"], ["done", "Completed"], ["needslog", "Needs time log"], ["cancelled", "Cancelled"]]
+        : [["upcoming", "Planned"], ["live", "Running"], ["done", "Completed"]];
+      el("oxLegend").innerHTML = items.map(function (i) { return '<span class="ox-legend-item"><i class="ox-dot ox-dot-' + i[0] + '"></i>' + i[1] + "</span>"; }).join("") +
+        '<span class="ox-legend-item"><i class="ox-dot ox-dot-holiday"></i>Holiday</span>';
+    }
+
+    function setKind(kind) {
+      filters.kind = kind;
+      filters.status = "All";
+      filters.type = "All";
+      filters.product = "All";
+      currentEventType = kind;
+      document.querySelectorAll(".ox-seg-btn[data-kind]").forEach(function (b) {
+        const on = b.getAttribute("data-kind") === kind;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      buildFilterPanel();
+      renderEvents();
+    }
+
+    document.querySelector(".ox-cal-side").addEventListener("click", function (e) {
+      const chip = e.target.closest(".ox-chip");
+      if (chip) {
+        filters[chip.getAttribute("data-group")] = chip.getAttribute("data-value");
+        buildFilterPanel();
+        renderEvents();
+        return;
+      }
+      const seg = e.target.closest(".ox-seg-btn[data-kind]");
+      if (seg && seg.getAttribute("data-kind") !== filters.kind) { setKind(seg.getAttribute("data-kind")); }
+    });
+    el("oxProductSelect").addEventListener("change", function () { filters.product = this.value; updateCounts(); renderEvents(); });
+
+    // ---- Toolbar -----------------------------------------------------------
+    el("oxToday").addEventListener("click", function () { calendar.today(); });
+    el("oxPrev").addEventListener("click", function () { calendar.prev(); });
+    el("oxNext").addEventListener("click", function () { calendar.next(); });
+    document.querySelectorAll(".ox-seg-btn[data-view]").forEach(function (b) {
+      b.addEventListener("click", function () { calendar.changeView(b.getAttribute("data-view")); });
+    });
+
+    function onDatesSet(arg) {
+      const title = el("oxTitle");
+      if (title) { title.textContent = calendar.view.title; }
+      document.querySelectorAll(".ox-seg-btn[data-view]").forEach(function (b) {
+        const on = b.getAttribute("data-view") === arg.view.type;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      try { window.localStorage.setItem(VIEW_KEY, arg.view.type); } catch (e) { /* ignore */ }
+      if (mini) { mini.setDate(calendar.getDate(), false); mini.jumpToDate(calendar.getDate()); }
+      // Time-grid views get a fixed, scrollable height; month/agenda grow with their content
+      const wanted = arg.view.type.indexOf("timeGrid") === 0 ? Math.max(560, window.innerHeight - 300) : "auto";
+      if (calendar.getOption("height") !== wanted) { setTimeout(function () { calendar.setOption("height", wanted); }, 0); }
+    }
+
+    // ---- Mini calendar -----------------------------------------------------
+    if (window.flatpickr && el("oxMini")) {
+      const miniInput = document.createElement("input");
+      miniInput.type = "text";
+      el("oxMini").appendChild(miniInput);
+      mini = flatpickr(miniInput, {
+        inline: true,
+        monthSelectorType: "static",
+        defaultDate: new Date(),
+        disableMobile: true,
+        onChange: function (sel) { if (sel[0]) { calendar.gotoDate(sel[0]); } },
+        onDayCreate: function (d, s, fp, dayElem) { if (eventDays.has(ymd(dayElem.dateObj))) { dayElem.classList.add("has-event"); } },
+      });
+    }
+
+    // ---- Scheduling from the calendar ---------------------------------------
+    function openScheduleModal(dateStr, minutes) {
+      document.getElementById("meeting_start_date").value = dateStr;
+      document.getElementById("meeting_end_date").value = dateStr;
+      $("#meetingModal").modal("show");
+      document.getElementById("modalTitle").innerText = "Schedule meeting";
+      $("#eventDetails, #timeLogSection, #helpdetails, #groupdetails").hide();
+      $("#scheduleMeetingForm").show();
+      document.getElementById("formOperation").value = "insert";
+      if (minutes != null && minutes < 24 * 60) {
+        // Clicking a time slot pre-fills the start time (snapped to 15 minutes)
+        $("#meetingModal").one("shown.bs.modal", function () {
+          const select = document.getElementById("startTimeSelect");
+          select.value = String(Math.floor(minutes / 15) * 15);
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          // Default to a one-hour meeting so the end time is filled in straight away
+          const hrs = document.getElementById("meeting_duration_hours");
+          const mins = document.getElementById("meeting_duration_minutes");
+          if (hrs && mins && !hrs.value && !mins.value) {
+            hrs.value = "1";
+            mins.value = "0";
+            hrs.dispatchEvent(new Event("change", { bubbles: true }));
+          }
         });
       }
     }
+
+    function handleSlotClick(dateStr, minutes) {
+      if (!permissions.scheduleMeeting || currentEventType !== "Meeting") { return; }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (new Date(dateStr + "T00:00:00") < today) {
+        Swal.fire({ icon: "warning", text: "You can't schedule a meeting on a past date" });
+        return;
+      }
+      $.ajax({ url: baseUrl + "meeting/checkHoliday", method: "GET", data: { date: dateStr } })
+        .done(function (response) {
+          const h = response && response.isHoliday && response.isHoliday.length ? response.isHoliday[0] : null;
+          if (!h) { openScheduleModal(dateStr, minutes); return; }
+          Swal.fire({
+            icon: "question", title: "Holiday",
+            text: h.holiday_title + " falls on this day. Schedule a meeting anyway?",
+            showCancelButton: true, confirmButtonText: "Yes, schedule", cancelButtonText: "Cancel",
+          }).then(function (r) { if (r.isConfirmed) { openScheduleModal(dateStr, minutes); } });
+        })
+        .fail(function () { openScheduleModal(dateStr, minutes); });
+    }
+
+    const newBtn = el("oxNewMeeting");
+    if (newBtn) {
+      newBtn.addEventListener("click", function () {
+        if (filters.kind !== "Meeting") { setKind("Meeting"); }
+        const now = new Date();
+        const next = Math.ceil((now.getHours() * 60 + now.getMinutes() + 1) / 15) * 15;
+        handleSlotClick(ymd(now), next < 24 * 60 ? next : null);
+      });
+    }
+
+    // ---- Keyboard shortcuts (T today, M/W/D/A views, ←/→ navigate, ? help) ----
+    document.addEventListener("keydown", function (e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) { return; }
+      const t = e.target;
+      if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) { return; }
+      if (document.body.classList.contains("modal-open") || document.querySelector(".swal2-container")) { return; }
+      const k = e.key.toLowerCase();
+      const views = { m: "dayGridMonth", w: "timeGridWeek", d: "timeGridDay", a: "listMonth" };
+      if (k === "t") { calendar.today(); }
+      else if (views[k]) { calendar.changeView(views[k]); }
+      else if (e.key === "ArrowLeft") { calendar.prev(); }
+      else if (e.key === "ArrowRight") { calendar.next(); }
+      else if (e.key === "?") { showEventDetailsModal(); }
+    });
+
+    // ---- Go ----------------------------------------------------------------
+    buildFilterPanel();
+    calendar.render();
+    renderEvents();
+    // Statuses depend on "now": refresh every 5 minutes unless a dialog is open
+    setInterval(function () { if (!document.body.classList.contains("modal-open")) { renderEvents(); } }, 300000);
   });
 
   /**

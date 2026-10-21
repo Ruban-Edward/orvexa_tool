@@ -1018,4 +1018,46 @@ class SprintModel extends BaseModel
           $result = $this->query($query, ["estimated_hours" => $estimated_hours, "sprint_id" => $sprintId]);
           return 0;
      }
+
+    /**
+     * Which of the given tasks already belong to a sprint that is not completed yet?
+     * (A task may only be planned into one open sprint at a time; tasks left over from a
+     * completed sprint can be planned again.)
+     * @return array<int,array{r_task_id:int,sprint_name:string,sprint_version:string}>
+     */
+    public function getTasksInOpenSprints(array $taskIds, ?int $ignoreSprintId = null): array
+    {
+        $taskIds = array_values(array_unique(array_map('intval', $taskIds)));
+        if (empty($taskIds)) {
+            return [];
+        }
+        $sql = "SELECT st.r_task_id, s.sprint_name, s.sprint_version
+                FROM orvexa_sprint_task AS st
+                INNER JOIN orvexa_sprint AS s ON s.sprint_id = st.r_sprint_id
+                WHERE st.is_deleted = 'N'
+                  AND s.is_deleted = 'N'
+                  AND s.r_module_status_id <> 23
+                  AND st.r_task_id IN (" . implode(',', array_fill(0, count($taskIds), '?')) . ")";
+        $params = $taskIds;
+        if ($ignoreSprintId !== null) {
+            $sql .= " AND s.sprint_id <> ?";
+            $params[] = $ignoreSprintId;
+        }
+        return $this->db->query($sql, $params)->getResultArray();
+    }
+
+    /**
+     * Is there already a sprint with the same name + version for this product?
+     */
+    public function sprintExists(int $productId, string $name, string $version, ?int $ignoreSprintId = null): bool
+    {
+        $sql = "SELECT sprint_id FROM orvexa_sprint
+                WHERE is_deleted = 'N' AND r_product_id = ? AND LOWER(sprint_name) = LOWER(?) AND LOWER(sprint_version) = LOWER(?)";
+        $params = [$productId, trim($name), trim($version)];
+        if ($ignoreSprintId !== null) {
+            $sql .= " AND sprint_id <> ?";
+            $params[] = $ignoreSprintId;
+        }
+        return $this->db->query($sql, $params)->getNumRows() > 0;
+    }
 }

@@ -458,8 +458,8 @@ class SprintController extends BaseController
      {
           // Collect data from the POST request
           $data = [
-               'sprint_name' => $this->request->getPost('sprintName'),
-               'sprint_version' => $this->request->getPost('sprintVersion'),
+               'sprint_name' => trim((string) $this->request->getPost('sprintName')),
+               'sprint_version' => trim((string) $this->request->getPost('sprintVersion')),
                'r_product_id' => $this->request->getPost('productName'),
                'r_customer_id' => $this->request->getPost('customer'),
                'r_sprint_duration_id' => $this->request->getPost('sprintDuration'),
@@ -469,136 +469,143 @@ class SprintController extends BaseController
                'created_date' => date('Y-m-d H:i:s'),
                'r_user_id_created' => $this->userId,
           ];
-          // Validate the data
           $checkValidations = $this->hasInvalidInput($this->scrumSprintModelobj, $data);
           if ($checkValidations !== true) {
-               // Collect errors if validation fails
                return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
           }
 
-          // Collect selected tasks, members, and settings from the POST request
-          $selectedTasks = $this->request->getPost('selectedTasks');
-          $selectedMembersJson = $this->request->getPost('selectedMembers');
-          $selectedMembersJson = isset($selectedMembersJson) ? $selectedMembersJson : '[]';
-          $selectedMembers = json_decode($selectedMembersJson, true);
-          array_push($selectedMembers, $this->userId);
-          $selectedMembers = array_unique($selectedMembers);
-          if (!empty($selectedTasks) && !empty($selectedMembers)) {
-               // Insert sprint details and get the sprint ID
-               $sprintId = $this->scrumSprintModelobj->insertSprintDetails($data);
+          // ---- Business rules (checked BEFORE anything is written) -------------------------
+          $start = \DateTime::createFromFormat('Y-m-d', (string) $data['start_date']);
+          $end   = \DateTime::createFromFormat('Y-m-d', (string) $data['end_date']);
+          if (! $start || ! $end || $start->format('Y-m-d') !== $data['start_date'] || $end->format('Y-m-d') !== $data['end_date']) {
+               return $this->response->setJSON(['success' => false, 'message' => 'Please enter valid start and end dates.']);
+          }
+          if ($end < $start) {
+               return $this->response->setJSON(['success' => false, 'message' => 'The sprint end date cannot be before its start date.']);
+          }
+          if ($this->sprintModel->sprintExists((int) $data['r_product_id'], $data['sprint_name'], $data['sprint_version'])) {
+               return $this->response->setJSON(['success' => false, 'message' => 'A sprint with this name and version already exists for the product.']);
+          }
 
-               // Iterate through each selected task and insert into the database
-               foreach ($selectedTasks as $isSelected) {
-                    if ($isSelected) {
-                         $taskData = [
-                              'r_sprint_id' => $sprintId,
-                              'r_task_id' => $isSelected,
-                         ];
+          $selectedTasks = array_values(array_filter((array) $this->request->getPost('selectedTasks')));
+          if (empty($selectedTasks)) {
+               return $this->response->setJSON(['success' => false, 'message' => 'Please select tasks']);
+          }
+          $busy = $this->sprintModel->getTasksInOpenSprints($selectedTasks);
+          if (! empty($busy)) {
+               $names = array_unique(array_map(static fn ($r) => $r['sprint_name'] . ' - ' . $r['sprint_version'], $busy));
+               return $this->response->setJSON(['success' => false, 'message' => count($busy) . ' of the selected task(s) already belong to another open sprint (' . implode(', ', $names) . ').']);
+          }
 
-                    }
-                    // Validate the task data
-                    $checkValidations = $this->hasInvalidInput($this->sprintTaskModelobj, $taskData);
-                    if ($checkValidations !== true) {
-                         return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
-                    }
-                    // Insert the selected task into the database
-                    $result = $this->sprintTaskModelobj->insertSelectedTasks($taskData);
-                    $this->sprintModel->updatesprintEstimationTime($sprintId);
+          $selectedMembers = json_decode($this->request->getPost('selectedMembers') ?? '[]', true);
+          $selectedMembers = is_array($selectedMembers) ? $selectedMembers : [];
+          $selectedMembers[] = $this->userId;
+          $selectedMembers = array_values(array_unique($selectedMembers));
+
+          // ---- Everything below is one transaction: a sprint is created completely or not at all
+          $db = \Config\Database::connect();
+          $db->transStart();
+
+          $sprintId = $this->scrumSprintModelobj->insertSprintDetails($data);
+
+          foreach ($selectedTasks as $taskId) {
+               $taskData = [
+                    'r_sprint_id' => $sprintId,
+                    'r_task_id' => $taskId,
+               ];
+               $checkValidations = $this->hasInvalidInput($this->sprintTaskModelobj, $taskData);
+               if ($checkValidations !== true) {
+                    $db->transRollback();
+                    return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
                }
+               $this->sprintTaskModelobj->insertSelectedTasks($taskData);
+          }
+          $this->sprintModel->updatesprintEstimationTime($sprintId);
 
-               // Iterate through each selected member and insert into the database
-               foreach ($selectedMembers as $memberId) {
-                    $memberData = [
-                         'r_sprint_id' => $sprintId,
-                         'r_user_id' => $memberId,
-                    ];
-                    // Validate the member data
-                    $checkValidations = $this->hasInvalidInput($this->sprintUserModelobj, $memberData);
-                    if ($checkValidations !== true) {
-                         return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
-                    }
-                    // Insert the selected member into the database
-                    $resultMember = $this->sprintUserModelobj->insertSelectedMembers($memberData);
+          foreach ($selectedMembers as $memberId) {
+               $memberData = [
+                    'r_sprint_id' => $sprintId,
+                    'r_user_id' => $memberId,
+               ];
+               $checkValidations = $this->hasInvalidInput($this->sprintUserModelobj, $memberData);
+               if ($checkValidations !== true) {
+                    $db->transRollback();
+                    return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
                }
-               // Check if sprint settings are provided
-               $sprintSettings = $this->request->getPost('sprintSettings');
-               if ($sprintSettings[0]['activity'] != null) {
-                    $i = 0;
-                    foreach ($sprintSettings as $value1) {
-                         // Prepare the notes data
-                         $notes = [
-                              "notes" => !empty($value1['comments']) ? $value1['comments'] : "No comments found",
-                              "r_user_id" => $this->userId,
-                              "created_date" => $this->currentDateTime
-                         ];
-                         // Validate the notes data
-                         $checkValidations = $this->hasInvalidInput($this->notesModelObj, $notes);
-                         if ($checkValidations !== true) {
-                              // Collect errors if validation fails
-                              return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
-                         }
-                         // Insert notes and get the note ID
-                         $sprintSettings[$i]['notes_id'] = $this->notesModelObj->insertNotes($notes);
-                         $i++;
-                    }
+               $this->sprintUserModelobj->insertSelectedMembers($memberData);
+          }
 
-                    // Iterate through each sprint setting and insert into the database
-                    foreach ($sprintSettings as $value1) {
-                         $settingsData = [
-                              'r_sprint_id' => $sprintId,
-                              'r_sprint_activity_id' => $value1['activity'],
-                              'start_date' => !empty($value1['startDate']) ? $value1['startDate'] : $this->request->getPost('startDate'),
-                              'end_date' => !empty($value1['endDate']) ? $value1['endDate'] : $this->request->getPost('startDate'),
-                              'r_notes_id' => $value1['notes_id'],
-                         ];
-                         // Insert the sprint planning data into the database
-                         $results = $this->sprintPlanningObj->insertSprintPlanning($settingsData);
-                    }
-               }
-
-               // Check if the planning data was successfully inserted
-               if ($resultMember) {
-                    // Get user stories associated with the selected tasks
-                    $userStories = $this->sprintModel->getUserStories($selectedTasks);
-                    // Update user stories
-                    $this->sprintModel->updateUserStory($userStories, 18);
-
-                    $action = array(
+          $sprintSettings = $this->request->getPost('sprintSettings');
+          if (! empty($sprintSettings[0]['activity'])) {
+               $i = 0;
+               foreach ($sprintSettings as $value1) {
+                    $notes = [
+                         "notes" => !empty($value1['comments']) ? $value1['comments'] : "No comments found",
                          "r_user_id" => $this->userId,
-                         "r_action_type_id" => 5,
-                         "product_id" => 0,
-                         "r_module_id" => 8,
-                         "reference_id" => $sprintId,
-                         "action_data" => "<b>" . $data["sprint_name"] . " - " . $data["sprint_version"] . "</b>",
-                         "action_date" => $this->currentDateTime
-                    );
-
-                    $this->historyModel->logActions($action);
-
-                    $sprintData = $this->sprintModel->getSprint($sprintId);
-                    $emailData = [
-                         'email_id' => array_column($this->sprintModel->getSprintMember($sprintId), "email_id"),
-                         'fileName' => 'createSprint',
-                         'contents' => [
-                              'subject' => "Creation of new sprint " . $sprintData[0]['sprint_name'] . " - " . $sprintData[0]['sprint_version'],
-                              'sprint_name' => $sprintData[0]['sprint_name'],
-                              'product_name' => $sprintData[0]['product_name'],
-                              'customer_name' => $sprintData[0]['customer_name'],
-                              'sprint_duration' => $sprintData[0]['sprint_duration'],
-                              'sprint_version' => $sprintData[0]['sprint_version'],
-                              'start_date' => $sprintData[0]['start_date'],
-                              'end_date' => $sprintData[0]['end_date'],
-                              'sprint_goal' => strip_tags($sprintData[0]['sprint_goal'])
-                         ]
+                         "created_date" => $this->currentDateTime
                     ];
-                    // return $this->response->setJSON(["success" => true, "data" => $emailData]);
-                    $this->emailService->sendMail($emailData);
-               } else {
-                    // Return error response if insertion fails
-                    return json_encode(['success' => false, 'error' => 'Failed to insert tasks']);
+                    $checkValidations = $this->hasInvalidInput($this->notesModelObj, $notes);
+                    if ($checkValidations !== true) {
+                         $db->transRollback();
+                         return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
+                    }
+                    $sprintSettings[$i]['notes_id'] = $this->notesModelObj->insertNotes($notes);
+                    $i++;
+               }
+
+               foreach ($sprintSettings as $value1) {
+                    $settingsData = [
+                         'r_sprint_id' => $sprintId,
+                         'r_sprint_activity_id' => $value1['activity'],
+                         'start_date' => !empty($value1['startDate']) ? $value1['startDate'] : $data['start_date'],
+                         'end_date' => !empty($value1['endDate']) ? $value1['endDate'] : $data['start_date'],
+                         'r_notes_id' => $value1['notes_id'],
+                    ];
+                    $this->sprintPlanningObj->insertSprintPlanning($settingsData);
                }
           }
-          return json_encode(['success' => false, 'message' => 'Please select tasks']);
+
+          $userStories = $this->sprintModel->getUserStories($selectedTasks);
+          $this->sprintModel->updateUserStory($userStories, 18);
+
+          $this->historyModel->logActions([
+               "r_user_id" => $this->userId,
+               "r_action_type_id" => 5,
+               "product_id" => 0,
+               "r_module_id" => 8,
+               "reference_id" => $sprintId,
+               "action_data" => "<b>" . esc($data["sprint_name"]) . " - " . esc($data["sprint_version"]) . "</b>",
+               "action_date" => $this->currentDateTime
+          ]);
+
+          $db->transComplete();
+          if ($db->transStatus() === false) {
+               return $this->response->setJSON(['success' => false, 'message' => 'The sprint could not be created. Nothing was saved, please try again.']);
+          }
+
+          // Notification e-mail is best-effort and must never turn a saved sprint into an error
+          try {
+               $sprintData = $this->sprintModel->getSprint($sprintId);
+               $this->emailService->sendMail([
+                    'email_id' => array_column($this->sprintModel->getSprintMember($sprintId), "email_id"),
+                    'fileName' => 'createSprint',
+                    'contents' => [
+                         'subject' => "Creation of new sprint " . $sprintData[0]['sprint_name'] . " - " . $sprintData[0]['sprint_version'],
+                         'sprint_name' => $sprintData[0]['sprint_name'],
+                         'product_name' => $sprintData[0]['product_name'],
+                         'customer_name' => $sprintData[0]['customer_name'],
+                         'sprint_duration' => $sprintData[0]['sprint_duration'],
+                         'sprint_version' => $sprintData[0]['sprint_version'],
+                         'start_date' => $sprintData[0]['start_date'],
+                         'end_date' => $sprintData[0]['end_date'],
+                         'sprint_goal' => strip_tags($sprintData[0]['sprint_goal'])
+                    ]
+               ]);
+          } catch (\Throwable $e) {
+               log_message('error', 'Sprint created but the notification mail failed: ' . $e->getMessage());
+          }
+
+          return $this->response->setJSON(['success' => true, 'sprint_id' => $sprintId]);
      }
 
      /**

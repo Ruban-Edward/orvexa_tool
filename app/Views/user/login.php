@@ -26,6 +26,7 @@ Updated Date: 16 July 2024
     <!-- Login specific CSS -->
     <link href="<?= ASSERT_PATH ?>assets/css/login/login.css?v=6" rel="stylesheet">
     
+    <?= view('layout/csrf') ?>
     <!-- jQuery library -->
     <script src="<?= ASSERT_PATH ?>support/extensions/jquery/jquery.min.js"></script>
 </head>

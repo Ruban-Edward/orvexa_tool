@@ -607,19 +607,26 @@ class BacklogController extends BaseController
         $normalizedAllowedDir = realpath($allowedDir);
 
         // Check if the file exists and is within the allowed directory
-        if ($realPath === false || strpos($realPath, $normalizedAllowedDir) !== 0 || !file_exists($realPath) || !is_readable($realPath)) {
+        if ($realPath === false || strpos($realPath, $normalizedAllowedDir . DIRECTORY_SEPARATOR) !== 0 || !file_exists($realPath) || !is_readable($realPath)) {
             return $this->response->setStatusCode(404)->setBody('File not found or access denied');
         }
 
         // Get the file's MIME type
-        $mimeType = mime_content_type($realPath);
+        $mimeType = mime_content_type($realPath) ?: 'application/octet-stream';
+
+        // Only render types that cannot execute script in the browser. Anything else
+        // (HTML, SVG, XML …) is forced to download so uploaded files can never run as
+        // JavaScript on the application's origin (stored XSS).
+        $inlineSafe  = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf', 'text/plain'];
+        $disposition = in_array($mimeType, $inlineSafe, true) ? 'inline' : 'attachment';
 
         // Read the file content
         $fileContent = file_get_contents($realPath);
 
         // Set the appropriate headers for viewing the file
         $this->response->setHeader('Content-Type', $mimeType);
-        $this->response->setHeader('Content-Disposition', 'inline; filename="' . basename($realPath) . '"');
+        $this->response->setHeader('X-Content-Type-Options', 'nosniff');
+        $this->response->setHeader('Content-Disposition', $disposition . '; filename="' . basename($realPath) . '"');
 
         // Output the file content
         return $this->response->setBody($fileContent);
@@ -645,7 +652,7 @@ class BacklogController extends BaseController
         $normalizedAllowedDir = realpath($allowedDir);
 
         // Check if the file exists and is within the allowed directory
-        if ($realPath === false || strpos($realPath, $normalizedAllowedDir) !== 0 || !file_exists($realPath) || !is_readable($realPath)) {
+        if ($realPath === false || strpos($realPath, $normalizedAllowedDir . DIRECTORY_SEPARATOR) !== 0 || !file_exists($realPath) || !is_readable($realPath)) {
             return $this->response->setStatusCode(404)->setBody('File not found or access denied');
         }
 
@@ -667,7 +674,10 @@ class BacklogController extends BaseController
         $pblId = $this->request->getPost('pblId');
 
         // Fetch the document details based on the document ID
-        $document = ($this->documentModel->getDocumentDetails(0, 0, $docId))[0];
+        $document = ($this->documentModel->getDocumentDetails(0, 0, $docId))[0] ?? null;
+        if (empty($document)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Document not found']);
+        }
 
         // Attempt to delete the document from the database
         $res = $this->backlogItemModel->deleteItem($docId, ['orvexa_document', 'document_id']);

@@ -38,29 +38,48 @@ class UserModel extends BaseModel
 
     public function getUser($input): array
     {
-        $sql = "SELECT 
+        // Look the account up by username only; the password is verified in PHP so
+        // that both modern (bcrypt/argon) hashes and legacy MD5 hashes are supported.
+        $sql = "SELECT
+                    user_id,
                     first_name,
                     external_employee_id,
                     r_role_id,
-                    external_api_key
-                FROM 
-                    orvexa_user 
-                WHERE 
-                    external_username=:username: 
-                AND 
-                    password=:password:
+                    external_api_key,
+                    password
+                FROM
+                    orvexa_user
+                WHERE
+                    external_username=:username:
                 AND
                     is_deleted='N'
+                LIMIT 1
         ";
-        $query = $this->query($sql, [
-            'username' => $input['username'],
-            'password' => md5($input['password'])
-        ]);
-        if ($query->getNumRows() > 0) {
-            $user = $query->getResult();
-            return $user;
+        $query = $this->query($sql, ['username' => $input['username']]);
+        if ($query->getNumRows() === 0) {
+            return [];
         }
-        return [];
+        $user   = $query->getRow();
+        $stored = (string) $user->password;
+        $plain  = (string) $input['password'];
+
+        $isModernHash = str_starts_with($stored, '$2y$') || str_starts_with($stored, '$argon');
+        if ($isModernHash) {
+            $valid = password_verify($plain, $stored);
+        } else {
+            // Legacy unsalted MD5 – compare in constant time, then upgrade below.
+            $valid = hash_equals(strtolower($stored), md5($plain));
+        }
+        if (! $valid) {
+            return [];
+        }
+        if (! $isModernHash || password_needs_rehash($stored, PASSWORD_DEFAULT)) {
+            $this->db->table('orvexa_user')
+                ->where('user_id', $user->user_id)
+                ->update(['password' => password_hash($plain, PASSWORD_DEFAULT)]);
+        }
+        unset($user->password);
+        return [$user];
     }
 
 
@@ -111,7 +130,7 @@ class UserModel extends BaseModel
             $params["first_name_{$index}"] = $item["first_name"];
             $params["last_name_{$index}"] = $item["last_name"];
             $params["email_id_{$index}"] = $item["email_id"];
-            $params["password_{$index}"] = md5($item["password"]);
+            $params["password_{$index}"] = password_hash($item["password"], PASSWORD_DEFAULT);
             $params["role_id_{$index}"] = $item["role_id"];
         }
 

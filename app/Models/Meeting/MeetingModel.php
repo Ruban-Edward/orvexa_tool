@@ -211,9 +211,10 @@ class MeetingModel extends BaseModel
                 INNER JOIN orvexa_sprint_user
                     ON orvexa_sprint_user.r_sprint_id = orvexa_sprint.sprint_id
                 WHERE
-                    orvexa_module_status.module_status_id IN (19, 20, 23)
+                    orvexa_module_status.module_status_id IN (19, 20, 21, 22, 23)
+                    AND orvexa_sprint.is_deleted = 'N'
                     AND orvexa_sprint_user.r_user_id = :id:
-                    AND orvexa_sprint.start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
+                    AND orvexa_sprint.end_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)";
         $result = $this->query($sql, ["id" => $id]);
         return $result->getResultArray(); //returns result as an array format
     }
@@ -347,6 +348,10 @@ class MeetingModel extends BaseModel
      */
     public function getUserId($membersArray): array
     {
+        $membersArray = array_values(array_filter(array_map('trim', (array) $membersArray), 'strlen'));
+        if (empty($membersArray)) {
+            return [];
+        }
         $placeholders = implode(',', array_fill(0, count($membersArray), '?'));
 
         $sql = "SELECT
@@ -355,7 +360,8 @@ class MeetingModel extends BaseModel
                 FROM
                     orvexa_user
                 WHERE
-                    first_name IN ({$placeholders})";
+                    first_name IN ({$placeholders})
+                    AND is_deleted = 'N'";
         $query = $this->query($sql, $membersArray);
         return $query->getResultArray();
     }
@@ -367,8 +373,18 @@ class MeetingModel extends BaseModel
      */
     public function getMeetingMembersConflict($meetData): mixed
     {
-        $sql = "SELECT
+        // $meetData: user_ids (int[]), start (Y-m-d H:i:s), end (Y-m-d H:i:s),
+        //            exclude_ids (int[], optional – meetings to ignore, e.g. the one being edited)
+        $userIds = array_values(array_unique(array_map('intval', $meetData['user_ids'] ?? [])));
+        if (empty($userIds)) {
+            return [];
+        }
+        $excludeIds = array_values(array_unique(array_map('intval', $meetData['exclude_ids'] ?? [])));
+
+        $sql = "SELECT DISTINCT
+                u.external_employee_id,
                 u.first_name,
+                d.meeting_start_date,
                 d.meeting_start_time,
                 d.meeting_end_time
             FROM
@@ -380,22 +396,17 @@ class MeetingModel extends BaseModel
                 orvexa_user AS u
                 ON u.external_employee_id = m.r_user_id
             WHERE
-                d.meeting_start_date = :meeting_start_date:
-                AND (
-                    (d.meeting_start_time >= :meeting_start_time: AND d.meeting_end_time <= :meeting_end_time:)
-                    OR
-                    (d.meeting_start_time <= :meeting_start_time: AND d.meeting_end_time >= :meeting_end_time:)
-                    OR
-                    (d.meeting_start_time <= :meeting_start_time: AND d.meeting_end_time >= :meeting_start_time:)
-                    OR
-                    (d.meeting_start_time <= :meeting_end_time: AND d.meeting_end_time >= :meeting_end_time:)
-                )";
-        $query = $this->query($sql, [
-            'meeting_start_date' => $meetData['meeting_start_date'],
-            'meeting_start_time' => $meetData['meeting_start_time'],
-            'meeting_end_time' => $meetData['meeting_end_time'],
-        ]);
-        return $query->getResultArray();
+                d.is_deleted = 'N'
+                AND m.is_deleted = 'N'
+                AND m.r_user_id IN (" . implode(',', array_fill(0, count($userIds), '?')) . ")
+                AND TIMESTAMP(d.meeting_start_date, d.meeting_start_time) < ?
+                AND TIMESTAMP(d.meeting_end_date, d.meeting_end_time) > ?";
+        $params = array_merge($userIds, [$meetData['end'], $meetData['start']]);
+        if (!empty($excludeIds)) {
+            $sql .= " AND d.meeting_details_id NOT IN (" . implode(',', array_fill(0, count($excludeIds), '?')) . ")";
+            $params = array_merge($params, $excludeIds);
+        }
+        return $this->query($sql, $params)->getResultArray();
     }
 
     /**
