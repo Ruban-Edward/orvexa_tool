@@ -10,7 +10,7 @@
 }
 
 .card-header {
-    background-color: #3949ab;
+    background-color: var(--ox-brand-700);
     color: #ffffff;
     border-radius: 4px;
     padding: 10px 10px 10px 15px;
@@ -48,14 +48,14 @@ label {
 }
 
 .btn-primary {
-    background-color: #3949ab;
-    border-color: #3949ab;
+    background-color: var(--ox-brand-700);
+    border-color: var(--ox-brand-700);
     font-size: 0.9rem;
 }
 
 .btn-primary:hover {
-    background-color: #1a237e;
-    border-color: #1a237e;
+    background-color: var(--ox-brand-800);
+    border-color: var(--ox-brand-800);
 }
 
 .form-control,
@@ -87,14 +87,14 @@ label {
 
 .table thead th {
     background-color: #e8eaf6;
-    color: #3949ab;
+    color: var(--ox-brand-700);
 }
 
 .avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #3949ab;
+    background-color: var(--ox-brand-700);
     color: white;
     display: flex;
     align-items: center;
@@ -150,14 +150,14 @@ label {
 
 .back-button {
     cursor: pointer;
-    color: #007bff;
+    color: var(--ox-brand-600);
 }
 .btn-primary{
    padding : 5px 20px;
 }
 .blue-button {
     color: #fff;
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     font-size: 1rem;
     padding: 10px 30px;
     border-radius: 5px;
@@ -169,7 +169,7 @@ label {
    }
    
    .blue-button:hover {
-    background-color: #357ABD;
+    background-color: var(--ox-brand-600);
    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
    }
 .back-button:hover {
@@ -188,7 +188,7 @@ label {
 }
 
 .modal-header {
-    background-color: #3949ab;
+    background-color: var(--ox-brand-700);
     color: white;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -242,7 +242,7 @@ label {
 
 .list-group-item.selected-backlog {
     /* background-color: #fcdc7a; */
-    background-color: #92a1ff;
+    background-color: var(--ox-brand-300);
     color: white;
     border-radius: 4px !important;
     font-weight: bold;
@@ -251,7 +251,7 @@ label {
 }
 
 .list-group-item.selected-epic {
-    background-color: #92a1ff;
+    background-color: var(--ox-brand-300);
     color: white;
     border-radius: 4px !important;
     font-weight: bold;
@@ -261,7 +261,7 @@ label {
 }
 
 .list-group-item.selected-user-story {
-    background-color: #92a1ff;
+    background-color: var(--ox-brand-300);
     color: white;
     border-radius: 4px !important;
     font-weight: bold;
@@ -271,7 +271,7 @@ label {
 }
 
 .list-group-item.selected-task {
-    background-color: #92a1ff;
+    background-color: var(--ox-brand-300);
     color: white;
     border-radius: 4px !important;
     font-weight: bold;
@@ -298,8 +298,8 @@ label {
 }
 
 /* .btn-primary {
-    background-color: #4a90e2;
-    border-color: #4a90e2;
+    background-color: var(--ox-brand-600);
+    border-color: var(--ox-brand-600);
 }
 
 .btn-primary:hover {
@@ -308,8 +308,8 @@ label {
 }
 
 .form-control:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    border-color: var(--ox-brand-600);
+    box-shadow: 0 0 0 0.2rem rgba(31, 184, 101, 0.25);
 } */
 
 .remove-task {
@@ -399,7 +399,7 @@ justify-content: flex-end !important;
 
 .epic-name {
     color: #495057;
-    border-bottom: 2px solid #3949ab;
+    border-bottom: 2px solid var(--ox-brand-700);
     padding-bottom: 5px;
     margin-bottom: 10px;
     font-size: 0.8rem;
@@ -448,12 +448,12 @@ h5, .h5 {
     display: none; 
 }
 .custom-card-header {
-    background-color: #3949AB;
+    background-color: var(--ox-brand-700);
     color: #fff;
 }
 .custom-badge {
     background-color: #ffffff;
-    color: #3949AB;
+    color: var(--ox-brand-700);
 }
 .scrollable-list {
     max-height: 250px; 
@@ -557,8 +557,8 @@ h5, .h5 {
   }
   
   .process-step.active .icon-container {
-    background-color: #007bff;
-    box-shadow: 0 0 0 5px rgba(0, 123, 255, 0.2);
+    background-color: var(--ox-brand-600);
+    box-shadow: 0 0 0 5px rgba(31, 184, 101, 0.2);
   }
   
   .process-step.active .icon-container i {

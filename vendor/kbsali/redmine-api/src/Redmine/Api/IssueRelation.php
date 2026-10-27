@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\MissingParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 
@@ -18,19 +22,48 @@ use Redmine\Serializer\JsonSerializer;
  */
 class IssueRelation extends AbstractApi
 {
-    private $relations = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see IssueRelation::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List relations of the given $issueId.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_IssueRelations#GET
      *
-     * @param int   $issueId the issue id
-     * @param array $params  optional parameters to be passed to the api (offset, limit, ...)
+     * @param int          $issueId the issue id
+     * @param array<mixed> $params  optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of relations found
+     * @return array<mixed> list of relations found
      */
     final public function listByIssueId(int $issueId, array $params = []): array
     {
@@ -46,33 +79,32 @@ class IssueRelation extends AbstractApi
      *
      * @deprecated v2.4.0 Use listByIssueId() instead.
      * @see IssueRelation::listByIssueId()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_IssueRelations#GET
      *
-     * @param int   $issueId the issue id
-     * @param array $params  optional parameters to be passed to the api (offset, limit, ...)
+     * @param int          $issueId the issue id
+     * @param array<mixed> $params  optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of relations found or error message or false
+     * @return array<mixed>|string|false list of relations found or error message or false
      */
     public function all($issueId, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::listByIssueId()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::listByIssueId()` instead.', E_USER_DEPRECATED);
 
         try {
-            $this->relations = $this->listByIssueId($issueId, $params);
+            $relations = $this->listByIssueId($issueId, $params);
         } catch (Exception $e) {
             if ($this->getLastResponse()->getContent() === '') {
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
             return $e->getMessage();
         }
 
-        return $this->relations;
+        return $relations;
     }
 
     /**
@@ -82,7 +114,9 @@ class IssueRelation extends AbstractApi
      *
      * @param int $id the relation id
      *
-     * @return array relation's details or empty array on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed> relation's details or empty array on error
      */
     public function show($id)
     {
@@ -93,6 +127,23 @@ class IssueRelation extends AbstractApi
 
         $body = $this->lastResponse->getContent();
 
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data) || !array_key_exists('relation', $data) || !is_array($data['relation'])) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data['relation'];
+        }
 
         if ('' === $body) {
             return [];
@@ -127,7 +178,18 @@ class IssueRelation extends AbstractApi
             '/relations/' . $id . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -140,12 +202,12 @@ class IssueRelation extends AbstractApi
      *   (in: "relates", "duplicates", "duplicated", "blocks", "blocked", "precedes", "follows", "copied_to", "copied_from")
      * - delay (optional): the delay for a "precedes" or "follows" relation
      *
-     * @param int   $issueId the ID of the issue we are creating the relation on
-     * @param array $params  the new issue relation data
+     * @param int          $issueId the ID of the issue we are creating the relation on
+     * @param array<mixed> $params  the new issue relation data
      *
      * @throws MissingParameterException Missing mandatory parameters
      *
-     * @return array
+     * @return array<mixed>
      */
     public function create($issueId, array $params = [])
     {
@@ -168,6 +230,15 @@ class IssueRelation extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                return JsonSerializer::createFromString($body)->getNormalized();
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
 
         return JsonSerializer::createFromString($body)->getNormalized();
     }

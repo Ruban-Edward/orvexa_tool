@@ -41,7 +41,7 @@ table {
   /* box-shadow: 0px 0px 3px 0px; */
 }
 .header_color th{
-  background-color: #d3e3f3;
+  background-color: var(--ox-brand-50);
   /* color: white; */
 }
 
@@ -49,7 +49,7 @@ table {
 /* modal */
 
 .modal-header{
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   padding: 7px 15px 7px 15px;
 }
 
@@ -193,8 +193,8 @@ span.optext {
   width: 120px;
   height: 34px;
   background-color: white;  
-  border: 1px solid #08479F;
-  color: #08479F;
+  border: 1px solid var(--ox-brand-700);
+  color: var(--ox-brand-700);
   border-radius: 2rem;
   padding: 5px 20px;
   transition: all 0.3s ease;
@@ -212,7 +212,7 @@ span.optext {
   font-size: 16px;
   background-color: transparent;
   font-weight: 700;
-  color: #08479F;
+  color: var(--ox-brand-700);
   width: 0;
   padding: 0;
   transition: all 0.3s ease;
@@ -235,7 +235,7 @@ color: red;
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: #08479F;
+  color: var(--ox-brand-700);
   font-weight: 700;
 }
 
@@ -243,7 +243,7 @@ color: red;
   margin-right: 10px;
 } */
 .search-input::placeholder {
-  color: #08479F;
+  color: var(--ox-brand-700);
   opacity: 1;
 }
 /* Hide placeholder when not expanded */
@@ -296,8 +296,8 @@ display: block;
 
 .button-primary {
   background-color: white;  /* Match the button color */
-  border: 1px solid #08479F;
-  color: #08479F;
+  border: 1px solid var(--ox-brand-700);
+  color: var(--ox-brand-700);
   font-size: 1rem;
   padding: 5px 20px; /* Adjusted padding for better alignment */
   border-radius: 2rem;
@@ -309,7 +309,7 @@ display: block;
 
 .button {
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--ox-brand-600);
   font-size: 1rem;
   padding: 5px 20px;
   border-radius: 2rem;
@@ -323,7 +323,7 @@ display: block;
 }
 
 .button:hover {
-  background-color: #357ABD;
+  background-color: var(--ox-brand-600);
   /* Slightly darker blue for hover effect */
 }
 
@@ -440,7 +440,7 @@ h5, .h5 {
 
 /* .date-filter button {
   padding: 5px 15px;
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   color: white;
   border: 1px solid transparent;
 } */
@@ -491,14 +491,14 @@ h5, .h5 {
 
 .activity-item .time {
   width: 70px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
 }
 
 .activity-item .icon {
   width: 30px;
   height: 30px;
-  background-color: #3949AB;
+  background-color: var(--ox-brand-700);
   color: white;
   border-radius: 50%;
   display: flex;

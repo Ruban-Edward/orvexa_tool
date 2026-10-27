@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\InvalidParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\PathSerializer;
@@ -21,19 +25,48 @@ use SimpleXMLElement;
  */
 class Wiki extends AbstractApi
 {
-    private $wikiPages = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see Wiki::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List wiki pages of a given project.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_WikiPages#Getting-the-pages-list-of-a-wiki
      *
-     * @param int|string $projectIdentifier project id or slug
-     * @param array      $params  optional parameters to be passed to the api (offset, limit, ...)
+     * @param int|string   $projectIdentifier project id or slug
+     * @param array<mixed> $params  optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of wiki pages found for the given project
+     * @return array<mixed> list of wiki pages found for the given project
      */
     final public function listByProject($projectIdentifier, array $params = []): array
     {
@@ -56,33 +89,32 @@ class Wiki extends AbstractApi
      *
      * @deprecated v2.4.0 Use listByProject() instead.
      * @see Wiki::listByProject()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_WikiPages#Getting-the-pages-list-of-a-wiki
      *
-     * @param int|string $project project name
-     * @param array      $params  optional parameters to be passed to the api (offset, limit, ...)
+     * @param int|string   $project project name
+     * @param array<mixed> $params  optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of wiki pages found or error message or false
+     * @return array<mixed>|string|false list of wiki pages found or error message or false
      */
     public function all($project, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::listByProject()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::listByProject()` instead.', E_USER_DEPRECATED);
 
         try {
-            $this->wikiPages = $this->listByProject(strval($project), $params);
+            $wikiPages = $this->listByProject(strval($project), $params);
         } catch (Exception $e) {
             if ($this->getLastResponse()->getContent() === '') {
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
             return $e->getMessage();
         }
 
-        return $this->wikiPages;
+        return $wikiPages;
     }
 
     /**
@@ -95,7 +127,9 @@ class Wiki extends AbstractApi
      * @param string     $page    the page name
      * @param int        $version version of the page
      *
-     * @return array|false|string information about the wiki page as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the wiki page as array or false|string on error
      */
     public function show($project, $page, $version = null)
     {
@@ -104,9 +138,9 @@ class Wiki extends AbstractApi
         ];
 
         if (null === $version) {
-            $path = '/projects/' . $project . '/wiki/' . urlencode($page) . '.json';
+            $path = '/projects/' . $project . '/wiki/' . rawurlencode($page) . '.json';
         } else {
-            $path = '/projects/' . $project . '/wiki/' . urlencode($page) . '/' . $version . '.json';
+            $path = '/projects/' . $project . '/wiki/' . rawurlencode($page) . '/' . $version . '.json';
         }
 
         $this->lastResponse = $this->getHttpClient()->request(HttpFactory::makeJsonRequest(
@@ -115,6 +149,24 @@ class Wiki extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -130,9 +182,9 @@ class Wiki extends AbstractApi
     /**
      * Create a new wiki page given an array of $params.
      *
-     * @param int|string $project the project name
-     * @param string     $page    the page name
-     * @param array      $params  the new wiki page data
+     * @param int|string   $project the project name
+     * @param string       $page    the page name
+     * @param array<mixed> $params  the new wiki page data
      *
      * @return SimpleXMLElement|string|false
      */
@@ -147,11 +199,24 @@ class Wiki extends AbstractApi
 
         $this->lastResponse = $this->getHttpClient()->request(HttpFactory::makeXmlRequest(
             'PUT',
-            '/projects/' . $project . '/wiki/' . urlencode($page) . '.xml',
+            '/projects/' . $project . '/wiki/' . rawurlencode($page) . '.xml',
             XmlSerializer::createFromArray(['wiki_page' => $params])->getEncoded(),
         ));
 
         $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 201 && $statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
 
         if ($body !== '') {
             return new SimpleXMLElement($body);
@@ -163,9 +228,9 @@ class Wiki extends AbstractApi
     /**
      * Updates wiki page $page.
      *
-     * @param int|string $project the project name
-     * @param string     $page    the page name
-     * @param array      $params  the new wiki page data
+     * @param int|string   $project the project name
+     * @param string       $page    the page name
+     * @param array<mixed> $params  the new wiki page data
      *
      * @return string|false
      */
@@ -190,9 +255,20 @@ class Wiki extends AbstractApi
     {
         $this->lastResponse = $this->getHttpClient()->request(HttpFactory::makeXmlRequest(
             'DELETE',
-            '/projects/' . $project . '/wiki/' . urlencode($page) . '.xml',
+            '/projects/' . $project . '/wiki/' . rawurlencode($page) . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 }

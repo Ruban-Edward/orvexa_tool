@@ -11,7 +11,7 @@
 }
 
 h1 {
-    color: #25396F;
+    color: var(--ox-brand-700);
     margin: 0;
 }
 
@@ -27,7 +27,7 @@ h1 {
 #date-picker {
     float: right;
     padding: 10px;
-    border: 2px solid #3f51b5;
+    border: 2px solid var(--ox-brand-700);
     border-radius: 8px;
     font-family: inherit;
 }
@@ -37,14 +37,14 @@ h1 {
 }
 
 .form-group-header {
-    background-color: #3f51b5;
+    background-color: var(--ox-brand-700);
     color: white;
     padding: 10px 15px;
     border-radius: 4px 4px 0 0;
 }
 
 .form-group-content {
-    border: 1px solid #3f51b5;
+    border: 1px solid var(--ox-brand-700);
     padding: 0;
     border-radius: 0 0 4px 4px;
     overflow: hidden;
@@ -84,7 +84,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     gap: 11px;
     justify-content: left;
     align-items: end;
-    color: #25396F;
+    color: var(--ox-brand-700);
 }
 
 .error-container {
@@ -105,7 +105,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     display: block;
     margin: 30px auto 0;
     color: #fff;
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     font-size: 1rem;
     padding: 5px 15px;
     border-radius: 5px;
@@ -117,7 +117,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 .blue-button:hover {
-    background-color: #357ABD;
+    background-color: var(--ox-brand-600);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -134,7 +134,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 #voiceRecorderBtn {
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     color: white;
     border: none;
     border-radius: 50%;
@@ -145,7 +145,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 #voiceRecorderBtn:hover {
-    background-color: #357ABD;
+    background-color: var(--ox-brand-600);
 }
 
 #voiceRecorderBtn.recording {

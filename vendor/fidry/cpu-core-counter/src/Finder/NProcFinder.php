@@ -30,10 +30,12 @@ final class NProcFinder extends ProcOpenBasedFinder
     private $all;
 
     /**
-     * @param bool $all If disabled will give the number of cores available for the current process only.
+     * @param bool $all If disabled, counts the cores available to the current process. If
+     *                  enabled, also counts offline or reserved cores, e.g. a 6-vCPU VMware VM
+     *                  with CPU hot-add can report 128. It is therefore disabled by default.
      */
     public function __construct(
-        bool $all = true,
+        bool $all = false,
         ?ProcessExecutor $executor = null
     ) {
         parent::__construct($executor);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Serializer;
 
 use Stringable;
@@ -9,6 +11,9 @@ use Stringable;
  */
 final class PathSerializer implements Stringable
 {
+    /**
+     * @param array<string> $queryParams
+     */
     public static function create(string $path, array $queryParams = []): self
     {
         $serializer = new self();
@@ -20,6 +25,9 @@ final class PathSerializer implements Stringable
 
     private string $path;
 
+    /**
+     * @var array<string>
+     */
     private array $queryParams;
 
     private function __construct()
@@ -31,7 +39,7 @@ final class PathSerializer implements Stringable
     {
         $queryString = '';
 
-        if (!empty($this->queryParams)) {
+        if ($this->queryParams !== []) {
             $queryString = '?' . \http_build_query($this->queryParams);
 
             // @see #154: replace every encoded array (`foo[0]=`, `foo[1]=`, etc with `foo[]=`)

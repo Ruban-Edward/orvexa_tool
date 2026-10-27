@@ -5,7 +5,140 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/kbsali/php-redmine-api/compare/v2.7.0...v2.x)
+## [Unreleased](https://github.com/kbsali/php-redmine-api/compare/v2.10.0...v2.x)
+
+Nothing yet.
+
+## [v2.10.0](https://github.com/kbsali/php-redmine-api/compare/v2.9.1...v2.10.0) - 2026-10-26
+
+### Added
+
+- Add support for Redmine 7.0.
+- `\Redmine\Client\NativeCurlClient::enableFutureMode()` to opt-in to throwing `UnexpectedResponseException` on unexpected status codes.
+- `\Redmine\Client\Psr18Client::enableFutureMode()` to opt-in to throwing `UnexpectedResponseException` on unexpected status codes.
+- API methods that create, update, or delete resources now verify the HTTP response status code. The return value only changes if `enableFutureMode()` was called on the client – unexpected status codes then throw `UnexpectedResponseException`.
+
+### Changed
+
+- Behaviour-driven tests are run against Redmine 7.0.2, 6.1.5, 6.0.11, 5.1.12.
+- All source files now declare `strict_types=1`.
+- The `show()` methods of `Attachment`, `Group`, `Issue`, `IssueCategory`, `IssueRelation`, `Project`, `Role`, `TimeEntry`, `User`, `Version` and `Wiki` now verify the response. The return value only changes if `enableFutureMode()` was called on the client – an unexpected status code, an empty body or a body that cannot be decoded into an array then throws `UnexpectedResponseException`.
+
+### Fixed
+
+- Wiki page titles with spaces are now encoded as `%20` instead of `+`, so `Redmine\Api\Wiki` creates, shows and removes the page `Test_Page` for the title `Test Page`. Pages created with a `+` in their title since v2.6.0 can still be accessed by passing the title with `+`, e.g. `Test+Page`.
+
+## [v2.9.1](https://github.com/kbsali/php-redmine-api/compare/v2.9.0...v2.9.1) - 2026-04-03
+
+### Fixed
+
+- Fixed wrongly triggered deprecation messages in `Redmine\Client\NativeCurlClient` and `Redmine\Client\Psr18Client`.
+- Allow unset version from an issue.
+
+## [v2.9.0](https://github.com/kbsali/php-redmine-api/compare/v2.8.0...v2.9.0) - 2026-03-08
+
+### Added
+
+- New method `Redmine\Api\Attachment::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\CustomField::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Group::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Issue::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\IssueCategory::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\IssuePriority::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\IssueRelation::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\IssueStatus::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Membership::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\News::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Project::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Query::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Role::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Search::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\TimeEntry::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\TimeEntryActivity::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Tracker::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\User::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Version::fromHttpClient()` for creating the class.
+- New method `Redmine\Api\Wiki::fromHttpClient()` for creating the class.
+- Add support for PHP 8.5
+- Add support for Redmine 6.1.
+
+### Changed
+
+- Behaviour-driven tests are run against Redmine 6.1.1, 6.0.8, 5.1.11.
+
+### Deprecated
+
+- `Redmine\Api\Attachment::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Attachment::fromHttpClient()` instead.
+- Extending `Redmine\Api\Attachment` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\CustomField::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\CustomField::fromHttpClient()` instead.
+- Extending `Redmine\Api\CustomField` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Group::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Group::fromHttpClient()` instead.
+- Extending `Redmine\Api\Group` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Issue::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Issue::fromHttpClient()` instead.
+- Extending `Redmine\Api\Issue` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\IssueCategory::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\IssueCategory::fromHttpClient()` instead.
+- Extending `Redmine\Api\IssueCategory` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\IssuePriority::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\IssuePriority::fromHttpClient()` instead.
+- Extending `Redmine\Api\IssuePriority` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\IssueRelation::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\IssueRelation::fromHttpClient()` instead.
+- Extending `Redmine\Api\IssueRelation` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\IssueStatus::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\IssueStatus::fromHttpClient()` instead.
+- Extending `Redmine\Api\IssueStatus` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Membership::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Membership::fromHttpClient()` instead.
+- Extending `Redmine\Api\Membership` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\News::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\News::fromHttpClient()` instead.
+- Extending `Redmine\Api\News` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Project::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Project::fromHttpClient()` instead.
+- Extending `Redmine\Api\Project` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Query::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Query::fromHttpClient()` instead.
+- Extending `Redmine\Api\Query` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Role::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Role::fromHttpClient()` instead.
+- Extending `Redmine\Api\Role` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Search::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Search::fromHttpClient()` instead.
+- Extending `Redmine\Api\Search` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\TimeEntry::__construct()` is deprecated and will be set to private in future, use `\Redmine\TimeEntry::fromHttpClient()` instead.
+- Extending `Redmine\TimeEntry` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\TimeEntryActivity::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\TimeEntryActivity::fromHttpClient()` instead.
+- Extending `Redmine\Api\TimeEntryActivity` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Tracker::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Tracker::fromHttpClient()` instead.
+- Extending `Redmine\Api\Tracker` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\User::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\User::fromHttpClient()` instead.
+- Extending `Redmine\Api\User` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Version::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Version::fromHttpClient()` instead.
+- Extending `Redmine\Api\Version` is deprecated and will be set to final in future, create a wrapper class instead.
+- `Redmine\Api\Wiki::__construct()` is deprecated and will be set to private in future, use `\Redmine\Api\Wiki::fromHttpClient()` instead.
+- Extending `Redmine\Api\Wiki` is deprecated and will be set to final in future, create a wrapper class instead.
+
+### Removed
+
+- Drop support for Redmine 5.0.x.
+
+## [v2.8.0](https://github.com/kbsali/php-redmine-api/compare/v2.7.0...v2.8.0) - 2025-05-30
+
+### Added
+
+- Added support for PHP 8.4
+- Support for Redmine 6.0.x was added.
+- New class `Redmine\Http\HttpFactory` to create `Redmine\Http\Request` and `Redmine\Http\Response` instances.
+
+### Changed
+
+- Improvement in `Redmine\Client\AbstractApi::retrieveData()` by using `total_count` from redmine response to avoid unnecessary http requests.
+- Behaviour-driven tests are run against Redmine 6.0.5, 5.1.8, 5.0.12.
+
+### Deprecated
+
+- `Redmine\Client\Client::requestGet()` is deprecated, use `\Redmine\Client\Client::request()` instead.
+- `Redmine\Client\Client::requestPost()` is deprecated, use `\Redmine\Client\Client::request()` instead.
+- `Redmine\Client\Client::requestPut()` is deprecated, use `\Redmine\Client\Client::request()` instead.
+- `Redmine\Client\Client::requestDelete()` is deprecated, use `\Redmine\Client\Client::request()` instead.
+- `Redmine\Client\Client::getLastResponseStatusCode()` is deprecated, use `\Redmine\Client\Client::request()` or `\Redmine\Api\AbstractApi::getLastResponse()->getStatusCode()` instead.
+- `Redmine\Client\Client::getLastResponseContentType()` is deprecated, use `\Redmine\Client\Client::request()` or `\Redmine\Api\AbstractApi::getLastResponse()->getContentType()` instead.
+- `Redmine\Client\Client::getLastResponseBody()` is deprecated, use `\Redmine\Client\Client::request()` or `\Redmine\Api\AbstractApi::getLastResponse()->getContent()` instead.
+
+### Removed
+
+- Support for Redmine 4.2.x was dropped.
 
 ## [v2.7.0](https://github.com/kbsali/php-redmine-api/compare/v2.6.0...v2.7.0) - 2024-07-10
 

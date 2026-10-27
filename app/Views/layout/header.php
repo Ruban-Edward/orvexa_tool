@@ -3,73 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <meta name="theme-color" content="#ffffff">
+    <title><?= isset($title) && $title !== '' ? esc(strip_tags((string) $title)) . ' · Orvexa' : 'Orvexa' ?></title>
     <?= $this->include('layout/headerLinks') ?>
 </head>
 
-<body>
-    <div id="loader">
+<body class="ox-app">
+    <script>
+        // Restore the collapsed sidebar before first paint to avoid a layout jump
+        try {
+            if (localStorage.getItem('ox-sidebar-collapsed') === '1' && window.innerWidth >= 1200) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        } catch (e) {}
+    </script>
+    <div id="loader" role="status" aria-live="polite">
         <div class="app-loader-mark">
-            <img src="<?= ASSERT_PATH ?>assets/images/orvexa-loader.png" alt="Orvexa">
+            <img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_06_app_icon.png" alt="">
         </div>
         <span class="app-loader-label">Loading</span>
     </div>
-        <!-- Header -->
-        <header>
-            <!-- <div class="container-fluid headerback"></div> -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white">
-
-                <div class="container-fluid cls-navbar-links">
-                    <a class="navbar-brand" href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_08_monochrome_light.png" alt="Orvexa" style="height: 48px;"></a>
-
-                    <div id="home-icon" aria-label="Home">
-                        <a href="<?= ASSERT_PATH ?>dashboard/dashboardView"><img src="<?= ASSERT_PATH ?>support/compiled/svg/home.svg" alt="home" height="100%" width="100%"></a>
-                    </div>
-
-                    <div class="cls-hamburger" id="hamburger-icon" role="button" tabindex="0" aria-label="Open navigation" aria-expanded="false">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-
-                    <div id="menu-items" class="cls-menu-items">
-                        <div class="menu-item-list">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
-                                    <div class="container">
-                                        <div class="d-flex">
-                                            <div class="notification-icon" id="notification-icon">
-                                                <h5 style="margin-top: 8px;"><i class="icon-bell"></i></h5>
-                                            </div>
-                                            <div class="sidebar-right" id="meetingDetails">
-                                                <div class="cls-up-arrow"></div>
-                                                <div class="cls-meetings">
-                                                    <?php include 'meetingDetails.php'; ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <div class="dropdown">
-                                    <button class="btn btn-link dropdown-toggle text-white"  type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="display: flex;text-decoration: none;">
-                                        <div class="avatar">
-                                            <?php $firstName = session()->get('first_name')?>
-                                            <?= ucfirst(substr($firstName,0,1))?>
-                                        </div>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                        <li><a class="dropdown-item" href="#">My account</a></li>
-                                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item" href="<?= ASSERT_PATH ?>logout"><i class="icon-log-out"></i> Sign out</a></li>
-                                    </ul>
-                                </div>
-                            </ul>
-                        </div>
-                    </div>
-
-            </nav>
-
-        </header>
+    <div class="ox-progress" id="oxProgress" aria-hidden="true"></div>

@@ -12,6 +12,7 @@
  */
 namespace App\Controllers;
 
+use CodeIgniter\Model;
 use CodeIgniter\RESTful\ResourceController;
 
 
@@ -21,6 +22,20 @@ class NotesController extends ResourceController {
     public function __construct() {
         $this->NotesModel = model( \App\Models\NotesModel::class );
         $this->SprintModel = model( \App\Models\SprintModel::class );
+    }
+
+    /**
+     * Validate the data against the model's detail validation rules.
+     * (Previously patched into the framework's ResourceController.)
+     *
+     * @return bool|array true when valid, otherwise the validation errors
+     */
+    private function hasInvalidInput(Model $model, $data)
+    {
+        $validation = service('validation');
+        $validation->setRules($model->getDetailValidationRules(), $model->getValidationMessages());
+
+        return $validation->run($data) ? true : $validation->getErrors();
     }
 
     public function insertNotes() {

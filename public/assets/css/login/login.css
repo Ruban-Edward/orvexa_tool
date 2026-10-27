@@ -1,399 +1,256 @@
+/* Orvexa sign-in page */
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("../../fonts/inter/Inter-latin.woff2") format("woff2");
 }
 
-body {
+:root {
+    --ox-brand-50: #effbf3;
+    --ox-brand-400: #40d37c;
+    --ox-brand-500: #1fb865;
+    --ox-brand-700: #117a45;
+    --ox-brand-800: #10613a;
+    --ox-brand-900: #0d261c;
+    --ox-ink: #101b15;
+    --ox-text: #2c3a32;
+    --ox-muted: #66746c;
+    --ox-subtle: #8c988f;
+    --ox-border: #e3e8e5;
+    --ox-border-strong: #cdd6d0;
+    --ox-red: #d92d20;
+    --ox-font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body.ox-auth {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: #ffffff;
+    color: var(--ox-text);
+    font-family: var(--ox-font);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.ox-auth * {
+    font-family: var(--ox-font);
+}
+
+.ox-auth-shell {
+    display: grid;
+    grid-template-columns: minmax(380px, 1fr) minmax(0, 1.15fr);
     min-height: 100vh;
     min-height: 100dvh;
-    margin: 0;
-    padding: 0;
+}
+
+/* Form column */
+.ox-auth-panel {
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(120deg, rgba(4, 23, 16, 0), rgba(9, 64, 36, 0.34)), url("../../images/login/login_form.png");
-    background-position: center;
-    background-size: cover;
-    background-attachment: fixed;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #f8fbff;
+    padding: 32px 48px;
 }
 
-header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(100deg, rgba(232, 255, 237, 0.94), rgba(246, 255, 241, 0.9));
-    border-bottom: 2px solid rgba(83, 205, 105, 0.48);
-    box-shadow: 0 4px 20px rgba(4, 27, 16, 0.2);
-    backdrop-filter: blur(14px);
-}
-
-header .cls-login-logo {
-    width: 100%;
-    max-width: 1580px;
-    margin: 0 auto;
-    padding: 5px 32px;
-}
-
-header img {
-    height: 55px;
+.ox-auth-brand img {
     display: block;
+    height: 34px;
+    width: auto;
 }
 
-.cls-login-form {
+.ox-auth-card {
     width: 100%;
-    flex: 1;
-    margin: 0;
+    max-width: 380px;
+    margin: auto;
+    padding: 48px 0;
+}
+
+.ox-auth-card h1 {
+    margin: 0 0 6px;
+    color: var(--ox-ink);
+    font-size: 28px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+.ox-auth-lead {
+    margin: 0 0 28px;
+    color: var(--ox-muted);
+    font-size: 15px;
+}
+
+.ox-auth-alert {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 18px;
-    background: transparent;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px 12px;
+    border: 1px solid #fecdca;
+    border-radius: 10px;
+    background: #fef3f2;
+    color: #b42318;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.col-md-7,
-.col-md-5 {
-    padding: 0;
+.ox-auth-alert svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
 }
 
-.cls-left {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 18px 0 0;
+.ox-field {
+    margin-bottom: 18px;
 }
 
-.cls-orvexa-img {
-    position: relative;
-    width: 100%;
-    min-height: 520px;
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: 0 24px 60px rgba(59, 130, 246, 0.12);
-}
-
-.cls-background-col {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(14, 116, 144, 0.3));
-}
-
-.cls-left img {
+.ox-field label {
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    margin-bottom: 6px;
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.cls-right {
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    padding-right: 120px;
+.ox-auth .form-control {
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--ox-border-strong);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ox-ink);
+    font-size: 15px;
+    box-shadow: 0 1px 2px rgba(16, 27, 21, 0.05);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.cls-form {
-    width: 100%;
-    max-width: 470px;
-    background: rgba(8, 39, 25, 0.66);
-    border: 1px solid rgba(174, 255, 177, 0.32);
-    border-radius: 22px;
-    padding: 34px 30px;
-    box-shadow: 0 22px 60px rgba(2, 20, 12, 0.42);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(18px);
+.ox-auth .form-control::placeholder {
+    color: var(--ox-subtle);
 }
 
-.form-group {
-    min-height: 100px;
-    margin-bottom: 8px;
+.ox-auth .form-control:focus {
+    border-color: var(--ox-brand-500);
+    outline: 0;
+    box-shadow: 0 0 0 4px rgba(31, 184, 101, 0.18);
 }
 
-.valid-feedback {
+.ox-auth .was-validated .form-control:invalid {
+    border-color: var(--ox-red);
+    background-image: none;
+}
+
+.ox-auth .was-validated .form-control:valid {
+    border-color: var(--ox-border-strong);
+    background-image: none;
+}
+
+.ox-auth .invalid-feedback,
+.ox-auth .cls-error-msg {
+    margin-top: 6px;
+    color: var(--ox-red);
     font-size: 12px;
-    margin-top: -12px;
-    margin-bottom: 10px;
-    color: #9af2a0;
-}
-
-.invalid-feedback,
-.cls-error-msg {
-    font-size: 12px;
-    margin-top: -12px;
-    margin-bottom: 10px;
-    color: #ffc4ad;
-}
-
-.cls-wrong-username-password {
-    color: #ffc4ad;
-    text-align: center;
-    margin-bottom: 14px;
-}
-
-.cls-right h2 {
-    margin: 0;
-    font-size: clamp(2.2rem, 2vw + 1rem, 3.25rem);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.04em;
-    color: #ffffff;
-}
-
-.cls-right p {
-    margin: 10px 0 24px;
-    font-size: 1rem;
-    color: rgba(226, 255, 226, 0.84);
-}
-
-.cls-right form {
-    padding: 2% 0 0;
 }
 
 .cls-password {
     position: relative;
 }
 
-.cls-password i {
+.cls-password .form-control {
+    padding-right: 44px;
+}
+
+#togglePassword {
     position: absolute;
-    top: 50%;
-    right: 16px;
-    transform: translateY(-50%);
-    font-size: 1.2rem;
-    color: #315a3a;
+    top: 22px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    color: var(--ox-subtle);
+    font-size: 17px;
     cursor: pointer;
+    transform: translateY(-50%);
 }
 
-.cls-right input {
-    height: 52px;
-    margin-bottom: 12px;
-    padding: 12px 16px;
-    font-size: 1rem;
-    border: 1px solid rgba(198, 228, 202, 0.9);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.9);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+#togglePassword:hover {
+    background: #f1f4f2;
+    color: var(--ox-ink);
 }
 
-.cls-right input:focus {
-    border-color: #62dc78;
-    box-shadow: 0 0 0 3px rgba(98, 220, 120, 0.18);
-    outline: none;
-}
-
-.cls-right label {
-    margin-bottom: 8px;
+.ox-auth-submit.btn {
+    width: 100%;
+    height: 44px;
+    margin-top: 8px;
+    border: 1px solid var(--ox-brand-700);
+    border-radius: 10px;
+    background: var(--ox-brand-700);
+    color: #fff;
+    font-size: 15px;
     font-weight: 600;
-    color: #eaffea;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(16, 27, 21, 0.1);
 }
 
-.cls-right button {
-    width: 100%;
-    margin: 18px 0 0;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    background: linear-gradient(100deg, #16833c 0%, #5dde72 100%);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 12px 22px rgba(50, 204, 91, 0.24);
+.ox-auth-submit.btn:hover,
+.ox-auth-submit.btn:focus-visible {
+    border-color: var(--ox-brand-800);
+    background: var(--ox-brand-800);
+    color: #fff;
 }
 
-.cls-right button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 24px rgba(50, 204, 91, 0.34);
-    background: linear-gradient(270deg, #16833c 0%, #5dde72 100%);
+.ox-auth-submit.btn:focus-visible {
+    box-shadow: 0 0 0 4px rgba(31, 184, 101, 0.25);
 }
 
-footer {
-    width: 100%;
+.ox-auth-footer {
+    color: var(--ox-subtle);
+    font-size: 12px;
+}
+
+/* Visual column */
+.ox-auth-visual {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 24px 12px;
-    font-size: 0.9rem;
-    color: rgba(226, 255, 226, 0.88);
-    background: linear-gradient(100deg, rgba(5, 33, 20, 0.86), rgba(17, 91, 46, 0.78));
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(12px);
+    margin: 12px;
+    padding: 48px;
+    overflow: hidden;
+    border-radius: 24px;
+    /* matches the illustration's own background so the image blends in */
+    background: #16261b;
 }
 
-footer p {
-    margin: 0;
-    text-align: center;
+.ox-auth-visual picture,
+.ox-auth-visual img {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
 }
 
-.row {
-    margin: 0;
+.ox-auth-visual img {
+    -webkit-mask-image: radial-gradient(70% 65% at 50% 50%, #000 50%, transparent 100%);
+    mask-image: radial-gradient(70% 65% at 50% 50%, #000 50%, transparent 100%);
 }
 
-.btn-primary {
-    padding: 9px 18px;
-    border-radius: 12px;
-    border-right: unset;
-}
-
-@media (max-width: 1024px) {
-    .cls-right {
-        justify-content: center;
-        padding-right: 0;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        background-attachment: scroll;
+@media (max-width: 991.98px) {
+    .ox-auth-shell {
+        grid-template-columns: 1fr;
     }
 
-    .cls-login-form {
-        padding: 24px 12px;
+    .ox-auth-visual {
+        display: none;
     }
 
-    header .cls-login-logo {
-        padding: 9px 18px;
+    .ox-auth-panel {
+        padding: 24px 20px;
     }
 
-     header img {
-        height: 50px;
-        width: auto;
-    }
-
-    .cls-right {
-        padding: 0;
-    }
-
-    .cls-form {
-        padding: 26px 18px;
-        border-radius: 18px;
-    }
-
-    .cls-right h2 {
-        margin: 0;
-        text-align: center;
-        font-size: 2rem;
-    }
-
-    .cls-right p {
-        font-size: 0.9rem;
-        text-align: center;
-        padding: unset;
-        margin-bottom: 18px;
-    }
-
-    .cls-right label {
-        font-size: 0.8rem;
-    }
-
-    .cls-right input {
-        height: 46px;
-        width: 100%;
-        padding: 15px;
-        margin-left: 0;
-        border-radius: 10px;
-    }
-
-    .cls-right input::placeholder {
-        font-size: 0.8rem;
-    }
-
-    .form-group {
-        min-height: 50px;
-    }
-
-    .cls-password i {
-        right: 12px;
-        font-size: 0.9rem;
-    }
-
-    .btn-primary {
-        padding: 10px 12px;
-        margin: 20px 0 0 !important;
-        width: 100%;
-        font-size: 0.8rem;
-        border-radius: 10px;
-    }
-
-    footer {
-        padding-bottom: 18px;
-    }
-
-    footer p {
-        font-size: 0.6rem;
-        width: 100%;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    header .cls-login-logo {
-        padding: 9px 22px;
-    }
-
-    header img {
-        height: 50px;
-        width: auto;
-    }
-
-    .cls-right {
-        padding: 0;
-    }
-
-    .cls-form {
-        padding: 28px 20px;
-    }
-
-    .cls-right h2 {
-        margin: 0;
-        text-align: center;
-        font-size: 2.5rem;
-    }
-
-    .cls-right p {
-        font-size: 1rem;
-        text-align: center;
-        padding: unset;
-        margin-bottom: 18px;
-    }
-
-    .cls-right label {
-        font-size: 1rem;
-    }
-
-    .cls-right input {
-        height: 50px;
-        width: 100%;
-        padding: 15px;
-        margin-left: 0;
-        border-radius: 10px;
-    }
-
-    .cls-right input::placeholder {
-        font-size: 0.9rem;
-    }
-
-    .form-group {
-        min-height: 60px;
-    }
-
-    .cls-password i {
-        right: 12px;
-        font-size: 1rem;
-    }
-
-    .btn-primary {
-        padding: 11px;
-        margin: 20px 0 0 !important;
-        width: 100%;
-        font-size: 0.9rem;
-        border-radius: 10px;
-    }
-
-    footer {
-        font-size: 0.85rem;
-    }
-
-    footer p {
-        font-size: 0.8rem;
-        width: 100%;
+    .ox-auth-card {
+        padding: 32px 0;
     }
 }

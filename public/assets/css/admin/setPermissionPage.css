@@ -1,5 +1,5 @@
 /* .content-header {
-    color: #3949AB;
+    color: var(--ox-brand-700);
     font-size: 2rem;
 } */
 
@@ -18,7 +18,7 @@
 }
 
 .cls-header {
-    background-color: #3949AB;
+    background-color: var(--ox-brand-700);
     color: white;
     padding-top: 16px;
     padding-left: 20px;
@@ -45,7 +45,7 @@
 }
 
 .cls-checkbox .cls-body h5 {
-    color: #3949AB;
+    color: var(--ox-brand-700);
     font-size: 1rem;
 }
 
@@ -104,7 +104,7 @@ h4 {
 }
 
 .button {
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     color: white;
     font-size: 1rem;
     padding: 5px 20px;
@@ -124,7 +124,7 @@ h4 {
 
 
 .modal-header {
-    background-color: #3949ab;
+    background-color: var(--ox-brand-700);
     color: white;
     border-bottom: none;
 }
@@ -136,7 +136,7 @@ h4 {
 }
 
 .modal-body label {
-    color: #3949ab;
+    color: var(--ox-brand-700);
     font-weight: 700;
 }
 
@@ -160,7 +160,7 @@ h4 {
     font-size: var(--MOBILEHEADERFONTSIZE);
 }
 .cls-checkbox .cls-body h5 {
-    color: #3949AB;
+    color: var(--ox-brand-700);
     font-size: var(--MOBILESMALLHEADER);
 }
 
@@ -173,4 +173,60 @@ h4 {
     display: none;
 }
 
+}
+/* --------------------------------------------------------------------------
+   Orvexa UI refresh
+   -------------------------------------------------------------------------- */
+body.ox-app #main .cls-select,
+body.ox-app #main .cls-checkbox {
+    margin-right: 0;
+    padding-top: 0;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .cls-checkbox {
+    margin-top: 16px;
+}
+
+body.ox-app #main .cls-body {
+    padding: 18px;
+    background: transparent;
+    color: var(--ox-text);
+}
+
+body.ox-app #main .cls-module-select {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 14px;
+}
+
+body.ox-app #main .checkbox-container + .cls-module-select {
+    margin-top: 14px;
+    border-top: 1px solid var(--ox-border);
+}
+
+body.ox-app #main .cls-module-select h5 {
+    margin: 0 !important;
+}
+
+body.ox-app #main .cls-module-select .cls-sub-select {
+    margin-left: 0;
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+body.ox-app #main .cls-checkbox .cls-body h5 {
+    margin-bottom: 8px;
+    color: var(--ox-ink) !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+body.ox-app #main .cls-checkbox label {
+    color: var(--ox-text);
+    font-weight: 400;
 }

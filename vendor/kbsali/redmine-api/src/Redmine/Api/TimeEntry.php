@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\MissingParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\XmlSerializer;
@@ -20,18 +24,47 @@ use SimpleXMLElement;
  */
 class TimeEntry extends AbstractApi
 {
-    private $timeEntries = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see TimeEntry::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List time entries.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_TimeEntries
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of time entries found
+     * @return array<mixed> list of time entries found
      */
     final public function list(array $params = []): array
     {
@@ -47,32 +80,31 @@ class TimeEntry extends AbstractApi
      *
      * @deprecated v2.4.0 Use list() instead.
      * @see TimeEntry::list()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_TimeEntries
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of time entries found or error message or false
+     * @return array<mixed>|string|false list of time entries found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
-            $this->timeEntries = $this->list($params);
+            $timeEntries = $this->list($params);
         } catch (Exception $e) {
             if ($this->getLastResponse()->getContent() === '') {
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
             return $e->getMessage();
         }
 
-        return $this->timeEntries;
+        return $timeEntries;
     }
 
     /**
@@ -82,7 +114,9 @@ class TimeEntry extends AbstractApi
      *
      * @param int $id the time entry id
      *
-     * @return array|false|string information about the time entry as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the time entry as array or false|string on error
      */
     public function show($id)
     {
@@ -92,6 +126,24 @@ class TimeEntry extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -109,7 +161,7 @@ class TimeEntry extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_TimeEntries
      *
-     * @param array $params the new time entry data
+     * @param array<mixed> $params the new time entry data
      *
      * @throws MissingParameterException Missing mandatory parameters
      *
@@ -141,6 +193,19 @@ class TimeEntry extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
 
         if ('' !== $body) {
             return new SimpleXMLElement($body);
@@ -154,7 +219,8 @@ class TimeEntry extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_TimeEntries
      *
-     * @param int $id
+     * @param int          $id
+     * @param array<mixed> $params
      *
      * @return string|false
      */
@@ -177,7 +243,18 @@ class TimeEntry extends AbstractApi
             XmlSerializer::createFromArray(['time_entry' => $params])->getEncoded(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -196,6 +273,17 @@ class TimeEntry extends AbstractApi
             '/time_entries/' . $id . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 }

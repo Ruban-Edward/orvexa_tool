@@ -15,7 +15,6 @@ namespace CodeIgniter\RESTful;
 
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Model;
 
 /**
  * An extendable controller to provide a RESTful API for a resource.
@@ -107,8 +106,7 @@ class ResourceController extends BaseResource
     /**
      * Set/change the expected response representation for returned objects
      *
-     * @param         string       $format Response format
-     * @phpstan-param 'json'|'xml' $format
+     * @param 'json'|'xml' $format Response format
      *
      * @return void
      */
@@ -116,24 +114,6 @@ class ResourceController extends BaseResource
     {
         if (in_array($format, ['json', 'xml'], true)) {
             $this->format = $format;
-        }
-    }
-
-    /**
-     * @param Model $model
-     *
-     * @return bool|array
-     */
-    public function hasInvalidInput(Model $model, $data)
-    {
-        $this->validation = \Config\Services::validation();
-        $validationRules = $model->getDetailValidationRules();
-        $validationMessages = $model->getValidationMessages();
-        $this->validation->setRules($validationRules, $validationMessages);
-        if (!$this->validation->run($data)) {
-            return $this->validation->getErrors();
-        } else {
-            return true;
         }
     }
 }

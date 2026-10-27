@@ -15,6 +15,7 @@ namespace CodeIgniter\Tasks;
 
 use CodeIgniter\Events\Events;
 use CodeIgniter\I18n\Time;
+use CodeIgniter\Queue\Payloads\PayloadMetadata;
 use CodeIgniter\Tasks\Exceptions\TasksException;
 use InvalidArgumentException;
 use ReflectionException;
@@ -48,19 +49,13 @@ class Task
         'closure',
         'event',
         'url',
+        'queue',
     ];
 
     /**
      * The type of action.
      */
     protected string $type;
-
-    /**
-     * The actual content that should be run.
-     *
-     * @var mixed
-     */
-    protected $action;
 
     /**
      * If not empty, lists the allowed environments
@@ -74,18 +69,27 @@ class Task
     protected string $name;
 
     /**
-     * @param mixed $action
+     * Whether to prevent concurrent executions of this task.
+     */
+    protected bool $singleInstance = false;
+
+    /**
+     * Maximum lock duration in seconds for single instance tasks.
+     */
+    protected ?int $singleInstanceTTL = null;
+
+    /**
+     * @param $action mixed The actual content that should be run.
      *
      * @throws TasksException
      */
-    public function __construct(string $type, $action)
+    public function __construct(string $type, protected mixed $action)
     {
         if (! in_array($type, $this->types, true)) {
             throw TasksException::forInvalidTaskType($type);
         }
 
-        $this->type   = $type;
-        $this->action = $action;
+        $this->type = $type;
     }
 
     /**
@@ -127,12 +131,23 @@ class Task
      */
     public function run()
     {
-        $method = 'run' . ucfirst($this->type);
-        if (! method_exists($this, $method)) {
-            throw TasksException::forInvalidTaskType($this->type);
+        if ($this->singleInstance) {
+            $lockKey = $this->getLockKey();
+            cache()->save($lockKey, [], $this->singleInstanceTTL ?? 0);
         }
 
-        return $this->{$method}();
+        try {
+            $method = 'run' . ucfirst($this->type);
+            if (! method_exists($this, $method)) {
+                throw TasksException::forInvalidTaskType($this->type);
+            }
+
+            return $this->{$method}();
+        } finally {
+            if ($this->singleInstance && $this->getType() !== 'queue') {
+                cache()->delete($lockKey);
+            }
+        }
     }
 
     /**
@@ -144,16 +159,36 @@ class Task
         $cron = service('cronExpression');
 
         // Allow times to be set during testing
-        if (! empty($testTime)) {
+        if ($testTime !== null && $testTime !== '' && $testTime !== '0') {
             $cron->testTime($testTime);
         }
 
         // Are we restricting to environments?
-        if (! empty($this->environments) && ! $this->runsInEnvironment($_SERVER['CI_ENVIRONMENT'])) {
+        if ($this->environments !== [] && ! $this->runsInEnvironment($_SERVER['CI_ENVIRONMENT'])) {
+            return false;
+        }
+
+        // If this is a single instance task and a lock exists, don't run
+        if ($this->singleInstance && cache()->get($this->getLockKey()) !== null) {
             return false;
         }
 
         return $cron->shouldRun($this->getExpression());
+    }
+
+    /**
+     * Set this task to be a single instance
+     *
+     * @param int|null $lockTTL Time-to-live for the cache lock in seconds
+     *
+     * @return $this
+     */
+    public function singleInstance(?int $lockTTL = null): static
+    {
+        $this->singleInstance    = true;
+        $this->singleInstanceTTL = $lockTTL;
+
+        return $this;
     }
 
     /**
@@ -201,7 +236,7 @@ class Task
     protected function runsInEnvironment(string $environment): bool
     {
         // If nothing is specified then it should run
-        if (empty($this->environments)) {
+        if ($this->environments === []) {
             return true;
         }
 
@@ -265,6 +300,27 @@ class Task
     }
 
     /**
+     * Sends a job to the queue.
+     *
+     * @return bool Status of the queue push
+     */
+    protected function runQueue()
+    {
+        $queueAction = $this->getAction();
+
+        if ($this->singleInstance) {
+            // Create PayloadMetadata instance with the task lock key
+            $queueAction[] = new PayloadMetadata([
+                'queue'       => $queueAction[0],
+                'taskLockTTL' => $this->singleInstanceTTL,
+                'taskLockKey' => $this->getLockKey(),
+            ]);
+        }
+
+        return service('queue')->push(...$queueAction)->getStatus();
+    }
+
+    /**
      * Builds a unique name for the task.
      * Used when an existing name doesn't exist.
      *
@@ -304,15 +360,29 @@ class Task
      * Magic getter
      *
      * @return mixed
+     *
+     * @throws ReflectionException
      */
     public function __get(string $key)
     {
-        if ($key === 'name' && empty($this->name)) {
+        if ($key === 'name' && (! isset($this->name) || ($this->name === ''))) {
             return $this->buildName();
         }
 
         if (property_exists($this, $key)) {
             return $this->{$key};
         }
+    }
+
+    /**
+     * Determine the lock key for the task.
+     *
+     * @throws ReflectionException
+     */
+    private function getLockKey(): string
+    {
+        $name = $this->name ?? $this->buildName();
+
+        return sprintf('task_lock_%s', $name);
     }
 }

@@ -45,7 +45,9 @@ class PockerController extends BaseController
  
      public function getPokerPlanning():Response
      {
-         $userStories = $this->request->getPost('userStory');
+         // jQuery omits an empty array from the POST body, so no stories arrives as null
+         $userStories = (array) ($this->request->getPost('userStory') ?? []);
+         $sendResult = [];
          // $productId = $this->request->getPost('product_id');
          $userId = session('employee_id');
          $conditionCheck = has_permission('backlog/revealPoker') != null ? true : false;

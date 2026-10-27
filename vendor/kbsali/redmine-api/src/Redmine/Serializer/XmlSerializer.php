@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Serializer;
 
+use Exception;
 use JsonException;
 use Redmine\Exception\SerializerException;
 use SimpleXMLElement;
 use Stringable;
-use Throwable;
 
 /**
  * XmlSerializer.
@@ -25,6 +27,8 @@ final class XmlSerializer implements Stringable
     }
 
     /**
+     * @param array<string,mixed> $data
+     *
      * @throws SerializerException if $data could not be serialized to XML
      */
     public static function createFromArray(array $data): self
@@ -62,7 +66,7 @@ final class XmlSerializer implements Stringable
 
     public function __toString(): string
     {
-        return $this->getEncoded();
+        return $this->encoded;
     }
 
     private function deserialize(string $encoded): void
@@ -73,18 +77,20 @@ final class XmlSerializer implements Stringable
 
         try {
             $this->deserialized = new SimpleXMLElement($encoded);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $errors = [];
+            $code = $e->getCode();
 
             foreach (libxml_get_errors() as $error) {
                 $errors[] = $error->message;
+                $code = max($code, $error->level);
             }
 
             libxml_clear_errors();
 
             throw new SerializerException(
                 'Catched errors: "' . implode('", "', $errors) . '" while decoding XML: ' . $encoded,
-                $e->getCode(),
+                $code,
                 $e,
             );
         } finally {
@@ -105,6 +111,11 @@ final class XmlSerializer implements Stringable
         $this->normalized = JsonSerializer::createFromString($serialized)->getNormalized();
     }
 
+    /**
+     * @param array<mixed> $normalized
+     *
+     * @throws SerializerException
+     */
     private function denormalize(array $normalized): void
     {
         $this->normalized = $normalized;
@@ -114,8 +125,8 @@ final class XmlSerializer implements Stringable
         $prevSetting = libxml_use_internal_errors(true);
 
         try {
-            $this->deserialized = $this->createXmlElement($rootElementName, $this->normalized[$rootElementName]);
-        } catch (Throwable $e) {
+            $this->deserialized = $this->createXmlElement((string) $rootElementName, $this->normalized[$rootElementName]);
+        } catch (Exception $e) {
             $errors = [];
 
             foreach (libxml_get_errors() as $error) {
@@ -136,6 +147,9 @@ final class XmlSerializer implements Stringable
         $this->encoded = $this->deserialized->asXml();
     }
 
+    /**
+     * @param string|array<mixed> $params
+     */
     private function createXmlElement(string $rootElementName, $params): SimpleXMLElement
     {
         $value = '';
@@ -154,6 +168,10 @@ final class XmlSerializer implements Stringable
         return $xml;
     }
 
+    /**
+     * @param string|int $k
+     * @param mixed $v
+     */
     private function addChildToXmlElement(SimpleXMLElement $xml, $k, $v): void
     {
         $specialParams = [
@@ -180,7 +198,7 @@ final class XmlSerializer implements Stringable
             $array = $xml->addChild($k, '');
             $array->addAttribute('type', 'array');
             foreach ($v as $id) {
-                $array->addChild($specialParams[$k], $id);
+                $array->addChild($specialParams[$k], (string) $id);
             }
         } elseif (is_array($v)) {
             $array = $xml->addChild($k, '');
@@ -196,8 +214,8 @@ final class XmlSerializer implements Stringable
     /**
      * Attaches Custom Fields to XML element.
      *
-     * @param SimpleXMLElement $xml    XML Element the custom fields are attached to
-     * @param array            $fields array of fields to attach, each field needs name, id and value set
+     * @param SimpleXMLElement     $xml    XML Element the custom fields are attached to
+     * @param array<array<string>> $fields array of fields to attach, each field needs name, id and value set
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_api#Working-with-custom-fields
      */
@@ -215,7 +233,7 @@ final class XmlSerializer implements Stringable
                 $_field->addAttribute('field_format', $field['field_format']);
             }
             if (isset($field['id'])) {
-                $_field->addAttribute('id', $field['id']);
+                $_field->addAttribute('id', strval($field['id']));
             }
             if (array_key_exists('value', $field) && is_array($field['value'])) {
                 $_field->addAttribute('multiple', 'true');
@@ -227,7 +245,7 @@ final class XmlSerializer implements Stringable
                 } else {
                     $_values->addAttribute('type', 'array');
                     foreach ($field['value'] as $val) {
-                        $_values->addChild('value', $val);
+                        $_values->addChild('value', (string) $val);
                     }
                 }
             } else {

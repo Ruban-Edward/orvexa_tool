@@ -81,7 +81,7 @@
 }
 .sync-checkbox:checked + .sync-label {
     background-color: #e7f5ff;
-    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 6px 12px rgba(31, 184, 101, 0.2);
 }
 .sync-label:hover {
     transform: translateY(-5px);
@@ -89,7 +89,7 @@
 }
 .sync-icon {
     font-size: 3rem;
-    color: #3949ab;
+    color: var(--ox-brand-700);
     margin-bottom: 15px;
 }
 .sync-label h5 {

@@ -52,11 +52,11 @@ class TaskRunner
 
         foreach ($tasks as $task) {
             // If specific tasks were chosen then skip executing remaining tasks
-            if (! empty($this->only) && ! in_array($task->name, $this->only, true)) {
+            if ($this->only !== [] && ! in_array($task->name, $this->only, true)) {
                 continue;
             }
 
-            if (! $task->shouldRun($this->testTime) && empty($this->only)) {
+            if (! $task->shouldRun($this->testTime) && $this->only === []) {
                 continue;
             }
 
@@ -139,7 +139,13 @@ class TaskRunner
         }
 
         // "unique" name will be returned if one wasn't set
-        $name = $taskLog->task->name;
+        $name  = $taskLog->task->name;
+        $error = null;
+
+        if ($taskLog->error instanceof Throwable) {
+            $error = "Exception: {$taskLog->error->getCode()} - {$taskLog->error->getMessage()}" . PHP_EOL .
+                "file: {$taskLog->error->getFile()}:{$taskLog->error->getLine()}";
+        }
 
         $data = [
             'task'     => $name,
@@ -147,7 +153,7 @@ class TaskRunner
             'start'    => $taskLog->runStart->format('Y-m-d H:i:s'),
             'duration' => $taskLog->duration(),
             'output'   => $taskLog->output ?? null,
-            'error'    => serialize($taskLog->error ?? null),
+            'error'    => $error,
         ];
 
         // Get existing logs

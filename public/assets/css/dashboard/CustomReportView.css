@@ -25,8 +25,8 @@
   cursor: pointer;
   margin-top: 5px;
   background-color: white !important;
-  border: 1px solid #08479F !important;
-  color: #08479F !important;
+  border: 1px solid var(--ox-brand-700) !important;
+  color: var(--ox-brand-700) !important;
   border-radius: 2rem !important;
 }
 
@@ -116,7 +116,7 @@ table {
   outline: none;
 }
 .header_color th {
-  background-color: #d3e3f3;
+  background-color: var(--ox-brand-50);
   color: black;
 }
 td,
@@ -189,7 +189,7 @@ tbody{
   border-radius: 50%;
 }
 .form-label{
-  color:#3949ab;
+  color:var(--ox-brand-700);
   font-weight: bold;
 }
 .placeholder{

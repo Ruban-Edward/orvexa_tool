@@ -82,19 +82,19 @@ class RunResolver
                     $satisfied = true;
                 }
                 // If the value is a list
-                elseif (strpos($value, ',') !== false) {
+                elseif (str_contains($value, ',')) {
                     if ($this->isInList($nextValue, $value)) {
                         $satisfied = true;
                     }
                 }
                 // If the value is a range
-                elseif (strpos($value, '-') !== false) {
+                elseif (str_contains($value, '-')) {
                     if ($this->isInRange($nextValue, $value)) {
                         $satisfied = true;
                     }
                 }
                 // If the value is an increment
-                elseif (strpos($value, '/') !== false) {
+                elseif (str_contains($value, '/')) {
                     if ($this->isInIncrement($nextValue, $value)) {
                         $satisfied = true;
                     }
@@ -121,26 +121,13 @@ class RunResolver
      */
     protected function increment(Time $next, string $position): Time
     {
-        switch ($position) {
-            case 'minute':
-                $next = $next->addMinutes(1);
-                break;
-
-            case 'hour':
-                $next = $next->addHours(1);
-                break;
-
-            case 'monthDay':
-            case 'weekDay':
-                $next = $next->addDays(1);
-                break;
-
-            case 'month':
-                $next = $next->addMonths(1);
-                break;
-        }
-
-        return $next;
+        return match ($position) {
+            'minute' => $next->addMinutes(1),
+            'hour'   => $next->addHours(1),
+            'monthDay', 'weekDay' => $next->addDays(1),
+            'month' => $next->addMonths(1),
+            default => $next,
+        };
     }
 
     /**
@@ -164,7 +151,7 @@ class RunResolver
     {
         $list = explode(',', $list);
 
-        return in_array(trim($value), $list, true);
+        return in_array(trim((string) $value), $list, true);
     }
 
     /**
@@ -207,13 +194,13 @@ class RunResolver
         }
 
         $days = [
-            'sun' => 0,
-            'mon' => 1,
-            'tue' => 2,
-            'wed' => 3,
-            'thu' => 4,
-            'fri' => 5,
-            'sat' => 6,
+            'sun' => '0',
+            'mon' => '1',
+            'tue' => '2',
+            'wed' => '3',
+            'thu' => '4',
+            'fri' => '5',
+            'sat' => '6',
         ];
 
         return str_replace(array_keys($days), array_values($days), $origValue);

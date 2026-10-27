@@ -100,7 +100,6 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('updatereveal', 'PockerController::updatePokerReveal');
     $routes->post('getpoker', 'PockerController::getPokerPlanning');
     $routes->post('addUserStoryPoint', 'UserStoryController::addUserStoryPoint');
-    $routes->get('test', 'PockerController::getPokerPlanning');
 
 });
 
@@ -114,7 +113,6 @@ $routes->group('sprint', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('navcreatesprint', 'SprintController::navCreateSprint');
     $routes->post('createsprint', 'SprintController::createSprint');
     $routes->get('navsprintview', 'SprintController::navSprintView');
-    $routes->get('navscrumdiary', 'SprintController::navScrumDiary');
     $routes->post('navsprintreview', 'SprintController::navSprintReview');
     $routes->post('scrumdiary', 'SprintController::insertScrumDiary');
     $routes->get('getProductTasks/(:num)', 'SprintController::getProductTasks/$1');
@@ -173,7 +171,6 @@ $routes->group('report', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('SprintReportfilter/(:any)', 'CustomReportController::getFilterReport/$1');
     $routes->post('BacklogReportfilter/(:any)', 'CustomReportController::getFilterReport/$1');
     $routes->post('download/(:any)', 'CustomReportController::downloadFilterAllData/$1');
-    $routes->get('pocker', 'PockerController::index');
 
 });
 

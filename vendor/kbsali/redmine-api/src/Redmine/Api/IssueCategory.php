@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\InvalidParameterException;
 use Redmine\Exception\MissingParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\PathSerializer;
@@ -22,22 +26,59 @@ use SimpleXMLElement;
  */
 class IssueCategory extends AbstractApi
 {
-    private $issueCategories = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
 
-    private $issueCategoriesNames = [];
+    /**
+     * @var null|array<mixed>
+     */
+    private ?array $issueCategories = null;
+
+    /**
+     * @var array<mixed>
+     */
+    private array $issueCategoriesNames = [];
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see IssueCategory::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List issue categories for a given project.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_IssueCategories#GET
      *
-     * @param string|int $projectIdentifier project id or literal identifier
-     * @param array      $params            optional parameters to be passed to the api (offset, limit, ...)
+     * @param string|int   $projectIdentifier project id or literal identifier
+     * @param array<mixed> $params            optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws InvalidParameterException if $projectIdentifier is not of type int or string
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of issue categories found
+     * @return array<mixed> list of issue categories found
      */
     final public function listByProject($projectIdentifier, array $params = []): array
     {
@@ -95,17 +136,16 @@ class IssueCategory extends AbstractApi
      *
      * @deprecated v2.4.0 Use listByProject() instead.
      * @see IssueCategory::listByProject()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_IssueCategories#GET
      *
-     * @param string|int $project project id or literal identifier
-     * @param array      $params  optional parameters to be passed to the api (offset, limit, ...)
+     * @param string|int   $project project id or literal identifier
+     * @param array<mixed> $params  optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of issue categories found or error message or false
+     * @return array<mixed>|string|false list of issue categories found or error message or false
      */
     public function all($project, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::listByProject()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::listByProject()` instead.', E_USER_DEPRECATED);
 
         try {
             return $this->listByProject(strval($project), $params);
@@ -114,7 +154,7 @@ class IssueCategory extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -131,13 +171,13 @@ class IssueCategory extends AbstractApi
      * @param string|int $project     project id or literal identifier
      * @param bool       $forceUpdate to force the update of the projects var
      *
-     * @return array list of projects (id => project name)
+     * @return array<string,int> list of projects (project name => id)
      */
     public function listing($project, $forceUpdate = false)
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNamesByProject()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNamesByProject()` instead.', E_USER_DEPRECATED);
 
-        return $this->doListing($project, $forceUpdate);
+        return $this->doListing($project, (bool) $forceUpdate);
     }
 
     /**
@@ -153,7 +193,7 @@ class IssueCategory extends AbstractApi
      */
     public function getIdByName($project, $name)
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNamesByProject()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNamesByProject()` instead.', E_USER_DEPRECATED);
 
         $arr = $this->doListing($project, false);
 
@@ -171,7 +211,9 @@ class IssueCategory extends AbstractApi
      *
      * @param int $id the issue category id
      *
-     * @return array|false|string information about the category as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the category as array or false|string on error
      */
     public function show($id)
     {
@@ -181,6 +223,24 @@ class IssueCategory extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -198,8 +258,8 @@ class IssueCategory extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_IssueCategories#POST
      *
-     * @param string|int $project project id or literal identifier
-     * @param array      $params  the new issue category data
+     * @param string|int   $project project id or literal identifier
+     * @param array<mixed> $params  the new issue category data
      *
      * @throws MissingParameterException Missing mandatory parameters
      *
@@ -227,6 +287,18 @@ class IssueCategory extends AbstractApi
 
         $body = $this->lastResponse->getContent();
 
+        if ($this->lastResponse->getStatusCode() !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
         if ($body === '') {
             return $body;
         }
@@ -239,7 +311,8 @@ class IssueCategory extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_IssueCategories#PUT
      *
-     * @param int $id the issue category id
+     * @param int          $id     the issue category id
+     * @param array<mixed> $params
      *
      * @return string|false
      */
@@ -257,7 +330,18 @@ class IssueCategory extends AbstractApi
             XmlSerializer::createFromArray(['issue_category' => $params])->getEncoded(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -267,8 +351,8 @@ class IssueCategory extends AbstractApi
      * available $params :
      * - reassign_to_id : when there are issues assigned to the category you are deleting, this parameter lets you reassign these issues to the category with this id
      *
-     * @param int   $id     id of the category
-     * @param array $params extra GET parameters
+     * @param int          $id     id of the category
+     * @param array<mixed> $params extra GET parameters
      *
      * @return string empty string on success
      */
@@ -279,13 +363,29 @@ class IssueCategory extends AbstractApi
             PathSerializer::create('/issue_categories/' . urlencode(strval($id)) . '.xml', $params)->getPath(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
-    private function doListing($project, bool $forceUpdate)
+    /**
+     * @param int|string $projectIdentifier
+     *
+     * @return array<string,int>
+     */
+    private function doListing($projectIdentifier, bool $forceUpdate): array
     {
-        if (true === $forceUpdate || empty($this->issueCategories)) {
-            $this->issueCategories = $this->listByProject($project);
+        if ($forceUpdate || $this->issueCategories === null) {
+            $this->issueCategories = $this->listByProject($projectIdentifier);
         }
 
         $ret = [];

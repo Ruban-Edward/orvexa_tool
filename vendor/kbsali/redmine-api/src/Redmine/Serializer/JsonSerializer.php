@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Serializer;
 
 use JsonException;
@@ -23,6 +25,8 @@ final class JsonSerializer implements Stringable
     }
 
     /**
+     * @param array<mixed> $data
+     *
      * @throws SerializerException if $data could not be serialized to JSON
      */
     public static function createFromArray(array $data): self
@@ -58,7 +62,7 @@ final class JsonSerializer implements Stringable
 
     public function __toString(): string
     {
-        return $this->getEncoded();
+        return $this->encoded;
     }
 
     private function decode(string $encoded): void
@@ -77,6 +81,9 @@ final class JsonSerializer implements Stringable
         }
     }
 
+    /**
+     * @param array<mixed> $normalized
+     */
     private function encode(array $normalized): void
     {
         $this->normalized = $normalized;

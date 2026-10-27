@@ -10,26 +10,26 @@
         "slack": "https://codeigniterchat.slack.com"
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-intl": "*",
         "ext-mbstring": "*",
         "cboden/ratchet": "^0.4.4",
         "codeigniter4/tasks": "dev-develop",
-        "dompdf/dompdf": "^3.0",
+        "dompdf/dompdf": "^3.1",
         "kbsali/redmine-api": "^2.6",
-        "laminas/laminas-escaper": "^2.13",
+        "laminas/laminas-escaper": "^2.18",
         "phpoffice/phpspreadsheet": "^2.2",
         "psr/log": "^3.0"
     },
     "require-dev": {
         "codeigniter/coding-standard": "^1.7",
-        "fakerphp/faker": "^1.9",
+        "fakerphp/faker": "^1.24",
         "friendsofphp/php-cs-fixer": "^3.47.1",
-        "kint-php/kint": "^5.0.4",
-        "mikey179/vfsstream": "^1.6",
+        "kint-php/kint": "^6.1",
+        "mikey179/vfsstream": "^1.6.12",
         "nexusphp/cs-config": "^3.6",
-        "phpunit/phpunit": "^10.5",
-        "predis/predis": "^1.1 || ^2.0"
+        "phpunit/phpunit": "^10.5.16 || ^11.2",
+        "predis/predis": "^3.0"
     },
     "suggest": {
         "ext-curl": "If you use CURLRequest class",

@@ -9,7 +9,7 @@
 .ox-cal {
     --ox-upcoming: #3f86e8;  --ox-upcoming-tint: #eaf2fe;
     --ox-live: #d85733;      --ox-live-tint: #fdeee9;
-    --ox-done: #2f8f58;      --ox-done-tint: #e6f3ea;
+    --ox-done: var(--ox-brand-600);      --ox-done-tint: #e6f3ea;
     --ox-needslog: #d63b3b;  --ox-needslog-tint: #fdecec;
     --ox-cancelled: #7d8580; --ox-cancelled-tint: #eff1ef;
     --ox-holiday: #b7791f;   --ox-holiday-tint: #fdf6e3;
@@ -100,7 +100,7 @@
     color: var(--pro-ink, #26332b); background: #fff; border: 1px solid var(--pro-border, #e3e9e5);
     border-radius: 16px; box-shadow: var(--pro-shadow-sm); overflow: hidden; margin: 0; --fc-border-color: #e6ede8;
     --fc-today-bg-color: rgba(168, 231, 120, .16); --fc-now-indicator-color: #d63b3b; --fc-page-bg-color: #fff;
-    --fc-neutral-bg-color: #f4f8f5; --fc-event-text-color: #1f2d26; --fc-list-event-hover-bg-color: #f0f6f1; --fc-event-border-color: transparent;
+    --fc-neutral-bg-color: var(--ox-canvas); --fc-event-text-color: #1f2d26; --fc-list-event-hover-bg-color: var(--ox-surface-2); --fc-event-border-color: transparent;
 }
 .calendar .fc-theme-standard td, .calendar .fc-theme-standard th, .calendar .fc-theme-standard .fc-scrollgrid { border-color: #e6ede8; }
 .calendar .fc-scrollgrid { border: 0; }
@@ -167,7 +167,7 @@
 
 /* Agenda (list) view */
 .calendar .fc-list { border: 0; }
-.calendar .fc-list-day-cushion { background: #f4f8f5; padding: .6rem 1rem; }
+.calendar .fc-list-day-cushion { background: var(--ox-canvas); padding: .6rem 1rem; }
 .calendar .fc-list-day-text { font-weight: 700; color: var(--primary-color, #175738); text-decoration: none; }
 .calendar .fc-list-event td { padding: .7rem 1rem; border-color: #edf2ee; }
 .calendar .fc-list-event .fc-list-event-time { font-weight: 600; color: var(--pro-muted, #68776d); width: 150px; }
@@ -214,7 +214,7 @@
 }
 
 .selected-email {
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   display: inline-flex;
   align-items: center;
   padding: 5px 10px;
@@ -233,7 +233,7 @@
   cursor: pointer;
   background-color: white;
   padding: 0px 7px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
 }
 
 .remove-email:hover {
@@ -245,7 +245,7 @@
 }
 
 .modal-header {
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
 }
 
 .modal-title {
@@ -279,7 +279,7 @@
 }
 
 .form-label {
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
 }
 
@@ -290,7 +290,7 @@
 
 .helpdetails h6,
 .cls-types {
-  color: #3949ab;
+  color: var(--ox-brand-700);
 }
 
 .eventDetails span,
@@ -314,7 +314,7 @@
 }
 
 .meeting-attendees p {
-  color: #3949ab;
+  color: var(--ox-brand-700);
 }
 
 .meeting-attendees label {
@@ -368,7 +368,7 @@
 .eventDetails b,
 .sprintDetails b,
 .timeLogSection b {
-  color: #3949ab;
+  color: var(--ox-brand-700);
   display: inline-block;
   width: 160px;
 }
@@ -454,7 +454,7 @@
 .cls-add-members {
   background-color: transparent;
   border: none;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
 }
 
@@ -466,7 +466,7 @@
 
 .member-list li {
   padding-left: 10px;
-  border-left: 2px solid #3949ab;
+  border-left: 2px solid var(--ox-brand-700);
   margin: 2px 0px;
 }
 
@@ -485,7 +485,7 @@
 }
 
 .button:hover {
-  background-color: #357abd;
+  background-color: var(--ox-brand-600);
   /* Slightly darker blue for hover effect */
 }
 
@@ -533,7 +533,7 @@
 
 .table thead th {
   background-color: #e8eaf6;
-  color: #3949ab;
+  color: var(--ox-brand-700);
 }
 
 #epic-checkbox-container label {
@@ -547,7 +547,7 @@
 }
 
 .upcoming {
-  background-color: #63a4ff;
+  background-color: var(--ox-brand-300);
 }
 .cancelled {
   background-color: #585858;

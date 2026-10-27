@@ -24,8 +24,20 @@ final class NativeCurlClient implements Client, HttpClient
     private int $lastResponseStatusCode = 0;
     private string $lastResponseContentType = '';
     private string $lastResponseBody = '';
+
+    /**
+     * @var array<int,mixed>
+     */
     private array $curlOptions = [];
+
+    /**
+     * @var array<string>
+     */
     private array $httpHeaders = [];
+
+    /**
+     * @var array<string>
+     */
     private array $httpHeadersNames = [];
     private ?int $port = null;
 
@@ -99,57 +111,95 @@ final class NativeCurlClient implements Client, HttpClient
 
     /**
      * Create and send a GET request.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` instead
+     * @see \Redmine\Http\HttpClient::request()
      */
     public function requestGet(string $path): bool
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` instead.', E_USER_DEPRECATED);
+
         return $this->runRequest('GET', $path);
     }
 
     /**
      * Create and send a POST request.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` instead
+     * @see \Redmine\Http\HttpClient::request()
      */
     public function requestPost(string $path, string $body): bool
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` instead.', E_USER_DEPRECATED);
+
         return $this->runRequest('POST', $path, $body);
     }
 
     /**
      * Create and send a PUT request.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` instead
+     * @see \Redmine\Http\HttpClient::request()
      */
     public function requestPut(string $path, string $body): bool
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` instead.', E_USER_DEPRECATED);
+
         return $this->runRequest('PUT', $path, $body);
     }
 
     /**
      * Create and send a DELETE request.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` instead
+     * @see \Redmine\Http\HttpClient::request()
      */
     public function requestDelete(string $path): bool
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` instead.', E_USER_DEPRECATED);
+
         return $this->runRequest('DELETE', $path);
     }
 
     /**
      * Returns status code of the last response.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` or `\Redmine\Api\AbstractApi::getLastResponse()` instead
+     * @see \Redmine\Http\HttpClient::request()
+     * @see \Redmine\Api\AbstractApi::getLastResponse()
      */
     public function getLastResponseStatusCode(): int
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` or `\Redmine\Api\AbstractApi::getLastResponse()` instead.', E_USER_DEPRECATED);
+
         return $this->lastResponseStatusCode;
     }
 
     /**
      * Returns content type of the last response.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` or `\Redmine\Api\AbstractApi::getLastResponse()` instead
+     * @see \Redmine\Http\HttpClient::request()
+     * @see \Redmine\Api\AbstractApi::getLastResponse()
      */
     public function getLastResponseContentType(): string
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` or `\Redmine\Api\AbstractApi::getLastResponse()` instead.', E_USER_DEPRECATED);
+
         return $this->lastResponseContentType;
     }
 
     /**
      * Returns the body of the last response.
+     *
+     * @deprecated v2.8.0 Use `\Redmine\Http\HttpClient::request()` or `\Redmine\Api\AbstractApi::getLastResponse()` instead
+     * @see \Redmine\Http\HttpClient::request()
+     * @see \Redmine\Api\AbstractApi::getLastResponse()
      */
     public function getLastResponseBody(): string
     {
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.8.0, use `\Redmine\Client\NativeCurlClient::request()` or `\Redmine\Api\AbstractApi::getLastResponse()` instead.', E_USER_DEPRECATED);
+
         return $this->lastResponseBody;
     }
 
@@ -163,7 +213,14 @@ final class NativeCurlClient implements Client, HttpClient
     {
         // Headers must be handled serperatly
         if (CURLOPT_HTTPHEADER === $option) {
-            // $value must be an array. setHttpHeaders() will enforce this.
+            if (! is_array($value)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'If argument #1 ($option) passed to %s() is set to `CURLOPT_HTTPHEADER` (10023), then Argument #2 ($value) must be of the type array, but `%s` given',
+                    __METHOD__,
+                    gettype($value),
+                ));
+            }
+
             $this->setHttpHeaders($value);
 
             return;
@@ -194,6 +251,8 @@ final class NativeCurlClient implements Client, HttpClient
 
     /**
      * Set multiple HTTP headers.
+     *
+     * @param array<mixed> $headers
      */
     private function setHttpHeaders(array $headers): void
     {
@@ -250,7 +309,11 @@ final class NativeCurlClient implements Client, HttpClient
 
         if (CURLE_OK !== $curlErrorNumber) {
             $e = new ClientException(curl_error($curl), $curlErrorNumber);
-            curl_close($curl);
+
+            if (PHP_VERSION_ID < 80000) {
+                curl_close($curl);
+            }
+
             throw $e;
         }
 
@@ -262,7 +325,9 @@ final class NativeCurlClient implements Client, HttpClient
             $this->lastResponseContentType = $possibleContentType;
         }
 
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
 
         return $this->lastResponseStatusCode < 400;
     }
@@ -272,7 +337,7 @@ final class NativeCurlClient implements Client, HttpClient
      *
      * BC for PHP 7.4: Do not add the return type because CurlHandle was introduced in PHP 8.0
      *
-     * @return \CurlHandle a cURL handle on success, <b>FALSE</b> on errors
+     * @return mixed a cURL handle on success, <b>FALSE</b> on errors
      */
     private function createCurl(string $method, string $path, string $body = '', string $contentType = '')
     {
@@ -339,6 +404,9 @@ final class NativeCurlClient implements Client, HttpClient
         return $curl;
     }
 
+    /**
+     * @return array<string>
+     */
     private function createHttpHeader(string $path, string $contentType = ''): array
     {
         // Additional request headers
@@ -355,13 +423,11 @@ final class NativeCurlClient implements Client, HttpClient
         // @see https://www.redmine.org/projects/redmine/wiki/Rest_api#Authentication
         if (null === $this->password && !array_key_exists(strtolower('X-Redmine-API-Key'), $this->httpHeadersNames)) {
             $httpHeaders[] = 'X-Redmine-API-Key: ' . $this->apikeyOrUsername;
-        } else {
-            if (!array_key_exists(strtolower('Authorization'), $this->httpHeadersNames)) {
-                // Setting Header "Authorization: Basic base64" is the same as
-                // $this->setCurlOption(CURLOPT_USERPWD, "$username:$password")
-                // @see https://stackoverflow.com/a/26285941
-                $httpHeaders[] = 'Authorization: Basic ' . base64_encode($this->apikeyOrUsername . ':' . $this->password);
-            }
+        } elseif (!array_key_exists(strtolower('Authorization'), $this->httpHeadersNames)) {
+            // Setting Header "Authorization: Basic base64" is the same as
+            // $this->setCurlOption(CURLOPT_USERPWD, "$username:$password")
+            // @see https://stackoverflow.com/a/26285941
+            $httpHeaders[] = 'Authorization: Basic ' . base64_encode($this->apikeyOrUsername . ':' . $this->password);
         }
 
         // prepare custom headers

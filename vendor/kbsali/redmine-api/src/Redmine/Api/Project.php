@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
 use InvalidArgumentException;
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\MissingParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\PathSerializer;
@@ -22,20 +26,57 @@ use SimpleXMLElement;
  */
 class Project extends AbstractApi
 {
-    private $projects = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
 
-    private $projectNames = null;
+    /**
+     * @var null|array<mixed>
+     */
+    private ?array $projects = null;
+
+    /**
+     * @var null|array<int,string>
+     */
+    private ?array $projectNames = null;
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see Project::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List projects.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Projects
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of projects found
+     * @return array<mixed> list of projects found
      */
     final public function list(array $params = []): array
     {
@@ -88,16 +129,15 @@ class Project extends AbstractApi
      *
      * @deprecated v2.4.0 Use list() instead.
      * @see Project::list()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Projects
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of projects found or error message or false
+     * @return array<mixed>|string|false list of projects found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
             $this->projects = $this->list($params);
@@ -106,7 +146,7 @@ class Project extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -122,17 +162,17 @@ class Project extends AbstractApi
      * @deprecated v2.7.0 Use listNames() instead.
      * @see Project::listNames()
      *
-     * @param bool  $forceUpdate to force the update of the projects var
-     * @param bool  $reverse     to return an array indexed by name rather than id
-     * @param array $params      to allow offset/limit (and more) to be passed
+     * @param bool         $forceUpdate to force the update of the projects var
+     * @param bool         $reverse     to return an array indexed by name rather than id
+     * @param array<mixed> $params      to allow offset/limit (and more) to be passed
      *
-     * @return array list of projects (id => project name)
+     * @return array<mixed> list of projects (id => project name | project name => id)
      */
     public function listing($forceUpdate = false, $reverse = true, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
-        return $this->doListing($forceUpdate, $reverse, $params);
+        return $this->doListing((bool) $forceUpdate, $reverse, $params);
     }
 
     /**
@@ -141,14 +181,14 @@ class Project extends AbstractApi
      * @deprecated v2.7.0 Use listNames() instead.
      * @see Project::listNames()
      *
-     * @param string $name
-     * @param array  $params to allow offset/limit (and more) to be passed
+     * @param string       $name
+     * @param array<mixed> $params to allow offset/limit (and more) to be passed
      *
      * @return int|bool
      */
     public function getIdByName($name, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
         $arr = $this->doListing(false, true, $params);
 
@@ -164,11 +204,13 @@ class Project extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Projects#Showing-a-project
      *
-     * @param string|int $id     project id or identifier
-     * @param array      $params available parameters:
-     *                           include: fetch associated data (optional). Possible values: trackers, issue_categories, enabled_modules (since 2.6.0)
+     * @param string|int   $id     project id or identifier
+     * @param array<mixed> $params available parameters:
+     *                             include: fetch associated data (optional). Possible values: trackers, issue_categories, enabled_modules (since 2.6.0)
      *
-     * @return array|false|string information about the project as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the project as array or false|string on error
      */
     public function show($id, array $params = [])
     {
@@ -184,6 +226,24 @@ class Project extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -201,7 +261,7 @@ class Project extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Projects
      *
-     * @param array $params the new project data
+     * @param array<mixed> $params the new project data
      *
      * @throws MissingParameterException
      *
@@ -230,6 +290,19 @@ class Project extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
 
         if ('' !== $body) {
             return new SimpleXMLElement($body);
@@ -244,6 +317,7 @@ class Project extends AbstractApi
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Projects
      *
      * @param string|int $id project id or identifier
+     * @param array<mixed> $params
      *
      * @return string|false
      */
@@ -263,7 +337,18 @@ class Project extends AbstractApi
             XmlSerializer::createFromArray(['project' => $params])->getEncoded(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -414,7 +499,7 @@ class Project extends AbstractApi
      * @deprecated v2.3.0 Use `\Redmine\Serializer\XmlSerializer::createFromArray()` instead.
      * @see \Redmine\Serializer\XmlSerializer::createFromArray()
      *
-     * @param array $params
+     * @param array<mixed> $params
      *
      * @return \SimpleXMLElement
      */
@@ -443,12 +528,28 @@ class Project extends AbstractApi
             '/projects/' . $id . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
-    private function doListing(bool $forceUpdate, bool $reverse, array $params)
+    /**
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
+     */
+    private function doListing(bool $forceUpdate, bool $reverse, array $params): array
     {
-        if (true === $forceUpdate || empty($this->projects)) {
+        if ($forceUpdate || $this->projects === null) {
             $this->projects = $this->list($params);
         }
 

@@ -17,7 +17,7 @@
 
 /* 
 .primary_button {
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     color: white;
     border: none;
     font-size: 1rem;
@@ -56,7 +56,7 @@
 }
 
 .dropdown-menu .btn-primary {
-    background-color: #08479f;
+    background-color: var(--ox-brand-700);
     /* Match the button color */
     border: none;
     color: white;
@@ -66,7 +66,7 @@
 }
 
 .dropdown-menu .btn-primary:hover {
-    background-color: #357abd;
+    background-color: var(--ox-brand-600);
     /* Hover effect for the button */
 }
 
@@ -163,7 +163,7 @@ table {
 }
 
 .header_color th {
-    background-color: #d3e3f3;
+    background-color: var(--ox-brand-50);
     padding: 0;
 }
 
@@ -184,8 +184,8 @@ table {
     padding: 1px;
     background-color: white;
     /* Match the button color */
-    border: 1px solid #08479f;
-    color: #08479f;
+    border: 1px solid var(--ox-brand-700);
+    color: var(--ox-brand-700);
     width: 60px;
     list-style-type: none;
 }
@@ -271,7 +271,7 @@ th.sorting_desc:before {
     background-color: white;
     /* Match the button color */
     border: 1px solid #cccccc;
-    color: #08479f;
+    color: var(--ox-brand-700);
     font-size: 1rem;
     padding: 5px 20px;
     /* Adjusted padding for better alignment */
@@ -284,7 +284,7 @@ th.sorting_desc:before {
 
 .submit {
     color: #fff;
-    background-color: #4a90e2;
+    background-color: var(--ox-brand-600);
     font-size: 1rem;
     padding: 5px 20px;
     border-radius: 2rem;
@@ -297,7 +297,7 @@ th.sorting_desc:before {
 }
 
 .submit:hover {
-    background-color: #357abd;
+    background-color: var(--ox-brand-600);
     /* Slightly darker blue for hover effect */
 }
 
@@ -307,7 +307,7 @@ th.sorting_desc:before {
     display: table;
     width: 100%;
     background-color: #f0f0f0;
-    border: 2px solid #3498db;
+    border: 2px solid var(--ox-brand-600);
     box-sizing: border-box;
     font-size: 0.9em;
     line-height: 1.6em;
@@ -482,7 +482,7 @@ th.sorting_desc:before {
     background-color: white;
     
     border: 1px solid #cccccc;
-    color: #08479F;
+    color: var(--ox-brand-700);
     border-radius: 2rem;
     padding: 5px 20px;
     transition: all 0.3s ease;
@@ -499,7 +499,7 @@ th.sorting_desc:before {
     outline: none;
     font-size: 16px;
     background-color: transparent;
-    color: #08479F;
+    color: var(--ox-brand-700);
     width: 0;
     padding: 0;
     transition: all 0.3s ease;
@@ -517,7 +517,7 @@ th.sorting_desc:before {
     cursor: pointer;
     display: flex;
     align-items: center;
-    color: #08479F;
+    color: var(--ox-brand-700);
 }
 
 .search-button i {
@@ -541,7 +541,7 @@ th.sorting_desc:before {
 }
 
 /* .search-input::placeholder {
-    color: #08479F;
+    color: var(--ox-brand-700);
     opacity: 1;
 }
 
@@ -600,7 +600,7 @@ tbody tr:last-child td:last-child {
 
 .action_button i {
     padding: 10px;
-    color: #3949ab;
+    color: var(--ox-brand-700);
 }
 
 .custom-table .action_button a {
@@ -622,13 +622,13 @@ tbody tr:last-child td:last-child {
 }
 
 .removeBtnstyle:hover {
-    color: #357abd;
+    color: var(--ox-brand-600);
 }
 
 /*Ram
 */
 .modal-header {
-    background-color: #3949ab;
+    background-color: var(--ox-brand-700);
 }
 
 .modal-title {
@@ -652,12 +652,12 @@ tbody tr:last-child td:last-child {
 }
 
 .form-label {
-    color: #3949ab;
+    color: var(--ox-brand-700);
     font-weight: bold;
 }
 
 .form-label1 {
-    color: #3949ab;
+    color: var(--ox-brand-700);
     font-weight: bold;
 }
 .cls-tableview{

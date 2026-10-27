@@ -1,9 +1,2377 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="/var/www/html/scrum_tool/phpunit.xml" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="13.448353">
-    <testsuite name="App" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="13.448353">
-      <testsuite name="App\Controllers\SettingsControllerTest" file="/var/www/html/scrum_tool/tests/app/Controllers/SettingsControllerTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="13.448353">
-        <testcase name="testSetProductOwner" file="/var/www/html/scrum_tool/tests/app/Controllers/SettingsControllerTest.php" line="254" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="13.448353"/>
+  <testsuite name="/var/www/html/phpunit.xml" tests="193" assertions="100" errors="163" failures="18" skipped="0" time="0.517505">
+    <testsuite name="App" tests="193" assertions="100" errors="163" failures="18" skipped="0" time="0.517505">
+      <testsuite name="App\Controllers\AdminControllerTest" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" tests="16" assertions="10" errors="12" failures="0" skipped="0" time="0.089350">
+        <testcase name="testManageUserPage" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="50" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.047422">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testManageUserPage
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:60
+/var/www/html/app/Controllers/AdminController.php:52
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:55</error>
+        </testcase>
+        <testcase name="testManagePermissionPage" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="67" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001517">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testManagePermissionPage
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:60
+/var/www/html/app/Controllers/AdminController.php:74
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:72</error>
+        </testcase>
+        <testcase name="testUpdateUserRole" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="83" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.003489">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testUpdateUserRole
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:94
+/var/www/html/app/Controllers/AdminController.php:165
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:106</error>
+        </testcase>
+        <testcase name="testUpdateUserRoleInvalidInput" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="114" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001312">
+          <error type="ErrorException">App\Controllers\AdminControllerTest::testUpdateUserRoleInvalidInput
+ErrorException: Undefined array key "userId"
+
+/var/www/html/app/Models/Admin/AdminModel.php:96
+/var/www/html/app/Controllers/AdminController.php:165
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:136</error>
+        </testcase>
+        <testcase name="testSetPermission" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="144" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.002379">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testSetPermission
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RolePermissionModel.php:115
+/var/www/html/app/Controllers/AdminController.php:105
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:170</error>
+        </testcase>
+        <testcase name="testSetPermissionInvalidInput" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="178" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001732">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testSetPermissionInvalidInput
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RolePermissionModel.php:115
+/var/www/html/app/Controllers/AdminController.php:105
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:204</error>
+        </testcase>
+        <testcase name="testSetPermissionNoRequiredField" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="212" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="4" time="0.003811"/>
+        <testcase name="testSearchRoleWithValidQuery" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="245" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="1" time="0.001281"/>
+        <testcase name="testSearchRoleWithInvalidQuery" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="272" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="1" time="0.001069"/>
+        <testcase name="testSetNewPermissionValidInput" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="294" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.008748">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testSetNewPermissionValidInput
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:89
+/var/www/html/app/Controllers/AdminController.php:231
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:318</error>
+        </testcase>
+        <testcase name="testSetNewPermissionInvalidInput" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="326" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="4" time="0.008460"/>
+        <testcase name="testGetSpecificPermissions" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="359" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001599">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testGetSpecificPermissions
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RolePermissionModel.php:115
+/var/www/html/app/Controllers/AdminController.php:251
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:376</error>
+        </testcase>
+        <testcase name="testGetPermissionName" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="386" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001287">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testGetPermissionName
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:115
+/var/www/html/app/Controllers/AdminController.php:262
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:389</error>
+        </testcase>
+        <testcase name="testDeletePermission" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="398" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001316">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testDeletePermission
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:136
+/var/www/html/app/Controllers/AdminController.php:273
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:401</error>
+        </testcase>
+        <testcase name="testGetPermissionDetails" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="407" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.001537">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testGetPermissionDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:161
+/var/www/html/app/Controllers/AdminController.php:287
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:410</error>
+        </testcase>
+        <testcase name="testUpdatePermission" file="/var/www/html/tests/app/Controllers/AdminControllerTest.php" line="422" class="App\Controllers\AdminControllerTest" classname="App.Controllers.AdminControllerTest" assertions="0" time="0.002392">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AdminControllerTest::testUpdatePermission
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:187
+/var/www/html/app/Controllers/AdminController.php:301
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AdminControllerTest.php:440</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\AuthControllerTest" file="/var/www/html/tests/app/Controllers/AuthControllerTest.php" tests="3" assertions="2" errors="1" failures="0" skipped="0" time="0.015218">
+        <testcase name="testLoginValidate" file="/var/www/html/tests/app/Controllers/AuthControllerTest.php" line="42" class="App\Controllers\AuthControllerTest" classname="App.Controllers.AuthControllerTest" assertions="1" time="0.009435"/>
+        <testcase name="testLogout" file="/var/www/html/tests/app/Controllers/AuthControllerTest.php" line="63" class="App\Controllers\AuthControllerTest" classname="App.Controllers.AuthControllerTest" assertions="0" time="0.001575">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\AuthControllerTest::testLogout
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Helpers/action_helper.php:70
+/var/www/html/app/Helpers/action_helper.php:37
+/var/www/html/app/Helpers/action_helper.php:11
+/var/www/html/app/Controllers/AuthController.php:157
+/var/www/html/app/Controllers/AuthController.php:145
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/AuthControllerTest.php:68</error>
+        </testcase>
+        <testcase name="testNoAccess" file="/var/www/html/tests/app/Controllers/AuthControllerTest.php" line="72" class="App\Controllers\AuthControllerTest" classname="App.Controllers.AuthControllerTest" assertions="1" time="0.004208"/>
+      </testsuite>
+      <testsuite name="App\Controllers\BacklogControllerTest" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" tests="9" assertions="4" errors="8" failures="1" skipped="0" time="0.023879">
+        <testcase name="testProductsWithNoData" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="45" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.007886">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testProductsWithNoData
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogModel.php:134
+/var/www/html/app/Controllers/BacklogController.php:66
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:55</error>
+        </testcase>
+        <testcase name="testProductsWithData" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="64" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.001614">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testProductsWithData
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogModel.php:134
+/var/www/html/app/Controllers/BacklogController.php:66
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:94</error>
+        </testcase>
+        <testcase name="testBacklogItemsView" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="108" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.001317">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testBacklogItemsView
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogModel.php:91
+/var/www/html/app/Helpers/authenticator_helper.php:27
+/var/www/html/app/Controllers/BacklogController.php:120
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:119</error>
+        </testcase>
+        <testcase name="testAddBacklog" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="128" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.001346">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testAddBacklog
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogItemModel.php:181
+/var/www/html/app/Controllers/BacklogController.php:219
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:152</error>
+        </testcase>
+        <testcase name="testUpdateBacklog" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="161" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.001314">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testUpdateBacklog
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Backlog/BacklogModel.php:546
+/var/www/html/app/Controllers/BacklogController.php:356
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:190</error>
+        </testcase>
+        <testcase name="testDeleteBacklog" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="199" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.002101">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testDeleteBacklog
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Backlog/BacklogModel.php:546
+/var/www/html/app/Controllers/BacklogController.php:304
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:213</error>
+        </testcase>
+        <testcase name="testDeleteBacklogInSprint" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="219" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.002152">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testDeleteBacklogInSprint
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Backlog/BacklogModel.php:546
+/var/www/html/app/Controllers/BacklogController.php:304
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:233</error>
+        </testcase>
+        <testcase name="testDeleteDocument" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="239" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="0" time="0.002037">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\BacklogControllerTest::testDeleteDocument
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/DocumentModel.php:78
+/var/www/html/app/Controllers/BacklogController.php:677
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:255</error>
+        </testcase>
+        <testcase name="testAddEpic" file="/var/www/html/tests/app/Controllers/BacklogControllerTest.php" line="265" class="App\Controllers\BacklogControllerTest" classname="App.Controllers.BacklogControllerTest" assertions="4" time="0.004112">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\BacklogControllerTest::testAddEpic
+Failed asserting that '{\n
+    "success": false,\n
+    "error": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required"\n
+    }\n
+}' matches JSON string "{"message":"Epic added successfully","success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "message": "Epic added successfully",
+-    "success": true
++    "error": {
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "username": "The Username field is required"
++    },
++    "success": false
+ }
+
+/var/www/html/tests/app/Controllers/BacklogControllerTest.php:290</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\CustomReportControllerTest" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" tests="8" assertions="0" errors="8" failures="0" skipped="0" time="0.013296">
+        <testcase name="testGetBacklogReportTable" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="17" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001941">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetBacklogReportTable
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:416
+/var/www/html/app/Controllers/CustomReportController.php:77
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:109
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:19</error>
+        </testcase>
+        <testcase name="testGetSprintReportTable" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="23" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001324">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetSprintReportTable
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:416
+/var/www/html/app/Controllers/CustomReportController.php:77
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:109
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:25</error>
+        </testcase>
+        <testcase name="testGetMeetReportTable" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="29" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001214">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetMeetReportTable
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:416
+/var/www/html/app/Controllers/CustomReportController.php:77
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:109
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:31</error>
+        </testcase>
+        <testcase name="testGetFilteredBacklogReport" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="35" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001513">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetFilteredBacklogReport
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/MySQLi/Connection.php:339
+/var/www/html/system/Database/BaseConnection.php:1594
+/var/www/html/system/Database/BaseConnection.php:1558
+/var/www/html/app/Models/CustomReportModel.php:351
+/var/www/html/app/Models/CustomReportModel.php:351
+/var/www/html/app/Controllers/CustomReportController.php:121
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:129
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:40</error>
+        </testcase>
+        <testcase name="testGetFilteredSprintReport" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="44" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001513">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetFilteredSprintReport
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/MySQLi/Connection.php:339
+/var/www/html/system/Database/BaseConnection.php:1594
+/var/www/html/system/Database/BaseConnection.php:1558
+/var/www/html/app/Models/CustomReportModel.php:250
+/var/www/html/app/Models/CustomReportModel.php:250
+/var/www/html/app/Controllers/CustomReportController.php:121
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:129
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:49</error>
+        </testcase>
+        <testcase name="testGetFilteredMeetReport" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="53" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.002527">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetFilteredMeetReport
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/MySQLi/Connection.php:339
+/var/www/html/system/Database/BaseConnection.php:1594
+/var/www/html/system/Database/BaseConnection.php:1558
+/var/www/html/app/Models/CustomReportModel.php:130
+/var/www/html/app/Models/CustomReportModel.php:130
+/var/www/html/app/Controllers/CustomReportController.php:121
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:129
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:58</error>
+        </testcase>
+        <testcase name="testGetFilteredBacklogReportWithoutFilters" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="63" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001712">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testGetFilteredBacklogReportWithoutFilters
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:372
+/var/www/html/app/Controllers/CustomReportController.php:121
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:74</error>
+        </testcase>
+        <testcase name="testDownloadFilteredDataWithNoData" file="/var/www/html/tests/app/Controllers/CustomReportControllerTest.php" line="84" class="App\Controllers\CustomReportControllerTest" classname="App.Controllers.CustomReportControllerTest" assertions="0" time="0.001551">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\CustomReportControllerTest::testDownloadFilteredDataWithNoData
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/MySQLi/Connection.php:339
+/var/www/html/system/Database/BaseConnection.php:1594
+/var/www/html/system/Database/BaseConnection.php:1558
+/var/www/html/app/Models/CustomReportModel.php:351
+/var/www/html/app/Models/CustomReportModel.php:351
+/var/www/html/app/Controllers/CustomReportController.php:49
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/CustomReportControllerTest.php:96</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\DashboardControllerTest" file="/var/www/html/tests/app/Controllers/DashboardControllerTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.000000">
+        <testcase name="testDashboardView" file="/var/www/html/tests/app/Controllers/DashboardControllerTest.php" line="55" class="App\Controllers\DashboardControllerTest" classname="App.Controllers.DashboardControllerTest" assertions="0" time="0.000000">
+          <error type="PHPUnit\Framework\MockObject\Generator\UnknownTypeException">App\Controllers\DashboardControllerTest::testDashboardView
+PHPUnit\Framework\MockObject\Generator\UnknownTypeException: Class or interface "Redmine\Services\IssuesService" does not exist
+
+/var/www/html/tests/app/Controllers/DashboardControllerTest.php:31</error>
+        </testcase>
+        <testcase name="testShowProductDashboard" file="/var/www/html/tests/app/Controllers/DashboardControllerTest.php" line="64" class="App\Controllers\DashboardControllerTest" classname="App.Controllers.DashboardControllerTest" assertions="0" time="0.000000">
+          <error type="PHPUnit\Framework\MockObject\Generator\UnknownTypeException">App\Controllers\DashboardControllerTest::testShowProductDashboard
+PHPUnit\Framework\MockObject\Generator\UnknownTypeException: Class or interface "Redmine\Services\IssuesService" does not exist
+
+/var/www/html/tests/app/Controllers/DashboardControllerTest.php:31</error>
+        </testcase>
+        <testcase name="testShowProductDashboardArgument" file="/var/www/html/tests/app/Controllers/DashboardControllerTest.php" line="72" class="App\Controllers\DashboardControllerTest" classname="App.Controllers.DashboardControllerTest" assertions="0" time="0.000000">
+          <error type="PHPUnit\Framework\MockObject\Generator\UnknownTypeException">App\Controllers\DashboardControllerTest::testShowProductDashboardArgument
+PHPUnit\Framework\MockObject\Generator\UnknownTypeException: Class or interface "Redmine\Services\IssuesService" does not exist
+
+/var/www/html/tests/app/Controllers/DashboardControllerTest.php:31</error>
+        </testcase>
+        <testcase name="testFetchPendingTaskBySprintId" file="/var/www/html/tests/app/Controllers/DashboardControllerTest.php" line="82" class="App\Controllers\DashboardControllerTest" classname="App.Controllers.DashboardControllerTest" assertions="0" time="0.000000">
+          <error type="PHPUnit\Framework\MockObject\Generator\UnknownTypeException">App\Controllers\DashboardControllerTest::testFetchPendingTaskBySprintId
+PHPUnit\Framework\MockObject\Generator\UnknownTypeException: Class or interface "Redmine\Services\IssuesService" does not exist
+
+/var/www/html/tests/app/Controllers/DashboardControllerTest.php:31</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Controllers\MeetingControllerTest" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" tests="30" assertions="36" errors="21" failures="8" skipped="0" time="0.062568">
+        <testcase name="testCalendar" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="138" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.011357">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testCalendar
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:400
+/var/www/html/app/Controllers/MeetingController.php:59
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:141</error>
+        </testcase>
+        <testcase name="testGetMeetingDetails" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="147" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001687">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetMeetingDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingModel.php:109
+/var/www/html/app/Controllers/MeetingController.php:83
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:150</error>
+        </testcase>
+        <testcase name="testInvalidGetMeetingDetails" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="156" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.002002">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidGetMeetingDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingModel.php:109
+/var/www/html/app/Controllers/MeetingController.php:83
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:160</error>
+        </testcase>
+        <testcase name="testGetSprintDetails" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="166" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.002080">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetSprintDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:316
+/var/www/html/app/Controllers/MeetingController.php:117
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:170</error>
+        </testcase>
+        <testcase name="testInvalidGetSprintDetails" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="176" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001598">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidGetSprintDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:316
+/var/www/html/app/Controllers/MeetingController.php:117
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:180</error>
+        </testcase>
+        <testcase name="testSprintByProduct" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="186" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001582">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testSprintByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:339
+/var/www/html/app/Controllers/MeetingController.php:133
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:189</error>
+        </testcase>
+        <testcase name="testInvalidSprintByProduct" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="195" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001618">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidSprintByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:339
+/var/www/html/app/Controllers/MeetingController.php:133
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:198</error>
+        </testcase>
+        <testcase name="testMeetingConfirmation" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="247" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.001790">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testMeetingConfirmation
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required"\n
+    }\n
+}' matches JSON string "{"mail":true,"success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "mail": true,
+-    "success": true
++    "errors": {
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:284</failure>
+        </testcase>
+        <testcase name="testInvalidMeetingConfirmation" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="287" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.002257">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testInvalidMeetingConfirmation
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required."\n
+    }\n
+}' matches JSON string "{"errors":{"r_meeting_location_id":"The meeting location ID is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "r_meeting_location_id": "The meeting location ID is required."
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:322</failure>
+        </testcase>
+        <testcase name="testLogMeetingTimes" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="346" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001858">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testLogMeetingTimes
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:346
+/var/www/html/app/Controllers/MeetingController.php:777
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:397</error>
+        </testcase>
+        <testcase name="testInvalidLogMeetingTimes" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="403" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.001519">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testInvalidLogMeetingTimes
+Failed asserting that '{\n
+    "success": false,\n
+    "message": "Nothing to log."\n
+}' matches JSON string "{"success":false}".
+--- Expected
++++ Actual
+@@ @@
+ {
++    "message": "Nothing to log.",
+     "success": false
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:418</failure>
+        </testcase>
+        <testcase name="testCreateGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="421" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.002260">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testCreateGroup
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required."\n
+    }\n
+}' matches JSON string "{"message":"Group Created Successfully","success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "message": "Group Created Successfully",
+-    "success": true
++    "errors": {
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:441</failure>
+        </testcase>
+        <testcase name="testInvalidCreateGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="444" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.002491">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testInvalidCreateGroup
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required."\n
+    }\n
+}' matches JSON string "{"errors":{"r_product_id":"The product ID is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "r_product_id": "The product ID is required."
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:463</failure>
+        </testcase>
+        <testcase name="testGetTeamDetailsById" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="468" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.002044">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetTeamDetailsById
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:518
+/var/www/html/app/Controllers/MeetingController.php:969
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:473</error>
+        </testcase>
+        <testcase name="testInvalidGetTeamDetailsById" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="478" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001564">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidGetTeamDetailsById
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:518
+/var/www/html/app/Controllers/MeetingController.php:969
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:483</error>
+        </testcase>
+        <testcase name="testEditGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="488" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.001588">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testEditGroup
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required."\n
+    }\n
+}' matches JSON string "{"message":"Group Updated Successfully","update":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "message": "Group Updated Successfully",
+-    "update": true
++    "errors": {
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:508</failure>
+        </testcase>
+        <testcase name="testInvalidDataTypeEditGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="511" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.001576">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testInvalidDataTypeEditGroup
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The Product ID must be an integer."\n
+    }\n
+}' matches JSON string "{"errors":{"r_product_id":"The Product ID must be an integer."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "r_product_id": "The Product ID must be an integer."
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The Product ID must be an integer.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:531</failure>
+        </testcase>
+        <testcase name="testInvalidEditGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="536" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.001490">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Controllers\MeetingControllerTest::testInvalidEditGroup
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required."\n
+    }\n
+}' matches JSON string "{"errors":{"r_product_id":"The product ID is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "r_product_id": "The product ID is required."
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:555</failure>
+        </testcase>
+        <testcase name="testDeleteGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="560" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001424">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testDeleteGroup
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingTeamModel.php:149
+/var/www/html/app/Controllers/MeetingController.php:1081
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:572</error>
+        </testcase>
+        <testcase name="testInvalidDeleteGroup" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="578" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="4" time="0.001297"/>
+        <testcase name="testGetSprintMembersDetails" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="596" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001714">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetSprintMembersDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:316
+/var/www/html/app/Controllers/MeetingController.php:117
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:600</error>
+        </testcase>
+        <testcase name="testInvalidGetSprintMembersDetails" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="608" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.002222">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidGetSprintMembersDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:316
+/var/www/html/app/Controllers/MeetingController.php:117
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:612</error>
+        </testcase>
+        <testcase name="testGetMembersByProduct" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="618" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001612">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetMembersByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:599
+/var/www/html/app/Controllers/MeetingController.php:1173
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:622</error>
+        </testcase>
+        <testcase name="testInvalidGetMembersByProduct" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="630" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.002156">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidGetMembersByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:599
+/var/www/html/app/Controllers/MeetingController.php:1173
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:634</error>
+        </testcase>
+        <testcase name="testBacklogByProduct" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="640" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001890">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testBacklogByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:626
+/var/www/html/app/Controllers/MeetingController.php:1189
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:644</error>
+        </testcase>
+        <testcase name="testInvalidBacklogByProduct" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="655" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.002045">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidBacklogByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:626
+/var/www/html/app/Controllers/MeetingController.php:1189
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:659</error>
+        </testcase>
+        <testcase name="testGetEpic" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="665" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001555">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetEpic
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/EpicModel.php:154
+/var/www/html/app/Controllers/MeetingController.php:1204
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:669</error>
+        </testcase>
+        <testcase name="testInavlidGetEpic" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="674" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001424">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInavlidGetEpic
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/EpicModel.php:154
+/var/www/html/app/Controllers/MeetingController.php:1204
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:678</error>
+        </testcase>
+        <testcase name="testGetSprintMembersById" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="684" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001333">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testGetSprintMembersById
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:711
+/var/www/html/app/Controllers/MeetingController.php:1267
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:688</error>
+        </testcase>
+        <testcase name="testInvalidGetSprintMembersById" file="/var/www/html/tests/app/Controllers/MeetingControllerTest.php" line="693" class="Tests\Controllers\MeetingControllerTest" classname="Tests.Controllers.MeetingControllerTest" assertions="0" time="0.001534">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Controllers\MeetingControllerTest::testInvalidGetSprintMembersById
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:711
+/var/www/html/app/Controllers/MeetingController.php:1267
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/MeetingControllerTest.php:697</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\NotificationControllerTest" file="/var/www/html/tests/app/Controllers/NotificationControllerTest.php" tests="1" assertions="0" errors="1" failures="0" skipped="0" time="0.000000">
+        <testcase name="testNotificationDetails" file="/var/www/html/tests/app/Controllers/NotificationControllerTest.php" line="28" class="App\Controllers\NotificationControllerTest" classname="App.Controllers.NotificationControllerTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\NotificationControllerTest::testNotificationDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogModel.php:91
+/var/www/html/app/Controllers/DashboardController.php:42
+/var/www/html/tests/app/Controllers/NotificationControllerTest.php:22</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\PockerControllerTest" file="/var/www/html/tests/app/Controllers/PockerControllerTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.008820">
+        <testcase name="testInsertPokerPlanning" file="/var/www/html/tests/app/Controllers/PockerControllerTest.php" line="23" class="App\Controllers\PockerControllerTest" classname="App.Controllers.PockerControllerTest" assertions="0" time="0.001732">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\PockerControllerTest::testInsertPokerPlanning
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Backlog/BacklogPoker.php:80
+/var/www/html/app/Controllers/PockerController.php:31
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/PockerControllerTest.php:40</error>
+        </testcase>
+        <testcase name="testGetPokerPlanning" file="/var/www/html/tests/app/Controllers/PockerControllerTest.php" line="47" class="App\Controllers\PockerControllerTest" classname="App.Controllers.PockerControllerTest" assertions="0" time="0.002405">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\PockerControllerTest::testGetPokerPlanning
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Database/BaseBuilder.php:1660
+/var/www/html/system/Model.php:298
+/var/www/html/system/BaseModel.php:714
+/var/www/html/app/Helpers/permission_helper.php:32
+/var/www/html/app/Controllers/PockerController.php:53
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/PockerControllerTest.php:62</error>
+        </testcase>
+        <testcase name="testUpdatePokerReveal" file="/var/www/html/tests/app/Controllers/PockerControllerTest.php" line="79" class="App\Controllers\PockerControllerTest" classname="App.Controllers.PockerControllerTest" assertions="0" time="0.002350">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\PockerControllerTest::testUpdatePokerReveal
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogPoker.php:152
+/var/www/html/app/Controllers/PockerController.php:84
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/PockerControllerTest.php:94</error>
+        </testcase>
+        <testcase name="testAddUserStoryPoint" file="/var/www/html/tests/app/Controllers/PockerControllerTest.php" line="104" class="App\Controllers\PockerControllerTest" classname="App.Controllers.PockerControllerTest" assertions="0" time="0.002333">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\PockerControllerTest::testAddUserStoryPoint
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/BacklogModel.php:441
+/var/www/html/app/Controllers/UserStoryController.php:558
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/PockerControllerTest.php:119</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\SettingsControllerTest" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" tests="18" assertions="44" errors="7" failures="9" skipped="0" time="0.031631">
+        <testcase name="testAdminSettingsPage" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="43" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.006287">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testAdminSettingsPage
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/SettingsModel.php:66
+/var/www/html/app/Controllers/SettingsController.php:44
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:48</error>
+        </testcase>
+        <testcase name="testGetRoles" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="57" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.001536">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testGetRoles
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:60
+/var/www/html/app/Controllers/SettingsController.php:80
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:60</error>
+        </testcase>
+        <testcase name="testAddRole" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="68" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001743">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testAddRole
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required."\n
+    }\n
+}' matches JSON string "{"success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "success": true
++    "errors": {
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:87</failure>
+        </testcase>
+        <testcase name="testAddRoleInvalidInput" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="90" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001674">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testAddRoleInvalidInput
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required."\n
+    }\n
+}' matches JSON string "{"errors":{"role_name":"The Role Name is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "role_name": "The Role Name is required."
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "role_name": "The Role Name is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:108</failure>
+        </testcase>
+        <testcase name="testDeleteRole" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="111" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.001338">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testDeleteRole
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:101
+/var/www/html/app/Controllers/SettingsController.php:117
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:126</error>
+        </testcase>
+        <testcase name="testCreateHolidays" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="133" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001428">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testCreateHolidays
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required."\n
+    }\n
+}' matches JSON string "{"success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "success": true
++    "errors": {
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "role_name": "The Role Name is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:153</failure>
+        </testcase>
+        <testcase name="testCreateHolidaysInvalidInput" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="156" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001531">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testCreateHolidaysInvalidInput
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required.",\n
+        "holiday_title": "The holiday title is required."\n
+    }\n
+}' matches JSON string "{"errors":{"holiday_title":"The holiday title is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "holiday_title": "The holiday title is required."
++        "holiday_title": "The holiday title is required.",
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "role_name": "The Role Name is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:175</failure>
+        </testcase>
+        <testcase name="testPokerConfigSetting" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="178" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001219">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testPokerConfigSetting
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required.",\n
+        "holiday_title": "The holiday title is required."\n
+    }\n
+}' matches JSON string "{"success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "success": true
++    "errors": {
++        "holiday_title": "The holiday title is required.",
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "role_name": "The Role Name is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:197</failure>
+        </testcase>
+        <testcase name="testPokerConfigSettingNoPokerData" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="200" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001336">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testPokerConfigSettingNoPokerData
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required.",\n
+        "holiday_title": "The holiday title is required.",\n
+        "settings_value": "The Settings Value field is required."\n
+    }\n
+}' matches JSON string "{"errors":{"settings_value":"The Settings Value field is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "settings_value": "The Settings Value field is required."
++        "holiday_title": "The holiday title is required.",
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "role_name": "The Role Name is required.",
++        "settings_value": "The Settings Value field is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:218</failure>
+        </testcase>
+        <testcase name="testPokerConfigSettingInvalid" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="221" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001054"/>
+        <testcase name="testGetPokerLimit" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="242" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.001297">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testGetPokerLimit
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/SettingConfigModel.php:84
+/var/www/html/app/Controllers/SettingsController.php:297
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:245</error>
+        </testcase>
+        <testcase name="testSetProductOwner" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="254" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001390">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testSetProductOwner
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required.",\n
+        "holiday_title": "The holiday title is required.",\n
+        "settings_value": "The Settings Value field is required."\n
+    }\n
+}' matches JSON string "{"success":true,"message":"Product owner updated"}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "message": "Product owner updated",
+-    "success": true
++    "errors": {
++        "holiday_title": "The holiday title is required.",
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "role_name": "The Role Name is required.",
++        "settings_value": "The Settings Value field is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:274</failure>
+        </testcase>
+        <testcase name="testSetProductOwnerInvalidData" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="277" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001425">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testSetProductOwnerInvalidData
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required.",\n
+        "holiday_title": "The holiday title is required.",\n
+        "settings_value": "The Settings Value field is required.",\n
+        "r_user_id": "The Product Owner field is required."\n
+    }\n
+}' matches JSON string "{"errors":{"r_user_id":"The Product Owner field is required."}}".
+--- Expected
++++ Actual
+@@ @@
+ {
+     "errors": {
+-        "r_user_id": "The Product Owner field is required."
++        "holiday_title": "The holiday title is required.",
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "r_user_id": "The Product Owner field is required.",
++        "role_name": "The Role Name is required.",
++        "settings_value": "The Settings Value field is required.",
++        "username": "The Username field is required"
+     }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:296</failure>
+        </testcase>
+        <testcase name="testGetMembersByProductList" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="299" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.003059">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testGetMembersByProductList
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:599
+/var/www/html/app/Controllers/SettingsController.php:354
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:308</error>
+        </testcase>
+        <testcase name="testGetTShirtSizeByProduct" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="316" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.001455">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testGetTShirtSizeByProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/TShirtSizeModel.php:84
+/var/www/html/app/Controllers/SettingsController.php:443
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:322</error>
+        </testcase>
+        <testcase name="testGetTShirtSizeByProductNoResponse" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="329" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="0" time="0.001253">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SettingsControllerTest::testGetTShirtSizeByProductNoResponse
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/TShirtSizeModel.php:84
+/var/www/html/app/Controllers/SettingsController.php:443
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:335</error>
+        </testcase>
+        <testcase name="testSetTShirtSize" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="341" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001475">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">App\Controllers\SettingsControllerTest::testSetTShirtSize
+Failed asserting that '{\n
+    "errors": {\n
+        "permission_name": "The Permission Name is required.",\n
+        "username": "The Username field is required",\n
+        "password": "The Password field is required",\n
+        "r_meeting_location_id": "The meeting location ID is required.",\n
+        "r_product_id": "The product ID is required.",\n
+        "role_name": "The Role Name is required.",\n
+        "holiday_title": "The holiday title is required.",\n
+        "settings_value": "The Settings Value field is required.",\n
+        "r_user_id": "The Product Owner field is required."\n
+    }\n
+}' matches JSON string "{"message":"No Changes Made","success":true}".
+--- Expected
++++ Actual
+@@ @@
+ {
+-    "message": "No Changes Made",
+-    "success": true
++    "errors": {
++        "holiday_title": "The holiday title is required.",
++        "password": "The Password field is required",
++        "permission_name": "The Permission Name is required.",
++        "r_meeting_location_id": "The meeting location ID is required.",
++        "r_product_id": "The product ID is required.",
++        "r_user_id": "The Product Owner field is required.",
++        "role_name": "The Role Name is required.",
++        "settings_value": "The Settings Value field is required.",
++        "username": "The Username field is required"
++    }
+ }
+
+/var/www/html/tests/app/Controllers/SettingsControllerTest.php:362</failure>
+        </testcase>
+        <testcase name="testSetTShirtSizeInvalidData" file="/var/www/html/tests/app/Controllers/SettingsControllerTest.php" line="365" class="App\Controllers\SettingsControllerTest" classname="App.Controllers.SettingsControllerTest" assertions="4" time="0.001129"/>
+      </testsuite>
+      <testsuite name="App\Controllers\SprintControllerTest" file="/var/www/html/tests/app/Controllers/SprintControllerTest.php" tests="3" assertions="0" errors="3" failures="0" skipped="0" time="0.000000">
+        <testcase name="testGetSprintList" file="/var/www/html/tests/app/Controllers/SprintControllerTest.php" line="73" class="App\Controllers\SprintControllerTest" classname="App.Controllers.SprintControllerTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SprintControllerTest::testGetSprintList
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/SprintModel.php:29
+/var/www/html/app/Controllers/SprintController.php:93
+/var/www/html/app/Controllers/SprintController.php:72
+/var/www/html/tests/app/Controllers/SprintControllerTest.php:55</error>
+        </testcase>
+        <testcase name="testGetProductTasks" file="/var/www/html/tests/app/Controllers/SprintControllerTest.php" line="83" class="App\Controllers\SprintControllerTest" classname="App.Controllers.SprintControllerTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SprintControllerTest::testGetProductTasks
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/SprintModel.php:29
+/var/www/html/app/Controllers/SprintController.php:93
+/var/www/html/app/Controllers/SprintController.php:72
+/var/www/html/tests/app/Controllers/SprintControllerTest.php:55</error>
+        </testcase>
+        <testcase name="testGetSprintPlanning" file="/var/www/html/tests/app/Controllers/SprintControllerTest.php" line="93" class="App\Controllers\SprintControllerTest" classname="App.Controllers.SprintControllerTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\SprintControllerTest::testGetSprintPlanning
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/SprintModel.php:29
+/var/www/html/app/Controllers/SprintController.php:93
+/var/www/html/app/Controllers/SprintController.php:72
+/var/www/html/tests/app/Controllers/SprintControllerTest.php:55</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\SyncRedmineControllerTest" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" tests="7" assertions="0" errors="7" failures="0" skipped="0" time="0.004660">
+        <testcase name="testSyncProducts" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="32" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000844">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testSyncProducts
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:36</error>
+        </testcase>
+        <testcase name="testProductUserSync" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="40" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000672">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testProductUserSync
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:44</error>
+        </testcase>
+        <testcase name="testTaskSync" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="48" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000626">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testTaskSync
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:52</error>
+        </testcase>
+        <testcase name="testMembersSync" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="56" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000633">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testMembersSync
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:60</error>
+        </testcase>
+        <testcase name="testCustomerSync" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="64" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000634">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testCustomerSync
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:68</error>
+        </testcase>
+        <testcase name="testMultipleSyncs" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="73" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000616">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testMultipleSyncs
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:79</error>
+        </testcase>
+        <testcase name="testSyncOnlyUsers" file="/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php" line="83" class="App\Controllers\SyncRedmineControllerTest" classname="App.Controllers.SyncRedmineControllerTest" assertions="0" time="0.000636">
+          <error type="CodeIgniter\Exceptions\InvalidArgumentException">App\Controllers\SyncRedmineControllerTest::testSyncOnlyUsers
+CodeIgniter\Exceptions\InvalidArgumentException: Invalid Controller: App\Controllers\SyncRedmineController
+
+/var/www/html/system/Test/ControllerTestTrait.php:135
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:23
+/var/www/html/tests/app/Controllers/SyncRedmineControllerTest.php:87</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="App\Controllers\TaskControllerTest" file="/var/www/html/tests/app/Controllers/TaskControllerTest.php" tests="3" assertions="0" errors="3" failures="0" skipped="0" time="0.005287">
+        <testcase name="testAddTask" file="/var/www/html/tests/app/Controllers/TaskControllerTest.php" line="36" class="App\Controllers\TaskControllerTest" classname="App.Controllers.TaskControllerTest" assertions="0" time="0.001647">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\TaskControllerTest::testAddTask
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/TaskModel.php:400
+/var/www/html/app/Controllers/TaskController.php:115
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/TaskControllerTest.php:61</error>
+        </testcase>
+        <testcase name="testUpdateTask" file="/var/www/html/tests/app/Controllers/TaskControllerTest.php" line="70" class="App\Controllers\TaskControllerTest" classname="App.Controllers.TaskControllerTest" assertions="0" time="0.001986">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">App\Controllers\TaskControllerTest::testUpdateTask
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Backlog/TaskModel.php:400
+/var/www/html/app/Controllers/TaskController.php:217
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/TaskControllerTest.php:95</error>
+        </testcase>
+        <testcase name="testDeleteTask" file="/var/www/html/tests/app/Controllers/TaskControllerTest.php" line="103" class="App\Controllers\TaskControllerTest" classname="App.Controllers.TaskControllerTest" assertions="0" time="0.001654">
+          <error type="ErrorException">App\Controllers\TaskControllerTest::testDeleteTask
+ErrorException: Undefined array key 1
+
+/var/www/html/app/Models/Backlog/BacklogItemModel.php:382
+/var/www/html/app/Controllers/TaskController.php:351
+/var/www/html/system/Test/ControllerTestTrait.php:166
+/var/www/html/tests/app/Controllers/TaskControllerTest.php:113</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\AdminModelTest" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" tests="6" assertions="0" errors="6" failures="0" skipped="0" time="0.004917">
+        <testcase name="testGetUsers" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" line="19" class="Tests\app\Models\AdminModelTest" classname="Tests.app.Models.AdminModelTest" assertions="0" time="0.001054">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\AdminModelTest::testGetUsers
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:41
+/var/www/html/tests/app/Models/Admin/AdminModelTest.php:21</error>
+        </testcase>
+        <testcase name="testGetPermissions" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" line="33" class="Tests\app\Models\AdminModelTest" classname="Tests.app.Models.AdminModelTest" assertions="0" time="0.000888">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\AdminModelTest::testGetPermissions
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:70
+/var/www/html/tests/app/Models/Admin/AdminModelTest.php:35</error>
+        </testcase>
+        <testcase name="testUpdateUserRole" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" line="47" class="Tests\app\Models\AdminModelTest" classname="Tests.app.Models.AdminModelTest" assertions="0" time="0.001026">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\AdminModelTest::testUpdateUserRole
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:94
+/var/www/html/tests/app/Models/Admin/AdminModelTest.php:53</error>
+        </testcase>
+        <testcase name="testUserFilter" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" line="59" class="Tests\app\Models\AdminModelTest" classname="Tests.app.Models.AdminModelTest" assertions="0" time="0.000740">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\AdminModelTest::testUserFilter
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:131
+/var/www/html/tests/app/Models/Admin/AdminModelTest.php:62</error>
+        </testcase>
+        <testcase name="testGetLastSync" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" line="84" class="Tests\app\Models\AdminModelTest" classname="Tests.app.Models.AdminModelTest" assertions="0" time="0.000626">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\AdminModelTest::testGetLastSync
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:165
+/var/www/html/tests/app/Models/Admin/AdminModelTest.php:86</error>
+        </testcase>
+        <testcase name="testGetModule" file="/var/www/html/tests/app/Models/Admin/AdminModelTest.php" line="97" class="Tests\app\Models\AdminModelTest" classname="Tests.app.Models.AdminModelTest" assertions="0" time="0.000584">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\AdminModelTest::testGetModule
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/AdminModel.php:189
+/var/www/html/tests/app/Models/Admin/AdminModelTest.php:99</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\PermissionModelTest" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" tests="6" assertions="0" errors="6" failures="0" skipped="0" time="0.003275">
+        <testcase name="testAddNewPermission" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" line="19" class="Tests\app\Models\PermissionModelTest" classname="Tests.app.Models.PermissionModelTest" assertions="0" time="0.000618">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\PermissionModelTest::testAddNewPermission
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:89
+/var/www/html/tests/app/Models/Admin/PermissionModelTest.php:28</error>
+        </testcase>
+        <testcase name="testAddNewPermissionInvalidInput" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" line="34" class="Tests\app\Models\PermissionModelTest" classname="Tests.app.Models.PermissionModelTest" assertions="0" time="0.000440">
+          <error type="ErrorException">Tests\app\Models\PermissionModelTest::testAddNewPermissionInvalidInput
+ErrorException: Undefined array key "routes_url"
+
+/var/www/html/app/Models/Admin/PermissionModel.php:92
+/var/www/html/tests/app/Models/Admin/PermissionModelTest.php:42</error>
+        </testcase>
+        <testcase name="testGetPermissions" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" line="48" class="Tests\app\Models\PermissionModelTest" classname="Tests.app.Models.PermissionModelTest" assertions="0" time="0.000533">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\PermissionModelTest::testGetPermissions
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:115
+/var/www/html/tests/app/Models/Admin/PermissionModelTest.php:50</error>
+        </testcase>
+        <testcase name="testDeletePermission" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" line="61" class="Tests\app\Models\PermissionModelTest" classname="Tests.app.Models.PermissionModelTest" assertions="0" time="0.000537">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\PermissionModelTest::testDeletePermission
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:136
+/var/www/html/tests/app/Models/Admin/PermissionModelTest.php:65</error>
+        </testcase>
+        <testcase name="testGetPermissionDetailsById" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" line="70" class="Tests\app\Models\PermissionModelTest" classname="Tests.app.Models.PermissionModelTest" assertions="0" time="0.000608">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\PermissionModelTest::testGetPermissionDetailsById
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:161
+/var/www/html/tests/app/Models/Admin/PermissionModelTest.php:73</error>
+        </testcase>
+        <testcase name="testGetPermissionDetailsByIdInvalidInput" file="/var/www/html/tests/app/Models/Admin/PermissionModelTest.php" line="87" class="Tests\app\Models\PermissionModelTest" classname="Tests.app.Models.PermissionModelTest" assertions="0" time="0.000539">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\PermissionModelTest::testGetPermissionDetailsByIdInvalidInput
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/PermissionModel.php:161
+/var/www/html/tests/app/Models/Admin/PermissionModelTest.php:90</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\ProductOwnerModelTest" file="/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.002093">
+        <testcase name="testSetProductOwner" file="/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php" line="17" class="Tests\app\Models\ProductOwnerModelTest" classname="Tests.app.Models.ProductOwnerModelTest" assertions="0" time="0.000568">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\ProductOwnerModelTest::testSetProductOwner
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/ProductOwnerModel.php:65
+/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php:24</error>
+        </testcase>
+        <testcase name="testSetProductOwnerInvalidInput" file="/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php" line="30" class="Tests\app\Models\ProductOwnerModelTest" classname="Tests.app.Models.ProductOwnerModelTest" assertions="0" time="0.000442">
+          <error type="ErrorException">Tests\app\Models\ProductOwnerModelTest::testSetProductOwnerInvalidInput
+ErrorException: Undefined array key "r_user_id"
+
+/var/www/html/app/Models/Admin/ProductOwnerModel.php:67
+/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php:36</error>
+        </testcase>
+        <testcase name="testGetProductOwner" file="/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php" line="42" class="Tests\app\Models\ProductOwnerModelTest" classname="Tests.app.Models.ProductOwnerModelTest" assertions="0" time="0.000529">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\ProductOwnerModelTest::testGetProductOwner
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/ProductOwnerModel.php:87
+/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php:45</error>
+        </testcase>
+        <testcase name="testGetProductOwnerInvalidInput" file="/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php" line="57" class="Tests\app\Models\ProductOwnerModelTest" classname="Tests.app.Models.ProductOwnerModelTest" assertions="0" time="0.000555">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\ProductOwnerModelTest::testGetProductOwnerInvalidInput
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/ProductOwnerModel.php:87
+/var/www/html/tests/app/Models/Admin/ProductOwnerModelTest.php:60</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\RoleModelTest" file="/var/www/html/tests/app/Models/Admin/RoleModelTest.php" tests="3" assertions="0" errors="3" failures="0" skipped="0" time="0.001846">
+        <testcase name="testGetRoles" file="/var/www/html/tests/app/Models/Admin/RoleModelTest.php" line="17" class="Tests\app\Models\RoleModelTest" classname="Tests.app.Models.RoleModelTest" assertions="0" time="0.000650">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\RoleModelTest::testGetRoles
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:60
+/var/www/html/tests/app/Models/Admin/RoleModelTest.php:19</error>
+        </testcase>
+        <testcase name="testInsertRole" file="/var/www/html/tests/app/Models/Admin/RoleModelTest.php" line="30" class="Tests\app\Models\RoleModelTest" classname="Tests.app.Models.RoleModelTest" assertions="0" time="0.000646">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\RoleModelTest::testInsertRole
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:80
+/var/www/html/tests/app/Models/Admin/RoleModelTest.php:37</error>
+        </testcase>
+        <testcase name="testDeleteRole" file="/var/www/html/tests/app/Models/Admin/RoleModelTest.php" line="45" class="Tests\app\Models\RoleModelTest" classname="Tests.app.Models.RoleModelTest" assertions="0" time="0.000550">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\RoleModelTest::testDeleteRole
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Admin/RoleModel.php:101
+/var/www/html/tests/app/Models/Admin/RoleModelTest.php:50</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\CustomReportModelTest" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" tests="8" assertions="0" errors="8" failures="0" skipped="0" time="0.005198">
+        <testcase name="testGetMeetReportView" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="18" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000678">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testGetMeetReportView
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:56
+/var/www/html/tests/app/Models/CustomReportModelTest.php:21</error>
+        </testcase>
+        <testcase name="testGetFilterMeetReportViewWithParams" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="30" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000682">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testGetFilterMeetReportViewWithParams
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/MySQLi/Connection.php:339
+/var/www/html/system/Database/BaseConnection.php:1594
+/var/www/html/system/Database/BaseConnection.php:1558
+/var/www/html/app/Models/CustomReportModel.php:130
+/var/www/html/app/Models/CustomReportModel.php:130
+/var/www/html/tests/app/Models/CustomReportModelTest.php:40</error>
+        </testcase>
+        <testcase name="testGetSprintReportView" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="48" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000671">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testGetSprintReportView
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:188
+/var/www/html/tests/app/Models/CustomReportModelTest.php:51</error>
+        </testcase>
+        <testcase name="testGetFilterSprintReportViewWithParams" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="60" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000653">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testGetFilterSprintReportViewWithParams
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/MySQLi/Connection.php:339
+/var/www/html/system/Database/BaseConnection.php:1594
+/var/www/html/system/Database/BaseConnection.php:1558
+/var/www/html/app/Models/CustomReportModel.php:250
+/var/www/html/app/Models/CustomReportModel.php:250
+/var/www/html/tests/app/Models/CustomReportModelTest.php:68</error>
+        </testcase>
+        <testcase name="testGetBacklogReportView" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="77" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000623">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testGetBacklogReportView
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:302
+/var/www/html/tests/app/Models/CustomReportModelTest.php:80</error>
+        </testcase>
+        <testcase name="testBackLogReportViewDataCorrectOrNOt" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="91" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000645">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testBackLogReportViewDataCorrectOrNOt
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:302
+/var/www/html/tests/app/Models/CustomReportModelTest.php:92</error>
+        </testcase>
+        <testcase name="testSprintReportViewDataCorrectOrNot" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="101" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000631">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testSprintReportViewDataCorrectOrNot
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:188
+/var/www/html/tests/app/Models/CustomReportModelTest.php:103</error>
+        </testcase>
+        <testcase name="testMeetReportViewDataCorrectOrNot" file="/var/www/html/tests/app/Models/CustomReportModelTest.php" line="113" class="Tests\app\Models\CustomReportModelTest" classname="Tests.app.Models.CustomReportModelTest" assertions="0" time="0.000614">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\CustomReportModelTest::testMeetReportViewDataCorrectOrNot
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/CustomReportModel.php:56
+/var/www/html/tests/app/Models/CustomReportModelTest.php:114</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\DashboardModelTest" file="/var/www/html/tests/app/Models/DashboardModelTest.php" tests="14" assertions="0" errors="14" failures="0" skipped="0" time="0.007741">
+        <testcase name="testGetSprintDetails" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="19" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000579">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetSprintDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:78
+/var/www/html/tests/app/Models/DashboardModelTest.php:30</error>
+        </testcase>
+        <testcase name="testGetRunningSprintId" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="34" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000559">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetRunningSprintId
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:104
+/var/www/html/tests/app/Models/DashboardModelTest.php:40</error>
+        </testcase>
+        <testcase name="testGetBacklogStatusCounts" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="44" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000541">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetBacklogStatusCounts
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:143
+/var/www/html/tests/app/Models/DashboardModelTest.php:55</error>
+        </testcase>
+        <testcase name="testGetUserStorystatusCounts" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="59" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000557">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetUserStorystatusCounts
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:182
+/var/www/html/tests/app/Models/DashboardModelTest.php:65</error>
+        </testcase>
+        <testcase name="testGetSprintTasksId" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="69" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000532">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetSprintTasksId
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:206
+/var/www/html/tests/app/Models/DashboardModelTest.php:75</error>
+        </testcase>
+        <testcase name="testGetAlluserStoryIds" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="79" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000543">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetAlluserStoryIds
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:261
+/var/www/html/tests/app/Models/DashboardModelTest.php:85</error>
+        </testcase>
+        <testcase name="testGetPendingTaskStatusCounts" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="89" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000633">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetPendingTaskStatusCounts
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:308
+/var/www/html/tests/app/Models/DashboardModelTest.php:96</error>
+        </testcase>
+        <testcase name="testGetPendingTasks" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="100" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000557">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetPendingTasks
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:351
+/var/www/html/tests/app/Models/DashboardModelTest.php:107</error>
+        </testcase>
+        <testcase name="testGetEstimatedSprintHours" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="111" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000575">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetEstimatedSprintHours
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Dashboard/DashboardModel.php:376
+/var/www/html/tests/app/Models/DashboardModelTest.php:117</error>
+        </testcase>
+        <testcase name="testUserMeetings" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="121" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000546">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testUserMeetings
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:420
+/var/www/html/tests/app/Models/DashboardModelTest.php:124</error>
+        </testcase>
+        <testcase name="testGetBacklogPriority" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="128" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000520">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetBacklogPriority
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:456
+/var/www/html/tests/app/Models/DashboardModelTest.php:134</error>
+        </testcase>
+        <testcase name="testGetSprintPerformance" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="138" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000532">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetSprintPerformance
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:510
+/var/www/html/tests/app/Models/DashboardModelTest.php:144</error>
+        </testcase>
+        <testcase name="testProductOnTrack" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="148" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000532">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testProductOnTrack
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:546
+/var/www/html/tests/app/Models/DashboardModelTest.php:154</error>
+        </testcase>
+        <testcase name="testGetAllUpcomingSprints" file="/var/www/html/tests/app/Models/DashboardModelTest.php" line="158" class="Tests\app\Models\DashboardModelTest" classname="Tests.app.Models.DashboardModelTest" assertions="0" time="0.000534">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\DashboardModelTest::testGetAllUpcomingSprints
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Dashboard/DashboardModel.php:606
+/var/www/html/tests/app/Models/DashboardModelTest.php:165</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\IssueModelTest" file="/var/www/html/tests/app/Models/IssueModelTest.php" tests="2" assertions="0" errors="2" failures="0" skipped="0" time="0.000758">
+        <testcase name="testGetAllTasksFromRedmine" file="/var/www/html/tests/app/Models/IssueModelTest.php" line="17" class="Tests\app\Models\IssueModelTest" classname="Tests.app.Models.IssueModelTest" assertions="0" time="0.000383">
+          <error type="Error">Tests\app\Models\IssueModelTest::testGetAllTasksFromRedmine
+Error: Call to a member function getAllTasksFromRedmine() on null
+
+/var/www/html/tests/app/Models/IssueModelTest.php:22</error>
+        </testcase>
+        <testcase name="testTaskDataIsCorrectOrNot" file="/var/www/html/tests/app/Models/IssueModelTest.php" line="30" class="Tests\app\Models\IssueModelTest" classname="Tests.app.Models.IssueModelTest" assertions="0" time="0.000375">
+          <error type="Error">Tests\app\Models\IssueModelTest::testTaskDataIsCorrectOrNot
+Error: Call to a member function getAllTasksFromRedmine() on null
+
+/var/www/html/tests/app/Models/IssueModelTest.php:34</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\Meeting\MeetingDetailModelTest" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" tests="10" assertions="0" errors="10" failures="0" skipped="0" time="0.007091">
+        <testcase name="testInsertMeetingDetails" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="18" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000715">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testInsertMeetingDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:194
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:40</error>
+        </testcase>
+        <testcase name="testUpdateMeetingDetails" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="47" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000744">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testUpdateMeetingDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:283
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:72</error>
+        </testcase>
+        <testcase name="testUpdateMeetingDetailsExternal" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="78" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000824">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testUpdateMeetingDetailsExternal
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:305
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:83</error>
+        </testcase>
+        <testcase name="testTimeLogisLogged" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="87" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000718">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testTimeLogisLogged
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:330
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:92</error>
+        </testcase>
+        <testcase name="testGetMeetingDetails" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="96" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000762">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testGetMeetingDetails
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:346
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:99</error>
+        </testcase>
+        <testcase name="testUpdateExternalReferenceTaskId" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="104" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000819">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testUpdateExternalReferenceTaskId
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:367
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:109</error>
+        </testcase>
+        <testcase name="testShowMeetings" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="113" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000780">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testShowMeetings
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:400
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:116</error>
+        </testcase>
+        <testcase name="testCancelMeetingsReason" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="121" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000615">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testCancelMeetingsReason
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:422
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:127</error>
+        </testcase>
+        <testcase name="testGetExternalIssueIdForSprint" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="131" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000549">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testGetExternalIssueIdForSprint
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:449
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:134</error>
+        </testcase>
+        <testcase name="testGetProductMeetType" file="/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php" line="139" class="Tests\app\Models\Meeting\MeetingDetailModelTest" classname="Tests.app.Models.Meeting.MeetingDetailModelTest" assertions="0" time="0.000565">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingDetailModelTest::testGetProductMeetType
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingDetailModel.php:480
+/var/www/html/tests/app/Models/Meeting/MeetingDetailModelTest.php:142</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\Meeting\MeetingModelTest" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" tests="14" assertions="0" errors="14" failures="0" skipped="0" time="0.007852">
+        <testcase name="testGetMeetingType" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="19" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000588">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetMeetingType
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:31
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:21</error>
+        </testcase>
+        <testcase name="testGetMeetingTypeReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="29" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000551">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetMeetingTypeReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:31
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:32</error>
+        </testcase>
+        <testcase name="testGetMeetingLocation" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="38" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000542">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetMeetingLocation
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:47
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:40</error>
+        </testcase>
+        <testcase name="testGetMeetingLocationReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="48" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000543">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetMeetingLocationReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:47
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:50</error>
+        </testcase>
+        <testcase name="testGetMeetingByType" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="56" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000551">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetMeetingByType
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingModel.php:109
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:65</error>
+        </testcase>
+        <testcase name="testGetMeetingByIdReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="75" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000539">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetMeetingByIdReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/Meeting/MeetingModel.php:109
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:77</error>
+        </testcase>
+        <testcase name="testGetProduct" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="83" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000539">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:130
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:86</error>
+        </testcase>
+        <testcase name="testGetProductReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="95" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000554">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetProductReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:130
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:98</error>
+        </testcase>
+        <testcase name="testGetSprintDuration" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="104" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000562">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetSprintDuration
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:146
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:106</error>
+        </testcase>
+        <testcase name="testGetSprintDurationReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="114" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000553">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetSprintDurationReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:146
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:116</error>
+        </testcase>
+        <testcase name="testGetSprintStatus" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="122" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000550">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetSprintStatus
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:174
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:124</error>
+        </testcase>
+        <testcase name="testGetSprintStatusReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="132" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000562">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testGetSprintStatusReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:174
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:134</error>
+        </testcase>
+        <testcase name="testShowSprint" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="140" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000561">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testShowSprint
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:218
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:143</error>
+        </testcase>
+        <testcase name="testShowSprintReturnsEmpty" file="/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php" line="158" class="Tests\app\Models\Meeting\MeetingModelTest" classname="Tests.app.Models.Meeting.MeetingModelTest" assertions="0" time="0.000657">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\Meeting\MeetingModelTest::testShowSprintReturnsEmpty
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/Meeting/MeetingModel.php:218
+/var/www/html/tests/app/Models/Meeting/MeetingModelTest.php:161</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\ProjectModelTest" file="/var/www/html/tests/app/Models/ProjectModelTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.001499">
+        <testcase name="testGetAllProductsFromRedmine" file="/var/www/html/tests/app/Models/ProjectModelTest.php" line="17" class="Tests\app\Models\ProjectModelTest" classname="Tests.app.Models.ProjectModelTest" assertions="0" time="0.000410">
+          <error type="Error">Tests\app\Models\ProjectModelTest::testGetAllProductsFromRedmine
+Error: Call to a member function getAllProductsFromRedmine() on null
+
+/var/www/html/tests/app/Models/ProjectModelTest.php:19</error>
+        </testcase>
+        <testcase name="testGetAllProductUsersFromRedmine" file="/var/www/html/tests/app/Models/ProjectModelTest.php" line="26" class="Tests\app\Models\ProjectModelTest" classname="Tests.app.Models.ProjectModelTest" assertions="0" time="0.000395">
+          <error type="Error">Tests\app\Models\ProjectModelTest::testGetAllProductUsersFromRedmine
+Error: Call to a member function getAllProductUsersFromRedmine() on null
+
+/var/www/html/tests/app/Models/ProjectModelTest.php:28</error>
+        </testcase>
+        <testcase name="testWhetherProductDataCorrectOrNot" file="/var/www/html/tests/app/Models/ProjectModelTest.php" line="32" class="Tests\app\Models\ProjectModelTest" classname="Tests.app.Models.ProjectModelTest" assertions="0" time="0.000350">
+          <error type="Error">Tests\app\Models\ProjectModelTest::testWhetherProductDataCorrectOrNot
+Error: Call to a member function getAllProductsFromRedmine() on null
+
+/var/www/html/tests/app/Models/ProjectModelTest.php:33</error>
+        </testcase>
+        <testcase name="testWhetherProductUserDataCorrectOrNot" file="/var/www/html/tests/app/Models/ProjectModelTest.php" line="43" class="Tests\app\Models\ProjectModelTest" classname="Tests.app.Models.ProjectModelTest" assertions="0" time="0.000345">
+          <error type="Error">Tests\app\Models\ProjectModelTest::testWhetherProductUserDataCorrectOrNot
+Error: Call to a member function getAllProductUsersFromRedmine() on null
+
+/var/www/html/tests/app/Models/ProjectModelTest.php:44</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Unit\SyncRedmineModelTest" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" tests="9" assertions="0" errors="9" failures="0" skipped="0" time="0.000000">
+        <testcase name="testLogSyncActivitySuccess" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="29" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testLogSyncActivitySuccess
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testLogSyncActivityFailure" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="38" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testLogSyncActivityFailure
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testGetAllProductUsersFromLocal" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="49" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testGetAllProductUsersFromLocal
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testUpdateProductUserSync" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="59" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testUpdateProductUserSync
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testUpdateProductSync" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="74" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testUpdateProductSync
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testGetLocalProduct" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="92" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testGetLocalProduct
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testUpdateTaskSync" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="100" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testUpdateTaskSync
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testGetLastUpdates" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="131" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testGetLastUpdates
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+        <testcase name="testUpdateCustomerSync" file="/var/www/html/tests/app/Models/SyncRedmineModelTest.php" line="139" class="Tests\Unit\SyncRedmineModelTest" classname="Tests.Unit.SyncRedmineModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\SyncRedmineModelTest::testUpdateCustomerSync
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254
+/var/www/html/tests/app/Models/SyncRedmineModelTest.php:23</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\app\Models\UserModelTest" file="/var/www/html/tests/app/Models/UserModelTest.php" tests="2" assertions="0" errors="2" failures="0" skipped="0" time="0.218896">
+        <testcase name="testGetUser" file="/var/www/html/tests/app/Models/UserModelTest.php" line="19" class="Tests\app\Models\UserModelTest" classname="Tests.app.Models.UserModelTest" assertions="0" time="0.000601">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\UserModelTest::testGetUser
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/system/Model.php:753
+/var/www/html/app/Models/User/UserModel.php:58
+/var/www/html/tests/app/Models/UserModelTest.php:25</error>
+        </testcase>
+        <testcase name="testInsertOrUpdatetUser" file="/var/www/html/tests/app/Models/UserModelTest.php" line="32" class="Tests\app\Models\UserModelTest" classname="Tests.app.Models.UserModelTest" assertions="0" time="0.218296">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\app\Models\UserModelTest::testInsertOrUpdatetUser
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Database/BaseConnection.php:792
+/var/www/html/app/Models/User/UserModel.php:150
+/var/www/html/tests/app/Models/UserModelTest.php:44</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="ExampleDatabaseTest" file="/var/www/html/tests/database/ExampleDatabaseTest.php" tests="2" assertions="0" errors="2" failures="0" skipped="0" time="0.000000">
+        <testcase name="testModelFindAll" file="/var/www/html/tests/database/ExampleDatabaseTest.php" line="17" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">ExampleDatabaseTest::testModelFindAll
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254</error>
+        </testcase>
+        <testcase name="testSoftDeleteLeavesRow" file="/var/www/html/tests/database/ExampleDatabaseTest.php" line="28" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">ExampleDatabaseTest::testSoftDeleteLeavesRow
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No such file or directory
+
+/var/www/html/system/Database/BaseConnection.php:601
+/var/www/html/system/Test/DatabaseTestTrait.php:91
+/var/www/html/system/Test/DatabaseTestTrait.php:67
+/var/www/html/system/Test/CIUnitTestCase.php:254</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="ExampleSessionTest" file="/var/www/html/tests/session/ExampleSessionTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.000716">
+        <testcase name="testSessionSimple" file="/var/www/html/tests/session/ExampleSessionTest.php" line="11" class="ExampleSessionTest" classname="ExampleSessionTest" assertions="1" time="0.000716"/>
+      </testsuite>
+      <testsuite name="HealthTest" file="/var/www/html/tests/unit/HealthTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.000914">
+        <testcase name="testIsDefinedAppPath" file="/var/www/html/tests/unit/HealthTest.php" line="13" class="HealthTest" classname="HealthTest" assertions="1" time="0.000338"/>
+        <testcase name="testBaseUrlHasBeenSet" file="/var/www/html/tests/unit/HealthTest.php" line="18" class="HealthTest" classname="HealthTest" assertions="2" time="0.000576"/>
       </testsuite>
     </testsuite>
   </testsuite>

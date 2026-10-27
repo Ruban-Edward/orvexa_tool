@@ -1,0 +1,2291 @@
+/* ==========================================================================
+   Orvexa UI — application design layer
+   Loaded after the template and legacy theme files. It sets the design
+   tokens (which the page stylesheets already consume through the legacy
+   variable names) and restyles the shell and shared components.
+   ========================================================================== */
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("../fonts/inter/Inter-latin.woff2") format("woff2");
+}
+
+/* --------------------------------------------------------------------------
+   Tokens
+   -------------------------------------------------------------------------- */
+:root {
+    /* Brand (sampled from the Orvexa palette) */
+    --ox-brand-50: #effbf3;
+    --ox-brand-100: #d8f5e2;
+    --ox-brand-200: #b2eac7;
+    --ox-brand-300: #84e788;
+    --ox-brand-400: #40d37c;
+    --ox-brand-500: #1fb865;
+    --ox-brand-600: #149553;
+    --ox-brand-700: #117a45;
+    --ox-brand-800: #10613a;
+    --ox-brand-900: #0d261c;
+    --ox-lime: #ddeda0;
+
+    /* Neutrals (slightly green-tinted) */
+    --ox-canvas: #f6f8f7;
+    --ox-surface: #ffffff;
+    --ox-surface-2: #f9fbfa;
+    --ox-surface-3: #f1f4f2;
+    --ox-border: #e3e8e5;
+    --ox-border-strong: #cdd6d0;
+    --ox-ink: #101b15;
+    --ox-text: #2c3a32;
+    --ox-muted: #66746c;
+    --ox-subtle: #8c988f;
+
+    /* Status */
+    --ox-red: #d92d20;
+    --ox-red-bg: #fef1f0;
+    --ox-amber: #b54708;
+    --ox-amber-bg: #fff6e6;
+    --ox-blue: #175cd3;
+    --ox-blue-bg: #eef4ff;
+    --ox-violet: #6941c6;
+    --ox-violet-bg: #f4f0ff;
+    --ox-green: var(--ox-brand-700);
+    --ox-green-bg: var(--ox-brand-50);
+
+    /* Shape & depth */
+    --ox-radius-sm: 6px;
+    --ox-radius: 8px;
+    --ox-radius-lg: 12px;
+    --ox-radius-xl: 16px;
+    --ox-shadow-xs: 0 1px 2px rgba(16, 27, 21, 0.05);
+    --ox-shadow-sm: 0 1px 3px rgba(16, 27, 21, 0.08), 0 1px 2px rgba(16, 27, 21, 0.04);
+    --ox-shadow-md: 0 8px 24px -6px rgba(16, 27, 21, 0.12), 0 2px 6px rgba(16, 27, 21, 0.05);
+    --ox-shadow-lg: 0 20px 48px -12px rgba(16, 27, 21, 0.22);
+    --ox-ring: 0 0 0 3px rgba(31, 184, 101, 0.22);
+
+    --ox-font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --ox-sidebar-w: 248px;
+    --ox-sidebar-w-collapsed: 68px;
+    --ox-topbar-h: 60px;
+
+    /* Legacy variables used by the page stylesheets */
+    --primary-color: var(--ox-brand-700);
+    --secondary-color: var(--ox-brand-600);
+    --accent-color: var(--ox-brand-400);
+    --bg-color: var(--ox-surface);
+    --text-color: var(--ox-text);
+    --app-border: var(--ox-border);
+    --app-muted: var(--ox-surface-2);
+    --app-canvas: var(--ox-canvas);
+    --app-tint: var(--ox-brand-50);
+    --app-hover-surface: var(--ox-surface-2);
+    --app-green-dark: var(--ox-brand-900);
+    --app-green-deep: var(--ox-brand-900);
+    --app-green-hover: var(--ox-brand-800);
+    --app-green-current: var(--ox-brand-700);
+    --pistachio-bg: var(--ox-canvas);
+    --pistachio-surface: var(--ox-surface);
+    --pistachio-soft: var(--ox-brand-50);
+    --pistachio-deep: var(--ox-brand-700);
+    --pistachio-ink: var(--ox-text);
+    --pistachio-muted: var(--ox-muted);
+    --pistachio-mint: var(--ox-brand-100);
+    --PRIMARYCOLOR: var(--ox-brand-700);
+    --SECONDARYCOLOR: var(--ox-brand-600);
+    --SECONDARYTEXTCOLOR: var(--ox-ink);
+    --app-radius: var(--ox-radius-lg);
+    --app-shadow: var(--ox-shadow-xs);
+    --app-shadow-raised: var(--ox-shadow-md);
+    --sidebar-width: var(--ox-sidebar-w);
+    --sidebar-collapsed-width: var(--ox-sidebar-w-collapsed);
+
+    /* Bootstrap */
+    --bs-body-font-family: var(--ox-font);
+    --bs-body-color: var(--ox-text);
+    --bs-body-bg: var(--ox-canvas);
+    --bs-border-color: var(--ox-border);
+    --bs-border-radius: var(--ox-radius);
+    --bs-primary: var(--ox-brand-700);
+    --bs-primary-rgb: 17, 122, 69;
+    --bs-primary-text-emphasis: var(--ox-brand-800);
+    --bs-primary-bg-subtle: var(--ox-brand-50);
+    --bs-primary-border-subtle: var(--ox-brand-200);
+    --bs-link-color: var(--ox-brand-700);
+    --bs-link-color-rgb: 17, 122, 69;
+    --bs-link-hover-color: var(--ox-brand-800);
+    --bs-link-hover-color-rgb: 16, 97, 58;
+    --bs-success: var(--ox-brand-600);
+    --bs-success-rgb: 20, 149, 83;
+    --bs-danger: var(--ox-red);
+    --bs-danger-rgb: 217, 45, 32;
+    --bs-warning-rgb: 247, 144, 9;
+    --bs-info: var(--ox-blue);
+    --bs-info-rgb: 23, 92, 211;
+    --bs-focus-ring-color: rgba(31, 184, 101, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body.ox-app {
+    margin: 0;
+    padding: 0 !important;
+    height: auto;
+    min-height: 100vh;
+    background: var(--ox-canvas) !important;
+    background-image: none !important;
+    color: var(--ox-text);
+    font-family: var(--ox-font);
+    font-size: 14px;
+    line-height: 1.5;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* The legacy theme animated every property on every element; cancel that
+   blanket rule without beating component-level transitions */
+:where(body.ox-app) *,
+:where(body.ox-app) *::before,
+:where(body.ox-app) *::after {
+    transition-property: none;
+}
+
+body.ox-app,
+body.ox-app button,
+body.ox-app input,
+body.ox-app select,
+body.ox-app textarea,
+body.ox-app .btn,
+body.ox-app .form-control,
+body.ox-app .form-select,
+body.ox-app h1, body.ox-app h2, body.ox-app h3,
+body.ox-app h4, body.ox-app h5, body.ox-app h6,
+body.ox-app p, body.ox-app label, body.ox-app th, body.ox-app td,
+body.ox-app strong, body.ox-app b {
+    font-family: var(--ox-font) !important;
+}
+
+body.ox-app h1, body.ox-app h2, body.ox-app h3,
+body.ox-app h4, body.ox-app h5, body.ox-app h6 {
+    color: var(--ox-ink);
+    letter-spacing: -0.01em;
+}
+
+body.ox-app a {
+    color: var(--ox-brand-700);
+    text-underline-offset: 2px;
+}
+
+body.ox-app a:hover {
+    color: var(--ox-brand-800);
+}
+
+body.ox-app ::selection {
+    background: var(--ox-brand-200);
+    color: var(--ox-ink);
+}
+
+body.ox-app :focus-visible {
+    outline: 2px solid var(--ox-brand-500);
+    outline-offset: 2px;
+}
+
+body.ox-app ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+body.ox-app ::-webkit-scrollbar-thumb {
+    background: #cfd8d2;
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+
+body.ox-app ::-webkit-scrollbar-thumb:hover {
+    background-color: #b4c0b8;
+}
+
+body.ox-app ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Loading feedback
+   -------------------------------------------------------------------------- */
+#loader {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(246, 248, 247, 0.82);
+    backdrop-filter: blur(6px);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease, visibility 0.2s ease !important;
+}
+
+#loader.is-loaded {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#loader .app-loader-mark {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-md);
+}
+
+#loader .app-loader-mark img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    animation: ox-loader-pulse 1.2s ease-in-out infinite;
+}
+
+#loader .app-loader-label {
+    color: var(--ox-muted);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+@keyframes ox-loader-pulse {
+    0%, 100% { transform: scale(0.92); opacity: 0.75; }
+    50% { transform: scale(1); opacity: 1; }
+}
+
+.ox-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3001;
+    height: 2px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease !important;
+}
+
+.ox-progress.is-active {
+    opacity: 1;
+}
+
+.ox-progress::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, var(--ox-brand-400), var(--ox-brand-600));
+    animation: ox-indeterminate 1.1s ease-in-out infinite;
+}
+
+@keyframes ox-indeterminate {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(260%); }
+}
+
+/* --------------------------------------------------------------------------
+   Shell: sidebar
+   -------------------------------------------------------------------------- */
+body.ox-app #sidebar.ox-sidebar {
+    position: fixed;
+    top: 0 !important;
+    inset: 0 auto 0 0;
+    z-index: 1040;
+    display: flex;
+    flex-direction: column;
+    width: var(--ox-sidebar-w);
+    height: 100vh;
+    height: 100dvh;
+    padding: 0;
+    background: var(--ox-surface) !important;
+    border-right: 1px solid var(--ox-border);
+    box-shadow: none;
+    color: var(--ox-text);
+    font-size: 14px;
+    transform: none;
+    transition: width 0.2s ease, transform 0.25s ease !important;
+}
+
+/* The legacy theme's accent strip and floating collapse tab */
+body.ox-app::before {
+    display: none;
+}
+
+body.ox-app #sidebar-toggle.ox-collapse-btn {
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: auto;
+    display: flex;
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: var(--ox-radius);
+    background: transparent;
+    color: var(--ox-muted);
+    box-shadow: none;
+}
+
+body.ox-app #sidebar-toggle.ox-collapse-btn::before {
+    content: none;
+}
+
+body.ox-app #sidebar-toggle.ox-collapse-btn:hover {
+    background: var(--ox-surface-3);
+    color: var(--ox-ink);
+}
+
+.ox-sidebar-brand {
+    display: flex;
+    align-items: center;
+    height: var(--ox-topbar-h);
+    padding: 0 18px;
+    border-bottom: 1px solid transparent;
+    flex-shrink: 0;
+}
+
+.ox-brand-link {
+    display: flex;
+    align-items: center;
+}
+
+.ox-brand-full {
+    height: 30px;
+    width: auto;
+}
+
+.ox-brand-mark {
+    display: none;
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.ox-sidenav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 12px 16px;
+}
+
+.ox-sidenav-section + .ox-sidenav-section {
+    margin-top: 18px;
+}
+
+.ox-sidenav-label {
+    padding: 0 10px 6px;
+    color: var(--ox-subtle);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ox-sidenav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+body.ox-app #sidebar .ox-sidenav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: var(--ox-radius);
+    background: transparent;
+    color: var(--ox-text);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+body.ox-app #sidebar .ox-sidenav-link i {
+    flex-shrink: 0;
+    width: 18px;
+    color: var(--ox-subtle);
+    font-size: 17px;
+    text-align: center;
+    transition: color 0.15s ease !important;
+}
+
+body.ox-app #sidebar .ox-sidenav-link:hover {
+    background: var(--ox-surface-3);
+    color: var(--ox-ink);
+}
+
+body.ox-app #sidebar .ox-sidenav-link:hover i {
+    color: var(--ox-text);
+}
+
+body.ox-app #sidebar .ox-sidenav-link.is-active {
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-800);
+    font-weight: 600;
+}
+
+body.ox-app #sidebar .ox-sidenav-link.is-active i {
+    color: var(--ox-brand-600);
+}
+
+.ox-sidenav-link.is-active::before {
+    content: "";
+    position: absolute;
+    left: -12px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--ox-brand-500);
+}
+
+.ox-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px 14px;
+    border-top: 1px solid var(--ox-border);
+}
+
+body.ox-app .ox-collapse-btn {
+    color: var(--ox-muted);
+}
+
+/* Collapsed (desktop) */
+@media (min-width: 1200px) {
+    body.sidebar-collapsed #sidebar.ox-sidebar {
+        width: var(--ox-sidebar-w-collapsed);
+    }
+
+    body.sidebar-collapsed .ox-sidebar-brand {
+        justify-content: center;
+        padding: 0;
+    }
+
+    body.sidebar-collapsed .ox-brand-full {
+        display: none;
+    }
+
+    body.sidebar-collapsed .ox-brand-mark {
+        display: block;
+    }
+
+    body.sidebar-collapsed .ox-sidenav {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    body.sidebar-collapsed .ox-sidenav-label {
+        height: 1px;
+        margin: 0 8px 10px;
+        padding: 0;
+        overflow: hidden;
+        background: var(--ox-border);
+        color: transparent;
+    }
+
+    body.sidebar-collapsed .ox-sidenav-section:first-child .ox-sidenav-label {
+        display: none;
+    }
+
+    body.sidebar-collapsed .ox-sidenav-link {
+        justify-content: center;
+        padding: 0;
+    }
+
+    body.sidebar-collapsed .ox-sidenav-link > span {
+        display: none;
+    }
+
+    body.sidebar-collapsed .ox-sidenav-link.is-active::before {
+        left: -14px;
+    }
+
+    body.sidebar-collapsed .ox-collapse-btn i {
+        transform: scaleX(-1);
+    }
+
+    /* Tooltips for icon-only navigation */
+    body.sidebar-collapsed .ox-sidenav-link::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        z-index: 10;
+        padding: 5px 9px;
+        border-radius: var(--ox-radius-sm);
+        background: var(--ox-ink);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-4px, -50%);
+        transition: opacity 0.12s ease, transform 0.12s ease !important;
+    }
+
+    body.sidebar-collapsed .ox-sidenav-link:hover::after,
+    body.sidebar-collapsed .ox-sidenav-link:focus-visible::after {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+
+    body.sidebar-collapsed .ox-sidenav {
+        overflow: visible;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Shell: main column & topbar
+   -------------------------------------------------------------------------- */
+.ox-main-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-left: var(--ox-sidebar-w);
+    transition: margin-left 0.2s ease !important;
+}
+
+body.sidebar-collapsed .ox-main-col {
+    margin-left: var(--ox-sidebar-w-collapsed);
+}
+
+.ox-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--ox-topbar-h);
+    padding: 0 28px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(180%) blur(10px);
+    border-bottom: 1px solid var(--ox-border);
+}
+
+.ox-hamburger,
+.ox-topbar-logo {
+    display: none !important;
+}
+
+.ox-topbar-logo img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+body.ox-app .ox-breadcrumbs {
+    display: flex;
+    align-self: center;
+    margin: 0 !important;
+    padding: 0;
+    line-height: 20px;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--ox-muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+body.ox-app .ox-breadcrumbs a {
+    color: var(--ox-muted);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+body.ox-app .ox-breadcrumbs a:hover {
+    color: var(--ox-ink);
+    text-decoration: none;
+}
+
+.ox-breadcrumbs span[aria-current] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--ox-ink);
+    font-weight: 600;
+}
+
+.ox-breadcrumbs i {
+    color: var(--ox-subtle);
+    font-size: 12px;
+}
+
+.ox-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+body.ox-app .ox-iconbtn {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--ox-radius);
+    background: transparent;
+    color: var(--ox-muted);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+body.ox-app .ox-iconbtn:hover,
+body.ox-app .ox-iconbtn[aria-expanded="true"] {
+    background: var(--ox-surface-3);
+    color: var(--ox-ink);
+}
+
+body.ox-app .notification-icon .badge,
+body.ox-app #meeting-count {
+    position: absolute;
+    top: 3px;
+    right: 2px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: var(--ox-red) !important;
+    color: #fff !important;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 13px;
+}
+
+body.ox-app .ox-user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 8px 0 4px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ox-ink);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.15s ease !important;
+}
+
+body.ox-app .ox-user-btn:hover,
+body.ox-app .ox-user-btn[aria-expanded="true"] {
+    background: var(--ox-surface-3);
+}
+
+body.ox-app .ox-user-btn::after {
+    display: none;
+}
+
+.ox-user-btn > i {
+    color: var(--ox-subtle);
+    font-size: 14px;
+}
+
+body.ox-app .avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ox-brand-300), var(--ox-brand-500));
+    color: var(--ox-brand-900);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.ox-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px 6px;
+}
+
+.ox-dropdown-header strong {
+    display: block;
+    color: var(--ox-ink);
+    font-size: 14px;
+}
+
+.ox-dropdown-header small {
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+/* Notifications popover */
+.ox-notify {
+    position: relative;
+}
+
+body.ox-app #meetingDetails.ox-popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: -8px;
+    left: auto;
+    z-index: 1060;
+    width: min(380px, calc(100vw - 24px));
+    height: auto;
+    max-height: min(520px, calc(100vh - 90px));
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    animation: none;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s !important;
+}
+
+body.ox-app #meetingDetails.ox-popover.active {
+    top: calc(100% + 10px);
+    right: -8px;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+body.ox-app #meetingDetails .cls-meetings {
+    height: auto;
+    max-height: inherit;
+    padding: 0;
+    overflow-y: auto;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-lg);
+}
+
+.ox-popover-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--ox-border);
+    background: var(--ox-surface);
+}
+
+body.ox-app .ox-popover-head .content-header {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--ox-ink);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.ox-segmented {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface-3);
+}
+
+.ox-segmented input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.ox-app .ox-segmented label {
+    margin: 0;
+    padding: 3px 10px;
+    border-radius: var(--ox-radius-sm);
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body.ox-app .ox-segmented input:checked + label {
+    background: var(--ox-surface);
+    color: var(--ox-ink);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #meeting-list {
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+}
+
+.ox-notice > .ox-notice-link,
+.ox-notice {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border-radius: var(--ox-radius);
+    color: inherit;
+    text-decoration: none;
+}
+
+li.ox-notice:has(> .ox-notice-link) {
+    padding: 0;
+}
+
+.ox-notice-link {
+    width: 100%;
+}
+
+.ox-notice:hover,
+.ox-notice-link:hover {
+    background: var(--ox-surface-2);
+}
+
+.ox-notice-icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ox-radius);
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-700);
+    font-size: 15px;
+}
+
+.ox-notice-body {
+    min-width: 0;
+}
+
+.ox-notice-title {
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ox-notice-meta {
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+body.ox-app #meeting-list .meeting-link {
+    display: block;
+    max-width: 100%;
+    margin-top: 2px;
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ox-empty-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 16px;
+    color: var(--ox-muted);
+    font-size: 13px;
+}
+
+/* Main content */
+body.ox-app #main.main-content {
+    flex: 1;
+    width: 100%;
+    max-width: 1440px;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 28px 32px 48px;
+    background: transparent !important;
+    color: var(--ox-text);
+}
+
+.ox-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+body.ox-app #main .ox-page-header .cls-h2 {
+    margin: 0;
+    color: var(--ox-ink) !important;
+    font-size: 24px;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+/* Flash message */
+body.ox-app .global-flash-message {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    z-index: 3100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 280px;
+    max-width: calc(100vw - 32px);
+    padding: 12px 14px 12px 16px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    color: var(--ox-ink);
+    box-shadow: var(--ox-shadow-lg);
+    font-weight: 500;
+    transform: translateX(-50%);
+}
+
+body.ox-app .global-flash-message.alert-success {
+    border-left: 4px solid var(--ox-brand-500);
+}
+
+body.ox-app .global-flash-message.alert-danger {
+    border-left: 4px solid var(--ox-red);
+}
+
+body.ox-app .global-flash-message .btn-close {
+    position: static;
+    margin-left: auto;
+    padding: 4px;
+    font-size: 11px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive shell
+   -------------------------------------------------------------------------- */
+@media (max-width: 1199.98px) {
+    body.ox-app #sidebar.ox-sidebar {
+        height: 100vh;
+        height: 100dvh;
+        width: min(var(--ox-sidebar-w), calc(100vw - 48px));
+        max-width: none;
+        box-shadow: var(--ox-shadow-lg);
+        transform: translateX(-105%) !important;
+    }
+
+    body.sidebar-mobile-open #sidebar.ox-sidebar {
+        transform: translateX(0) !important;
+    }
+
+    .ox-main-col,
+    body.sidebar-collapsed .ox-main-col {
+        margin-left: 0;
+    }
+
+    .ox-hamburger,
+    .ox-topbar-logo {
+        display: inline-grid !important;
+    }
+
+    .ox-topbar {
+        padding: 0 16px;
+    }
+
+    body.ox-app .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1035;
+        background: rgba(13, 38, 28, 0.36);
+        backdrop-filter: blur(2px);
+        animation: ox-fade-in 0.18s ease-out both;
+    }
+
+    body.sidebar-mobile-open {
+        overflow: hidden;
+    }
+
+    body.ox-app #main.main-content {
+        padding: 22px 20px 40px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.ox-app .ox-breadcrumbs > :not(span[aria-current]):not(:nth-last-child(2)) {
+        display: none;
+    }
+
+    .ox-user-name,
+    .ox-user-btn > i {
+        display: none;
+    }
+
+    body.ox-app .ox-user-btn {
+        padding: 0 4px;
+    }
+
+    body.ox-app #main.main-content {
+        padding: 18px 14px 32px;
+    }
+
+    body.ox-app #main .ox-page-header .cls-h2 {
+        font-size: 20px;
+    }
+
+    body.ox-app #meetingDetails.ox-popover,
+    body.ox-app #meetingDetails.ox-popover.active {
+        position: fixed;
+        top: calc(var(--ox-topbar-h) + 6px);
+        right: 12px;
+    }
+}
+
+@keyframes ox-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Cards & panels
+   -------------------------------------------------------------------------- */
+body.ox-app #main .card,
+body.ox-app #main .product-card {
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface) !important;
+    box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .card:hover {
+    box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg) var(--ox-radius-lg) 0 0;
+    background: var(--ox-surface) !important;
+    color: var(--ox-ink);
+}
+
+body.ox-app #main .card-header h4,
+body.ox-app #main .card-title,
+body.ox-app #main .content-header,
+body.ox-app #main .product-header {
+    color: var(--ox-ink) !important;
+    font-weight: 600;
+}
+
+body.ox-app #main .card-body {
+    padding: 18px;
+}
+
+.ox-panel {
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+.ox-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+body.ox-app .ox-panel-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ox-ink);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+body.ox-app .ox-badge-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: var(--ox-surface-3);
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ox-search {
+    position: relative;
+    width: min(280px, 100%);
+}
+
+.ox-search > i {
+    position: absolute;
+    top: 50%;
+    left: 11px;
+    color: var(--ox-subtle);
+    font-size: 15px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+body.ox-app .ox-search .form-control {
+    padding-left: 34px;
+}
+
+.ox-pagebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.ox-pagebar-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ox-empty,
+body.ox-app #main .cls-norecFound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    color: var(--ox-muted);
+    text-align: center;
+}
+
+.ox-empty > i {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface-3);
+    color: var(--ox-muted);
+    font-size: 20px;
+}
+
+body.ox-app .ox-empty h4 {
+    margin: 0 0 4px;
+    color: var(--ox-ink);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.ox-empty p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+body.ox-app .btn,
+body.ox-app #main .blue-button,
+body.ox-app #main .button-secondary,
+body.ox-app #main .back-button {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: var(--ox-radius);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+body.ox-app .btn-sm {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+body.ox-app .btn-lg {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 15px;
+}
+
+body.ox-app .btn-primary,
+body.ox-app #main .blue-button,
+body.ox-app .swal2-confirm {
+    border: 1px solid var(--ox-brand-700) !important;
+    background: var(--ox-brand-700) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), var(--ox-shadow-xs) !important;
+}
+
+body.ox-app .btn-primary:hover,
+body.ox-app #main .blue-button:hover,
+body.ox-app .swal2-confirm:hover {
+    border-color: var(--ox-brand-800) !important;
+    background: var(--ox-brand-800) !important;
+    color: #fff !important;
+}
+
+body.ox-app .btn-primary:focus-visible,
+body.ox-app #main .blue-button:focus-visible {
+    box-shadow: var(--ox-ring) !important;
+}
+
+body.ox-app .btn-secondary,
+body.ox-app .btn-light,
+body.ox-app .btn-outline-secondary,
+body.ox-app #main .button-secondary,
+body.ox-app #main .back-button,
+body.ox-app .ox-btn-ghost,
+body.ox-app .swal2-cancel {
+    border: 1px solid var(--ox-border-strong) !important;
+    background: var(--ox-surface) !important;
+    color: var(--ox-ink) !important;
+    box-shadow: var(--ox-shadow-xs) !important;
+}
+
+body.ox-app .btn-secondary:hover,
+body.ox-app .btn-light:hover,
+body.ox-app .btn-outline-secondary:hover,
+body.ox-app #main .button-secondary:hover,
+body.ox-app #main .back-button:hover,
+body.ox-app .ox-btn-ghost:hover,
+body.ox-app .swal2-cancel:hover {
+    border-color: var(--ox-border-strong) !important;
+    background: var(--ox-surface-2) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app .btn-outline-primary,
+body.ox-app #main .btn-outline-primary {
+    border: 1px solid var(--ox-brand-200) !important;
+    background: var(--ox-brand-50) !important;
+    color: var(--ox-brand-800) !important;
+}
+
+body.ox-app .btn-outline-primary:hover,
+body.ox-app #main .btn-outline-primary:hover {
+    border-color: var(--ox-brand-300) !important;
+    background: var(--ox-brand-100) !important;
+    color: var(--ox-brand-900) !important;
+}
+
+body.ox-app .btn-danger,
+body.ox-app .swal2-deny {
+    border: 1px solid var(--ox-red) !important;
+    background: var(--ox-red) !important;
+    color: #fff !important;
+}
+
+body.ox-app .btn-danger:hover {
+    border-color: #b42318 !important;
+    background: #b42318 !important;
+}
+
+body.ox-app .btn-outline-danger {
+    border-color: #fecdca !important;
+    background: var(--ox-red-bg) !important;
+    color: #b42318 !important;
+}
+
+body.ox-app .btn:disabled,
+body.ox-app .btn.disabled {
+    opacity: 0.55;
+}
+
+body.ox-app .btn-link {
+    min-height: 0;
+    padding: 0;
+    color: var(--ox-brand-700);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Forms
+   -------------------------------------------------------------------------- */
+body.ox-app label,
+body.ox-app .form-label,
+body.ox-app #main label {
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+body.ox-app .form-control,
+body.ox-app .form-select,
+body.ox-app .dataTable-input,
+body.ox-app #main input[type="text"]:not(.btn),
+body.ox-app #main input[type="search"],
+body.ox-app #main input[type="email"],
+body.ox-app #main input[type="number"],
+body.ox-app #main input[type="date"],
+body.ox-app #main input[type="time"],
+body.ox-app #main input[type="password"],
+body.ox-app #main select,
+body.ox-app #main textarea {
+    min-height: 36px;
+    border: 1px solid var(--ox-border-strong) !important;
+    border-radius: var(--ox-radius) !important;
+    background-color: var(--ox-surface) !important;
+    color: var(--ox-ink) !important;
+    font-size: 14px;
+    box-shadow: var(--ox-shadow-xs) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+body.ox-app textarea.form-control,
+body.ox-app #main textarea {
+    min-height: 80px;
+}
+
+body.ox-app .form-control::placeholder,
+body.ox-app #main input::placeholder,
+body.ox-app #main textarea::placeholder {
+    color: var(--ox-subtle);
+}
+
+body.ox-app .form-control:focus,
+body.ox-app .form-select:focus,
+body.ox-app #main input:focus,
+body.ox-app #main select:focus,
+body.ox-app #main textarea:focus {
+    border-color: var(--ox-brand-500) !important;
+    outline: 0;
+    box-shadow: var(--ox-ring) !important;
+}
+
+body.ox-app .form-control:disabled,
+body.ox-app .form-select:disabled,
+body.ox-app .form-control[readonly] {
+    background-color: var(--ox-surface-3) !important;
+    color: var(--ox-muted) !important;
+}
+
+body.ox-app .form-check-input {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--ox-border-strong);
+    box-shadow: none !important;
+}
+
+body.ox-app .form-check-input:checked {
+    border-color: var(--ox-brand-600);
+    background-color: var(--ox-brand-600);
+}
+
+body.ox-app .form-check-input:focus {
+    box-shadow: var(--ox-ring) !important;
+}
+
+body.ox-app .is-invalid,
+body.ox-app .parsley-error {
+    border-color: var(--ox-red) !important;
+}
+
+body.ox-app .invalid-feedback,
+body.ox-app .parsley-errors-list,
+body.ox-app .text-danger {
+    color: var(--ox-red) !important;
+    font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+body.ox-app #main table:not(.fc *),
+body.ox-app #main .table,
+body.ox-app #main .dataTable-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--ox-surface) !important;
+    color: var(--ox-text);
+    font-size: 14px;
+}
+
+body.ox-app #main table:not(.fc *) thead,
+body.ox-app #main .table thead,
+body.ox-app #main .dataTable-table thead {
+    background: var(--ox-surface-2) !important;
+}
+
+body.ox-app #main table:not(.fc *) thead th,
+body.ox-app #main .table thead th,
+body.ox-app #main .dataTable-table thead th {
+    padding: 10px 16px !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid var(--ox-border) !important;
+    background: var(--ox-surface-2) !important;
+    color: var(--ox-muted) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+body.ox-app #main table:not(.fc *) tbody td,
+body.ox-app #main .table tbody td,
+body.ox-app #main .dataTable-table tbody td {
+    padding: 12px 16px !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid var(--ox-border) !important;
+    background: transparent !important;
+    color: var(--ox-text);
+    vertical-align: middle;
+}
+
+body.ox-app #main table:not(.fc *) tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+body.ox-app #main table:not(.fc *) tbody tr,
+body.ox-app #main .table tbody tr,
+body.ox-app #main .dataTable-table tbody tr {
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+body.ox-app #main table:not(.fc *) tbody tr:hover,
+body.ox-app #main .table tbody tr:hover,
+body.ox-app #main .dataTable-table tbody tr:hover {
+    background: var(--ox-surface-2) !important;
+}
+
+body.ox-app #main .table-responsive,
+body.ox-app #main .dataTable-container {
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .table-responsive > table,
+body.ox-app #main .dataTable-container > table {
+    border: 0 !important;
+}
+
+/* Rounded table when it is the outer element */
+body.ox-app #main table.table:not(.fc *):not(.table-responsive table):not(.dataTable-container table),
+body.ox-app #main .dataTable-table:not(.dataTable-container table) {
+    overflow: hidden;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+/* Icon actions inside rows */
+body.ox-app #main td .icon-edit,
+body.ox-app #main td .icon-edit-2,
+body.ox-app #main td .icon-trash,
+body.ox-app #main td .icon-trash-2,
+body.ox-app #main td .icon-eye,
+body.ox-app #main td .icon-book-open {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--ox-radius);
+    color: var(--ox-muted);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+body.ox-app #main td .icon-edit:hover,
+body.ox-app #main td .icon-edit-2:hover,
+body.ox-app #main td .icon-eye:hover,
+body.ox-app #main td .icon-book-open:hover {
+    background: var(--ox-surface-3);
+    color: var(--ox-ink);
+}
+
+body.ox-app #main td .icon-trash:hover,
+body.ox-app #main td .icon-trash-2:hover {
+    background: var(--ox-red-bg);
+    color: var(--ox-red);
+}
+
+/* Pagination */
+body.ox-app .pagination {
+    gap: 4px;
+}
+
+body.ox-app .page-link {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius) !important;
+    background: var(--ox-surface);
+    color: var(--ox-text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 30px;
+    text-align: center;
+}
+
+body.ox-app .page-item.active .page-link {
+    border-color: var(--ox-brand-700) !important;
+    background: var(--ox-brand-700);
+    color: #fff;
+}
+
+body.ox-app #pageInfo {
+    color: var(--ox-muted);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Badges & pills
+   -------------------------------------------------------------------------- */
+body.ox-app #main .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+body.ox-app #main .badge.bg-success,
+body.ox-app #main .badge.bg-primary,
+body.ox-app #main .badge.text-primary {
+    background: var(--ox-green-bg) !important;
+    color: var(--ox-green) !important;
+}
+
+body.ox-app #main .badge.bg-danger,
+body.ox-app #main .badge.text-danger {
+    background: var(--ox-red-bg) !important;
+    color: #b42318 !important;
+}
+
+body.ox-app #main .badge.bg-warning,
+body.ox-app #main .badge.text-warning {
+    background: var(--ox-amber-bg) !important;
+    color: var(--ox-amber) !important;
+}
+
+body.ox-app #main .badge.bg-info {
+    background: var(--ox-blue-bg) !important;
+    color: var(--ox-blue) !important;
+}
+
+body.ox-app #main .badge.bg-secondary,
+body.ox-app #main .badge.secondary {
+    background: var(--ox-surface-3) !important;
+    color: var(--ox-muted) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Overlays: modals, dropdowns, tooltips, alerts
+   -------------------------------------------------------------------------- */
+body.ox-app .modal-backdrop.show {
+    background: var(--ox-brand-900);
+    opacity: 0.4;
+}
+
+body.ox-app .modal-content {
+    overflow: hidden;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-xl) !important;
+    background: var(--ox-surface) !important;
+    box-shadow: var(--ox-shadow-lg) !important;
+}
+
+body.ox-app .modal-header,
+body.ox-app #main .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--ox-border) !important;
+    background: var(--ox-surface) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app .modal-title,
+body.ox-app #main .modal-header .modal-title {
+    color: var(--ox-ink) !important;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+body.ox-app .modal-header .btn-close {
+    filter: none !important;
+    opacity: 0.55;
+}
+
+body.ox-app .modal-body {
+    padding: 20px;
+}
+
+body.ox-app .modal-footer {
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--ox-border) !important;
+    background: var(--ox-surface-2) !important;
+}
+
+body.ox-app .modal-footer > * {
+    margin: 0;
+}
+
+body.ox-app .dropdown-menu {
+    min-width: 200px;
+    padding: 6px !important;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg) !important;
+    background: var(--ox-surface) !important;
+    box-shadow: var(--ox-shadow-md) !important;
+    font-size: 14px;
+}
+
+body.ox-app .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px !important;
+    border-radius: var(--ox-radius-sm);
+    color: var(--ox-text) !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+body.ox-app .dropdown-item i {
+    color: var(--ox-subtle);
+}
+
+body.ox-app .dropdown-item:hover,
+body.ox-app .dropdown-item:focus {
+    background: var(--ox-surface-3) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app .dropdown-divider {
+    margin: 6px 0;
+    border-color: var(--ox-border);
+}
+
+body.ox-app .tooltip-inner,
+body.ox-app .tippy-box {
+    border-radius: var(--ox-radius-sm);
+    background: var(--ox-ink);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body.ox-app #main .alert {
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+}
+
+body.ox-app #main .alert-success,
+body.ox-app #main .alert-primary {
+    border-color: var(--ox-brand-200);
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-900);
+}
+
+body.ox-app #main .alert-danger {
+    border-color: #fecdca;
+    background: var(--ox-red-bg);
+    color: #912018;
+}
+
+body.ox-app #main .alert-warning {
+    border-color: #fedf89;
+    background: var(--ox-amber-bg);
+    color: #93370d;
+}
+
+/* Tabs */
+body.ox-app #main .nav-tabs {
+    gap: 4px;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+body.ox-app #main .nav-tabs .nav-link {
+    margin-bottom: -1px;
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent !important;
+    color: var(--ox-muted);
+    font-weight: 500;
+}
+
+body.ox-app #main .nav-tabs .nav-link:hover {
+    color: var(--ox-ink);
+}
+
+body.ox-app #main .nav-tabs .nav-link.active {
+    border-bottom-color: var(--ox-brand-600);
+    color: var(--ox-ink) !important;
+    font-weight: 600;
+}
+
+/* SweetAlert2 */
+body.ox-app .swal2-popup {
+    padding: 24px;
+    border-radius: var(--ox-radius-xl);
+    font-family: var(--ox-font);
+    box-shadow: var(--ox-shadow-lg);
+}
+
+body.ox-app .swal2-title {
+    color: var(--ox-ink);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+body.ox-app .swal2-html-container {
+    color: var(--ox-muted);
+    font-size: 14px;
+}
+
+body.ox-app .swal2-actions {
+    gap: 8px;
+}
+
+body.ox-app .swal2-styled {
+    min-height: 38px;
+    margin: 0;
+    padding: 0 16px;
+    border-radius: var(--ox-radius) !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+body.ox-app .swal2-styled:focus {
+    box-shadow: var(--ox-ring) !important;
+}
+
+/* Flatpickr */
+body.ox-app .flatpickr-calendar {
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    box-shadow: var(--ox-shadow-md);
+    font-family: var(--ox-font);
+}
+
+body.ox-app .flatpickr-day.selected,
+body.ox-app .flatpickr-day.selected:hover {
+    border-color: var(--ox-brand-700);
+    background: var(--ox-brand-700);
+}
+
+/* --------------------------------------------------------------------------
+   Legacy page patterns
+   -------------------------------------------------------------------------- */
+/* Page headings rendered inside views (the layout already shows the title) */
+body.ox-app #main .page-title-headings h3,
+body.ox-app #main .page-heading h3 {
+    color: var(--ox-ink) !important;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* No-data view */
+body.ox-app #main .cls-noProductIcon {
+    display: inline-grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface-3);
+    color: var(--ox-muted);
+    font-size: 26px;
+}
+
+body.ox-app #main .display-1 {
+    font-size: inherit;
+}
+
+/* Filter side panel (shared by list pages); shadow only while open */
+body.ox-app #filterSidebar,
+body.ox-app .filter-sidebar {
+    border-left: 1px solid var(--ox-border);
+    background: var(--ox-surface) !important;
+    box-shadow: none !important;
+}
+
+body.ox-app #filterSidebar.open,
+body.ox-app .filter-sidebar.open {
+    box-shadow: var(--ox-shadow-lg) !important;
+}
+
+/* Legacy expanding search ("Search" pill that grows on click): always an input */
+body.ox-app #main .search-container {
+    margin: 0;
+}
+
+body.ox-app #main .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 240px !important;
+    max-width: 100%;
+    height: auto;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
+    overflow: visible;
+}
+
+body.ox-app #main .search-box .search-input {
+    flex: 1;
+    width: 100% !important;
+    min-height: 36px;
+    padding: 0 12px 0 34px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+}
+
+body.ox-app #main .search-box .search-input::placeholder {
+    color: var(--ox-subtle) !important;
+}
+
+body.ox-app #main .search-box .search-button {
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    min-height: 0;
+    margin: 0;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--ox-subtle) !important;
+    box-shadow: none !important;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+body.ox-app #main .search-box .search-button i {
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 14px;
+}
+
+body.ox-app #main .search-box .search-button span {
+    display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard
+   -------------------------------------------------------------------------- */
+.ox-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ox-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.ox-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+.ox-stat-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+body.ox-app .ox-stat-head h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--ox-ink);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.ox-stat-icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ox-radius);
+    font-size: 16px;
+}
+
+.ox-tone-green { background: var(--ox-brand-50); color: var(--ox-brand-700); }
+.ox-tone-blue { background: var(--ox-blue-bg); color: var(--ox-blue); }
+.ox-tone-amber { background: var(--ox-amber-bg); color: var(--ox-amber); }
+.ox-tone-violet { background: var(--ox-violet-bg); color: var(--ox-violet); }
+.ox-tone-red { background: var(--ox-red-bg); color: var(--ox-red); }
+
+.ox-stat-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+body.ox-app .ox-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--ox-radius);
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+body.ox-app button.ox-metric {
+    cursor: pointer;
+}
+
+body.ox-app button.ox-metric:hover {
+    border-color: var(--ox-border);
+    background: var(--ox-surface-2);
+}
+
+.ox-metric-value {
+    color: var(--ox-ink);
+    font-size: 26px;
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.ox-metric-value small {
+    margin-left: 1px;
+    color: var(--ox-muted);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.ox-metric-value.is-danger {
+    color: var(--ox-red);
+}
+
+.ox-metric-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.ox-sdot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+}
+
+.ox-sdot-green { background: var(--ox-brand-500); }
+.ox-sdot-red { background: var(--ox-red); }
+.ox-sdot-amber { background: #f79009; }
+
+.ox-progress-track,
+.ox-stack-bar {
+    display: flex;
+    height: 6px;
+    margin-top: auto;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--ox-surface-3);
+}
+
+.ox-progress-track > span {
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--ox-brand-400), var(--ox-brand-600));
+}
+
+.ox-stack-bar {
+    gap: 2px;
+    background: transparent;
+}
+
+.ox-stack-bar > span { min-width: 0; }
+.ox-stack-bar > .is-high { background: #f97066; }
+.ox-stack-bar > .is-medium { background: #fdb022; }
+.ox-stack-bar > .is-low { background: var(--ox-brand-400); }
+
+.ox-product-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ox-product-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.1fr) minmax(0, 3fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+.ox-product-row:last-child {
+    border-bottom: 0;
+}
+
+.ox-product-row:hover {
+    background: var(--ox-surface-2);
+}
+
+.ox-product-row.product-hide {
+    display: none;
+}
+
+.ox-product-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--ox-ink);
+    font-weight: 600;
+}
+
+.ox-product-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ox-tag {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+.ox-tag-red { background: var(--ox-red-bg); color: #b42318; }
+.ox-tag-green { background: var(--ox-green-bg); color: var(--ox-green); }
+.ox-tag-amber { background: var(--ox-amber-bg); color: var(--ox-amber); }
+.ox-tag-blue { background: var(--ox-blue-bg); color: var(--ox-blue); }
+.ox-tag-gray { background: var(--ox-surface-3); color: var(--ox-muted); }
+
+body.ox-app #main .ox-product-action .btn {
+    flex-direction: row;
+    width: auto;
+    height: 32px;
+    min-height: 32px;
+    white-space: nowrap;
+}
+
+.ox-avatar-square {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ox-radius);
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-800);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ox-product-row .cls-sprints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ox-product-row .cls-sprints form {
+    margin: 0;
+}
+
+body.ox-app #main .ox-sprint-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 5px 10px;
+    border: 1px solid var(--ox-brand-200);
+    border-radius: var(--ox-radius);
+    background: var(--ox-brand-50) !important;
+    color: var(--ox-brand-800) !important;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+body.ox-app #main .ox-sprint-chip:hover {
+    border-color: var(--ox-brand-300);
+    background: var(--ox-brand-100) !important;
+}
+
+.ox-sprint-chip-title i {
+    font-size: 11px;
+}
+
+.ox-sprint-chip-meta {
+    color: var(--ox-muted);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+body.ox-app #main .ox-sprint-chip.is-delayed {
+    border-color: #fecdca;
+    background: var(--ox-red-bg) !important;
+    color: #b42318 !important;
+}
+
+body.ox-app #main .ox-sprint-chip.is-idle {
+    flex-direction: row;
+    border: 1px dashed var(--ox-border-strong);
+    background: transparent !important;
+    color: var(--ox-muted) !important;
+    font-weight: 500;
+}
+
+body.ox-app #main .ox-sprint-chip.is-idle:hover {
+    background: var(--ox-surface-3) !important;
+    color: var(--ox-ink) !important;
+}
+
+@media (max-width: 1199.98px) {
+    .ox-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .ox-stat-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ox-product-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .ox-product-row .cls-active-sprints {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .ox-search {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.ox-app *,
+    body.ox-app *::before,
+    body.ox-app *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Legacy table wrappers: tables are full-bleed inside their card
+   -------------------------------------------------------------------------- */
+body.ox-app #main table:not(.fc *) {
+    padding: 0 !important;
+}
+
+body.ox-app #main table:not(.fc *) thead tr {
+    background: transparent !important;
+}
+
+body.ox-app #main table:not(.fc *) thead th,
+body.ox-app #main table:not(.fc *) tbody td {
+    border-radius: 0 !important;
+}
+
+body.ox-app #main table:not(.fc *) tbody::before {
+    content: none !important;
+    display: none !important;
+}
+
+/* Section headers on admin pages (.cls-header) */
+body.ox-app #main .cls-header {
+    padding: 14px 18px !important;
+    border-bottom: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg) var(--ox-radius-lg) 0 0;
+    background: var(--ox-surface) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app #main .cls-header h4,
+body.ox-app #main .cls-header label {
+    margin: 0;
+    color: var(--ox-ink) !important;
+    font-size: 15px;
+    font-weight: 600;
+}

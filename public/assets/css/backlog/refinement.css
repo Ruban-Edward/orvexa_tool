@@ -29,7 +29,7 @@
 }
 
 .dropdown-menu .btn-primary {
-    background-color: #3949AB;  
+    background-color: var(--ox-brand-700);  
     border: none;
     color: white;
     padding: 10px 15px;  
@@ -37,7 +37,7 @@
 }
 
 .dropdown-menu .btn-primary:hover {
-    background-color: #357ABD;  /* Hover effect for the button */
+    background-color: var(--ox-brand-600);  /* Hover effect for the button */
 }
 
 /** Ensure form elements inside the dropdown are properly styled */
@@ -84,7 +84,7 @@ table {
 }
 
 .header_color th {
-    background-color: #d3e3f3;
+    background-color: var(--ox-brand-50);
     color: black;
 }
 
@@ -175,7 +175,7 @@ th.sorting_desc:before {
 
 .button {
     color: #fff;
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     font-size: 1rem;
     padding: 5px 20px; /* Adjusted padding for better alignment */
     border-radius: 5px;
@@ -188,7 +188,7 @@ th.sorting_desc:before {
 }
 
 .button:hover {
-    background-color: #357ABD; /* Slightly darker blue for hover effect */
+    background-color: var(--ox-brand-600); /* Slightly darker blue for hover effect */
 }
 
 /* Sortable table row helper styling */
@@ -197,7 +197,7 @@ th.sorting_desc:before {
     display: table;
     width: 100%;
     background-color: #f0f0f0;
-    border: 2px solid #3498db;
+    border: 2px solid var(--ox-brand-600);
     box-sizing: border-box;
     font-size: 0.9em;
     line-height: 1.6em;
@@ -254,13 +254,13 @@ min-height: 50px;
 
 .sortable-helper {
     background-color: #d8e5f0;  /* Light background for the helper */
-    border: 1px dashed #007bff;  /* Dashed border for the helper */
+    border: 1px dashed var(--ox-brand-600);  /* Dashed border for the helper */
     z-index: 1000;  /* Ensure the helper is above other elements */
 }
 
 .placeholder {
     background-color: #dcdcdc;  /* Different background for the placeholder */
-    border: 1px solid #007bff;  /* Border for the placeholder */
+    border: 1px solid var(--ox-brand-600);  /* Border for the placeholder */
     height: 50px;  /* Same height as rows */
     line-height: 50px;  /* Center the placeholder text */
     text-align: center;  /* Center the placeholder text */
@@ -277,7 +277,7 @@ tr {
 
 .dragging {
     background-color: #e0e0e0;  /* Highlight dragged row */
-    border: 1px solid #007bff;  /* Border for the dragged row */
+    border: 1px solid var(--ox-brand-600);  /* Border for the dragged row */
     color: #000;  /* Ensure text color is readable */
 }
 
@@ -344,8 +344,8 @@ tbody{
     display: flex;
     align-items: center;
     width: 120px;
-    background-color: #4A90E2;
-    border: 1px solid #4A90E2;
+    background-color: var(--ox-brand-600);
+    border: 1px solid var(--ox-brand-600);
     border-radius: 5px;
     padding: 7px 15px;
     transition: all 0.3s ease;

@@ -41,7 +41,9 @@ class TaskLog
     public function __construct(array $data)
     {
         foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
+            if ($key === 'output') {
+                $this->output = $this->setOutput($value);
+            } elseif (property_exists($this, $key)) {
                 $this->{$key} = $value;
             }
         }
@@ -67,5 +69,23 @@ class TaskLog
         if (property_exists($this, $key)) {
             return $this->{$key};
         }
+    }
+
+    /**
+     * Unify output to string.
+     *
+     * @param array<int, string>|bool|int|string|null $value
+     */
+    private function setOutput($value): ?string
+    {
+        if (is_string($value) || $value === null) {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            return implode(PHP_EOL, $value);
+        }
+
+        return (string) $value;
     }
 }

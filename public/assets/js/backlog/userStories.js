@@ -1047,7 +1047,7 @@ if (typeof m_userStories !== "undefined") {
             }
           } else {
             filteredStories = []; // Clear the filtered stories if no data is returned
-            displayStories(currentPage);
+            displayStories(filteredStories);
             updatePaginationControls();
           }
         },
@@ -1083,8 +1083,6 @@ if (typeof m_userStories !== "undefined") {
       applyFilters();
     }
 
-    displayStories(currentPage);
-    updatePagination();
 
     function countNumberOfFilters() {
       let numberOfFilters = document.getElementById("noti");

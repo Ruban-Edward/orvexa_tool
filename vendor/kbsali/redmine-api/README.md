@@ -19,10 +19,18 @@ like [Guzzle](https://github.com/guzzle/guzzle) for handling http connections
 * [mid-level API](docs/usage.md#mid-level-api) e.g.
     ```php
     $client->getApi('issue')->create(['project_id' => 1, 'subject' => 'issue title']);
+
+    $response = $client->getApi('issue')->getLastResponse();
     ```
 * [low-level API](docs/usage.md#low-level-api) e.g.
     ```php
-    $client->requestPost('/issues.json', '{"issue":{"project_id":1,"subject":"issue title"}}');
+    $response = $client->request(
+        HttpFactory::makeJsonRequest(
+            'POST',
+            '/issues.json',
+            '{"issue":{"project_id":1,"subject":"issue title"}}',
+        ),
+    );
     ```
 
 ## Supported Redmine versions
@@ -30,9 +38,12 @@ like [Guzzle](https://github.com/guzzle/guzzle) for handling http connections
 We support (and run tests against) the [latest supported Redmine versions](https://www.redmine.org/projects/redmine/wiki/Download#Versions-status-and-releases-policy)
 that receive security updates.
 
-- Redmine 5.1.x
-- Redmine 5.0.x
-- Redmine 4.2.x
+| php-redmine-api | 7.0 | 6.1 | 6.0 | 5.1 | 5.0 | 4.2 |
+|-----------------|:---:|:---:|:---:|:---:|:---:|:---:|
+| **v2.10** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| v2.9 | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| v2.8 | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
+| v2.7 | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
 
 Nevertheless, you can also use this library for all older Redmine versions.
 In this case, however, be aware that some features might not be supported by your Redmine server.
@@ -58,8 +69,6 @@ you are welcome to [create an issue](https://github.com/kbsali/php-redmine-api/i
 ## Todo
 
 * Tracking of Redmine API feature support in [#305](https://github.com/kbsali/php-redmine-api/issues/305)
-* Check header's response code (especially for POST/PUT/DELETE requests)
-    * See https://stackoverflow.com/questions/9183178/php-curl-retrieving-response-headers-and-body-in-a-single-request/9183272#9183272
 
 ## Limitations / Missing Redmine-API
 

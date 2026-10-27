@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 
 /**
  * Listing custom fields.
@@ -15,20 +19,57 @@ use Redmine\Exception\UnexpectedResponseException;
  */
 class CustomField extends AbstractApi
 {
-    private $customFields = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
 
-    private $customFieldNames = null;
+    /**
+     * @var null|array<mixed>
+     */
+    private ?array $customFields = null;
+
+    /**
+     * @var null|array<int,string>
+     */
+    private ?array $customFieldNames = null;
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see CustomField::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List custom fields.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_CustomFields#GET
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of custom fields found
+     * @return array<mixed> list of custom fields found
      */
     final public function list(array $params = []): array
     {
@@ -68,16 +109,15 @@ class CustomField extends AbstractApi
      *
      * @deprecated v2.4.0 Use list() instead.
      * @see CustomField::list()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_CustomFields#GET
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of custom fields found or error message or false
+     * @return array<mixed>|string|false list of custom fields found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
             $this->customFields = $this->list($params);
@@ -86,7 +126,7 @@ class CustomField extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -102,16 +142,16 @@ class CustomField extends AbstractApi
      * @deprecated v2.7.0 Use listNames() instead.
      * @see CustomField::listNames()
      *
-     * @param bool  $forceUpdate to force the update of the custom fields var
-     * @param array $params      optional parameters to be passed to the api (offset, limit, ...)
+     * @param bool         $forceUpdate to force the update of the custom fields var
+     * @param array<mixed> $params      optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array list of custom fields (id => name)
+     * @return array<string,int> list of custom fields (name => id)
      */
     public function listing($forceUpdate = false, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
-        return $this->doListing($forceUpdate, $params);
+        return $this->doListing((bool) $forceUpdate, $params);
     }
 
     /**
@@ -120,14 +160,14 @@ class CustomField extends AbstractApi
      * @deprecated v2.7.0 Use listNames() instead.
      * @see CustomField::listNames()
      *
-     * @param string|int $name   customer field name
-     * @param array      $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param string|int   $name   customer field name
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @return int|false
      */
     public function getIdByName($name, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
         $arr = $this->doListing(false, $params);
 
@@ -138,9 +178,14 @@ class CustomField extends AbstractApi
         return $arr[(string) $name];
     }
 
-    private function doListing(bool $forceUpdate, array $params)
+    /**
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
+     */
+    private function doListing(bool $forceUpdate, array $params): array
     {
-        if (empty($this->customFields) || $forceUpdate) {
+        if ($forceUpdate || $this->customFields === null) {
             $this->customFields = $this->list($params);
         }
 

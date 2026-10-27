@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CodeIgniter\Settings\Handlers;
 
 use CodeIgniter\Database\BaseBuilder;
 use CodeIgniter\Database\BaseConnection;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\I18n\Time;
 use CodeIgniter\Settings\Config\Settings;
 use RuntimeException;
@@ -17,21 +20,21 @@ class DatabaseHandler extends ArrayHandler
     /**
      * The DB connection for the Settings.
      */
-    private BaseConnection $db;
+    private readonly BaseConnection $db;
 
     /**
      * The Query Builder for the Settings table.
      */
-    private BaseBuilder $builder;
+    private readonly BaseBuilder $builder;
 
     /**
      * Array of contexts that have been stored.
      *
-     * @var null[]|string[]
+     * @var list<null>|list<string>
      */
-    private $hydrated = [];
+    private array $hydrated = [];
 
-    private Settings $config;
+    private readonly Settings $config;
 
     /**
      * Stores the configured database table.
@@ -41,6 +44,8 @@ class DatabaseHandler extends ArrayHandler
         $this->config  = config('Settings');
         $this->db      = db_connect($this->config->database['group']);
         $this->builder = $this->db->table($this->config->database['table']);
+
+        $this->setupDeferredWrites($this->config->database['deferWrites'] ?? false);
     }
 
     /**
@@ -59,7 +64,7 @@ class DatabaseHandler extends ArrayHandler
      * read and stored the first call for each contexts
      * and then retrieved from storage.
      *
-     * @return mixed|null
+     * @return mixed
      */
     public function get(string $class, string $property, ?string $context = null)
     {
@@ -71,11 +76,60 @@ class DatabaseHandler extends ArrayHandler
      *
      * @param mixed $value
      *
-     * @return void
+     * @throws RuntimeException For database failures
+     */
+    public function set(string $class, string $property, $value = null, ?string $context = null): void
+    {
+        if ($this->deferWrites) {
+            $this->hydrate($context);
+            $this->markPending($class, $property, $value, $context);
+        } else {
+            $this->persist($class, $property, $value, $context);
+        }
+
+        // Update storage after persistence check
+        $this->setStored($class, $property, $value, $context);
+    }
+
+    /**
+     * Stores multiple values into the database for later retrieval.
+     *
+     * @param list<array{class: string, property: string, value: mixed}> $settings
      *
      * @throws RuntimeException For database failures
      */
-    public function set(string $class, string $property, $value = null, ?string $context = null)
+    public function setMany(array $settings, ?string $context = null): void
+    {
+        if ($settings === []) {
+            return;
+        }
+
+        if ($this->deferWrites) {
+            $this->hydrate($context);
+
+            foreach ($settings as $setting) {
+                $this->markPending($setting['class'], $setting['property'], $setting['value'], $context);
+                $this->setStored($setting['class'], $setting['property'], $setting['value'], $context);
+            }
+
+            return;
+        }
+
+        $this->persistRows($this->prepareUpsertRows($settings, $context), []);
+
+        foreach ($settings as $setting) {
+            $this->setStored($setting['class'], $setting['property'], $setting['value'], $context);
+        }
+    }
+
+    /**
+     * Persists a single property to the database.
+     *
+     * @param mixed $value
+     *
+     * @throws RuntimeException For database failures
+     */
+    private function persist(string $class, string $property, $value, ?string $context): void
     {
         $time     = Time::now()->format('Y-m-d H:i:s');
         $type     = gettype($value);
@@ -110,22 +164,63 @@ class DatabaseHandler extends ArrayHandler
         if ($result !== true) {
             throw new RuntimeException($this->db->error()['message'] ?? 'Error writing to the database.');
         }
-
-        // Update storage
-        $this->setStored($class, $property, $value, $context);
     }
 
     /**
      * Deletes the record from persistent storage, if found,
      * and from the local cache.
-     *
-     * @return void
      */
-    public function forget(string $class, string $property, ?string $context = null)
+    public function forget(string $class, string $property, ?string $context = null): void
     {
         $this->hydrate($context);
 
-        // Delete from the database
+        if ($this->deferWrites) {
+            $this->markPending($class, $property, null, $context, true);
+        } else {
+            $this->persistForget($class, $property, $context);
+        }
+
+        // Delete from local storage
+        $this->forgetStored($class, $property, $context);
+    }
+
+    /**
+     * Deletes multiple records from persistent storage, if found,
+     * and from the local cache.
+     *
+     * @param list<array{class: string, property: string}> $settings
+     */
+    public function forgetMany(array $settings, ?string $context = null): void
+    {
+        if ($settings === []) {
+            return;
+        }
+
+        $this->hydrate($context);
+
+        if ($this->deferWrites) {
+            foreach ($settings as $setting) {
+                $this->markPending($setting['class'], $setting['property'], null, $context, true);
+                $this->forgetStored($setting['class'], $setting['property'], $context);
+            }
+
+            return;
+        }
+
+        $this->persistRows([], $this->prepareDeleteRows($settings, $context));
+
+        foreach ($settings as $setting) {
+            $this->forgetStored($setting['class'], $setting['property'], $context);
+        }
+    }
+
+    /**
+     * Deletes a single property from the database.
+     *
+     * @throws RuntimeException For database failures
+     */
+    private function persistForget(string $class, string $property, ?string $context): void
+    {
         $result = $this->builder
             ->where('class', $class)
             ->where('key', $property)
@@ -135,18 +230,13 @@ class DatabaseHandler extends ArrayHandler
         if (! $result) {
             throw new RuntimeException($this->db->error()['message'] ?? 'Error writing to the database.');
         }
-
-        // Delete from local storage
-        $this->forgetStored($class, $property, $context);
     }
 
     /**
      * Deletes all records from persistent storage, if found,
      * and from the local cache.
-     *
-     * @return void
      */
-    public function flush()
+    public function flush(): void
     {
         $this->builder->truncate();
 
@@ -189,6 +279,205 @@ class DatabaseHandler extends ArrayHandler
 
         foreach ($result->getResultObject() as $row) {
             $this->setStored($row->class, $row->key, $this->parseValue($row->value, $row->type), $row->context);
+        }
+    }
+
+    /**
+     * Persists all pending properties to the database.
+     * Called automatically at the end of request via post_system
+     * event when deferWrites is enabled.
+     */
+    public function persistPendingProperties(): void
+    {
+        if ($this->pendingProperties === []) {
+            return;
+        }
+
+        $time = Time::now()->format('Y-m-d H:i:s');
+
+        // Separate deletes from upserts and prepare for database operations
+        $deletes = [];
+        $upserts = [];
+
+        foreach ($this->pendingProperties as $info) {
+            if ($info['delete']) {
+                // Prepare delete row with correct database column names
+                $deletes[] = [
+                    'class'   => $info['class'],
+                    'key'     => $info['property'],
+                    'context' => $info['context'],
+                ];
+            } else {
+                // Prepare upsert row with correct database column names
+                $upserts[] = [
+                    'class'      => $info['class'],
+                    'key'        => $info['property'],
+                    'value'      => $this->prepareValue($info['value']),
+                    'type'       => gettype($info['value']),
+                    'context'    => $info['context'],
+                    'created_at' => $time,
+                    'updated_at' => $time,
+                ];
+            }
+        }
+
+        try {
+            $this->persistRows($upserts, $deletes);
+
+            $this->pendingProperties = [];
+        } catch (DatabaseException|RuntimeException $e) {
+            log_message('error', 'Failed to persist pending properties: ' . $e->getMessage());
+
+            $this->pendingProperties = [];
+        }
+    }
+
+    /**
+     * Prepares database rows for setting persistence.
+     *
+     * @param list<array{class: string, property: string, value: mixed}> $settings
+     *
+     * @return list<array{class: string, key: string, value: mixed, type: string, context: string|null, created_at: string, updated_at: string}>
+     */
+    private function prepareUpsertRows(array $settings, ?string $context): array
+    {
+        $time = Time::now()->format('Y-m-d H:i:s');
+        $rows = [];
+
+        foreach ($settings as $setting) {
+            $rows[] = [
+                'class'      => $setting['class'],
+                'key'        => $setting['property'],
+                'value'      => $this->prepareValue($setting['value']),
+                'type'       => gettype($setting['value']),
+                'context'    => $context,
+                'created_at' => $time,
+                'updated_at' => $time,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Prepares database rows for delete persistence.
+     *
+     * @param list<array{class: string, property: string}> $settings
+     *
+     * @return list<array{class: string, key: string, context: string|null}>
+     */
+    private function prepareDeleteRows(array $settings, ?string $context): array
+    {
+        $rows = [];
+
+        foreach ($settings as $setting) {
+            $rows[] = [
+                'class'   => $setting['class'],
+                'key'     => $setting['property'],
+                'context' => $context,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Persists prepared rows to the database.
+     *
+     * @param list<array{class: string, key: string, value: mixed, type: string, context: string|null, created_at: string, updated_at: string}> $upserts
+     * @param list<array{class: string, key: string, context: string|null}>                                                                     $deletes
+     */
+    private function persistRows(array $upserts, array $deletes): void
+    {
+        if ($upserts === [] && $deletes === []) {
+            return;
+        }
+
+        $this->db->transStart();
+
+        // Handle upserts: fetch existing records matching our pending data
+        if ($upserts !== []) {
+            // Build query to fetch only the specific records we need
+            $this->buildOrWhereConditions($upserts, 'class', 'key', 'context');
+
+            $existing = $this->builder->get()->getResultArray();
+
+            // Build a map of existing records for quick lookup
+            $existingMap = [];
+
+            foreach ($existing as $row) {
+                $key               = $this->buildCompositeKey($row['class'], $row['key'], $row['context']);
+                $existingMap[$key] = $row['id'];
+            }
+
+            // Separate into inserts and updates
+            $inserts = [];
+            $updates = [];
+
+            foreach ($upserts as $row) {
+                $key = $this->buildCompositeKey($row['class'], $row['key'], $row['context']);
+
+                if (isset($existingMap[$key])) {
+                    // Record exists - prepare for update
+                    $updates[] = [
+                        'id'         => $existingMap[$key],
+                        'value'      => $row['value'],
+                        'type'       => $row['type'],
+                        'updated_at' => $row['updated_at'],
+                    ];
+                } else {
+                    // New record - prepare for insert
+                    $inserts[] = $row;
+                }
+            }
+
+            // Batch insert new records
+            if ($inserts !== []) {
+                $this->builder->insertBatch($inserts);
+            }
+
+            // Batch update existing records
+            if ($updates !== []) {
+                $this->builder->updateBatch($updates, 'id');
+            }
+        }
+
+        // Batch delete all delete operations
+        if ($deletes !== []) {
+            $this->buildOrWhereConditions($deletes, 'class', 'key', 'context');
+
+            $this->builder->delete();
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            throw new RuntimeException('Failed to persist settings to database.');
+        }
+    }
+
+    /**
+     * Builds a composite key for lookup purposes.
+     */
+    private function buildCompositeKey(string $class, string $key, ?string $context): string
+    {
+        return $class . '::' . $key . ($context === null ? '' : '::' . $context);
+    }
+
+    /**
+     * Builds OR WHERE conditions for multiple rows.
+     */
+    private function buildOrWhereConditions(array $rows, string $classKey, string $keyKey, string $contextKey): void
+    {
+        foreach ($rows as $row) {
+            $this->builder->orGroupStart();
+
+            $this->builder
+                ->where($classKey, $row[$classKey])
+                ->where($keyKey, $row[$keyKey])
+                ->where($contextKey, $row[$contextKey]);
+
+            $this->builder->groupEnd();
         }
     }
 }

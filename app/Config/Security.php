@@ -87,20 +87,4 @@ class Security extends BaseConfig
     // Never bounce an AJAX call to another page: answer with a plain 403 instead.
     public bool $redirect = false;
 
-    /**
-     * --------------------------------------------------------------------------
-     * CSRF SameSite
-     * --------------------------------------------------------------------------
-     *
-     * Setting for CSRF SameSite cookie token.
-     *
-     * Allowed values are: None - Lax - Strict - ''.
-     *
-     * Defaults to `Lax` as recommended in this link:
-     *
-     * @see https://portswigger.net/web-security/csrf/samesite-cookies
-     *
-     * @deprecated `Config\Cookie` $samesite property is used.
-     */
-    public string $samesite = 'Lax';
 }

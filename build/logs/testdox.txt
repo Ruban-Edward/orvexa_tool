@@ -1,3 +1,247 @@
+Admin Controller (App\Controllers\AdminController)
+ [ ] Manage user page
+ [ ] Manage permission page
+ [ ] Update user role
+ [ ] Update user role invalid input
+ [ ] Set permission
+ [ ] Set permission invalid input
+ [x] Set permission no required field
+ [x] Search role with valid query
+ [x] Search role with invalid query
+ [ ] Set new permission valid input
+ [x] Set new permission invalid input
+ [ ] Get specific permissions
+ [ ] Get permission name
+ [ ] Delete permission
+ [ ] Get permission details
+ [ ] Update permission
+
+Admin Model (Tests\app\Models\AdminModel)
+ [ ] Get users
+ [ ] Get permissions
+ [ ] Update user role
+ [ ] User filter
+ [ ] Get last sync
+ [ ] Get module
+
+Auth Controller (App\Controllers\AuthController)
+ [x] Login validate
+ [ ] Logout
+ [x] No access
+
+Backlog Controller (App\Controllers\BacklogController)
+ [ ] Products with no data
+ [ ] Products with data
+ [ ] Backlog items view
+ [ ] Add backlog
+ [ ] Update backlog
+ [ ] Delete backlog
+ [ ] Delete backlog in sprint
+ [ ] Delete document
+ [ ] Add epic
+
+Custom Report Controller (App\Controllers\CustomReportController)
+ [ ] Get backlog report table
+ [ ] Get sprint report table
+ [ ] Get meet report table
+ [ ] Get filtered backlog report
+ [ ] Get filtered sprint report
+ [ ] Get filtered meet report
+ [ ] Get filtered backlog report without filters
+ [ ] Download filtered data with no data
+
+Custom Report Model (Tests\app\Models\CustomReportModel)
+ [ ] Get meet report view
+ [ ] Get filter meet report view with params
+ [ ] Get sprint report view
+ [ ] Get filter sprint report view with params
+ [ ] Get backlog report view
+ [ ] Back log report view data correct or n ot
+ [ ] Sprint report view data correct or not
+ [ ] Meet report view data correct or not
+
+Dashboard Controller (App\Controllers\DashboardController)
+ [ ] Dashboard view
+ [ ] Show product dashboard
+ [ ] Show product dashboard argument
+ [ ] Fetch pending task by sprint id
+
+Dashboard Model (Tests\app\Models\DashboardModel)
+ [ ] Get sprint details
+ [ ] Get running sprint id
+ [ ] Get backlog status counts
+ [ ] Get user storystatus counts
+ [ ] Get sprint tasks id
+ [ ] Get alluser story ids
+ [ ] Get pending task status counts
+ [ ] Get pending tasks
+ [ ] Get estimated sprint hours
+ [ ] User meetings
+ [ ] Get backlog priority
+ [ ] Get sprint performance
+ [ ] Product on track
+ [ ] Get all upcoming sprints
+
+Example Database
+ [ ] Model find all
+ [ ] Soft delete leaves row
+
+Example Session
+ [x] Session simple
+
+Health
+ [x] Is defined app path
+ [x] Base url has been set
+
+Issue Model (Tests\app\Models\IssueModel)
+ [ ] Get all tasks from redmine
+ [ ] Task data is correct or not
+
+Meeting Controller (Tests\Controllers\MeetingController)
+ [ ] Calendar
+ [ ] Get meeting details
+ [ ] Invalid get meeting details
+ [ ] Get sprint details
+ [ ] Invalid get sprint details
+ [ ] Sprint by product
+ [ ] Invalid sprint by product
+ [ ] Meeting confirmation
+ [ ] Invalid meeting confirmation
+ [ ] Log meeting times
+ [ ] Invalid log meeting times
+ [ ] Create group
+ [ ] Invalid create group
+ [ ] Get team details by id
+ [ ] Invalid get team details by id
+ [ ] Edit group
+ [ ] Invalid data type edit group
+ [ ] Invalid edit group
+ [ ] Delete group
+ [x] Invalid delete group
+ [ ] Get sprint members details
+ [ ] Invalid get sprint members details
+ [ ] Get members by product
+ [ ] Invalid get members by product
+ [ ] Backlog by product
+ [ ] Invalid backlog by product
+ [ ] Get epic
+ [ ] Inavlid get epic
+ [ ] Get sprint members by id
+ [ ] Invalid get sprint members by id
+
+Meeting Detail Model (Tests\app\Models\Meeting\MeetingDetailModel)
+ [ ] Insert meeting details
+ [ ] Update meeting details
+ [ ] Update meeting details external
+ [ ] Time logis logged
+ [ ] Get meeting details
+ [ ] Update external reference task id
+ [ ] Show meetings
+ [ ] Cancel meetings reason
+ [ ] Get external issue id for sprint
+ [ ] Get product meet type
+
+Meeting Model (Tests\app\Models\Meeting\MeetingModel)
+ [ ] Get meeting type
+ [ ] Get meeting type returns empty
+ [ ] Get meeting location
+ [ ] Get meeting location returns empty
+ [ ] Get meeting by type
+ [ ] Get meeting by id returns empty
+ [ ] Get product
+ [ ] Get product returns empty
+ [ ] Get sprint duration
+ [ ] Get sprint duration returns empty
+ [ ] Get sprint status
+ [ ] Get sprint status returns empty
+ [ ] Show sprint
+ [ ] Show sprint returns empty
+
+Notification Controller (App\Controllers\NotificationController)
+ [ ] Notification details
+
+Permission Model (Tests\app\Models\PermissionModel)
+ [ ] Add new permission
+ [ ] Add new permission invalid input
+ [ ] Get permissions
+ [ ] Delete permission
+ [ ] Get permission details by id
+ [ ] Get permission details by id invalid input
+
+Pocker Controller (App\Controllers\PockerController)
+ [ ] Insert poker planning
+ [ ] Get poker planning
+ [ ] Update poker reveal
+ [ ] Add user story point
+
+Product Owner Model (Tests\app\Models\ProductOwnerModel)
+ [ ] Set product owner
+ [ ] Set product owner invalid input
+ [ ] Get product owner
+ [ ] Get product owner invalid input
+
+Project Model (Tests\app\Models\ProjectModel)
+ [ ] Get all products from redmine
+ [ ] Get all product users from redmine
+ [ ] Whether product data correct or not
+ [ ] Whether product user data correct or not
+
+Role Model (Tests\app\Models\RoleModel)
+ [ ] Get roles
+ [ ] Insert role
+ [ ] Delete role
+
 Settings Controller (App\Controllers\SettingsController)
- [x] Set product owner
+ [ ] Admin settings page
+ [ ] Get roles
+ [ ] Add role
+ [ ] Add role invalid input
+ [ ] Delete role
+ [ ] Create holidays
+ [ ] Create holidays invalid input
+ [ ] Poker config setting
+ [ ] Poker config setting no poker data
+ [x] Poker config setting invalid
+ [ ] Get poker limit
+ [ ] Set product owner
+ [ ] Set product owner invalid data
+ [ ] Get members by product list
+ [ ] Get t shirt size by product
+ [ ] Get t shirt size by product no response
+ [ ] Set t shirt size
+ [x] Set t shirt size invalid data
+
+Sprint Controller (App\Controllers\SprintController)
+ [ ] Get sprint list
+ [ ] Get product tasks
+ [ ] Get sprint planning
+
+Sync Redmine Controller (App\Controllers\SyncRedmineController)
+ [ ] Sync products
+ [ ] Product user sync
+ [ ] Task sync
+ [ ] Members sync
+ [ ] Customer sync
+ [ ] Multiple syncs
+ [ ] Sync only users
+
+Sync Redmine Model (Tests\Unit\SyncRedmineModel)
+ [ ] Log sync activity success
+ [ ] Log sync activity failure
+ [ ] Get all product users from local
+ [ ] Update product user sync
+ [ ] Update product sync
+ [ ] Get local product
+ [ ] Update task sync
+ [ ] Get last updates
+ [ ] Update customer sync
+
+Task Controller (App\Controllers\TaskController)
+ [ ] Add task
+ [ ] Update task
+ [ ] Delete task
+
+User Model (Tests\app\Models\UserModel)
+ [ ] Get user
+ [ ] Insert or updatet user
 

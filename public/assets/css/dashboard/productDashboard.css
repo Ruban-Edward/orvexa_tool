@@ -35,9 +35,9 @@
 }
 
 .no-sprints{
-    border: 1px solid #1a237e;
+    border: 1px solid var(--ox-brand-800);
     padding: 8px;
-    color: #1a237e;
+    color: var(--ox-brand-800);
     font-size: 14px;
     font-family: roboto-semibold;
     border-radius: 8px;
@@ -61,20 +61,20 @@
     }
 .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(63, 81, 181, 0.3);
+        box-shadow: 0 4px 8px rgba(31, 184, 101, 0.3);
 }
 .card, .btn, .nav-link {
         transition: all 0.3s ease;
     }
 .main-content .card-title{
         font-weight: bolder;
-        color: #1a237e ;
+        color: var(--ox-brand-800) ;
         font-size: 1.1rem;
     }
 
 .product-header{
     font-weight: 800;
-    color: #1a237e;
+    color: var(--ox-brand-800);
 }
 b, strong {
     font-weight: bolder;
@@ -89,7 +89,7 @@ b, strong {
 }
 
 .main-content .card-header{
-    background-color: #1a237e;
+    background-color: var(--ox-brand-800);
     color: white;
 }
 
@@ -106,7 +106,7 @@ b, strong {
 .header-buttons .blue-button,
 .main-content .blue-button  {
     color: #fff;
-    background-color: #4A90E2;
+    background-color: var(--ox-brand-600);
     font-size: 1rem;
     padding: 5px 15px;
     border-radius: 5px;
@@ -131,7 +131,7 @@ b, strong {
 .custom-select:focus {
     border-color: #80bdff;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    box-shadow: 0 0 0 0.2rem rgba(31, 184, 101, .25);
 }
 
 .main-content .bg-card-1{
@@ -258,7 +258,7 @@ b, strong {
 
 
 .header_color th{
-    background-color: #d3e3f3;
+    background-color: var(--ox-brand-50);
     color: rgb(0, 0, 0);
    
 } 

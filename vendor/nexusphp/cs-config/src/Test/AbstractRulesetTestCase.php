@@ -13,12 +13,13 @@ declare(strict_types=1);
 
 namespace Nexus\CsConfig\Test;
 
+use Nexus\CsConfig\Ruleset\ConfigurableAllowedUnsupportedPhpVersionRulesetInterface;
 use Nexus\CsConfig\Ruleset\RulesetInterface;
+use PhpCsFixer\ConfigInterface;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\FixerConfiguration\DeprecatedFixerOptionInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionInterface;
-use PhpCsFixer\Preg;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -68,12 +69,47 @@ abstract class AbstractRulesetTestCase extends TestCase
     // TESTS
     // =========================================================================
 
+    final public function testHighestSupportedPhpVersionIdIsSameWithUpstream(): void
+    {
+        $ruleset = static::createRuleset();
+
+        if (! $ruleset instanceof ConfigurableAllowedUnsupportedPhpVersionRulesetInterface) {
+            self::markTestSkipped(\sprintf(
+                'Ruleset "%s" does not implement "%s".',
+                $ruleset::class,
+                ConfigurableAllowedUnsupportedPhpVersionRulesetInterface::class,
+            )); // @codeCoverageIgnore
+        }
+
+        /** @var int<80100, 80499> $maxSupportedPhpVersion */
+        $maxSupportedPhpVersion = \constant($ruleset::class.'::PHP_CS_FIXER_MAX_SUPPORTED_PHP_VERSION_ID');
+        $maxSupportedPhpVersion = \sprintf(
+            '%d.%d.%d',
+            $maxSupportedPhpVersion / 10000,
+            ($maxSupportedPhpVersion % 10000) / 100,
+            $maxSupportedPhpVersion % 100,
+        );
+
+        // @phpstan-ignore-next-line classConstant.internal
+        $upstreamMaxSupportedPhpVersion = ConfigInterface::PHP_VERSION_SYNTAX_SUPPORTED.'.99';
+
+        self::assertTrue(
+            version_compare($upstreamMaxSupportedPhpVersion, $maxSupportedPhpVersion, '='),
+            \sprintf(
+                '[%s] Ruleset\'s highest supported PHP version (PHP %s) is not the same as upstream (PHP %s).',
+                $ruleset::class,
+                $maxSupportedPhpVersion,
+                $upstreamMaxSupportedPhpVersion,
+            ),
+        );
+    }
+
     final public function testAllConfiguredFixersAreNotUsingPresets(): void
     {
         $fixersThatArePresets = array_filter(
             self::$enabledFixers,
             static fn(string $fixer): bool => substr($fixer, 0, 1) === '@',
-            ARRAY_FILTER_USE_KEY,
+            \ARRAY_FILTER_USE_KEY,
         );
 
         self::assertEmpty($fixersThatArePresets, \sprintf(
@@ -149,7 +185,7 @@ abstract class AbstractRulesetTestCase extends TestCase
 
         if (false === $ruleConfiguration) {
             // fixer is turned off
-            $this->addToAssertionCount(1);
+            $this->expectNotToPerformAssertions();
 
             return;
         }
@@ -221,8 +257,8 @@ abstract class AbstractRulesetTestCase extends TestCase
 
     protected static function createRuleset(): RulesetInterface
     {
-        /** @phpstan-var class-string<RulesetInterface> $className */
-        $className = Preg::replace('/^(Nexus\\\\CsConfig)\\\\Tests(\\\\.+)Test$/', '$1$2', static::class);
+        /** @var class-string<RulesetInterface> $className */
+        $className = preg_replace('/^(Nexus\\\\CsConfig)\\\\Tests(\\\\.+)Test$/', '$1$2', static::class);
 
         return new $className();
     }

@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Client\NativeCurlClient;
 use Redmine\Client\Psr18Client;
 use Redmine\Exception;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\PathSerializer;
@@ -47,30 +51,61 @@ class Issue extends AbstractApi
      */
     public const PRIO_IMMEDIATE = 5;
 
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
+
     /**
-     * @var IssueCategory
+     * @var null|IssueCategory
      */
     private $issueCategoryApi;
 
     /**
-     * @var IssueStatus
+     * @var null|IssueStatus
      */
     private $issueStatusApi;
 
     /**
-     * @var Project
+     * @var null|Project
      */
     private $projectApi;
 
     /**
-     * @var Tracker
+     * @var null|Tracker
      */
     private $trackerApi;
 
     /**
-     * @var User
+     * @var null|User
      */
     private $userApi;
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see Issue::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List issues.
@@ -87,11 +122,11 @@ class Issue extends AbstractApi
      * - cf_x: get issues with the given value for custom field with an ID of x. (Custom field must have 'used as a filter' checked.)
      * - query_id : id of the previously saved query
      *
-     * @param array $params the additional parameters (cf available $params above)
+     * @param array<mixed> $params the additional parameters (cf available $params above)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of issues found
+     * @return array<mixed> list of issues found
      */
     final public function list(array $params = []): array
     {
@@ -107,7 +142,6 @@ class Issue extends AbstractApi
      *
      * @deprecated v2.4.0 Use list() instead.
      * @see Issue::list()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Issues
      * available $params :
      * - offset: skip this number of issues in response (optional)
@@ -120,13 +154,13 @@ class Issue extends AbstractApi
      * - cf_x: get issues with the given value for custom field with an ID of x. (Custom field must have 'used as a filter' checked.)
      * - query_id : id of the previously saved query
      *
-     * @param array $params the additional parameters (cf available $params above)
+     * @param array<mixed> $params the additional parameters (cf available $params above)
      *
-     * @return array|string|false list of issues found or error message or false
+     * @return array<mixed>|string|false list of issues found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
             return $this->list($params);
@@ -135,7 +169,7 @@ class Issue extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -150,10 +184,12 @@ class Issue extends AbstractApi
      * available $params :
      * include: fetch associated data (optional). Possible values: children, attachments, relations, changesets and journals
      *
-     * @param int    $id     the issue id
-     * @param array  $params extra associated data
+     * @param int          $id     the issue id
+     * @param array<mixed> $params extra associated data
      *
-     * @return array|false|string information about the issue as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the issue as array or false|string on error
      */
     public function show($id, array $params = [])
     {
@@ -167,6 +203,24 @@ class Issue extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -185,7 +239,7 @@ class Issue extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Issues#Creating-an-issue
      *
-     * @param array $params the new issue data
+     * @param array<mixed> $params the new issue data
      *
      * @return string|SimpleXMLElement|false
      */
@@ -222,6 +276,18 @@ class Issue extends AbstractApi
 
         $body = $this->lastResponse->getContent();
 
+        if ($this->lastResponse->getStatusCode() !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
         if ($body === '') {
             return $body;
         }
@@ -234,7 +300,8 @@ class Issue extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Issues#Updating-an-issue
      *
-     * @param int $id the issue number
+     * @param int          $id     the issue number
+     * @param array<mixed> $params
      *
      * @return string|SimpleXMLElement|false
      */
@@ -260,13 +327,29 @@ class Issue extends AbstractApi
             $sanitizedParams['assigned_to_id'] = '';
         }
 
+        // Allow fixed_version_id to be `` (empty string) to unassign a version from an issue
+        if (array_key_exists('fixed_version_id', $params) && '' === $params['fixed_version_id']) {
+            $sanitizedParams['fixed_version_id'] = '';
+        }
+
         $this->lastResponse = $this->getHttpClient()->request(HttpFactory::makeXmlRequest(
             'PUT',
             '/issues/' . urlencode(strval($id)) . '.xml',
             XmlSerializer::createFromArray(['issue' => $sanitizedParams])->getEncoded(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -284,6 +367,19 @@ class Issue extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
 
         if ($body === '') {
             return $body;
@@ -305,7 +401,18 @@ class Issue extends AbstractApi
             '/issues/' . urlencode(strval($id)) . '/watchers/' . urlencode(strval($watcherUserId)) . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -341,9 +448,11 @@ class Issue extends AbstractApi
     /**
      * Transforms literal identifiers to integer ids.
      *
-     * @return array
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
      */
-    private function cleanParams(array $params = [])
+    private function cleanParams(array $params = []): array
     {
         if (isset($params['project'])) {
             $projectApi = $this->getProjectApi();
@@ -420,8 +529,8 @@ class Issue extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Issues#Updating-an-issue
      *
-     * @param int    $id         the issue number
-     * @param array  $attachment ['token' => '...', 'filename' => '...', 'content_type' => '...']
+     * @param int          $id         the issue number
+     * @param array<mixed> $attachment ['token' => '...', 'filename' => '...', 'content_type' => '...']
      *
      * @return bool|string
      */
@@ -435,11 +544,11 @@ class Issue extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Issues#Updating-an-issue
      *
-     * @param int    $id          the issue number
-     * @param array  $attachments [
-     *                            ['token' => '...', 'filename' => '...', 'content_type' => '...'],
-     *                            ['token' => '...', 'filename' => '...', 'content_type' => '...']
-     *                            ]
+     * @param int          $id          the issue number
+     * @param array<mixed> $attachments [
+     *                                  ['token' => '...', 'filename' => '...', 'content_type' => '...'],
+     *                                  ['token' => '...', 'filename' => '...', 'content_type' => '...']
+     *                                  ]
      *
      * @return bool|string
      */
@@ -456,7 +565,18 @@ class Issue extends AbstractApi
             JsonSerializer::createFromArray(['issue' => $params])->getEncoded(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -473,7 +593,18 @@ class Issue extends AbstractApi
             '/issues/' . urlencode(strval($id)) . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -486,7 +617,7 @@ class Issue extends AbstractApi
                 /** @var IssueCategory */
                 $issueCategoryApi = $this->client->getApi('issue_category');
             } else {
-                $issueCategoryApi = new IssueCategory($this->getHttpClient());
+                $issueCategoryApi = IssueCategory::fromHttpClient($this->getHttpClient());
             }
 
             $this->issueCategoryApi = $issueCategoryApi;
@@ -505,7 +636,7 @@ class Issue extends AbstractApi
                 /** @var IssueStatus */
                 $issueStatusApi = $this->client->getApi('issue_status');
             } else {
-                $issueStatusApi = new IssueStatus($this->getHttpClient());
+                $issueStatusApi = IssueStatus::fromHttpClient($this->getHttpClient());
             }
 
             $this->issueStatusApi = $issueStatusApi;
@@ -524,7 +655,7 @@ class Issue extends AbstractApi
                 /** @var Project */
                 $projectApi = $this->client->getApi('project');
             } else {
-                $projectApi = new Project($this->getHttpClient());
+                $projectApi = Project::fromHttpClient($this->getHttpClient());
             }
 
             $this->projectApi = $projectApi;
@@ -543,7 +674,7 @@ class Issue extends AbstractApi
                 /** @var Tracker */
                 $trackerApi = $this->client->getApi('tracker');
             } else {
-                $trackerApi = new Tracker($this->getHttpClient());
+                $trackerApi = Tracker::fromHttpClient($this->getHttpClient());
             }
 
             $this->trackerApi = $trackerApi;
@@ -562,7 +693,7 @@ class Issue extends AbstractApi
                 /** @var User */
                 $userApi = $this->client->getApi('user');
             } else {
-                $userApi = new User($this->getHttpClient());
+                $userApi = User::fromHttpClient($this->getHttpClient());
             }
 
             $this->userApi = $userApi;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
 use InvalidArgumentException;
@@ -28,10 +30,12 @@ abstract class AbstractApi implements Api
      */
     protected $client;
 
+    private \Redmine\Http\HttpClient $httpClient;
+
     /**
-     * @var HttpClient
+     * Enabled by the client via `enableFutureMode()`.
      */
-    private $httpClient;
+    private bool $futureMode = false;
 
     /**
      * @var Response
@@ -43,7 +47,7 @@ abstract class AbstractApi implements Api
      */
     public function __construct($client)
     {
-        if (! is_object($client) || (! $client instanceof Client && ! $client instanceof HttpClient)) {
+        if (! $client instanceof Client && ! $client instanceof HttpClient) {
             throw new InvalidArgumentException(sprintf(
                 '%s(): Argument #1 ($client) must be of type %s or %s, `%s` given',
                 __METHOD__,
@@ -71,9 +75,14 @@ abstract class AbstractApi implements Api
         return $this->httpClient;
     }
 
+    final protected function isFutureModeEnabled(): bool
+    {
+        return $this->futureMode;
+    }
+
     final public function getLastResponse(): Response
     {
-        return $this->lastResponse !== null ? $this->lastResponse : HttpFactory::makeResponse(0, '', '');
+        return ($this->lastResponse instanceof Response) ? $this->lastResponse : HttpFactory::makeResponse(0, '', '');
     }
 
     /**
@@ -108,7 +117,7 @@ abstract class AbstractApi implements Api
      * @param string $path
      * @param bool   $decodeIfJson
      *
-     * @return string|array|SimpleXMLElement|false
+     * @return string|array<mixed>|SimpleXMLElement|false
      */
     protected function get($path, $decodeIfJson = true)
     {
@@ -238,14 +247,17 @@ abstract class AbstractApi implements Api
     protected function isNotNull($var)
     {
         return
-            false !== $var &&
-            null !== $var &&
-            '' !== $var &&
-            !((is_array($var) || is_object($var)) && empty($var));
+            false !== $var
+            && null !== $var
+            && '' !== $var
+            && (!is_array($var) && !is_object($var) || !empty($var));
     }
 
     /**
-     * @return array
+     * @param array<mixed> $defaults
+     * @param array<mixed> $params
+     *
+     * @return array<mixed>
      */
     protected function sanitizeParams(array $defaults, array $params)
     {
@@ -262,10 +274,10 @@ abstract class AbstractApi implements Api
      * @deprecated v2.2.0 Use `retrieveData()` instead
      * @see AbstractApi::retrieveData()
      *
-     * @param string $endpoint API end point
-     * @param array  $params   optional parameters to be passed to the api (offset, limit, ...)
+     * @param string       $endpoint API end point
+     * @param array<mixed> $params   optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false elements found or error message or false
+     * @return array<mixed>|string|false elements found or error message or false
      */
     protected function retrieveAll($endpoint, array $params = [])
     {
@@ -288,16 +300,16 @@ abstract class AbstractApi implements Api
      * Retrieves as many elements as you want of a given endpoint (even if the
      * total number of elements is greater than 100).
      *
-     * @param string $endpoint API end point
-     * @param array  $params   optional query parameters to be passed to the api (offset, limit, ...)
+     * @param string       $endpoint API end point
+     * @param array<mixed> $params   optional query parameters to be passed to the api (offset, limit, ...)
      *
      * @throws SerializerException if response body could not be converted into array
      *
-     * @return array elements found
+     * @return array<mixed> elements found
      */
     protected function retrieveData(string $endpoint, array $params = []): array
     {
-        if (empty($params)) {
+        if ($params === []) {
             $this->lastResponse = $this->getHttpClient()->request(HttpFactory::makeRequest(
                 'GET',
                 strval($endpoint),
@@ -317,18 +329,21 @@ abstract class AbstractApi implements Api
 
         $returnData = [];
 
-        $limit = $params['limit'];
+        // Redmine max limit is 100,
+        // @see https://www.redmine.org/projects/redmine/wiki/Rest_api#Collection-resources-and-pagination
+        $redmineLimit = 100;
+        $requestedLimit = $remaininglimit = $params['limit'];
         $offset = $params['offset'];
 
-        while ($limit > 0) {
-            if ($limit > 100) {
-                $_limit = 100;
-                $limit -= 100;
+        while ($remaininglimit > 0) {
+            if ($remaininglimit > $redmineLimit) {
+                $realLimit = $redmineLimit;
+                $remaininglimit -= $redmineLimit;
             } else {
-                $_limit = $limit;
-                $limit = 0;
+                $realLimit = $remaininglimit;
+                $remaininglimit = 0;
             }
-            $params['limit'] = $_limit;
+            $params['limit'] = $realLimit;
             $params['offset'] = $offset;
 
             $this->lastResponse = $this->getHttpClient()->request(HttpFactory::makeRequest(
@@ -341,16 +356,34 @@ abstract class AbstractApi implements Api
 
             $returnData = array_merge_recursive($returnData, $newDataSet);
 
-            $offset += $_limit;
+            // After the first request we know the total_count for this endpoint
+            // so lets use the total_count to correct $requestedLimit to save us
+            // from making unnecessary requests
+            // e.g. total_count = 5 and $requestedLimit = 500 will make only 1 request instead of 2
+            if (isset($newDataSet['total_count']) && $newDataSet['total_count'] < $requestedLimit) {
+                $requestedLimit = $remaininglimit = (int) $newDataSet['total_count'];
+
+                if ($remaininglimit > $redmineLimit) {
+                    $realLimit = $redmineLimit;
+                    $remaininglimit -= $redmineLimit;
+                } else {
+                    $realLimit = $remaininglimit;
+                    $remaininglimit = 0;
+                }
+            }
+
+            $offset += $realLimit;
 
             if (
-                empty($newDataSet) || !isset($newDataSet['limit']) || (
-                    isset($newDataSet['offset']) &&
-                    isset($newDataSet['total_count']) &&
-                    $newDataSet['offset'] >= $newDataSet['total_count']
+                $newDataSet === []
+                || !isset($newDataSet['limit'])
+                || (
+                    isset($newDataSet['offset'])
+                    && isset($newDataSet['total_count'])
+                    && $newDataSet['offset'] >= $newDataSet['total_count']
                 )
             ) {
-                $limit = 0;
+                $remaininglimit = 0;
             }
         }
 
@@ -364,7 +397,7 @@ abstract class AbstractApi implements Api
      * @see \Redmine\Serializer\XmlSerializer::createFromArray()
      *
      * @param SimpleXMLElement $xml    XML Element the custom fields are attached to
-     * @param array            $fields array of fields to attach, each field needs name, id and value set
+     * @param array<mixed>     $fields array of fields to attach, each field needs name, id and value set
      *
      * @return SimpleXMLElement $xml
      *
@@ -411,6 +444,8 @@ abstract class AbstractApi implements Api
      * returns the last response body as array.
      *
      * @throws SerializerException if response body could not be converted into array
+     *
+     * @return array<mixed>
      */
     private function getResponseAsArray(Response $response): array
     {
@@ -435,7 +470,7 @@ abstract class AbstractApi implements Api
     private function handleClient(Client $client): HttpClient
     {
         return new class ($client) implements HttpClient {
-            private $client;
+            private Client $client;
 
             public function __construct(Client $client)
             {
@@ -471,12 +506,16 @@ abstract class AbstractApi implements Api
 
         if (false !== strpos($path, '/uploads.json') || false !== strpos($path, '/uploads.xml')) {
             return 'application/octet-stream';
-        } elseif ('json' === substr($tmp['path'], -4)) {
-            return 'application/json';
-        } elseif ('xml' === substr($tmp['path'], -3)) {
-            return 'application/xml';
-        } else {
-            return '';
         }
+
+        if ('json' === substr($tmp['path'], -4)) {
+            return 'application/json';
+        }
+
+        if ('xml' === substr($tmp['path'], -3)) {
+            return 'application/xml';
+        }
+
+        return '';
     }
 }

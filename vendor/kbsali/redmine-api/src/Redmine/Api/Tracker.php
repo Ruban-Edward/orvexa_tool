@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 
 /**
  * Listing trackers.
@@ -15,20 +19,57 @@ use Redmine\Exception\UnexpectedResponseException;
  */
 class Tracker extends AbstractApi
 {
-    private $trackers = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
 
-    private $trackerNames = null;
+    /**
+     * @var null|array<mixed>
+     */
+    private ?array $trackers = null;
+
+    /**
+     * @var null|array<int,string>
+     */
+    private ?array $trackerNames = null;
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see Group::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List trackers.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Trackers#GET
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of trackers found
+     * @return array<mixed> list of trackers found
      */
     final public function list(array $params = []): array
     {
@@ -67,16 +108,15 @@ class Tracker extends AbstractApi
      *
      * @deprecated v2.4.0 Use list() instead.
      * @see Tracker::list()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Trackers#GET
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of trackers found or error message or false
+     * @return array<mixed>|string|false list of trackers found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
             $this->trackers = $this->list($params);
@@ -85,7 +125,7 @@ class Tracker extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -103,13 +143,13 @@ class Tracker extends AbstractApi
      *
      * @param bool $forceUpdate to force the update of the trackers var
      *
-     * @return array list of trackers (id => name)
+     * @return array<mixed> list of trackers (id => name)
      */
     public function listing($forceUpdate = false)
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
-        return $this->doListing($forceUpdate);
+        return $this->doListing((bool) $forceUpdate);
     }
 
     /**
@@ -124,7 +164,7 @@ class Tracker extends AbstractApi
      */
     public function getIdByName($name)
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
         $arr = $this->doListing(false);
 
@@ -135,9 +175,12 @@ class Tracker extends AbstractApi
         return $arr[(string) $name];
     }
 
-    private function doListing(bool $forceUpdate)
+    /**
+     * @return array<mixed>
+     */
+    private function doListing(bool $forceUpdate): array
     {
-        if (empty($this->trackers) || $forceUpdate) {
+        if ($forceUpdate || $this->trackers === null) {
             $this->trackers = $this->list();
         }
 

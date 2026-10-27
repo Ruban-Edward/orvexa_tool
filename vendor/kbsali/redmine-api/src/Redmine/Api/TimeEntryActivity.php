@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 
 /**
  * Listing time entry activities.
@@ -15,18 +19,55 @@ use Redmine\Exception\UnexpectedResponseException;
  */
 class TimeEntryActivity extends AbstractApi
 {
-    private $timeEntryActivities = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
 
-    private $timeEntryActivityNames = null;
+    /**
+     * @var null|array<mixed>
+     */
+    private ?array $timeEntryActivities = null;
+
+    /**
+     * @var null|array<string>
+     */
+    private ?array $timeEntryActivityNames = null;
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see TimeEntryActivity::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List time entry activities.
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of time entry activities found
+     * @return array<mixed> list of time entry activities found
      */
     final public function list(array $params = []): array
     {
@@ -66,13 +107,13 @@ class TimeEntryActivity extends AbstractApi
      * @deprecated v2.4.0 Use list() instead.
      * @see TimeEntryActivity::list()
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of time entry activities found or error message or false
+     * @return array<mixed>|string|false list of time entry activities found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
             $this->timeEntryActivities = $this->list($params);
@@ -81,7 +122,7 @@ class TimeEntryActivity extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -99,11 +140,11 @@ class TimeEntryActivity extends AbstractApi
      *
      * @param bool $forceUpdate to force the update of the statuses var
      *
-     * @return array list of time entry activities (id => name)
+     * @return array<string,int> list of time entry activities (name => id)
      */
     public function listing($forceUpdate = false)
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
         return $this->doListing((bool) $forceUpdate);
     }
@@ -120,7 +161,7 @@ class TimeEntryActivity extends AbstractApi
      */
     public function getIdByName($name)
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listNames()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listNames()` instead.', E_USER_DEPRECATED);
 
         $arr = $this->doListing(false);
 
@@ -131,9 +172,12 @@ class TimeEntryActivity extends AbstractApi
         return $arr[(string) $name];
     }
 
-    private function doListing(bool $forceUpdate)
+    /**
+     * @return array<string,int>
+     */
+    private function doListing(bool $forceUpdate): array
     {
-        if (empty($this->timeEntryActivities) || $forceUpdate) {
+        if ($forceUpdate || $this->timeEntryActivities === null) {
             $this->timeEntryActivities = $this->list();
         }
 

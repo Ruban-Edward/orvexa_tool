@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>support/compiled/css/tippy.css">
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>support/extensions/flatpickr/flatpickr.min.css">
 
-    <?php if(isset($view)){
-        echo "<link rel='stylesheet' href='"  . CSS_PATH . $view .  ".css'>";
+    <?php if (isset($view) && is_file(FCPATH . 'assets/css/' . $view . '.css')) {
+        echo "<link rel='stylesheet' href='" . CSS_PATH . $view . ".css'>";
     } ?>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/app-theme.css?v=15">
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-pro.css?v=1">
+    <link rel="preload" href="<?= ASSERT_PATH ?>assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-ui.css?v=1">
    
     <script src="<?=ASSERT_PATH?>assets/js/dashboard/exceljs.min.js"> </script>
 
@@ -25,9 +27,6 @@
     <script src="<?= ASSERT_PATH ?>support/static/js/initTheme.js"></script>
     <script>document.documentElement.setAttribute('data-bs-theme', 'light');</script>
     <script src="<?= ASSERT_PATH ?>support/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script src="<?= ASSERT_PATH ?>support/compiled/js/app.js"></script>
-    <script src="<?= ASSERT_PATH ?>support/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script src="<?= ASSERT_PATH ?>support/compiled/js/app.js"></script>
 
     
     <script src="<?= ASSERT_PATH ?>support/compiled/js/popper.js"></script>

@@ -18,7 +18,6 @@ use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\DeprecatedFixerInterface;
 use PhpCsFixer\FixerConfiguration\FixerOptionInterface;
-use PhpCsFixer\FixerDefinition\CodeSampleInterface;
 use PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface;
 use PhpCsFixer\FixerDefinition\VersionSpecificCodeSampleInterface;
 use PhpCsFixer\FixerNameValidator;
@@ -38,6 +37,8 @@ use PHPUnit\Framework\TestCase;
  *
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  * @author John Paul E. Balandan, CPA <paulbalandan@gmail.com>
+ *
+ * @deprecated v3.26.0
  */
 abstract class AbstractCustomFixerTestCase extends TestCase
 {
@@ -162,8 +163,6 @@ abstract class AbstractCustomFixerTestCase extends TestCase
             self::assertIsInt($counter);
 
             ++$counter;
-            self::assertInstanceOf(CodeSampleInterface::class, $sample, \sprintf('[%s] Sample #%d must be an instance of "%s".', $fixerName, $counter, CodeSampleInterface::class));
-
             $code = $sample->getCode();
             self::assertNotEmpty($code, \sprintf('[%s] Code provided by sample #%d must not be empty.', $fixerName, $counter));
             self::assertSame("\n", substr($code, -1), \sprintf('[%s] Sample #%d must end with linebreak', $fixerName, $counter));
@@ -334,6 +333,7 @@ abstract class AbstractCustomFixerTestCase extends TestCase
 
     private function getLinter(): LinterInterface
     {
+        /** @var null|CachingLinter $linter */
         static $linter = null;
 
         if (null === $linter) {

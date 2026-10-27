@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\PathSerializer;
-use SimpleXMLElement;
 
 /**
  * Attachment details.
@@ -18,6 +21,37 @@ use SimpleXMLElement;
  */
 class Attachment extends AbstractApi
 {
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see Attachment::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
+
     /**
      * Get extended information about an attachment.
      *
@@ -25,7 +59,9 @@ class Attachment extends AbstractApi
      *
      * @param int $id the attachment number
      *
-     * @return array|false|string information about the attachment as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the attachment as array or false|string on error
      */
     public function show($id)
     {
@@ -35,6 +71,24 @@ class Attachment extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -52,10 +106,10 @@ class Attachment extends AbstractApi
      *
      * @see https://www.redmine.org/projects/redmine/wiki/Rest_Attachments#PATCH
      *
-     * @param int $id the attachment id
-     * @param array $params available $params:
-     *   - filename: filename of the attachment
-     *   - description: new description of the attachment
+     * @param int          $id     the attachment id
+     * @param array<mixed> $params available $params:
+     *                             - filename: filename of the attachment
+     *                             - description: new description of the attachment
      *
      * @throws SerializerException if $params contains invalid values
      * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response
@@ -108,8 +162,8 @@ class Attachment extends AbstractApi
      * available $params :
      * - filename: filename of the attachment
      *
-     * @param string $attachment the attachment content
-     * @param array  $params     optional parameters to be passed to the api
+     * @param string       $attachment the attachment content
+     * @param array<mixed> $params     optional parameters to be passed to the api
      *
      * @return string information about the attachment
      */
@@ -122,7 +176,17 @@ class Attachment extends AbstractApi
             $attachment,
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+
+        if ($this->lastResponse->getStatusCode() !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -141,6 +205,17 @@ class Attachment extends AbstractApi
             '/attachments/' . urlencode(strval($id)) . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 }

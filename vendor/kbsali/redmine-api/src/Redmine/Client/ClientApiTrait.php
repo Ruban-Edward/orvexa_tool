@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Client;
 
 use Redmine\Api;
+use Redmine\Api\AbstractApi;
 use Redmine\Exception\InvalidApiNameException;
 
 /**
@@ -12,29 +15,37 @@ use Redmine\Exception\InvalidApiNameException;
  */
 trait ClientApiTrait
 {
+    /**
+     * @var array<AbstractApi>
+     */
     private array $apiInstances = [];
 
+    private bool $futureMode = false;
+
+    /**
+     * @var array<string,class-string>
+     */
     private array $apiClassnames = [
-        'attachment' => 'Attachment',
-        'group' => 'Group',
-        'custom_fields' => 'CustomField',
-        'issue' => 'Issue',
-        'issue_category' => 'IssueCategory',
-        'issue_priority' => 'IssuePriority',
-        'issue_relation' => 'IssueRelation',
-        'issue_status' => 'IssueStatus',
-        'membership' => 'Membership',
-        'news' => 'News',
-        'project' => 'Project',
-        'query' => 'Query',
-        'role' => 'Role',
-        'time_entry' => 'TimeEntry',
-        'time_entry_activity' => 'TimeEntryActivity',
-        'tracker' => 'Tracker',
-        'user' => 'User',
-        'version' => 'Version',
-        'wiki' => 'Wiki',
-        'search' => 'Search',
+        'attachment' => \Redmine\Api\Attachment::class,
+        'group' => \Redmine\Api\Group::class,
+        'custom_fields' => \Redmine\Api\CustomField::class,
+        'issue' => \Redmine\Api\Issue::class,
+        'issue_category' => \Redmine\Api\IssueCategory::class,
+        'issue_priority' => \Redmine\Api\IssuePriority::class,
+        'issue_relation' => \Redmine\Api\IssueRelation::class,
+        'issue_status' => \Redmine\Api\IssueStatus::class,
+        'membership' => \Redmine\Api\Membership::class,
+        'news' => \Redmine\Api\News::class,
+        'project' => \Redmine\Api\Project::class,
+        'query' => \Redmine\Api\Query::class,
+        'role' => \Redmine\Api\Role::class,
+        'search' => \Redmine\Api\Search::class,
+        'time_entry' => \Redmine\Api\TimeEntry::class,
+        'time_entry_activity' => \Redmine\Api\TimeEntryActivity::class,
+        'tracker' => \Redmine\Api\Tracker::class,
+        'user' => \Redmine\Api\User::class,
+        'version' => \Redmine\Api\Version::class,
+        'wiki' => \Redmine\Api\Wiki::class,
     ];
 
     /**
@@ -48,10 +59,36 @@ trait ClientApiTrait
         if (isset($this->apiInstances[$name])) {
             return $this->apiInstances[$name];
         }
-        $class = 'Redmine\Api\\' . $this->apiClassnames[$name];
-        $this->apiInstances[$name] = new $class($this);
+        $class = $this->apiClassnames[$name];
+        $this->apiInstances[$name] = $class::fromHttpClient($this);
+
+        if ($this->futureMode) {
+            self::enableFutureModeOnApi($this->apiInstances[$name]);
+        }
 
         return $this->apiInstances[$name];
+    }
+
+    /**
+     * Throw an `UnexpectedResponseException` on unexpected response status codes.
+     *
+     * The mode applies to all APIs of this client, including APIs already returned by `getApi()`.
+     */
+    public function enableFutureMode(): void
+    {
+        $this->futureMode = true;
+
+        foreach ($this->apiInstances as $api) {
+            self::enableFutureModeOnApi($api);
+        }
+    }
+
+    private static function enableFutureModeOnApi(AbstractApi $api): void
+    {
+        // Set the private property without adding a public method to AbstractApi
+        \Closure::bind(static function (AbstractApi $api): void {
+            $api->futureMode = true;
+        }, null, AbstractApi::class)($api);
     }
 
     private function isUploadCall(string $path): bool

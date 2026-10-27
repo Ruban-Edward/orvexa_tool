@@ -39,8 +39,6 @@ class CronExpression
      * on construct
      *
      * @param string $timezone The global timezone for all tasks
-     *
-     * @return void
      */
     public function __construct(?string $timezone = null)
     {
@@ -145,7 +143,7 @@ class CronExpression
         assert(ctype_digit($currentTime));
 
         // Handle repeating times (i.e. /5 or */5 for every 5 minutes)
-        if (strpos($time, '/') !== false) {
+        if (str_contains($time, '/')) {
             $period = substr($time, strpos($time, '/') + 1) ?: '';
 
             if ($period === '' || ! ctype_digit($period)) {
@@ -156,7 +154,7 @@ class CronExpression
         }
 
         // Handle ranges (1-5)
-        if (strpos($time, '-') !== false) {
+        if (str_contains($time, '-')) {
             $items         = [];
             [$start, $end] = explode('-', $time);
 

@@ -11,7 +11,7 @@ This document is a technical overview of the repository as inspected. It is inte
 | Area | Technology | Evidence in repository |
 |---|---|---|
 | Application framework | CodeIgniter 4 | `composer.json`, `app/Config`, `spark` |
-| Language/runtime | PHP 8.1+; Docker image uses PHP 8.3-FPM | `composer.json`, `Dockerfile` |
+| Language/runtime | PHP 8.1+; Docker image uses PHP 8.5.12-FPM | `composer.json`, `Dockerfile` |
 | Database | MySQL 8.3 | `docker-compose.yml` |
 | Web server | Nginx 1.27 Alpine | `docker-compose.yml`, `docker/nginx/default.conf` |
 | Database driver | MySQLi / PDO MySQL extension | `app/Config/Database.php`, `Dockerfile` |

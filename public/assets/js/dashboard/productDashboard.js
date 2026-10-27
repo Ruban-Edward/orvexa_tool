@@ -681,7 +681,9 @@ if(typeof productDashboard !== 'undefined') {
 // Variables for pagination
 let currentPage = 1;
 const rowsPerPage = 10;
-const totalRows = data.length;
+// `data` is only rendered by the view when the product has sprints
+const sprintRows = typeof data !== 'undefined' && Array.isArray(data) ? data : [];
+const totalRows = sprintRows.length;
 const totalPages = Math.ceil(totalRows / rowsPerPage);
 
 // Function to display rows based on current page
@@ -691,7 +693,7 @@ function displayTableRows(page) {
 
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    const paginatedItems = data.slice(start, end);
+    const paginatedItems = sprintRows.slice(start, end);
 
     paginatedItems.forEach(sprint => {
         const row = `<tr>
@@ -712,14 +714,14 @@ function displayTableRows(page) {
 }
 
 // Event listeners for pagination controls
-document.getElementById('prevPage').addEventListener('click', () => {
+document.getElementById('prevPage')?.addEventListener('click', () => {
     if (currentPage > 1) {
         currentPage--;
         displayTableRows(currentPage);
     }
 });
 
-document.getElementById('nextPage').addEventListener('click', () => {
+document.getElementById('nextPage')?.addEventListener('click', () => {
     if (currentPage < totalPages) {
         currentPage++;
         displayTableRows(currentPage);
@@ -753,7 +755,9 @@ function getBadgeText(status, completed) {
 }
 
 // Initial display
-displayTableRows(currentPage);
+if (sprintRows.length && document.getElementById('pageInfo')) {
+    displayTableRows(currentPage);
+}
 
 
 }

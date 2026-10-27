@@ -239,7 +239,7 @@ if (typeof m_tasks !== 'undefined') {
             <div class='col-md-12'>
                 <div class='card cls-task-card'>
                     <div class='row card-header cls-task-header'>
-                        <div class='col-sm-2 card-text cls-task-header-details'>Redmine ID: ${task.external_id}</div>
+                        <div class='col-sm-2 card-text cls-task-header-details'>Redmine ID: ${task.external_id ?? '—'}</div>
                         <div class='col-sm-7 card-title cls-task-header-details'>${task.task_title}</div>
                         <div class='col-sm-3 cls-action-buttons'>
                             <span class='cls-priority priority-box ${task.priority.toLowerCase()}'>${task.priority}</span>

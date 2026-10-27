@@ -698,6 +698,10 @@ class SprintController extends BaseController
      {
           // Get the sprint ID from the GET request
           $viewData['id'] = $this->request->getGet('sprint_id');
+          // This is a data endpoint; a direct browser hit goes to the sprint page instead
+          if (! $this->request->isAJAX()) {
+               return $this->redirectToSprintView($viewData['id']);
+          }
           // Fetch sprint planning details from the model
           $viewData['sprintPlanning'] = $this->sprintModel->getSprintPlanning($viewData['id']);
           $i = 0;
@@ -706,13 +710,20 @@ class SprintController extends BaseController
                $viewData['sprintPlanning'][$i]['endDate'] = $this->formatDate($value1['endDate']);
                $i++;
           }
-          // Send JSON response if the request is AJAX
-          if ($this->request->isAJAX()) {
-               return $this->response->setJSON(['success' => true, 'data' => $viewData['sprintPlanning']]);
-          }
-          // Render the sprint view template with the prepared data
-          return $this->template_view('sprint/sprintView', $viewData = null);
+          return $this->response->setJSON(['success' => true, 'data' => $viewData['sprintPlanning']]);
      }
+     /**
+      * Redirects a non-AJAX request for a sprint data endpoint to the sprint view (or list).
+      */
+     private function redirectToSprintView($sprintId)
+     {
+          if (is_numeric($sprintId)) {
+               return redirect()->to(ASSERT_PATH . 'sprint/navsprintview?sprint_id=' . (int) $sprintId);
+          }
+
+          return redirect()->to(ASSERT_PATH . 'sprint/sprintlist');
+     }
+
      /**
       * Fetches and returns the sprint review details for a specific sprint.
       *
@@ -799,6 +810,10 @@ class SprintController extends BaseController
      {
           // Get the sprint ID from the GET request
           $viewData['id'] = $this->request->getGet('sprint_id');
+          // This is a data endpoint; a direct browser hit goes to the sprint page instead
+          if (! $this->request->isAJAX()) {
+               return $this->redirectToSprintView($viewData['id']);
+          }
 
           // Fetch sprint retrospective details from the model
           $notesInput = ['notes_type' => $this->sprintModelConfig->retrospectiveNotes, 'reference' => $viewData['id']];
@@ -834,12 +849,7 @@ class SprintController extends BaseController
                'data' => array($viewData['sprintRetrospective'], $viewData['sprintRetrospectiveDate']) // Assuming $tasks is an array of data to send
           ];
 
-          // Send JSON response if the request is AJAX
-          if ($this->request->isAJAX()) {
-               return $this->response->setJSON($response);
-          }
-          // Render the sprint view template with the prepared data
-          return $this->template_view('sprint/sprintView', $viewData = null);
+          return $this->response->setJSON($response);
      }
 
      /**

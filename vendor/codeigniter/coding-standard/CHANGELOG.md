@@ -4,6 +4,67 @@ All notable changes to this library will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.9.2](https://github.com/CodeIgniter/coding-standard/compare/v1.9.1...v1.9.2) - 2026-04-12
+
+- Bump to php-cs-fixer v3.95
+- Security harden the workflows
+
+## [v1.9.1](https://github.com/CodeIgniter/coding-standard/compare/v1.9.0...v1.9.1) - 2026-02-17
+
+- Set `other` option of `phpdoc_line_span` to `null` for now
+
+## [v1.9.0](https://github.com/CodeIgniter/coding-standard/compare/v1.8.9...v1.9.0) - 2026-02-17
+
+- Add new fixers of php-cs-fixer v3.93
+- Enable new options of `phpdoc_line_span`
+- Rename configs
+- Bump to PHP 8.2
+- Cleanup workflows
+
+## [v1.8.9](https://github.com/CodeIgniter/coding-standard/compare/v1.8.8...v1.8.9) - 2025-12-12
+
+- Bump dependencies
+
+## [v1.8.8](https://github.com/CodeIgniter/coding-standard/compare/v1.8.7...v1.8.8) - 2025-09-27
+
+- Add but disable`phpdoc_tag_no_named_arguments`
+- Add `modifier_keywords` fixer
+- Add `@const` to `phpdoc_no_alias_tag`
+
+## [v1.8.7](https://github.com/CodeIgniter/coding-standard/compare/v1.8.6...v1.8.7) - 2025-07-18
+
+- Enable `no_useless_printf` fixer
+
+## [v1.8.6](https://github.com/CodeIgniter/coding-standard/compare/v1.8.5...v1.8.6) - 2025-07-05
+
+- Bump to php-cs-fixer v3.76
+- Test on PHP 8.4
+
+## [v1.8.5](https://github.com/CodeIgniter/coding-standard/compare/v1.8.4...v1.8.5) - 2025-05-02
+
+- Enable `import_symbols` option in `fully_qualified_strict_types`
+- Fix `staticMethod.internalClass` error
+
+## [v1.8.4](https://github.com/CodeIgniter/coding-standard/compare/v1.8.3...v1.8.4) - 2025-02-23
+
+- Update badges
+- Enable `php_unit_data_provider_method_order` fixer
+- Bump php-cs-fixer to v3.70
+- Enable `modernize_stripos` option in `modernize_strpos` fixer
+
+## [v1.8.3](https://github.com/CodeIgniter/coding-standard/compare/v1.8.2...v1.8.3) - 2025-01-13
+
+- Bump to php-cs-fixer v3.67 and cs-config v3.25
+- Add `@phpstan-ignore` to ignored tags of `comment_to_phpdoc`
+- Add `general_attribute_remove` fixer
+- Enable `get_class_to_class_keyword`
+- Add more elements to `trailing_comma_in_multiline`
+
+## [v1.8.2](https://github.com/CodeIgniter/coding-standard/compare/v1.8.1...v1.8.2) - 2024-11-20
+
+- Add `case` to ordered_class_elements order
+- Bump to phpstan 2.0
+
 ## [v1.8.1](https://github.com/CodeIgniter/coding-standard/compare/v1.8.0...v1.8.1) - 2024-08-05
 
 - Add `keep_annotations` option for `php_unit_attributes`

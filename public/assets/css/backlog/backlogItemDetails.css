@@ -76,7 +76,7 @@
 
 /* .nav-tabs .nav-link {
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--ox-brand-600);
   font-size: 1rem;
   padding: 5px 20px; 
   border-radius: 5px;
@@ -90,7 +90,7 @@
 
 /* .nav-tabs .nav-link.active {
   background-color: var(--PRIMARYCOLOR);
-  color: #4A90E2;
+  color: var(--ox-brand-600);
 } */
 
 .button-secondary.active{
@@ -121,12 +121,12 @@
   border-radius: 5px;
 }
 .btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--ox-brand-600);
+  border-color: var(--ox-brand-600);
 }
 
 /* .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: var(--ox-brand-800);
   border-color: #004085;
 } */
 
@@ -141,7 +141,7 @@ ul li {
 }
 
 .header {
-  background-color: #3949AB;
+  background-color: var(--ox-brand-700);
   padding: 0px 20px;
   border-radius: 10px 10px 0 0;
 }
@@ -190,7 +190,7 @@ ul li {
 
 .button {
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--ox-brand-600);
   font-size: 1rem;
   padding: 5px 20px; /* Adjusted padding for better alignment */
   border-radius: 5px;
@@ -203,7 +203,7 @@ ul li {
 }
 
 /* .button:hover {
-  background-color: #357ABD; 
+  background-color: var(--ox-brand-600); 
 } */
 
 
@@ -224,7 +224,7 @@ ul li {
 
 .date-filter button {
   /* padding: 5px 15px;
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   color: white;
   border: none;
   border-radius: 4px; */
@@ -263,14 +263,14 @@ ul li {
 
 .activity-item .time {
   width: 70px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
 }
 
 .activity-item .icon {
   width: 30px;
   height: 30px;
-  background-color: #3949AB;
+  background-color: var(--ox-brand-700);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -302,3 +302,83 @@ ul li {
   margin: 0px auto;
 } */
 /*
+/* --------------------------------------------------------------------------
+   Orvexa UI refresh (scoped under body.ox-app so it wins over the theme layers)
+   -------------------------------------------------------------------------- */
+body.ox-app #main .header {
+  align-items: center;
+  padding: 10px 16px 10px 20px;
+  border: 1px solid var(--ox-border);
+  border-bottom: 0;
+  border-radius: var(--ox-radius-lg) var(--ox-radius-lg) 0 0;
+  background: var(--ox-surface) !important;
+}
+
+body.ox-app #main .header .heading {
+  margin: 0;
+}
+
+body.ox-app #main .header .heading h4 {
+  margin: 0;
+  color: var(--ox-ink) !important;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+body.ox-app #main .header .mt-2 {
+  margin: 0 !important;
+}
+
+body.ox-app #main .header .nav-tabs {
+  align-items: center;
+  gap: 8px;
+  border: 0;
+}
+
+body.ox-app #main .header-links a {
+  margin-right: 4px;
+  color: var(--ox-brand-700) !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.ox-app #main .header-links a:hover {
+  text-decoration: underline;
+}
+
+body.ox-app #main .header .button-secondary.active {
+  border-color: var(--ox-brand-200) !important;
+  background: var(--ox-brand-50) !important;
+  color: var(--ox-brand-800) !important;
+}
+
+body.ox-app #main #myTabContent {
+  padding: 8px 20px 20px;
+  border: 1px solid var(--ox-border);
+  border-radius: 0 0 var(--ox-radius-lg) var(--ox-radius-lg);
+  background: var(--ox-surface);
+  box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main #myTabContent .row-content {
+  padding: 10px 0;
+}
+
+body.ox-app #main #myTabContent .h5 {
+  margin: 0;
+  color: var(--ox-muted) !important;
+  font-size: 13px !important;
+  font-weight: 500;
+}
+
+body.ox-app #main #myTabContent .fs-6 {
+  color: var(--ox-ink);
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
+body.ox-app #main #myTabContent hr {
+  margin: 0 !important;
+  border-color: var(--ox-border);
+  opacity: 1;
+}

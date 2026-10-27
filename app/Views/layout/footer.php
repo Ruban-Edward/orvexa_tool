@@ -1,225 +1,142 @@
-<!-- Footer -->
-<footer>
-        
-</footer>
-
-
-<script src="<?= ASSERT_PATH ?>support/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-<script src="<?= ASSERT_PATH ?>support/compiled/js/app.js"></script>
-<script src="<?= ASSERT_PATH ?>support/extensions/jquery/jquery.min.js"></script>
+<script src="<?= ASSERT_PATH ?>assets/js/bootstrap/js/bootstrap.min.js"></script>
 <script src="<?= ASSERT_PATH ?>support/extensions/flatpickr/flatpickr.min.js"></script>
 <script src="<?= ASSERT_PATH ?>support/static/js/pages/date-picker.js"></script>
 
 <!-- Include the Chart.js DataLabels plugin -->
 <script src="<?= ASSERT_PATH ?>support/extensions/chart.js/chartjs-plugin-datalabels.js"></script>
 
-<!-- Need: Apexcharts -->
-<!-- <script src="<?= ASSERT_PATH ?>support/extensions/apexcharts/apexcharts.min.js"></script>
-<script src="<?= ASSERT_PATH ?>support/static/js/pages/dashboard.js"></script> -->
 <script>
     // Pass the base URL from PHP to JavaScript
     var baseUrl = '<?php echo base_url(); ?>';
 
-    // document.getElementById('sidebar-toggle').addEventListener('click', function() {
-    //     document.getElementById('sidebar').classList.toggle('active');
-    // });
-    var homebtn = document.getElementById('home-icon');
-    var menuitems = document.getElementById('menu-items');
-    if (homebtn) {
-        homebtn.addEventListener('click', () => {
-            menuitems.classList.toggle('show');
-        });
-    }
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 500) {
-            menuitems.style.display = 'block';
-        } else {
-            menuitems.style.display = 'none';
-        }
-    })
-    document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('hamburger-icon');
-    const desktopSidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    const hasSubItems = document.querySelectorAll('.has-sub');
+    // ---------------------------------------------------------------------
+    // Sidebar: collapsible on desktop (remembered), off-canvas on small screens
+    // ---------------------------------------------------------------------
+    (function () {
+        const body = document.body;
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.getElementById('hamburger-icon');
+        const collapseBtn = document.getElementById('sidebar-toggle');
+        const isDesktop = () => window.innerWidth >= 1200;
 
-    const closeMobileSidebar = () => {
-        sidebar?.classList.remove('active');
-        document.body.classList.remove('sidebar-mobile-open');
-        document.querySelector('.sidebar-backdrop')?.remove();
-        sidebarToggle?.setAttribute('aria-expanded', 'false');
-        sidebarToggle?.setAttribute('aria-label', 'Open navigation');
-    };
-
-    const toggleMobileSidebar = () => {
-        const isOpen = !document.body.classList.contains('sidebar-mobile-open');
-        sidebar?.classList.toggle('active', isOpen);
-        document.body.classList.toggle('sidebar-mobile-open', isOpen);
-        sidebarToggle?.setAttribute('aria-expanded', String(isOpen));
-        sidebarToggle?.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
-
-        if (isOpen) {
-            const backdrop = document.createElement('div');
-            backdrop.className = 'sidebar-backdrop';
-            backdrop.addEventListener('click', closeMobileSidebar, { once: true });
-            document.body.appendChild(backdrop);
-        } else {
+        const closeMobileSidebar = () => {
+            body.classList.remove('sidebar-mobile-open');
             document.querySelector('.sidebar-backdrop')?.remove();
-        }
-    };
+            hamburger?.setAttribute('aria-expanded', 'false');
+        };
 
-    sidebarToggle?.addEventListener('click', toggleMobileSidebar);
-    sidebarToggle?.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            toggleMobileSidebar();
-        }
-    });
-
-    desktopSidebarToggle?.addEventListener('click', () => {
-        const isExpanded = document.body.classList.toggle('sidebar-collapsed') === false;
-        desktopSidebarToggle.setAttribute('aria-expanded', String(isExpanded));
-        desktopSidebarToggle.setAttribute('aria-label', isExpanded ? 'Collapse navigation' : 'Expand navigation');
-        desktopSidebarToggle.setAttribute('title', isExpanded ? 'Collapse navigation' : 'Expand navigation');
-    });
-
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && document.body.classList.contains('sidebar-mobile-open')) {
-            closeMobileSidebar();
-        }
-    });
-
-    window.addEventListener('resize', () => {
-        if (window.innerWidth >= 1200) {
-            closeMobileSidebar();
-        } else {
-            document.body.classList.remove('sidebar-collapsed');
-            desktopSidebarToggle?.setAttribute('aria-expanded', 'true');
-        }
-    });
-
-    // Handle active state and dropdowns
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            const isSubMenu = this.nextElementSibling && this.nextElementSibling.classList.contains('submenu');
-            
-            if (isSubMenu) {
-                e.preventDefault();
-                const item = this.parentElement;
-                item.classList.toggle('open');
-                // A menu group is a container, not a destination page.
-                this.classList.remove('active');
-                this.removeAttribute('aria-current');
-                this.parentElement.classList.remove('active');
-            } else {
-                sidebarLinks.forEach(l => l.classList.remove('active'));
-                document.querySelectorAll('#sidebar .sidebar-item').forEach(item => item.classList.remove('active'));
-                this.classList.add('active');
-                this.closest('.sidebar-item')?.classList.add('active');
+        const openMobileSidebar = () => {
+            body.classList.add('sidebar-mobile-open');
+            hamburger?.setAttribute('aria-expanded', 'true');
+            if (!document.querySelector('.sidebar-backdrop')) {
+                const backdrop = document.createElement('div');
+                backdrop.className = 'sidebar-backdrop';
+                backdrop.addEventListener('click', closeMobileSidebar, { once: true });
+                body.appendChild(backdrop);
             }
+        };
+
+        const syncCollapseButton = () => {
+            const collapsed = body.classList.contains('sidebar-collapsed');
+            collapseBtn?.setAttribute('aria-expanded', String(!collapsed));
+            collapseBtn?.setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation');
+        };
+
+        hamburger?.addEventListener('click', () => {
+            body.classList.contains('sidebar-mobile-open') ? closeMobileSidebar() : openMobileSidebar();
         });
 
-        // Set active class based on current URL
-        if (link.getAttribute('href') === window.location.pathname) {
-            link.classList.add('active');
-        }
-    });
-
-    // Close other dropdowns when opening a new one
-    hasSubItems.forEach(item => {
-        item.querySelector('.sidebar-link').addEventListener('click', function() {
-            hasSubItems.forEach(subItem => {
-                if (subItem !== item) {
-                    subItem.classList.remove('open');
-                }
-            });
-        });
-    });
-});
-    document.addEventListener('DOMContentLoaded', function() {
-    const sidebarLinks = document.querySelectorAll('#sidebar .sidebar-link, #sidebar .submenu-item a');
-    const normalizePath = path => path.replace(/\/+$/, '') || '/';
-    const currentPath = normalizePath(window.location.pathname);
-
-    sidebarLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && href !== '#') {
-            const targetPath = normalizePath(new URL(href, window.location.origin).pathname);
-            const selected = currentPath === targetPath;
-            const nestedRoute = targetPath !== '/' && currentPath.startsWith(`${targetPath}/`);
-
-            if (selected || nestedRoute) {
-                link.classList.add('active');
-                if (selected) {
-                    link.setAttribute('aria-current', 'page');
-                }
-
-                link.closest('.sidebar-item')?.classList.add('active');
-                const parentMenu = link.closest('.has-sub');
-                if (parentMenu) {
-                    parentMenu.classList.add('active', 'open');
-                    const parentLink = parentMenu.querySelector(':scope > .sidebar-link');
-                    parentLink?.classList.add('active');
-                    parentLink?.setAttribute('aria-expanded', 'true');
-                }
-            }
-        }
-
-        link.addEventListener('click', function(event) {
-            const isSubMenu = this.nextElementSibling?.classList.contains('submenu');
-            if (isSubMenu) {
-                event.preventDefault();
-                this.classList.remove('active');
+        collapseBtn?.addEventListener('click', () => {
+            if (!isDesktop()) {
+                closeMobileSidebar();
                 return;
             }
-            sidebarLinks.forEach(sidebarLink => sidebarLink.classList.remove('active'));
-            document.querySelectorAll('#sidebar .sidebar-item').forEach(item => item.classList.remove('active'));
-            this.classList.add('active');
-            this.closest('.sidebar-item')?.classList.add('active');
+            const collapsed = body.classList.toggle('sidebar-collapsed');
+            try { localStorage.setItem('ox-sidebar-collapsed', collapsed ? '1' : '0'); } catch (e) {}
+            syncCollapseButton();
         });
-    });
-});
 
-    // for appling tooltip
-    // $(function () {
-    //     $('[data-toggle="tooltip"]').tooltip()
-    // });
-
-    $(document).ready(function() {
-        $('#notification-icon').click(function() {
-            $('#meetingDetails').toggleClass('active');
-            //call the notification function when the notification icon is clicked
-            notification();
-        });
-        // call the notification function
-        notification();
-        $('#close-sidebar').click(function() {
-            $('#meetingDetails').removeClass('active');
-        });
-        
-        $(document).click(function(event) {
-            var $target = $(event.target);
-            if (!$target.closest('#notification-icon').length && 
-                !$target.closest('#meetingDetails').length && 
-                $('#meetingDetails').hasClass('active')) {
-                $('#meetingDetails').removeClass('active');
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                closeMobileSidebar();
+                document.getElementById('meetingDetails')?.classList.remove('active');
             }
         });
+
+        window.addEventListener('resize', () => {
+            if (isDesktop()) {
+                closeMobileSidebar();
+            } else {
+                body.classList.remove('sidebar-collapsed');
+            }
+            syncCollapseButton();
+        });
+
+        // Keep the active item visible in a long navigation list
+        sidebar?.querySelector('.ox-sidenav-link.is-active')?.scrollIntoView({ block: 'nearest' });
+        syncCollapseButton();
+    })();
+
+    // ---------------------------------------------------------------------
+    // Notifications popover
+    // ---------------------------------------------------------------------
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, ch => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[ch]);
+    }
+
+    function isValidUrl(string) {
+        try {
+            const url = new URL(string);
+            return url.protocol === 'http:' || url.protocol === 'https:';
+        } catch (_) {
+            return false;
+        }
+    }
+
+    $(document).ready(function() {
+        $('#notification-icon').on('click', function(event) {
+            event.stopPropagation();
+            const panel = $('#meetingDetails').toggleClass('active');
+            $(this).attr('aria-expanded', panel.hasClass('active') ? 'true' : 'false');
+            if (panel.hasClass('active')) {
+                notification();
+            }
+        });
+        notification();
+
+        $(document).on('click', function(event) {
+            const $target = $(event.target);
+            if (!$target.closest('#notification-icon').length &&
+                !$target.closest('#meetingDetails').length &&
+                $('#meetingDetails').hasClass('active')) {
+                $('#meetingDetails').removeClass('active');
+                $('#notification-icon').attr('aria-expanded', 'false');
+            }
+        });
+
+        $('#meeting-filters').on('change', 'input[name="meetingFilter"]', function() {
+            const showMeetings = this.value === 'meetings';
+            $('.meeting').toggle(showMeetings);
+            $('.upcoming-sprints-list').toggle(!showMeetings);
+        });
     });
 
-    function notification(){
+    function notification() {
         $.ajax({
-            url: baseUrl+'notification/notificationDetails', 
+            url: baseUrl + 'notification/notificationDetails',
             method: 'GET',
-            dataType: 'json', // Expect a JSON response
+            dataType: 'json',
+            global: false, // background refresh: don't trigger the page loader
             success: function(response) {
-                // Assuming the response contains a "meetings" array
-                if (response && response.meetings.length > 0 || response.sprints.length > 0) {
+                const meetings = response?.meetings ?? [];
+                const sprints = response?.sprints ?? [];
+                if (meetings.length > 0 || sprints.length > 0) {
                     $('#meeting-filters').show();
-                    renderMeetings(response);
+                    renderMeetings(meetings, sprints);
                     $('#no-meetings-message').hide();
-                    $('#meetings').click();
+                    $('#meetings').prop('checked', true).trigger('change');
                 } else {
                     $('#meeting-list').empty();
                     $('#meeting-count').remove();
@@ -228,300 +145,135 @@
                 }
             },
             error: function() {
-                $('#no-meetings-message').text('Failed to load meetings').show();
+                $('#no-meetings-message').find('span').text('Failed to load notifications');
+                $('#no-meetings-message').show();
             }
         });
     }
 
-        // for render the user meetings
-        function renderMeetings(response) {
-            let noMeetings = true;
-            let noSprints = true;
-            const count = `<span class="badge badge-pill badge-danger" id="meeting-count">
-                            ${(response.meetings.length+response.sprints.length)>9?'9+':`${response.meetings.length+response.sprints.length}`}
-                        </span>`;
+    // Render the user's meetings and upcoming scrum activities
+    function renderMeetings(meetings, sprints) {
+        const total = meetings.length + sprints.length;
+        $('#meeting-count').remove();
+        $('#notification-icon').append(`<span class="badge" id="meeting-count">${total > 9 ? '9+' : total}</span>`);
 
-            $('#notification-icon').append(count);
-        
-            $('#meeting-list').empty();
+        const list = $('#meeting-list').empty();
 
-            response.meetings.forEach(function(meeting) {
-                // check that is an valid url or not 
-                const isValid = isValidUrl(meeting.meeting_link);
+        meetings.forEach(function(meeting) {
+            const link = meeting.meeting_link;
+            const linkHtml = !link
+                ? '<div class="meeting-link text-muted">No link found</div>'
+                : isValidUrl(link)
+                    ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener" class="meeting-link">${escapeHtml(link)}</a>`
+                    : `<div class="meeting-link">${escapeHtml(link)}</div>`;
 
-                let meetingHtml = `
-                    <li>
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong class="text-dark">
-                                    ${formatDate(meeting.meeting_start_date)} ${timeFormat(meeting.meeting_start_time)}
-                                </strong>
-                            </div>
-                            <div class="text-dark">
-                                ${meeting.product_name}
-                            </div>
+            list.append(`
+                <li class="meeting ox-notice">
+                    <div class="ox-notice-icon"><i class="icon-video" aria-hidden="true"></i></div>
+                    <div class="ox-notice-body">
+                        <div class="ox-notice-title">${escapeHtml(meeting.meeting_type_name)}</div>
+                        <div class="ox-notice-meta">
+                            ${escapeHtml(formatDate(meeting.meeting_start_date))} · ${escapeHtml(timeFormat(meeting.meeting_start_time))}
+                            · ${escapeHtml(meeting.product_name)}
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <div class="text-dark">
-                                ${meeting.meeting_type_name}
-                            </div>
-                            <i class="fas fa-chevron-down toggle-icon d-flex justify-content-center"></i>
+                        ${linkHtml}
+                    </div>
+                </li>`);
+        });
+
+        sprints.forEach(function(sprint) {
+            list.append(`
+                <li class="upcoming-sprints-list ox-notice">
+                    <a class="ox-notice-link" href="${baseUrl}sprint/navsprintview?sprint_id=${encodeURIComponent(sprint.sprint_id)}">
+                        <div class="ox-notice-icon"><i class="icon-zap" aria-hidden="true"></i></div>
+                        <div class="ox-notice-body">
+                            <div class="ox-notice-title">${escapeHtml(sprint.activity)} · Sprint ${escapeHtml(sprint.sprint_version)}</div>
+                            <div class="ox-notice-meta">${escapeHtml(formatDate(sprint.start_date))} · ${escapeHtml(sprint.product_name)}</div>
                         </div>
-                        <div class="row">
-                            ${meeting.meeting_link ? 
-                                isValid ? 
-                                    `<a href="${meeting.meeting_link}" target="_blank" class="meeting-link">${meeting.meeting_link}</a>`:
-                                    `<div class="meeting-link text-dark">${meeting.meeting_link}</div>` :
-                                '<div class="meeting-link text-dark">No link found</div>'
-                            }
-                        </div>
-                    </li>
-                `;
-                noMeetings = false;
-                $('#meeting-list').append(`<div class="meeting">${meetingHtml}</div>`);
-            });
+                    </a>
+                </li>`);
+        });
 
-            response.sprints.forEach(function(sprint) {
+        if (meetings.length === 0) {
+            list.append('<li class="meeting ox-empty-inline"><i class="icon-calendar" aria-hidden="true"></i><span>No meetings scheduled</span></li>');
+        }
+        if (sprints.length === 0) {
+            list.append('<li class="upcoming-sprints-list ox-empty-inline"><i class="icon-zap" aria-hidden="true"></i><span>No upcoming scrum events</span></li>');
+        }
+    }
 
-                let sprintHtml = `
-                    <form action="${baseUrl}sprint/navsprintview" class="pointer" method="get">
-                        <input type="text" name="sprint_id" value="${sprint.sprint_id}" hidden>
-                        <button type="submit" class="cls-upcoming-sprint-btn">
-                            <li>
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <strong class="text-dark cls-no-underline">
-                                            ${formatDate(sprint.start_date)} 
-                                        </strong>
-                                    </div>
-                                    <div class="text-dark">
-                                        ${sprint.product_name}
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <div class="text-dark">
-                                        Sprint ${sprint.sprint_version}
-                                    </div>
-                                    <div class="text-dark">
-                                        ${sprint.activity}
-                                    </div>
-                                </div>
-                            </li>
-                        </button>
-                    </form>
-                `;
-                noSprints = false;
-                $('#meeting-list').append(`<div class="upcoming-sprints-list">${sprintHtml}</div>`);
-            });
+    // ---------------------------------------------------------------------
+    // Loading feedback: overlay for slow page navigation, slim top bar for AJAX
+    // ---------------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', function() {
+        const loader = document.getElementById('loader');
+        const progress = document.getElementById('oxProgress');
+        let loaderTimer = null;
 
-            if (noMeetings) {
-                $('#meeting-list').append('<div class="card mt-3 p-2 meeting"><h6 class="text-center text-dark">No meetings available</h6></div>');
-            }
+        const showLoader = () => {
+            // Only show the overlay if navigation is actually slow
+            clearTimeout(loaderTimer);
+            loaderTimer = setTimeout(() => loader?.classList.remove('is-loaded'), 350);
+        };
+        const hideLoader = () => {
+            clearTimeout(loaderTimer);
+            loader?.classList.add('is-loaded');
+        };
+        hideLoader();
 
-            if (noSprints) {
-                $('#meeting-list').append('<div class="card mt-3 p-2 upcoming-sprints-list"><h6 class="text-center text-dark">No upcoming scrum available</h6></div>');
-            }
-
-            // for showing and  hiding meeting links
-            document.querySelectorAll('.toggle-icon').forEach(icon => {
-                icon.addEventListener('click', () => {
-                    const link = icon.closest('li').querySelector('.meeting-link');
-                    if (link.style.display === 'none' || link.style.display === '') {
-                        link.style.display = 'block';
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-up');
-                    } else {
-                        link.style.display = 'none';
-                        icon.classList.remove('fa-chevron-up');
-                        icon.classList.add('fa-chevron-down');
-                    }
+        document.querySelectorAll('a[href], form').forEach(element => {
+            if (element.matches('a[href]')) {
+                element.addEventListener('click', event => {
+                    const href = element.getAttribute('href');
+                    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || !href || href.startsWith('#') ||
+                        href.startsWith('javascript:') || element.target === '_blank' || element.hasAttribute('data-bs-toggle') ||
+                        element.hasAttribute('download')) return;
+                    showLoader();
                 });
-            });
-        }
-
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-
-    $(".navbar-nav li .notification-icon").click(function(){
-    $(this).parents('.navbar-nav').find(".panel").slideDown(200)
-})
-
-        //remove the loader when the DOM loaded
-        document.addEventListener("DOMContentLoaded", function() {
-            const loader = document.getElementById('loader');
-            if (loader) {
-                loader.classList.add('is-loaded');
-            }
-
-            const showLoader = () => loader?.classList.remove('is-loaded');
-            const hideLoader = () => loader?.classList.add('is-loaded');
-
-            document.querySelectorAll('a[href], form').forEach(element => {
-                if (element.matches('a[href]')) {
-                    element.addEventListener('click', event => {
-                        const href = element.getAttribute('href');
-                        if (event.defaultPrevented || !href || href.startsWith('#') || href.startsWith('javascript:') || element.target === '_blank' || element.hasAttribute('data-bs-toggle')) return;
-                        showLoader();
-                    });
-                } else {
-                    element.addEventListener('submit', () => showLoader());
-                }
-            });
-
-            window.addEventListener('pageshow', hideLoader);
-            window.addEventListener('beforeunload', showLoader);
-            if (window.jQuery) {
-                $(document).ajaxStart(showLoader).ajaxStop(hideLoader);
-            }
-
-            // Function to remove the base URL from a given path
-            function stripBaseUrl(url, baseUrl) {
-                if (url.startsWith(baseUrl)) {
-                    return url.slice(baseUrl.length);
-                }
-                return url;
-            }
-
-            // // Get the current URL path
-            // var currentPath = window.location.href;
-
-            // // Get the current URL path with menu
-            // var currentPathMenu = stripBaseUrl(currentPath, baseUrl).split('/')[0];
-            
-            // // Get all the sidebar links
-            // var sidebarLinks = document.querySelectorAll(".sidebar-link");
-
-            // // Loop through the links and add the 'active' class to the matching link
-            // sidebarLinks.forEach(function(link) {
-            //     // Ignore links with href="#"
-            //     if (link.getAttribute('href') === '#') {
-            //         return;
-            //     }
-            //     // Get the pathname from the link's href attribute and strip the base URL
-            //     var linkPath = stripBaseUrl(link.href, baseUrl).split('/')[0];
-
-            //     if (linkPath === currentPathMenu) {
-            //         link.classList.add("active");
-            //     }
-            // });
-
-            // // Handle submenu items
-            // var submenuLinks = document.querySelectorAll(".submenu-item a");
-            // submenuLinks.forEach(function(link) {
-            //     if (link.href === currentPath) {
-            //     // Open the submenu if an item inside is active
-            //     link.closest(".has-sub").classList.add("open");
-            //     link.closest(".submenu").classList.add("submenu-open");
-            //     link.closest(".has-sub").querySelector(".sidebar-link").classList.add("active");
-            //     link.closest(".submenu-item").classList.add("active");
-            //     }
-            // });
-
-        });
-
-        // date format
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-
-            const day = date.getDate().toString().padStart(2, '0');
-            const month = date.toLocaleString('en-US', { month: 'short' });
-            const year = date.getFullYear();
-
-            return `${day}, ${month} ${year}`;
-        }
-
-        // time format
-        function timeFormat(timeString) {
-            // Split the time string into hours, minutes, and seconds
-            const [hours, minutes] = timeString.split(':').map(Number);
-
-            // Determine AM or PM
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-
-            // Convert hours to 12-hour format
-            let hours12 = hours % 12;
-            hours12 = hours12 ? hours12 : 12; // the hour '0' should be '12'
-
-            return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-        }
-
-
-        // for apply filter for today and tomorrow meetings
-        let today = document.getElementById('meetings');
-        let upcomingSprints = document.getElementById('upcoming-scrum');
-
-        meetings = document.getElementsByClassName('meeting');
-        upcomingSprintsList = document.getElementsByClassName('upcoming-sprints-list');
-
-        today.addEventListener('click',function(){
-            for (let element of meetings) {
-                element.style.display = "block";
-            }
-            for (let element of upcomingSprintsList) {
-                element.style.display = "none";
+            } else {
+                element.addEventListener('submit', event => {
+                    if (!event.defaultPrevented) showLoader();
+                });
             }
         });
 
+        window.addEventListener('pageshow', hideLoader);
+        if (window.jQuery) {
+            $(document).ajaxStart(() => progress?.classList.add('is-active'))
+                .ajaxStop(() => progress?.classList.remove('is-active'));
+        }
+    });
 
-        upcomingSprints.addEventListener('click',function(){
-            for (let element of meetings) {
-                element.style.display = 'none'
-            }
-            for (let element of upcomingSprintsList) {
-                element.style.display = "block";
-            }
-        });
+    // date format
+    function formatDate(dateString) {
+        const date = new Date(dateString);
 
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const year = date.getFullYear();
 
-        // Fetch view
-        // var baseUrl = '<?= base_url() ?>';
-        // $(document).ready(function() {
-            
-        //     $('.view').on('click', function() {
+        return `${day}, ${month} ${year}`;
+    }
 
-        //         event.preventDefault();
-        //         let productId = $(this).data('product-id');
-        //         console.log(productId);
-                
-        //         if(typeof productId !== 'undefined'){
-        //             console.log(productId);
-        //             $.ajax({
-        //                 url: baseUrl + 'dashboard/showProductDashboard',
-        //                 type: 'POST',
-        //                 dataType: 'json',
-        //                 data: {
-        //                     product_id: productId
-        //                 },
-        //                 success: function(response) {
-        //                     // console.log(response.html);
-        //                     $('#content').empty().html(response.html);
-        //                     // $('#content').empty().append($(response.html));
-        //                     ppnew();
-                           
-        //                 },
-        //                 error: function(xhr, status, error) {
-        //                     // Handle errors
-        //                     console.error('An error occurred: ' + error);
-        //                 }
-        //             });
-        //         }
-        //     });
-        // });
+    // time format
+    function timeFormat(timeString) {
+        // Split the time string into hours, minutes, and seconds
+        const [hours, minutes] = timeString.split(':').map(Number);
 
-        
+        // Determine AM or PM
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        // Convert hours to 12-hour format
+        let hours12 = hours % 12;
+        hours12 = hours12 ? hours12 : 12; // the hour '0' should be '12'
+
+        return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    }
 </script>
 
-<!-- <script src="<?= ASSERT_PATH ?>dist/js/bundle.min.js"></script> -->
-
-<?php if (isset($view)) {
+<?php if (isset($view) && is_file(FCPATH . 'assets/js/' . $view . '.js')) {
     echo "<script type='text/javascript' src='" . JS_PATH . $view . ".js'></script>";
-} ?> 
+} ?>
 </body>
 
 </html>

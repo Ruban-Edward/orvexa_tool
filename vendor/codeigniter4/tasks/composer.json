@@ -18,16 +18,14 @@
     ],
     "homepage": "https://github.com/codeigniter4/tasks",
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.2",
         "ext-json": "*",
-        "codeigniter4/settings": "^2.0"
+        "codeigniter4/settings": "^2.0",
+        "codeigniter4/queue": "^1.0"
     },
     "require-dev": {
-        "codeigniter/coding-standard": "1.7.*",
-        "codeigniter4/devkit": "^1.0",
-        "codeigniter4/framework": "^4.1",
-        "phpunit/phpunit": "^9.6",
-        "rector/rector": "1.2.2"
+        "codeigniter4/devkit": "^1.3",
+        "codeigniter4/framework": "^4.3"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

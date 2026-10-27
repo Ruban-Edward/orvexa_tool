@@ -157,9 +157,9 @@
         <div class="cls-filterHeaderContainer">
             <div class="page">
                 <div class="date-filter" style="display:flex;">
-                    <label for="" style="margin-top: 7px;color:#3949AB;font-weight:bold">Start Date:</label>
+                    <label for="" style="margin-top: 7px;color:#117a45;font-weight:bold">Start Date:</label>
                     <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input" id="startDate" name="startDate" accept="" placeholder="YYYY-MM-DD" readonly="readonly" required style="margin: 0px 10px;width: auto;">
-                    <label for="" style="margin-top: 7px;color:#3949AB;font-weight:bold">End Date:</label>
+                    <label for="" style="margin-top: 7px;color:#117a45;font-weight:bold">End Date:</label>
                     <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input" id="endDate" name="startDate" accept="" placeholder="YYYY-MM-DD" readonly="readonly" required style="margin: 0px 10px;width: auto;">
                     <button id="filterButton" class="btn primary_button" style="
                         height: 37px;

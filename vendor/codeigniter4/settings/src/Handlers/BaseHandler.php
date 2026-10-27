@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CodeIgniter\Settings\Handlers;
 
 use RuntimeException;
@@ -26,13 +28,26 @@ abstract class BaseHandler
      *
      * @param mixed $value
      *
-     * @return void
+     * @throws RuntimeException
+     */
+    public function set(string $class, string $property, $value = null, ?string $context = null): void
+    {
+        throw new RuntimeException('Set method not implemented for current Settings handler.');
+    }
+
+    /**
+     * If the Handler supports saving values, it MAY override this method
+     * to provide optimized batch functionality.
+     *
+     * @param list<array{class: string, property: string, value: mixed}> $settings
      *
      * @throws RuntimeException
      */
-    public function set(string $class, string $property, $value = null, ?string $context = null)
+    public function setMany(array $settings, ?string $context = null): void
     {
-        throw new RuntimeException('Set method not implemented for current Settings handler.');
+        foreach ($settings as $setting) {
+            $this->set($setting['class'], $setting['property'], $setting['value'], $context);
+        }
     }
 
     /**
@@ -41,25 +56,46 @@ abstract class BaseHandler
      * Not all Handlers will support writing values.
      * Must throw RuntimeException for any failures.
      *
-     * @return void
-     *
      * @throws RuntimeException
      */
-    public function forget(string $class, string $property, ?string $context = null)
+    public function forget(string $class, string $property, ?string $context = null): void
     {
         throw new RuntimeException('Forget method not implemented for current Settings handler.');
     }
 
     /**
-     * All handlers MUST support flushing all values.
+     * If the Handler supports forgetting values, it MAY override this method
+     * to provide optimized batch functionality.
      *
-     * @return void
+     * @param list<array{class: string, property: string}> $settings
      *
      * @throws RuntimeException
      */
-    public function flush()
+    public function forgetMany(array $settings, ?string $context = null): void
+    {
+        foreach ($settings as $setting) {
+            $this->forget($setting['class'], $setting['property'], $context);
+        }
+    }
+
+    /**
+     * All handlers MUST support flushing all values.
+     *
+     * @throws RuntimeException
+     */
+    public function flush(): void
     {
         throw new RuntimeException('Flush method not implemented for current Settings handler.');
+    }
+
+    /**
+     * All handlers that support deferWrites MUST support this method.
+     *
+     * @throws RuntimeException
+     */
+    public function persistPendingProperties(): void
+    {
+        throw new RuntimeException('PersistPendingProperties method not implemented for current Settings handler.');
     }
 
     /**
@@ -73,7 +109,7 @@ abstract class BaseHandler
     protected function prepareValue($value)
     {
         if (is_bool($value)) {
-            return (int) $value;
+            return $value ? '1' : '0';
         }
 
         if (is_array($value) || is_object($value)) {
@@ -156,7 +192,7 @@ abstract class BaseHandler
                     if ('"' !== substr($data, -2, 1)) {
                         return false;
                     }
-                } elseif (false === strpos($data, '"')) {
+                } elseif (! str_contains($data, '"')) {
                     return false;
                 }
 

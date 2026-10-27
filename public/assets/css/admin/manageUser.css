@@ -29,7 +29,7 @@ table {
 }
 
 .header_color th {
-  background-color: #d3e3f3;
+  background-color: var(--ox-brand-50);
   /* color: white; */
 }
 
@@ -73,7 +73,7 @@ tbody {
 }
 
 /* .content-header {
-    color: #3949ab;
+    color: var(--ox-brand-700);
     font-size: 2rem;
 } */
 
@@ -92,15 +92,15 @@ tbody {
 }
 
 .cls-user {
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
 }
 
 .cls-user:hover {
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
 }
 
 .modal-header {
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   color: white;
   border-bottom: none;
 }
@@ -112,7 +112,7 @@ tbody {
 }
 
 .modal-body label {
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: 700;
   font-size: 0.9rem;
 }
@@ -126,7 +126,7 @@ tbody {
 }
 
 .btn-group .btn-view {
-  background-color: #4a90e2;
+  background-color: var(--ox-brand-600);
   color: white;
   font-size: 1rem;
   padding: 5px 20px;
@@ -147,8 +147,8 @@ tbody {
   cursor: pointer;
   margin-top: 5px;
   background-color: white !important;
-  border: 1px solid #08479f !important;
-  color: #08479f !important;
+  border: 1px solid var(--ox-brand-700) !important;
+  color: var(--ox-brand-700) !important;
   border-radius: 2rem !important;
 }
 
@@ -164,8 +164,8 @@ tbody {
     height: 34px;
     background-color: white;
     
-    border: 1px solid #08479F;
-    color: #08479F;
+    border: 1px solid var(--ox-brand-700);
+    color: var(--ox-brand-700);
     border-radius: 2rem;
     padding: 5px 20px;
     transition: all 0.3s ease;
@@ -188,7 +188,7 @@ tbody {
   font-size: 16px;
   background-color: transparent;
   font-weight: 700;
-  color: #08479f;
+  color: var(--ox-brand-700);
   width: 0;
   padding: 0;
   transition: all 0.3s ease;
@@ -205,12 +205,12 @@ tbody {
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: #08479f;
+  color: var(--ox-brand-700);
   font-weight: 700;
 }
 
 /* .search-button:hover {
-    background-color: #357ABD;
+    background-color: var(--ox-brand-600);
     color:white
 } */
 
@@ -229,7 +229,7 @@ tbody {
 }
 
 .search-input::placeholder {
-  color: #08479f;
+  color: var(--ox-brand-700);
   opacity: 1;
 }
 
@@ -265,7 +265,7 @@ ul {
 }
 
 .button {
-  background-color: #4a90e2;
+  background-color: var(--ox-brand-600);
   color: white;
   font-size: 1rem;
   padding: 5px 20px;

@@ -1,5 +1,5 @@
 .header-elementsprintview {
-  background-color: #2939ab;
+  background-color: var(--ox-brand-700);
   padding: 0.5rem;
   display: flex;
   align-items: center;
@@ -32,7 +32,7 @@
 }
 
 .modal-header {
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
 }
 
 .header-elementsprintview ul li {
@@ -147,7 +147,7 @@
 .pagebutton {
   height: 25px;
   width: 25px;
-  background-color: #2939AB;
+  background-color: var(--ox-brand-700);
   color: white;
   border-radius: 50%;
   border: none;
@@ -168,7 +168,7 @@
 
 .card-header {
   /* background: linear-gradient(135deg, #6e8efb, #a777e3); */
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   color: white;
   border-radius: 15px 15px 0 0 !important;
   padding: 20px;
@@ -196,7 +196,7 @@
 
 .removeBtnstyle {
   border: none;
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   color: white;
 }
 
@@ -242,7 +242,7 @@
 .label {
   font-weight: bold;
   font-size: 0.9rem;
-  color: #3949AB;
+  color: var(--ox-brand-700);
   margin-bottom: 5px;
 }
 
@@ -285,7 +285,7 @@ table {
 }
 
 .backlog-thead th {
-  color: #3949AB;
+  color: var(--ox-brand-700);
 }
 
 .formElements td {
@@ -456,7 +456,7 @@ font-weight: 700;
 .ds_title {
   margin-top: 1rem;
   margin-bottom: 0px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   text-align: left;
   font-weight: 800;
   font-size: 0.9rem;
@@ -526,7 +526,7 @@ font-weight: 700;
   position: sticky;
   /* Stick main header to the top */
   top: 0;
-  background-color: #007bff;
+  background-color: var(--ox-brand-600);
   color: white;
   padding: 12px 16px;
   font-size: 18px;
@@ -536,7 +536,7 @@ font-weight: 700;
 }
 
 .main-header:hover {
-  background-color: #0056b3;
+  background-color: var(--ox-brand-800);
 }
 
 .sprint-details {
@@ -555,7 +555,7 @@ font-weight: 700;
 
 .sprint-details th {
   background-color: #f2f2f2;
-  color: #3949AB;
+  color: var(--ox-brand-700);
   text-align: center;
 }
 
@@ -595,7 +595,7 @@ font-weight: 700;
 }
 
 .completed {
-  color: #0056b3;
+  color: var(--ox-brand-800);
   background-color: #eaf1fb;
 }
 
@@ -624,7 +624,7 @@ font-weight: 700;
 }
 
 .details>div strong {
-  color: #2939ab;
+  color: var(--ox-brand-700);
   /* Label text color */
   font-weight: bold;
   font-size: 0.9rem;
@@ -652,7 +652,7 @@ font-weight: 700;
 .cons h3,
 .suggestions h3 {
   margin-bottom: 10px;
-  color: #2939ab;
+  color: var(--ox-brand-700);
   /* Header text color */
 }
 
@@ -664,7 +664,7 @@ font-weight: 700;
 .cons,
 .suggestions ul li {
   margin-bottom: 10px;
-  color: #2939ab;
+  color: var(--ox-brand-700);
   font-size: 0.8rem;
 }
 
@@ -674,12 +674,12 @@ font-weight: 700;
 }
 
 .details strong {
-  color: #2939ab;
+  color: var(--ox-brand-700);
   margin-right: 10px;
 }
 
 .details span {
-  color: #2939ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
   font-size: 0.9rem;
 }
@@ -705,7 +705,7 @@ label {
   display: none;
   width: 40px;
   height: 40px;
-  background-color: #007bff;
+  background-color: var(--ox-brand-600);
   color: white;
   border: none;
   border-radius: 50%;
@@ -741,7 +741,7 @@ label {
   font-size: 12px;
   border-radius: 50%;
   font-weight: bold;
-  color: #2939ab;
+  color: var(--ox-brand-700);
   text-align: center;
 }
 
@@ -757,7 +757,7 @@ label {
 
 @media only screen and (max-width: 780px) {
   .header-elementsprintview {
-    background-color: #2939ab;
+    background-color: var(--ox-brand-700);
     padding-top: 1rem;
     padding-bottom: 1rem;
     display: flex;
@@ -769,7 +769,7 @@ label {
 
 @media only screen and (max-width: 1200px) {
   .header-elementsprintview {
-    background-color: #2939ab;
+    background-color: var(--ox-brand-700);
     padding-top: 1rem;
     padding-bottom: 1rem;
     display: flex;
@@ -845,7 +845,7 @@ h1 {
 .data-time {
   font-weight: 500;
   margin-right: 1rem;
-  color: #3498db;
+  color: var(--ox-brand-600);
   width: 70px;
 }
 
@@ -853,7 +853,7 @@ h1 {
   width: 32px;
   height: 32px;
   margin-right: 1rem;
-  background-color: #3498db;
+  background-color: var(--ox-brand-600);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -889,7 +889,7 @@ h1 {
 }
 
 .modal-header {
-  background-color: #3949AB;
+  background-color: var(--ox-brand-700);
 
 }
 
@@ -935,7 +935,7 @@ h1 {
 #datepicker {
   float: right;
   padding: 10px;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   border-radius: 8px;
   font-family: inherit;
 }
@@ -945,14 +945,14 @@ h1 {
 }
 
 .form-group-header {
-  background-color: #3f51b5;
+  background-color: var(--ox-brand-700);
   color: white;
   padding: 10px 15px;
   border-radius: 4px 4px 0 0;
 }
 
 .form-group-content {
-  border: 1px solid #3f51b5;
+  border: 1px solid var(--ox-brand-700);
   padding: 0;
   border-radius: 0 0 4px 4px;
   overflow: hidden;
@@ -992,7 +992,7 @@ textarea::-webkit-scrollbar-thumb:hover {
   gap: 10px;
   margin-top: 10px;
   margin-bottom: 0;
-  color: #25396F;
+  color: var(--ox-brand-700);
 }
 
 .error-container {
@@ -1013,7 +1013,7 @@ textarea::-webkit-scrollbar-thumb:hover {
   display: block;
   margin: 30px auto 0;
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--ox-brand-600);
   font-size: 1rem;
   padding: 5px 15px;
   border-radius: 5px;
@@ -1025,7 +1025,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 .blue-button:hover {
-  background-color: #357ABD;
+  background-color: var(--ox-brand-600);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -1046,7 +1046,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 #date-picker {
   padding: 10px;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   border-radius: 8px;
   font-family: inherit;
 }
@@ -1056,14 +1056,14 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 .form-group-header {
-  background-color: #3f51b5;
+  background-color: var(--ox-brand-700);
   color: white;
   padding: 10px 15px;
   border-radius: 4px 4px 0 0;
 }
 
 .form-group-content {
-  border: 1px solid #3f51b5;
+  border: 1px solid var(--ox-brand-700);
   padding: 0;
   border-radius: 0 0 4px 4px;
   overflow: hidden;
@@ -1085,7 +1085,7 @@ textarea {
   display: flex;
   gap: 10px;
   margin-top: 10px;
-  color: #25396F;
+  color: var(--ox-brand-700);
 }
 
 .error-container {
@@ -1106,7 +1106,7 @@ textarea {
   display: block;
   margin: 30px auto 0;
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--ox-brand-600);
   font-size: 1rem;
   padding: 10px 20px;
   border-radius: 5px;
@@ -1118,7 +1118,7 @@ textarea {
 }
 
 .blue-button:hover {
-  background-color: #357ABD;
+  background-color: var(--ox-brand-600);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -1129,12 +1129,12 @@ textarea {
   background: none;
   border: none;
   font-size: 24px;
-  color: #3f51b5;
+  color: var(--ox-brand-700);
   cursor: pointer;
 }
 
 .mic-button:hover {
-  color: #303f9f;
+  color: var(--ox-brand-700);
 }
 
 .mic-button.recording {
@@ -1148,7 +1148,7 @@ textarea {
 
 .select-selected {
   background-color: white;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   padding: 10px;
   border-radius: 8px;
   cursor: pointer;
@@ -1163,7 +1163,7 @@ textarea {
   left: 0;
   right: 0;
   z-index: 99;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   border-top: none;
   border-radius: 0 0 8px 8px;
   max-height: 200px;
@@ -1189,7 +1189,7 @@ textarea {
   width: calc(100% - 20px);
   padding: 10px;
   margin: 10px;
-  border: 1px solid #3f51b5;
+  border: 1px solid var(--ox-brand-700);
   border-radius: 4px;
   font-family: inherit;
   font-size: 0.7rem;
@@ -1204,7 +1204,7 @@ textarea {
 
 #pagination button {
   padding: 5px 10px;
-  background-color: #3f51b5;
+  background-color: var(--ox-brand-700);
   color: white;
   border: none;
   border-radius: 4px;
@@ -1243,7 +1243,7 @@ textarea {
 
 th {
   background-color: #f2f2f2;
-  color: #2939ab !important;
+  color: var(--ox-brand-700) !important;
   /* Dark blue */
   text-align: center;
   font-size: 0.9rem;
@@ -1294,7 +1294,7 @@ th {
 
 .date-filter button {
   padding: 5px 15px;
-  background-color: #3949ab;
+  background-color: var(--ox-brand-700);
   color: white;
   border: none;
   cursor: pointer;
@@ -1328,14 +1328,14 @@ th {
 
 .activity-item .time {
   width: 70px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
 }
 
 .activity-item .icon {
   width: 30px;
   height: 30px;
-  background-color: #3949AB;
+  background-color: var(--ox-brand-700);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -1407,7 +1407,7 @@ th {
 }
 
 #resetButton:hover {
-  color: #3949AB;
+  color: var(--ox-brand-700);
 }
 
 .history-date {
@@ -1567,7 +1567,7 @@ label {
   border-radius: 50%;
   margin-left: -25px;
   font-weight: bold;
-  color: #2939ab;
+  color: var(--ox-brand-700);
 }
 th{
   font-size: var(--MOBILESMALLHEADER);
@@ -1584,7 +1584,7 @@ th{
 #scrumRetrospectiveForm #date-picker {
   font-size: var(--MOBILETEXTSIZE);
   padding: 1px;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   border-radius: 8px;
   font-family: inherit;
 } 
@@ -1594,18 +1594,18 @@ th{
   margin-top: 10px;
   font-size: var(--MOBILETEXTSIZE);
   margin-bottom: 0;
-  color: #25396F;
+  color: var(--ox-brand-700);
 }
 .input-area .radio-group{
   display: flex;
   gap: 10px;
   margin-top: 10px;
   font-size: var(--MOBILETEXTSIZE);
-  color: #25396F;
+  color: var(--ox-brand-700);
 }
 .select-selected {
   background-color: white;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   padding: 4px;
   border-radius: 8px;
   cursor: pointer;
@@ -1614,7 +1614,7 @@ th{
 #scrumDiaryForm #datepicker {
   float: right;
   padding: 1px;
-  border: 2px solid #3f51b5;
+  border: 2px solid var(--ox-brand-700);
   border-radius: 8px;
   font-size: var(--MOBILETEXTSIZE);
   font-family: inherit;
@@ -1626,7 +1626,7 @@ th{
   background: none;
   border: none;
   font-size: 16px;
-  color: #3f51b5;
+  color: var(--ox-brand-700);
   cursor: pointer;
 }
 .form-select {
@@ -1642,7 +1642,7 @@ th{
 
 .activity-item .time {
   width: 70px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-size: var(--MOBILESMALLHEADER);
   font-weight: bold;
 }
@@ -1677,13 +1677,112 @@ textarea {
   overflow-y: auto;
 }
 .details>div strong {
-  color: #2939ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
   font-size: var(--MOBILESMALLHEADER);
 }
 .details span {
-  color: #2939ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
   font-size: var(--MOBILETEXTSIZE);
 }
+}
+
+/* --------------------------------------------------------------------------
+   Orvexa UI refresh (scoped under body.ox-app so it wins over the theme layers)
+   -------------------------------------------------------------------------- */
+body.ox-app #main .header-elementsprintview {
+  padding: 12px 16px 12px 20px;
+  border: 1px solid var(--ox-border);
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-surface);
+  box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .header-elementsprintview .navbar-brand {
+  padding: 0;
+}
+
+body.ox-app #main .header-elementsprintview .headerName.headerSize {
+  color: var(--ox-ink) !important;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+body.ox-app #main .header-elementsprintview .navbar-nav {
+  flex-direction: row;
+  gap: 8px;
+}
+
+body.ox-app #main .header-elementsprintview ul li {
+  padding: 0;
+}
+
+body.ox-app #main #navbarNavDropdown ul .nav-item a,
+body.ox-app #main #navbarNavDropdown .edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-border-strong);
+  border-radius: var(--ox-radius);
+  background: var(--ox-surface);
+  color: var(--ox-ink) !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main #navbarNavDropdown ul .nav-item > a:has(form) {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+body.ox-app #main #navbarNavDropdown ul .nav-item a:hover,
+body.ox-app #main #navbarNavDropdown .edit:hover {
+  border-bottom-color: var(--ox-border-strong);
+  background: var(--ox-surface-2);
+}
+
+body.ox-app #main .cls-headerIcon {
+  margin: 0;
+  color: var(--ox-muted);
+}
+
+body.ox-app #main .card .card-header .headerName {
+  color: var(--ox-ink) !important;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+body.ox-app #main .card .card-header .headerName i {
+  color: var(--ox-subtle);
+}
+
+body.ox-app #main .sprint-info {
+  gap: 18px 48px;
+  margin-top: 4px;
+}
+
+body.ox-app #main .sprint-info .label {
+  margin-bottom: 4px;
+  color: var(--ox-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+body.ox-app #main .sprint-info .value {
+  color: var(--ox-ink);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+body.ox-app #main .card + .card,
+body.ox-app #main .card.mb-4 {
+  margin-top: 12px !important;
+  margin-bottom: 0 !important;
 }

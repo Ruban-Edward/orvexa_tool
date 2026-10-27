@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\MissingParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 use Redmine\Http\HttpFactory;
 use Redmine\Serializer\JsonSerializer;
 use Redmine\Serializer\PathSerializer;
@@ -21,20 +25,57 @@ use SimpleXMLElement;
  */
 class User extends AbstractApi
 {
-    private $users = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
 
-    private $userLogins = null;
+    /**
+     * @var null|array<mixed>
+     */
+    private ?array $users = null;
+
+    /**
+     * @var null|array<int,string>
+     */
+    private ?array $userLogins = null;
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see User::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List users.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Users#GET
      *
-     * @param array $params to allow offset/limit (and more) to be passed
+     * @param array<mixed> $params to allow offset/limit (and more) to be passed
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of users found
+     * @return array<mixed> list of users found
      */
     final public function list(array $params = []): array
     {
@@ -87,16 +128,15 @@ class User extends AbstractApi
      *
      * @deprecated v2.4.0 Use list() instead.
      * @see User::list()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Users#GET
      *
-     * @param array $params to allow offset/limit (and more) to be passed
+     * @param array<mixed> $params to allow offset/limit (and more) to be passed
      *
-     * @return array|string|false list of users found or error message or false
+     * @return array<mixed>|string|false list of users found or error message or false
      */
     public function all(array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` instead.', E_USER_DEPRECATED);
 
         try {
             $this->users = $this->list($params);
@@ -105,7 +145,7 @@ class User extends AbstractApi
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
@@ -121,16 +161,16 @@ class User extends AbstractApi
      * @deprecated v2.7.0 Use listLogins() instead.
      * @see User::listLogins()
      *
-     * @param bool  $forceUpdate to force the update of the users var
-     * @param array $params      to allow offset/limit (and more) to be passed
+     * @param bool         $forceUpdate to force the update of the users var
+     * @param array<mixed> $params      to allow offset/limit (and more) to be passed
      *
-     * @return array list of users (id => username)
+     * @return int[] list of users (username => id)
      */
     public function listing($forceUpdate = false, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listLogins()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listLogins()` instead.', E_USER_DEPRECATED);
 
-        return $this->doListing($forceUpdate, $params);
+        return $this->doListing((bool) $forceUpdate, $params);
     }
 
     /**
@@ -138,9 +178,9 @@ class User extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Users#usersidformat
      *
-     * @param array $params extra associated data
+     * @param array<mixed> $params extra associated data
      *
-     * @return array current user data
+     * @return array<mixed> current user data
      */
     public function getCurrentUser(array $params = [])
     {
@@ -153,14 +193,14 @@ class User extends AbstractApi
      * @deprecated v2.7.0 Use listLogins() instead.
      * @see User::listLogins()
      *
-     * @param string $username
-     * @param array  $params   to allow offset/limit (and more) to be passed
+     * @param string       $username
+     * @param array<mixed> $params   to allow offset/limit (and more) to be passed
      *
      * @return int|bool
      */
     public function getIdByUsername($username, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . __CLASS__ . '::listLogins()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.7.0, use `' . self::class . '::listLogins()` instead.', E_USER_DEPRECATED);
 
         $arr = $this->doListing(false, $params);
 
@@ -183,17 +223,19 @@ class User extends AbstractApi
      *  - api_key: the API key of the user, visible for admins and for yourself (added in 2.3.0)
      *  - status: a numeric id representing the status of the user, visible for admins only (added in 2.4.0)
      *
-     * @param int|string $id     the user id or `current` for retrieving the user whose credentials are used
-     * @param array      $params extra associated data
+     * @param int|string   $id     the user id or `current` for retrieving the user whose credentials are used
+     * @param array<mixed> $params extra associated data
      *
-     * @return array|false|string information about the user as array or false|string on error
+     * @throws UnexpectedResponseException if the Redmine server delivers an unexpected response (only if future mode is enabled)
+     *
+     * @return array<mixed>|false|string information about the user as array or false|string on error
      */
     public function show($id, array $params = [])
     {
         // set default ones
         $params['include'] = array_unique(
             array_merge(
-                isset($params['include']) ? $params['include'] : [],
+                $params['include'] ?? [],
                 [
                     'memberships',
                     'groups',
@@ -208,6 +250,24 @@ class User extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+
+        if ($this->isFutureModeEnabled()) {
+            if ($this->lastResponse->getStatusCode() !== 200 || $body === '') {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            try {
+                $data = JsonSerializer::createFromString($body)->getNormalized();
+            } catch (SerializerException $e) {
+                throw UnexpectedResponseException::create($this->lastResponse, $e);
+            }
+
+            if (!is_array($data)) {
+                throw UnexpectedResponseException::create($this->lastResponse);
+            }
+
+            return $data;
+        }
 
         if ('' === $body) {
             return false;
@@ -225,7 +285,7 @@ class User extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Users#POST
      *
-     * @param array $params the new user data
+     * @param array<mixed> $params the new user data
      *
      * @throws MissingParameterException Missing mandatory parameters
      *
@@ -258,6 +318,19 @@ class User extends AbstractApi
         ));
 
         $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 201) {
+            if (!$this->isFutureModeEnabled()) {
+                if ($body === '') {
+                    return $body;
+                }
+
+                return new SimpleXMLElement($body);
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
 
         if ('' !== $body) {
             return new SimpleXMLElement($body);
@@ -271,7 +344,8 @@ class User extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_Users#PUT
      *
-     * @param int $id the user id
+     * @param int          $id     the user id
+     * @param array<mixed> $params
      *
      * @return string|false
      */
@@ -293,7 +367,18 @@ class User extends AbstractApi
             XmlSerializer::createFromArray(['user' => $params])->getEncoded(),
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
     /**
@@ -312,18 +397,34 @@ class User extends AbstractApi
             '/users/' . $id . '.xml',
         ));
 
-        return $this->lastResponse->getContent();
+        $body = $this->lastResponse->getContent();
+        $statusCode = $this->lastResponse->getStatusCode();
+
+        if ($statusCode !== 204) {
+            if (!$this->isFutureModeEnabled()) {
+                return $body;
+            }
+
+            throw UnexpectedResponseException::create($this->lastResponse);
+        }
+
+        return $body;
     }
 
-    private function doListing(bool $forceUpdate, array $params)
+    /**
+     * @param array<mixed> $params
+     *
+     * @return int[]
+     */
+    private function doListing(bool $forceUpdate, array $params): array
     {
-        if (empty($this->users) || $forceUpdate) {
+        if ($forceUpdate || $this->users === null) {
             $this->users = $this->list($params);
         }
 
         $ret = [];
 
-        if (is_array($this->users) && isset($this->users['users'])) {
+        if (array_key_exists('users', $this->users)) {
             foreach ($this->users['users'] as $e) {
                 $ret[$e['login']] = (int) $e['id'];
             }

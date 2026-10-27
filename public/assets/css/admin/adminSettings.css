@@ -47,7 +47,7 @@
 }
 
 .form-label {
-  color: #3949ab;
+  color: var(--ox-brand-700);
   font-weight: bold;
 }
 
@@ -114,7 +114,7 @@
 .import {
   background-color: transparent;
   border: none;
-  color: #3949ab;
+  color: var(--ox-brand-700);
   margin-right: 20px;
 }
 
@@ -127,7 +127,7 @@
   border: none;
   float: right;
   font-size: 20px;
-  color: #3949ab;
+  color: var(--ox-brand-700);
 }
 
 .close {
@@ -193,4 +193,115 @@ h6, .h6 {
 .productUser select, .productUserMember select, .deleteRole select, .pokerInput input, .addRoleInput input, .holidayTitleInput input, .holidayDate input, .parentProduct select {
   width: 75%;
 }
+}
+
+/* --------------------------------------------------------------------------
+   Orvexa UI refresh
+   -------------------------------------------------------------------------- */
+body.ox-app #main .cls-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+body.ox-app #main .cls-sidebar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 10px;
+  width: 300px;
+  flex-shrink: 0;
+  height: auto;
+  padding: 12px;
+  overflow: visible;
+  border: 1px solid var(--ox-border);
+  border-radius: var(--ox-radius-lg);
+  box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .cls-btn {
+  margin: 0;
+  padding: 0;
+}
+
+body.ox-app #main .cls-settings {
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 104px;
+  border: 1px solid var(--ox-border) !important;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-surface) !important;
+  color: var(--ox-ink) !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease !important;
+}
+
+body.ox-app #main .cls-settings:hover {
+  border-color: var(--ox-border-strong) !important;
+  background: var(--ox-surface-2) !important;
+}
+
+body.ox-app #main .cls-settings h2 {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border-radius: var(--ox-radius);
+  background: var(--ox-surface-3);
+  color: var(--ox-muted) !important;
+  font-size: 20px;
+}
+
+body.ox-app #main .cls-settings h6,
+body.ox-app #main .cls-settings h4,
+body.ox-app #main .cls-settings p,
+body.ox-app #main .cls-settings span {
+  margin: 0;
+  color: var(--ox-ink) !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.ox-app #main .cls-settings.show-tick {
+  border-color: var(--ox-brand-300) !important;
+  background: var(--ox-brand-50) !important;
+  box-shadow: 0 0 0 1px var(--ox-brand-300);
+}
+
+body.ox-app #main .cls-settings.show-tick h2 {
+  background: var(--ox-surface);
+  color: var(--ox-brand-700) !important;
+}
+
+body.ox-app #main .cls-sidebarContent {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--ox-border);
+  border-radius: var(--ox-radius-lg);
+  box-shadow: var(--ox-shadow-xs);
+}
+
+body.ox-app #main .cls-sidebarContent h2,
+body.ox-app #main .cls-sidebarContent h3 {
+  color: var(--ox-ink) !important;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+  body.ox-app #main .cls-main {
+    flex-direction: column;
+  }
+
+  body.ox-app #main .cls-sidebar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+}
+
+body.ox-app #main .cls-settings .tick-icon {
+  display: none;
 }

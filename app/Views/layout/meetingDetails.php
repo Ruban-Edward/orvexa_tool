@@ -1,16 +1,14 @@
-<div class="d-flex justify-content-between">
-    <h5 class="content-header d-flex align-items-center justify-content-between mb-2">
-        Notifications
-        <i class="icon-Notification" id="notification-icon"></i>
-    </h5>
-    <div id="meeting-filters" class="pb-2" style="display:none;">
-        <input type="radio" class="form-check-input meet-select-radio pointer" id="meetings" name="meetingFilter" value="meetings" checked>
-        <label for="meetings" class="fw-bold meet-select pointer">Meetings</label>
-        <input type="radio" class="form-check-input meet-select-radio pointer" id="upcoming-scrum" name="meetingFilter" value="upcoming-scrum">
-        <label for="upcoming-scrum" class="fw-bold meet-select pointer">Scrum</label>
+<div class="ox-popover-head">
+    <h5 class="content-header">Notifications</h5>
+    <div id="meeting-filters" class="ox-segmented" style="display:none;">
+        <input type="radio" class="meet-select-radio" id="meetings" name="meetingFilter" value="meetings" checked>
+        <label for="meetings" class="meet-select">Meetings</label>
+        <input type="radio" class="meet-select-radio" id="upcoming-scrum" name="meetingFilter" value="upcoming-scrum">
+        <label for="upcoming-scrum" class="meet-select">Scrum</label>
     </div>
 </div>
 <ul id="meeting-list"></ul>
-<div id="no-meetings-message" class="card mt-3 p-2" style="display:none;">
-    <h6 class="text-center text-dark">No notification available</h6>
+<div id="no-meetings-message" class="ox-empty-inline" style="display:none;">
+    <i class="icon-bell-off" aria-hidden="true"></i>
+    <span>You're all caught up</span>
 </div>

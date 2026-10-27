@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Redmine\Api;
 
+use Redmine\Client\Client;
 use Redmine\Exception;
 use Redmine\Exception\InvalidParameterException;
 use Redmine\Exception\SerializerException;
 use Redmine\Exception\UnexpectedResponseException;
+use Redmine\Http\HttpClient;
 
 /**
  * @see   http://www.redmine.org/projects/redmine/wiki/Rest_News
@@ -14,20 +18,49 @@ use Redmine\Exception\UnexpectedResponseException;
  */
 class News extends AbstractApi
 {
-    private $news = [];
+    final public static function fromHttpClient(HttpClient $httpClient): self
+    {
+        return new self($httpClient, true);
+    }
+
+    /**
+     * @deprecated v2.9.0 Use fromHttpClient() instead.
+     * @see News::fromHttpClient()
+     *
+     * @param Client|HttpClient $client
+     */
+    public function __construct($client/*, bool $privatelyCalled = false*/)
+    {
+        $privatelyCalled = (func_num_args() > 1) ? func_get_arg(1) : false;
+
+        if ($privatelyCalled === true) {
+            parent::__construct($client);
+
+            return;
+        }
+
+        if (static::class !== self::class) {
+            $className = (new \ReflectionClass($this))->isAnonymous() ? '' : ' in `' . static::class . '`';
+            @trigger_error('Class `' . self::class . '` will declared as final in v3.0.0, stop extending it' . $className . '.', E_USER_DEPRECATED);
+        } else {
+            @trigger_error('Method `' . __METHOD__ . '()` is deprecated since v2.9.0 and will declared as private in v3.0.0, use `' . self::class . '::fromHttpClient()` instead.', E_USER_DEPRECATED);
+        }
+
+        parent::__construct($client);
+    }
 
     /**
      * List news for a given project.
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_News#GET
      *
-     * @param string|int $projectIdentifier project id or literal identifier
-     * @param array      $params            optional parameters to be passed to the api (offset, limit, ...)
+     * @param string|int   $projectIdentifier project id or literal identifier
+     * @param array<mixed> $params            optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws InvalidParameterException if $projectIdentifier is not of type int or string
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of news found
+     * @return array<mixed> list of news found
      */
     final public function listByProject($projectIdentifier, array $params = []): array
     {
@@ -50,11 +83,11 @@ class News extends AbstractApi
      *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_News#GET
      *
-     * @param array $params optional parameters to be passed to the api (offset, limit, ...)
+     * @param array<mixed> $params optional parameters to be passed to the api (offset, limit, ...)
      *
      * @throws UnexpectedResponseException if response body could not be converted into array
      *
-     * @return array list of news found
+     * @return array<mixed> list of news found
      */
     final public function list(array $params = []): array
     {
@@ -71,36 +104,31 @@ class News extends AbstractApi
      * @deprecated v2.4.0 Use list() or listByProject() instead.
      * @see News::list()
      * @see News::listByProject()
-     *
      * @see http://www.redmine.org/projects/redmine/wiki/Rest_News#GET
      *
-     * @param string|int $project project id or literal identifier [optional]
-     * @param array      $params  optional parameters to be passed to the api (offset, limit, ...)
+     * @param string|int   $project project id or literal identifier [optional]
+     * @param array<mixed> $params  optional parameters to be passed to the api (offset, limit, ...)
      *
-     * @return array|string|false list of news found or error message or false
+     * @return array<mixed>|string|false list of news found or error message or false
      */
     public function all($project = null, array $params = [])
     {
-        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . __CLASS__ . '::list()` or `' . __CLASS__ . '::listByProject()` instead.', E_USER_DEPRECATED);
+        @trigger_error('`' . __METHOD__ . '()` is deprecated since v2.4.0, use `' . self::class . '::list()` or `' . self::class . '::listByProject()` instead.', E_USER_DEPRECATED);
 
         try {
-            if (null === $project) {
-                $this->news = $this->list($params);
-            } else {
-                $this->news = $this->listByProject(strval($project), $params);
-            }
+            $news = null === $project ? $this->list($params) : $this->listByProject(strval($project), $params);
         } catch (Exception $e) {
             if ($this->getLastResponse()->getContent() === '') {
                 return false;
             }
 
-            if ($e instanceof UnexpectedResponseException && $e->getPrevious() !== null) {
+            if ($e instanceof UnexpectedResponseException && $e->getPrevious() instanceof \Throwable) {
                 $e = $e->getPrevious();
             }
 
             return $e->getMessage();
         }
 
-        return $this->news;
+        return $news;
     }
 }

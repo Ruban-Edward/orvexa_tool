@@ -51,9 +51,279 @@
         </style>
     </head>
     <body>
+        <h2>Admin Controller (App\Controllers\AdminController)</h2>
+        <ul>
+            <li class="defect">Manage user page</li>
+            <li class="defect">Manage permission page</li>
+            <li class="defect">Update user role</li>
+            <li class="defect">Update user role invalid input</li>
+            <li class="defect">Set permission</li>
+            <li class="defect">Set permission invalid input</li>
+            <li class="success">Set permission no required field</li>
+            <li class="success">Search role with valid query</li>
+            <li class="success">Search role with invalid query</li>
+            <li class="defect">Set new permission valid input</li>
+            <li class="success">Set new permission invalid input</li>
+            <li class="defect">Get specific permissions</li>
+            <li class="defect">Get permission name</li>
+            <li class="defect">Delete permission</li>
+            <li class="defect">Get permission details</li>
+            <li class="defect">Update permission</li>
+        </ul>
+        <h2>Admin Model (Tests\app\Models\AdminModel)</h2>
+        <ul>
+            <li class="defect">Get users</li>
+            <li class="defect">Get permissions</li>
+            <li class="defect">Update user role</li>
+            <li class="defect">User filter</li>
+            <li class="defect">Get last sync</li>
+            <li class="defect">Get module</li>
+        </ul>
+        <h2>Auth Controller (App\Controllers\AuthController)</h2>
+        <ul>
+            <li class="success">Login validate</li>
+            <li class="defect">Logout</li>
+            <li class="success">No access</li>
+        </ul>
+        <h2>Backlog Controller (App\Controllers\BacklogController)</h2>
+        <ul>
+            <li class="defect">Products with no data</li>
+            <li class="defect">Products with data</li>
+            <li class="defect">Backlog items view</li>
+            <li class="defect">Add backlog</li>
+            <li class="defect">Update backlog</li>
+            <li class="defect">Delete backlog</li>
+            <li class="defect">Delete backlog in sprint</li>
+            <li class="defect">Delete document</li>
+            <li class="defect">Add epic</li>
+        </ul>
+        <h2>Custom Report Controller (App\Controllers\CustomReportController)</h2>
+        <ul>
+            <li class="defect">Get backlog report table</li>
+            <li class="defect">Get sprint report table</li>
+            <li class="defect">Get meet report table</li>
+            <li class="defect">Get filtered backlog report</li>
+            <li class="defect">Get filtered sprint report</li>
+            <li class="defect">Get filtered meet report</li>
+            <li class="defect">Get filtered backlog report without filters</li>
+            <li class="defect">Download filtered data with no data</li>
+        </ul>
+        <h2>Custom Report Model (Tests\app\Models\CustomReportModel)</h2>
+        <ul>
+            <li class="defect">Get meet report view</li>
+            <li class="defect">Get filter meet report view with params</li>
+            <li class="defect">Get sprint report view</li>
+            <li class="defect">Get filter sprint report view with params</li>
+            <li class="defect">Get backlog report view</li>
+            <li class="defect">Back log report view data correct or n ot</li>
+            <li class="defect">Sprint report view data correct or not</li>
+            <li class="defect">Meet report view data correct or not</li>
+        </ul>
+        <h2>Dashboard Controller (App\Controllers\DashboardController)</h2>
+        <ul>
+            <li class="defect">Dashboard view</li>
+            <li class="defect">Show product dashboard</li>
+            <li class="defect">Show product dashboard argument</li>
+            <li class="defect">Fetch pending task by sprint id</li>
+        </ul>
+        <h2>Dashboard Model (Tests\app\Models\DashboardModel)</h2>
+        <ul>
+            <li class="defect">Get sprint details</li>
+            <li class="defect">Get running sprint id</li>
+            <li class="defect">Get backlog status counts</li>
+            <li class="defect">Get user storystatus counts</li>
+            <li class="defect">Get sprint tasks id</li>
+            <li class="defect">Get alluser story ids</li>
+            <li class="defect">Get pending task status counts</li>
+            <li class="defect">Get pending tasks</li>
+            <li class="defect">Get estimated sprint hours</li>
+            <li class="defect">User meetings</li>
+            <li class="defect">Get backlog priority</li>
+            <li class="defect">Get sprint performance</li>
+            <li class="defect">Product on track</li>
+            <li class="defect">Get all upcoming sprints</li>
+        </ul>
+        <h2>Example Database</h2>
+        <ul>
+            <li class="defect">Model find all</li>
+            <li class="defect">Soft delete leaves row</li>
+        </ul>
+        <h2>Example Session</h2>
+        <ul>
+            <li class="success">Session simple</li>
+        </ul>
+        <h2>Health</h2>
+        <ul>
+            <li class="success">Is defined app path</li>
+            <li class="success">Base url has been set</li>
+        </ul>
+        <h2>Issue Model (Tests\app\Models\IssueModel)</h2>
+        <ul>
+            <li class="defect">Get all tasks from redmine</li>
+            <li class="defect">Task data is correct or not</li>
+        </ul>
+        <h2>Meeting Controller (Tests\Controllers\MeetingController)</h2>
+        <ul>
+            <li class="defect">Calendar</li>
+            <li class="defect">Get meeting details</li>
+            <li class="defect">Invalid get meeting details</li>
+            <li class="defect">Get sprint details</li>
+            <li class="defect">Invalid get sprint details</li>
+            <li class="defect">Sprint by product</li>
+            <li class="defect">Invalid sprint by product</li>
+            <li class="defect">Meeting confirmation</li>
+            <li class="defect">Invalid meeting confirmation</li>
+            <li class="defect">Log meeting times</li>
+            <li class="defect">Invalid log meeting times</li>
+            <li class="defect">Create group</li>
+            <li class="defect">Invalid create group</li>
+            <li class="defect">Get team details by id</li>
+            <li class="defect">Invalid get team details by id</li>
+            <li class="defect">Edit group</li>
+            <li class="defect">Invalid data type edit group</li>
+            <li class="defect">Invalid edit group</li>
+            <li class="defect">Delete group</li>
+            <li class="success">Invalid delete group</li>
+            <li class="defect">Get sprint members details</li>
+            <li class="defect">Invalid get sprint members details</li>
+            <li class="defect">Get members by product</li>
+            <li class="defect">Invalid get members by product</li>
+            <li class="defect">Backlog by product</li>
+            <li class="defect">Invalid backlog by product</li>
+            <li class="defect">Get epic</li>
+            <li class="defect">Inavlid get epic</li>
+            <li class="defect">Get sprint members by id</li>
+            <li class="defect">Invalid get sprint members by id</li>
+        </ul>
+        <h2>Meeting Detail Model (Tests\app\Models\Meeting\MeetingDetailModel)</h2>
+        <ul>
+            <li class="defect">Insert meeting details</li>
+            <li class="defect">Update meeting details</li>
+            <li class="defect">Update meeting details external</li>
+            <li class="defect">Time logis logged</li>
+            <li class="defect">Get meeting details</li>
+            <li class="defect">Update external reference task id</li>
+            <li class="defect">Show meetings</li>
+            <li class="defect">Cancel meetings reason</li>
+            <li class="defect">Get external issue id for sprint</li>
+            <li class="defect">Get product meet type</li>
+        </ul>
+        <h2>Meeting Model (Tests\app\Models\Meeting\MeetingModel)</h2>
+        <ul>
+            <li class="defect">Get meeting type</li>
+            <li class="defect">Get meeting type returns empty</li>
+            <li class="defect">Get meeting location</li>
+            <li class="defect">Get meeting location returns empty</li>
+            <li class="defect">Get meeting by type</li>
+            <li class="defect">Get meeting by id returns empty</li>
+            <li class="defect">Get product</li>
+            <li class="defect">Get product returns empty</li>
+            <li class="defect">Get sprint duration</li>
+            <li class="defect">Get sprint duration returns empty</li>
+            <li class="defect">Get sprint status</li>
+            <li class="defect">Get sprint status returns empty</li>
+            <li class="defect">Show sprint</li>
+            <li class="defect">Show sprint returns empty</li>
+        </ul>
+        <h2>Notification Controller (App\Controllers\NotificationController)</h2>
+        <ul>
+            <li class="defect">Notification details</li>
+        </ul>
+        <h2>Permission Model (Tests\app\Models\PermissionModel)</h2>
+        <ul>
+            <li class="defect">Add new permission</li>
+            <li class="defect">Add new permission invalid input</li>
+            <li class="defect">Get permissions</li>
+            <li class="defect">Delete permission</li>
+            <li class="defect">Get permission details by id</li>
+            <li class="defect">Get permission details by id invalid input</li>
+        </ul>
+        <h2>Pocker Controller (App\Controllers\PockerController)</h2>
+        <ul>
+            <li class="defect">Insert poker planning</li>
+            <li class="defect">Get poker planning</li>
+            <li class="defect">Update poker reveal</li>
+            <li class="defect">Add user story point</li>
+        </ul>
+        <h2>Product Owner Model (Tests\app\Models\ProductOwnerModel)</h2>
+        <ul>
+            <li class="defect">Set product owner</li>
+            <li class="defect">Set product owner invalid input</li>
+            <li class="defect">Get product owner</li>
+            <li class="defect">Get product owner invalid input</li>
+        </ul>
+        <h2>Project Model (Tests\app\Models\ProjectModel)</h2>
+        <ul>
+            <li class="defect">Get all products from redmine</li>
+            <li class="defect">Get all product users from redmine</li>
+            <li class="defect">Whether product data correct or not</li>
+            <li class="defect">Whether product user data correct or not</li>
+        </ul>
+        <h2>Role Model (Tests\app\Models\RoleModel)</h2>
+        <ul>
+            <li class="defect">Get roles</li>
+            <li class="defect">Insert role</li>
+            <li class="defect">Delete role</li>
+        </ul>
         <h2>Settings Controller (App\Controllers\SettingsController)</h2>
         <ul>
-            <li class="success">Set product owner</li>
+            <li class="defect">Admin settings page</li>
+            <li class="defect">Get roles</li>
+            <li class="defect">Add role</li>
+            <li class="defect">Add role invalid input</li>
+            <li class="defect">Delete role</li>
+            <li class="defect">Create holidays</li>
+            <li class="defect">Create holidays invalid input</li>
+            <li class="defect">Poker config setting</li>
+            <li class="defect">Poker config setting no poker data</li>
+            <li class="success">Poker config setting invalid</li>
+            <li class="defect">Get poker limit</li>
+            <li class="defect">Set product owner</li>
+            <li class="defect">Set product owner invalid data</li>
+            <li class="defect">Get members by product list</li>
+            <li class="defect">Get t shirt size by product</li>
+            <li class="defect">Get t shirt size by product no response</li>
+            <li class="defect">Set t shirt size</li>
+            <li class="success">Set t shirt size invalid data</li>
+        </ul>
+        <h2>Sprint Controller (App\Controllers\SprintController)</h2>
+        <ul>
+            <li class="defect">Get sprint list</li>
+            <li class="defect">Get product tasks</li>
+            <li class="defect">Get sprint planning</li>
+        </ul>
+        <h2>Sync Redmine Controller (App\Controllers\SyncRedmineController)</h2>
+        <ul>
+            <li class="defect">Sync products</li>
+            <li class="defect">Product user sync</li>
+            <li class="defect">Task sync</li>
+            <li class="defect">Members sync</li>
+            <li class="defect">Customer sync</li>
+            <li class="defect">Multiple syncs</li>
+            <li class="defect">Sync only users</li>
+        </ul>
+        <h2>Sync Redmine Model (Tests\Unit\SyncRedmineModel)</h2>
+        <ul>
+            <li class="defect">Log sync activity success</li>
+            <li class="defect">Log sync activity failure</li>
+            <li class="defect">Get all product users from local</li>
+            <li class="defect">Update product user sync</li>
+            <li class="defect">Update product sync</li>
+            <li class="defect">Get local product</li>
+            <li class="defect">Update task sync</li>
+            <li class="defect">Get last updates</li>
+            <li class="defect">Update customer sync</li>
+        </ul>
+        <h2>Task Controller (App\Controllers\TaskController)</h2>
+        <ul>
+            <li class="defect">Add task</li>
+            <li class="defect">Update task</li>
+            <li class="defect">Delete task</li>
+        </ul>
+        <h2>User Model (Tests\app\Models\UserModel)</h2>
+        <ul>
+            <li class="defect">Get user</li>
+            <li class="defect">Insert or updatet user</li>
         </ul>
     </body>
 </html>

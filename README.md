@@ -43,7 +43,7 @@ See [docs/ORVEXA_COMMANDS.md](docs/ORVEXA_COMMANDS.md) for the full command refe
 
 ## Technology and architecture
 
-- PHP 8.3-FPM and CodeIgniter 4
+- PHP 8.5.12-FPM and CodeIgniter 4
 - MySQL 8.3 and Nginx 1.27
 - Docker Compose and PHPUnit 10.5
 - Redmine synchronization, report exports, background jobs, and WebSockets

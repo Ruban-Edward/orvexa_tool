@@ -215,13 +215,70 @@ try {
 }
 ```
 
+### Forward compatibility mode
+
+By default, API methods that create, update, or delete resources do not check the HTTP status code of the response. Their return values are unchanged from earlier versions, even if the status code indicates an error: depending on the method this is the response body as a string, a `SimpleXMLElement` or an array. This preserves backwards compatibility with existing code.
+
+The same applies to the `show()` methods that read a single resource: on errors they return `false`, an error message as a string or, in `IssueRelation::show()`, an empty array.
+
+You can opt-in to stricter behavior by enabling the forward compatibility mode on the client:
+
+```php
+$client->enableFutureMode();
+```
+
+After calling `enableFutureMode()`, any unexpected status code (e.g. a 422 validation error or a 404 for a not existing resource) throws `\Redmine\Exception\UnexpectedResponseException`. This allows you to catch and handle errors more reliably.
+
+The `show()` methods also throw `\Redmine\Exception\UnexpectedResponseException` if the response body is empty or cannot be decoded into an array. So in forward compatibility mode, `show()` either returns an array or throws an exception.
+
+> :bulb: The forward compatibility mode only applies to the client on which `enableFutureMode()` was called and to all APIs returned by its `getApi()` method, including APIs that were returned before. Other clients are not affected. API instances created manually with `fromHttpClient()` always use the default behavior.
+
+> :bulb: The forward compatibility mode requires Redmine 4.1 or newer. Older Redmine versions respond with `200 OK` instead of `204 No Content` on successful updates and deletions, which would be treated as an unexpected status code.
+
+```php
+$client->enableFutureMode();
+
+try {
+    $client->getApi('issue')->create([
+        'project_id' => 1,
+        'subject' => 'test',
+    ]);
+} catch (\Redmine\Exception\UnexpectedResponseException $e) {
+    // Handle unexpected response (wrong status code)
+    $response = $e->getResponse();
+    $statusCode = $response->getStatusCode();
+    $body = $response->getContent();
+}
+```
+
+```php
+$client->enableFutureMode();
+
+try {
+    $issue = $client->getApi('issue')->show(123);
+} catch (\Redmine\Exception\UnexpectedResponseException $e) {
+    if ($e->getResponse()->getStatusCode() === 404) {
+        // Handle not existing issue
+    }
+
+    // Handle other unexpected responses, e.g. an invalid JSON body.
+    // In this case $e->getPrevious() contains the decoding error.
+}
+```
+
 ## API
 
 ### Mid-level API
 
-You can now use the `getApi()` method to create and get a specific Redmine API. This simplifies common use-cases and gives you some features like caching and assigning a user to an issue by username instead of the user ID.
+You can now use the `getApi()` method to create and get a specific Redmine API.
 
-To check for failed requests you can afterwards check the status code via `$client->getLastResponseStatusCode()`.
+```php
+$api = $client->getApi('issue');
+```
+
+This simplifies common use-cases and gives you some features like caching and assigning a user to an issue by username instead of the user ID.
+
+To check for failed requests you can afterwards check the status code via `$api->getLastResponse()->getStatusCode()`.
 
 #### Tracker API
 
@@ -646,68 +703,76 @@ The low-level API allows you to send highly customized requests to the Redmine s
 
 > :bulb: See the [Redmine REST-API docs](https://www.redmine.org/projects/redmine/wiki/Rest_api) for available endpoints and required parameters.
 
-The client has 4 methods for requests:
+The client has a method for requests:
 
-- `requestGet()`
-- `requestPost()`
-- `requestPut()`
-- `requestDelete()`
+- `request(\Redmine\Http\Request $request): \Redmine\Http\Response`
 
-Using this methods you can use every Redmine API endpoint. The following example shows you how to rename a project and add a custom field. To build the XML body you can use the `XmlSerializer`.
+There is also a `HttpFactory` to create `Request` objects:
+
+- `\Redmine\Http\HttpFactory::makeJsonRequest()` creates a `\Redmine\Http\Request` instance for JSON requests
+- `\Redmine\Http\HttpFactory::makeXmlRequest()` creates a `\Redmine\Http\Request` instance for XML requests
+
+Using this method and the `HttpFactory` you can use every Redmine API endpoint. The following example shows you how to rename a project and add a custom field. To build the XML body you can use the `XmlSerializer`.
 
 ```php
-$client->requestPut(
-    '/projects/1.xml',
-    (string) \Redmine\Serializer\XmlSerializer::createFromArray([
-        'project' => [
-            'name' => 'renamed project',
-            'custom_fields' => [
-                [
-                    'id' => 123,
-                    'name' => 'cf_name',
-                    'field_format' => 'string',
-                    'value' => [1, 2, 3],
+$response = $client->request(
+    \Redmine\Http\HttpFactory::makeXmlRequest(
+        'PUT',
+        '/projects/1.xml',
+        (string) \Redmine\Serializer\XmlSerializer::createFromArray([
+            'project' => [
+                'name' => 'renamed project',
+                'custom_fields' => [
+                    [
+                        'id' => 123,
+                        'name' => 'cf_name',
+                        'field_format' => 'string',
+                        'value' => [1, 2, 3],
+                    ],
                 ],
             ],
-        ]
-    ])
+        ]),
+    ),
 );
 ```
 
-> :bulb: Use `\Redmine\Serializer\JsonSerializer` if you want to use the JSON endpoint.
+> :bulb: Use `\Redmine\Serializer\JsonSerializer` and `HttpFactory::makeJsonRequest()` if you want to use the JSON endpoint.
 
-Or to fetch data with complex query parameters you can use `requestGet()` with the `PathSerializer`:
+Or to fetch data with complex query parameters you can use the `PathSerializer`:
 
 ```php
-$client->requestGet(
-    (string) \Redmine\Serializer\PathSerializer::create(
-        '/time_entries.json',
-        [
-            'f' => ['spent_on'],
-            'op' => ['spent_on' => '><'],
-            'v' => [
-                'spent_on' => [
-                    '2016-01-18',
-                    '2016-01-22',
+$response = $client->request(
+    \Redmine\Http\HttpFactory::makeJsonRequest(
+        'GET',
+        (string) \Redmine\Serializer\PathSerializer::create(
+            '/time_entries.json',
+            [
+                'f' => ['spent_on'],
+                'op' => ['spent_on' => '><'],
+                'v' => [
+                    'spent_on' => [
+                        '2016-01-18',
+                        '2016-01-22',
+                    ],
                 ],
             ],
-        ],
-    )
+        ),
+    ),
 );
 ```
 
-After the request you can use these 3 methods to work with the response:
+After the request you can use these 3 methods to work with the `\Redmine\Http\Response` instance:
 
-- `getLastResponseStatusCode()`
-- `getLastResponseContentType()`
-- `getLastResponseBody()`
+- `getStatusCode()`
+- `getContentType()`
+- `getContent()`
 
-To parse the response body from the last example to an array you can use `XmlSerializer`:
+To parse the response body to an array you can use `XmlSerializer`:
 
 ```php
-if ($client->getLastResponseStatusCode() === 200) {
+if ($response->getStatusCode() === 200) {
     $responseAsArray = \Redmine\Serializer\XmlSerializer::createFromString(
-        $client->getLastResponseBody()
+        $response->getContent(),
     )->getNormalized();
 }
 ```

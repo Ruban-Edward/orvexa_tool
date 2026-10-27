@@ -29,6 +29,7 @@ use CodeIgniter\Debug\Timer;
 use CodeIgniter\Debug\Toolbar;
 use CodeIgniter\Email\Email;
 use CodeIgniter\Encryption\EncrypterInterface;
+use CodeIgniter\Exceptions\InvalidArgumentException;
 use CodeIgniter\Filters\Filters;
 use CodeIgniter\Format\Format;
 use CodeIgniter\Honeypot\Honeypot;
@@ -75,10 +76,11 @@ use Config\Modules;
 use Config\Optimize;
 use Config\Pager as ConfigPager;
 use Config\Services as AppServices;
+use Config\Session as ConfigSession;
 use Config\Toolbar as ConfigToolbar;
 use Config\Validation as ConfigValidation;
 use Config\View as ConfigView;
-use InvalidArgumentException;
+use Config\WorkerMode;
 
 /**
  * Services Configuration file.
@@ -130,9 +132,9 @@ use InvalidArgumentException;
  * @method static Router                     router(RouteCollectionInterface $routes = null, Request $request = null, $getShared = true)
  * @method static RouteCollection            routes($getShared = true)
  * @method static Security                   security(App $config = null, $getShared = true)
- * @method static Session                    session(App $config = null, $getShared = true)
+ * @method static Session                    session(ConfigSession $config = null, $getShared = true)
  * @method static SiteURIFactory             siteurifactory(App $config = null, Superglobals $superglobals = null, $getShared = true)
- * @method static Superglobals               superglobals(array $server = null, array $get = null, bool $getShared = true)
+ * @method static Superglobals               superglobals(array<string, mixed> $server = null, array<string, mixed> $get = null, bool $getShared = true)
  * @method static Throttler                  throttler($getShared = true)
  * @method static Timer                      timer($getShared = true)
  * @method static Toolbar                    toolbar(ConfigToolbar $config = null, $getShared = true)
@@ -176,7 +178,7 @@ class BaseService
     /**
      * A cache of other service classes we've found.
      *
-     * @var array
+     * @var array{}
      *
      * @deprecated 4.5.0 No longer used.
      */
@@ -199,6 +201,18 @@ class BaseService
     public static function get(string $key): ?object
     {
         return static::$instances[$key] ?? static::__callStatic($key, []);
+    }
+
+    /**
+     * Checks if a service instance has been created.
+     *
+     * @param string $key Identifier of the entry to check.
+     *
+     * @return bool True if the service instance exists, false otherwise.
+     */
+    public static function has(string $key): bool
+    {
+        return isset(static::$instances[$key]);
     }
 
     /**
@@ -230,7 +244,7 @@ class BaseService
      *
      * $key must be a name matching a service.
      *
-     * @param array|bool|float|int|object|string|null ...$params
+     * @param mixed ...$params
      *
      * @return object
      */
@@ -262,9 +276,7 @@ class BaseService
     public static function autoloader(bool $getShared = true)
     {
         if ($getShared) {
-            if (empty(static::$instances['autoloader'])) {
-                static::$instances['autoloader'] = new Autoloader();
-            }
+            static::$instances['autoloader'] ??= new Autoloader();
 
             return static::$instances['autoloader'];
         }
@@ -282,7 +294,7 @@ class BaseService
     public static function locator(bool $getShared = true)
     {
         if ($getShared) {
-            if (empty(static::$instances['locator'])) {
+            if (! isset(static::$instances['locator'])) {
                 $cacheEnabled = class_exists(Optimize::class)
                     && (new Optimize())->locatorCacheEnabled;
 
@@ -302,6 +314,8 @@ class BaseService
     /**
      * Provides the ability to perform case-insensitive calling of service
      * names.
+     *
+     * @param array<array-key, mixed> $arguments
      *
      * @return object|null
      */
@@ -346,6 +360,8 @@ class BaseService
      * Reset shared instances and mocks for testing.
      *
      * @return void
+     *
+     * @testTag only available to test code
      */
     public static function reset(bool $initAutoloader = true)
     {
@@ -359,9 +375,58 @@ class BaseService
     }
 
     /**
+     * Reconnect cache connection for worker mode at the start of a request.
+     * Checks if cache connection is alive and reconnects if needed.
+     *
+     * This should be called at the beginning of each request in worker mode,
+     * before the application runs.
+     */
+    public static function reconnectCacheForWorkerMode(): void
+    {
+        if (! isset(static::$instances['cache'])) {
+            return;
+        }
+
+        $cache = static::$instances['cache'];
+
+        if (! $cache->ping()) {
+            $cache->reconnect();
+        }
+    }
+
+    /**
+     * Resets all services except those in the persistent list.
+     * Used for worker mode to preserve expensive-to-initialize services.
+     *
+     * Called at the END of each request to clean up state.
+     */
+    public static function resetForWorkerMode(WorkerMode $config): void
+    {
+        // Reset mocks (testing only, safe to clear)
+        static::$mocks = [];
+
+        // Reset factories
+        static::$factories = [];
+
+        // Process each service instance
+        $persistentInstances = [];
+
+        foreach (static::$instances as $serviceName => $service) {
+            // Persist services in the persistent list
+            if (in_array($serviceName, $config->persistentServices, true)) {
+                $persistentInstances[$serviceName] = $service;
+            }
+        }
+
+        static::$instances = $persistentInstances;
+    }
+
+    /**
      * Resets any mock and shared instances for a single service.
      *
      * @return void
+     *
+     * @testTag only available to test code
      */
     public static function resetSingle(string $name)
     {
@@ -375,11 +440,23 @@ class BaseService
      * @param object $mock
      *
      * @return void
+     *
+     * @testTag only available to test code
      */
     public static function injectMock(string $name, $mock)
     {
-        static::$instances[$name]         = $mock;
-        static::$mocks[strtolower($name)] = $mock;
+        $name                     = strtolower($name);
+        static::$instances[$name] = $mock;
+        static::$mocks[$name]     = $mock;
+    }
+
+    /**
+     * Resets the service cache.
+     */
+    public static function resetServicesCache(): void
+    {
+        self::$serviceNames = [];
+        static::$discovered = false;
     }
 
     protected static function buildServicesCache(): void
