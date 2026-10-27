@@ -37,7 +37,7 @@ label {
 .form-control:focus,
 .form-select:focus {
     border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(31, 184, 101, .25);
+    box-shadow: 0 0 0 0.2rem rgba(66, 214, 116, .25);
 }
 
 #date-picker {

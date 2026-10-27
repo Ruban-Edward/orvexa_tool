@@ -83,7 +83,7 @@ $(document).ready(function () {
   function showDiv(divId) {
     // Hide all divs
     $(
-      "#productUserDiv, #pokerConfigDiv, #addRoleDiv, #holidayDiv, #tShirtDiv"
+      "#productUserDiv, #pokerConfigDiv, #addRoleDiv, #holidayDiv, #tShirtDiv, #customerDiv"
     ).hide();
 
     // Show the selected div

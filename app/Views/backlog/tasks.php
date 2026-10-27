@@ -1,31 +1,14 @@
-<div class="row cls-product-header">
-    <ul class="col cls-product-details-list">
-        <li>
-            <h5><span class="h6 cls-product-details">Product name: </span><?= trim(ucfirst(strtolower($data['product_name']))) ?></h5>
-        </li>
-        <span class="bar">|</span>
-        <li>
-            <h5><span class="h6 cls-product-details">Backlog item name: </span><?= trim(ucfirst(strtolower($data['backlog_item_name']))); ?>
-            </h5>
-        </li>
-    </ul>
-</div>
-<div class="row cls-user-story-details">
-    <div class="col-md-auto">
-        <p class="cls-user-story-list"><span class="h6">User story ID: </span><b><?= "US_" . $data['user_story_id'] ?></b></p>
-    </div>
-</div>
-<div class="row cls-user-story-details">
-    <div class="col-md-auto">
-        <p class="cls-user-story-list"><span class="h6">User story: </span><b>As a / an
-            </b><?= trim(ucfirst(strtolower($data['user_story']['as_a_an']))) ?><b> I Want
-            </b><?= ucfirst($data['user_story']['i_want']) ?><b> So That
-            </b><?= ucfirst($data['user_story']['so_that']) ?></p>
-    </div>
-    <div class="col-md-auto">
-        <h5 class="cls-user-story-list"><span class="h6">No of tasks: </span><?= $data['task_count'] ?></h5>
-    </div>
-</div>
+<dl class="ox-context">
+    <div><dt>Product</dt><dd><?= esc(trim(ucfirst(strtolower($data['product_name'])))) ?></dd></div>
+    <div><dt>Backlog item</dt><dd><?= esc(trim(ucfirst(strtolower($data['backlog_item_name'])))); ?></dd></div>
+    <div><dt>User story</dt><dd><?= "US_" . (int) $data['user_story_id'] ?></dd></div>
+    <div><dt>Tasks</dt><dd><?= (int) $data['task_count'] ?></dd></div>
+</dl>
+<p class="ox-story-line">
+    <b>As a / an</b> <?= esc(trim(ucfirst(strtolower($data['user_story']['as_a_an'])))) ?>
+    <b>I want</b> <?= esc(ucfirst($data['user_story']['i_want'])) ?>
+    <b>so that</b> <?= esc(ucfirst($data['user_story']['so_that'])) ?>
+</p>
 <div class=" d-flex justify-content-between">
 
     <div>

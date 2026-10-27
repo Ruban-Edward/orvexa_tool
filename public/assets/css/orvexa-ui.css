@@ -17,30 +17,41 @@
    Tokens
    -------------------------------------------------------------------------- */
 :root {
-    /* Brand (sampled from the Orvexa palette) */
-    --ox-brand-50: #effbf3;
-    --ox-brand-100: #d8f5e2;
-    --ox-brand-200: #b2eac7;
-    --ox-brand-300: #84e788;
-    --ox-brand-400: #40d37c;
-    --ox-brand-500: #1fb865;
-    --ox-brand-600: #149553;
-    --ox-brand-700: #117a45;
-    --ox-brand-800: #10613a;
-    --ox-brand-900: #0d261c;
-    --ox-lime: #ddeda0;
+    /* Orvexa brand palette */
+    --ox-primary: #42d674;       /* Primary Green – execution, energy */
+    --ox-fresh: #80ef80;         /* Fresh Green – velocity, growth */
+    --ox-pistachio: #e3f0a3;     /* Pistachio – intelligence, light */
+    --ox-sage: #badba2;          /* Sage – balance, stability */
+    --ox-deep: #102018;          /* Deep Green – foundation, depth */
+    --ox-soft-white: #f7faf3;    /* Soft White – clarity, clean */
+    --ox-gradient: linear-gradient(90deg, var(--ox-pistachio) 0%, var(--ox-fresh) 45%, var(--ox-primary) 75%, #1fae5c 100%);
 
-    /* Neutrals (slightly green-tinted) */
-    --ox-canvas: #f6f8f7;
+    /* Scale built around the palette. Primary Green is too light for text on
+       white, so green text/links use the darker 600–800 steps (≥ 4.5:1). */
+    --ox-brand-50: #eefbf2;
+    --ox-brand-100: #dcf7e5;
+    --ox-brand-200: var(--ox-sage);
+    --ox-brand-300: var(--ox-fresh);
+    --ox-brand-400: var(--ox-primary);
+    --ox-brand-500: #34c466;
+    --ox-brand-600: #1f9450;
+    --ox-brand-700: #167a40;
+    --ox-brand-800: #0f5c30;
+    --ox-brand-900: var(--ox-deep);
+    --ox-lime: var(--ox-pistachio);
+    --ox-pistachio-tint: #f2f8d6;
+
+    /* Neutrals (tinted toward Sage / Deep Green) */
+    --ox-canvas: var(--ox-soft-white);
     --ox-surface: #ffffff;
-    --ox-surface-2: #f9fbfa;
-    --ox-surface-3: #f1f4f2;
-    --ox-border: #e3e8e5;
-    --ox-border-strong: #cdd6d0;
-    --ox-ink: #101b15;
-    --ox-text: #2c3a32;
-    --ox-muted: #66746c;
-    --ox-subtle: #8c988f;
+    --ox-surface-2: #fafcf7;
+    --ox-surface-3: #f0f5ea;
+    --ox-border: #e3eadc;
+    --ox-border-strong: #cad5c2;
+    --ox-ink: var(--ox-deep);
+    --ox-text: #27362d;
+    --ox-muted: #5e6e64;
+    --ox-subtle: #8a9a8f;
 
     /* Status */
     --ox-red: #d92d20;
@@ -63,7 +74,7 @@
     --ox-shadow-sm: 0 1px 3px rgba(16, 27, 21, 0.08), 0 1px 2px rgba(16, 27, 21, 0.04);
     --ox-shadow-md: 0 8px 24px -6px rgba(16, 27, 21, 0.12), 0 2px 6px rgba(16, 27, 21, 0.05);
     --ox-shadow-lg: 0 20px 48px -12px rgba(16, 27, 21, 0.22);
-    --ox-ring: 0 0 0 3px rgba(31, 184, 101, 0.22);
+    --ox-ring: 0 0 0 3px rgba(66, 214, 116, 0.35);
 
     --ox-font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --ox-sidebar-w: 248px;
@@ -107,23 +118,23 @@
     --bs-body-bg: var(--ox-canvas);
     --bs-border-color: var(--ox-border);
     --bs-border-radius: var(--ox-radius);
-    --bs-primary: var(--ox-brand-700);
-    --bs-primary-rgb: 17, 122, 69;
+    --bs-primary: var(--ox-primary);
+    --bs-primary-rgb: 66, 214, 116;
     --bs-primary-text-emphasis: var(--ox-brand-800);
     --bs-primary-bg-subtle: var(--ox-brand-50);
     --bs-primary-border-subtle: var(--ox-brand-200);
     --bs-link-color: var(--ox-brand-700);
-    --bs-link-color-rgb: 17, 122, 69;
+    --bs-link-color-rgb: 22, 122, 64;
     --bs-link-hover-color: var(--ox-brand-800);
-    --bs-link-hover-color-rgb: 16, 97, 58;
+    --bs-link-hover-color-rgb: 15, 92, 48;
     --bs-success: var(--ox-brand-600);
-    --bs-success-rgb: 20, 149, 83;
+    --bs-success-rgb: 31, 148, 80;
     --bs-danger: var(--ox-red);
     --bs-danger-rgb: 217, 45, 32;
     --bs-warning-rgb: 247, 144, 9;
     --bs-info: var(--ox-blue);
     --bs-info-rgb: 23, 92, 211;
-    --bs-focus-ring-color: rgba(31, 184, 101, 0.25);
+    --bs-focus-ring-color: rgba(66, 214, 116, 0.35);
 }
 
 /* --------------------------------------------------------------------------
@@ -449,8 +460,8 @@ body.ox-app #sidebar .ox-sidenav-link:hover i {
 }
 
 body.ox-app #sidebar .ox-sidenav-link.is-active {
-    background: var(--ox-brand-50);
-    color: var(--ox-brand-800);
+    background: var(--ox-pistachio-tint);
+    color: var(--ox-deep);
     font-weight: 600;
 }
 
@@ -466,7 +477,7 @@ body.ox-app #sidebar .ox-sidenav-link.is-active i {
     bottom: 8px;
     width: 3px;
     border-radius: 0 3px 3px 0;
-    background: var(--ox-brand-500);
+    background: var(--ox-primary);
 }
 
 .ox-sidebar-footer {
@@ -728,7 +739,7 @@ body.ox-app .avatar {
     height: 30px;
     margin: 0;
     border-radius: 999px;
-    background: linear-gradient(135deg, var(--ox-brand-300), var(--ox-brand-500));
+    background: linear-gradient(135deg, var(--ox-fresh), var(--ox-primary));
     color: var(--ox-brand-900);
     font-size: 13px;
     font-weight: 700;
@@ -1254,18 +1265,23 @@ body.ox-app .btn-lg {
 body.ox-app .btn-primary,
 body.ox-app #main .blue-button,
 body.ox-app .swal2-confirm {
-    border: 1px solid var(--ox-brand-700) !important;
-    background: var(--ox-brand-700) !important;
-    color: #fff !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), var(--ox-shadow-xs) !important;
+    border: 1px solid var(--ox-brand-500) !important;
+    background: var(--ox-primary) !important;
+    color: var(--ox-deep) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), var(--ox-shadow-xs) !important;
+}
+
+body.ox-app .btn-primary i,
+body.ox-app #main .blue-button i {
+    color: inherit !important;
 }
 
 body.ox-app .btn-primary:hover,
 body.ox-app #main .blue-button:hover,
 body.ox-app .swal2-confirm:hover {
-    border-color: var(--ox-brand-800) !important;
-    background: var(--ox-brand-800) !important;
-    color: #fff !important;
+    border-color: var(--ox-brand-600) !important;
+    background: var(--ox-brand-500) !important;
+    color: var(--ox-deep) !important;
 }
 
 body.ox-app .btn-primary:focus-visible,
@@ -1569,9 +1585,9 @@ body.ox-app .page-link {
 }
 
 body.ox-app .page-item.active .page-link {
-    border-color: var(--ox-brand-700) !important;
-    background: var(--ox-brand-700);
-    color: #fff;
+    border-color: var(--ox-brand-500) !important;
+    background: var(--ox-primary);
+    color: var(--ox-deep);
 }
 
 body.ox-app #pageInfo {
@@ -1816,8 +1832,9 @@ body.ox-app .flatpickr-calendar {
 
 body.ox-app .flatpickr-day.selected,
 body.ox-app .flatpickr-day.selected:hover {
-    border-color: var(--ox-brand-700);
-    background: var(--ox-brand-700);
+    border-color: var(--ox-brand-500);
+    background: var(--ox-primary);
+    color: var(--ox-deep);
 }
 
 /* --------------------------------------------------------------------------
@@ -2049,7 +2066,7 @@ body.ox-app button.ox-metric:hover {
     border-radius: 999px;
 }
 
-.ox-sdot-green { background: var(--ox-brand-500); }
+.ox-sdot-green { background: var(--ox-primary); }
 .ox-sdot-red { background: var(--ox-red); }
 .ox-sdot-amber { background: #f79009; }
 
@@ -2065,7 +2082,7 @@ body.ox-app button.ox-metric:hover {
 
 .ox-progress-track > span {
     border-radius: 999px;
-    background: linear-gradient(90deg, var(--ox-brand-400), var(--ox-brand-600));
+    background: var(--ox-gradient);
 }
 
 .ox-stack-bar {
@@ -2076,7 +2093,7 @@ body.ox-app button.ox-metric:hover {
 .ox-stack-bar > span { min-width: 0; }
 .ox-stack-bar > .is-high { background: #f97066; }
 .ox-stack-bar > .is-medium { background: #fdb022; }
-.ox-stack-bar > .is-low { background: var(--ox-brand-400); }
+.ox-stack-bar > .is-low { background: var(--ox-primary); }
 
 .ox-product-list {
     margin: 0;
@@ -2152,8 +2169,8 @@ body.ox-app #main .ox-product-action .btn {
     width: 32px;
     height: 32px;
     border-radius: var(--ox-radius);
-    background: var(--ox-brand-50);
-    color: var(--ox-brand-800);
+    background: var(--ox-pistachio-tint);
+    color: var(--ox-deep);
     font-size: 13px;
     font-weight: 700;
 }
@@ -2174,7 +2191,7 @@ body.ox-app #main .ox-sprint-chip {
     align-items: flex-start;
     gap: 0;
     padding: 5px 10px;
-    border: 1px solid var(--ox-brand-200);
+    border: 1px solid var(--ox-sage);
     border-radius: var(--ox-radius);
     background: var(--ox-brand-50) !important;
     color: var(--ox-brand-800) !important;
@@ -2288,4 +2305,938 @@ body.ox-app #main .cls-header label {
     color: var(--ox-ink) !important;
     font-size: 15px;
     font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Palette applied to legacy page components
+   (page stylesheets paint these with the dark brand green + white text)
+   -------------------------------------------------------------------------- */
+body.ox-app #main .ox-new-btn,
+body.ox-app #main .primary_button,
+body.ox-app #main .primary-button,
+body.ox-app #main .button,
+body.ox-app #main .submit,
+body.ox-app #main .pagebutton,
+body.ox-app #main .btn-download,
+body.ox-app #main a.download,
+body.ox-app #main .btn-view,
+body.ox-app #main #pagination button.active,
+body.ox-app #main .date-filter button.active,
+body.ox-app #main .dropdown-menu .btn-primary,
+body.ox-app .modal .primary_button,
+body.ox-app .modal .button,
+body.ox-app .modal .blue-button,
+body.ox-app .modal .submit {
+    border: 1px solid var(--ox-brand-500) !important;
+    background: var(--ox-primary) !important;
+    color: var(--ox-deep) !important;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), var(--ox-shadow-xs) !important;
+}
+
+body.ox-app #main .primary_button i,
+body.ox-app #main .primary-button i,
+body.ox-app #main .button i,
+body.ox-app .modal .button i {
+    color: inherit !important;
+}
+
+body.ox-app #main .ox-new-btn:hover,
+body.ox-app #main .primary_button:hover,
+body.ox-app #main .primary-button:hover,
+body.ox-app #main .button:hover,
+body.ox-app #main .submit:hover,
+body.ox-app #main .pagebutton:hover,
+body.ox-app #main .btn-download:hover,
+body.ox-app #main a.download:hover,
+body.ox-app #main .btn-view:hover,
+body.ox-app #main .dropdown-menu .btn-primary:hover,
+body.ox-app .modal .primary_button:hover,
+body.ox-app .modal .button:hover,
+body.ox-app .modal .blue-button:hover,
+body.ox-app .modal .submit:hover {
+    border-color: var(--ox-brand-600) !important;
+    background: var(--ox-brand-500) !important;
+    color: var(--ox-deep) !important;
+}
+
+body.ox-app #main .bg-primary,
+body.ox-app #main .badge.bg-primary {
+    background: var(--ox-primary) !important;
+    color: var(--ox-deep) !important;
+}
+
+/* Coloured section headers become plain surfaces */
+body.ox-app #main .form-group-header,
+body.ox-app #main .custom-card-header {
+    border-bottom: 1px solid var(--ox-border);
+    background: var(--ox-surface) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app #main .form-group-header *,
+body.ox-app #main .custom-card-header * {
+    color: var(--ox-ink) !important;
+}
+
+/* Small brand chips and icon badges */
+body.ox-app .selected-email {
+    border: 1px solid var(--ox-sage) !important;
+    background: var(--ox-pistachio-tint) !important;
+    color: var(--ox-deep) !important;
+}
+
+body.ox-app #main .activity-item .icon,
+body.ox-app #main .data-icon,
+body.ox-app #main #voiceRecorderBtn {
+    background: var(--ox-primary) !important;
+    color: var(--ox-deep) !important;
+}
+
+body.ox-app #main .ox-link-arrow,
+body.ox-app #main .header-links a {
+    color: var(--ox-brand-700) !important;
+}
+
+/* ==========================================================================
+   Page refinements
+   One primary action per page, shared context strip, card patterns and
+   semantic chips so every page reads as the same product.
+   ========================================================================== */
+:root {
+    /* Priority scale – tinted chip + dark text, never colour alone */
+    --ox-prio-high: #b42318;
+    --ox-prio-high-bg: #fef1f0;
+    --ox-prio-high-border: #fecdca;
+    --ox-prio-med: #93530b;
+    --ox-prio-med-bg: #fff6e6;
+    --ox-prio-med-border: #fedf89;
+    --ox-prio-low: var(--ox-brand-800);
+    --ox-prio-low-bg: var(--ox-brand-50);
+    --ox-prio-low-border: var(--ox-brand-200);
+}
+
+/* Primary action: Primary Green with Deep Green text (8.9:1) everywhere,
+   including the legacy `#main .btn-primary` rule from app-theme.css */
+body.ox-app #main .btn-primary,
+body.ox-app #main .primary_button,
+body.ox-app #main .blue-button {
+    border: 1px solid var(--ox-brand-500) !important;
+    background: var(--ox-primary) !important;
+    color: var(--ox-deep) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), var(--ox-shadow-xs) !important;
+}
+
+body.ox-app #main .btn-primary:hover,
+body.ox-app #main .primary_button:hover,
+body.ox-app #main .blue-button:hover {
+    border-color: var(--ox-brand-600) !important;
+    background: var(--ox-brand-500) !important;
+    color: var(--ox-deep) !important;
+}
+
+body.ox-app #main .btn-primary i,
+body.ox-app #main .primary_button i {
+    color: inherit !important;
+}
+
+/* Secondary buttons: neutral ink; icons slightly recessive */
+body.ox-app #main .button-secondary {
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app #main .button-secondary i,
+body.ox-app #main .btn.button-secondary i {
+    color: var(--ox-muted) !important;
+}
+
+body.ox-app #main .button-secondary.active {
+    border-color: var(--ox-brand-200) !important;
+    background: var(--ox-brand-50) !important;
+    color: var(--ox-brand-800) !important;
+}
+
+/* Toolbars built from legacy wrappers line up with a consistent gap */
+body.ox-app #main .cls-backlog-left-side-buttons,
+body.ox-app #main .cls-backlog-buttons-left-side,
+body.ox-app #main .cls-backlog-buttons-right-side,
+body.ox-app #main .cls-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+body.ox-app #main .cls-action-button {
+    margin: 0 !important;
+}
+
+body.ox-app #main .search-box .search-button {
+    color: var(--ox-muted) !important;
+}
+
+body.ox-app #main .btn-filterclose {
+    color: var(--ox-muted) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Context strip – "where am I" facts under the page title
+   -------------------------------------------------------------------------- */
+body.ox-app #main .ox-context {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -4px 0 20px;
+    padding: 0;
+}
+
+body.ox-app #main .ox-context > div {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 100%;
+    padding: 5px 12px;
+    border: 1px solid var(--ox-border);
+    border-radius: 999px;
+    background: var(--ox-surface);
+}
+
+body.ox-app #main .ox-context dt {
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body.ox-app #main .ox-context dd {
+    overflow: hidden;
+    margin: 0;
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.ox-app #main .ox-story-line {
+    margin: -8px 0 20px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--ox-primary);
+    border-radius: 0 var(--ox-radius) var(--ox-radius) 0;
+    background: var(--ox-surface);
+    color: var(--ox-text);
+    font-size: 14px;
+}
+
+body.ox-app #main .ox-story-line b {
+    color: var(--ox-muted);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Empty states
+   -------------------------------------------------------------------------- */
+body.ox-app #main .ox-empty-page {
+    max-width: 560px;
+    margin: 24px auto 0;
+    padding: 48px 24px;
+}
+
+body.ox-app #main .ox-empty-page > i {
+    width: 52px;
+    height: 52px;
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-700);
+    font-size: 22px;
+}
+
+body.ox-app #main .ox-empty-page p {
+    max-width: 380px;
+    color: var(--ox-muted);
+}
+
+body.ox-app #main .ox-card-empty,
+body.ox-app #main .no-document {
+    margin: 16px 0 0;
+    color: var(--ox-muted) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-align: left;
+}
+
+body.ox-app #main .no-sprints {
+    margin: 0;
+    padding: 28px 16px;
+    border: 1px dashed var(--ox-border-strong) !important;
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    color: var(--ox-muted) !important;
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Tables – left-aligned, vertically centred rows
+   -------------------------------------------------------------------------- */
+body.ox-app #main table:not(.fc *) thead th,
+body.ox-app #main table:not(.fc *) tbody td {
+    text-align: left !important;
+    vertical-align: middle !important;
+}
+
+/* Legacy page CSS nudged tbody down 10px, clipping the last row */
+body.ox-app #main table:not(.fc *) tbody {
+    position: static !important;
+    top: auto !important;
+}
+
+body.ox-app #main table:not(.fc *) tbody td {
+    height: auto !important;
+    line-height: 1.45;
+}
+
+body.ox-app #main table:not(.fc *) tbody td a:not(.btn) {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+body.ox-app #main table:not(.fc *) tbody td a:not(.btn):hover {
+    text-decoration: underline;
+}
+
+body.ox-app #main table:not(.fc *) td .form-select,
+body.ox-app #main table:not(.fc *) td select {
+    min-height: 32px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 13px;
+}
+
+/* --------------------------------------------------------------------------
+   Chips: priority, status, ids
+   -------------------------------------------------------------------------- */
+body.ox-app #main [class^="priority-"],
+body.ox-app #main [class*=" priority-"]:not(.priority-box),
+body.ox-app #main .priority-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 24px;
+    padding: 0 8px;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: 999px !important;
+    background: var(--ox-surface-3) !important;
+    color: var(--ox-text) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1;
+    box-shadow: none !important;
+}
+
+body.ox-app #main .priority-H,
+body.ox-app #main .priority-box.high,
+body.ox-app #main .priority-box.urgent,
+body.ox-app #main .priority-box.immediate {
+    border-color: var(--ox-prio-high-border) !important;
+    background: var(--ox-prio-high-bg) !important;
+    color: var(--ox-prio-high) !important;
+}
+
+body.ox-app #main .priority-M,
+body.ox-app #main .priority-box.medium,
+body.ox-app #main .priority-box.normal {
+    border-color: var(--ox-prio-med-border) !important;
+    background: var(--ox-prio-med-bg) !important;
+    color: var(--ox-prio-med) !important;
+}
+
+body.ox-app #main .priority-L,
+body.ox-app #main .priority-box.low {
+    border-color: var(--ox-prio-low-border) !important;
+    background: var(--ox-prio-low-bg) !important;
+    color: var(--ox-prio-low) !important;
+}
+
+body.ox-app #main .ox-id-chip {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: var(--ox-radius-sm);
+    background: var(--ox-surface-3);
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+body.ox-app #main .ox-status-pill {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    gap: 6px;
+    height: 24px;
+    padding: 0 10px;
+    border: 1px solid var(--ox-border);
+    border-radius: 999px;
+    background: var(--ox-surface);
+    color: var(--ox-text);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+body.ox-app #main .ox-status-pill::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ox-primary);
+    content: "";
+}
+
+/* Ghost icon actions (edit / delete) */
+body.ox-app #main .ox-icon-action {
+    display: inline-grid !important;
+    place-items: center;
+    width: 32px;
+    min-height: 32px !important;
+    height: 32px;
+    padding: 0 !important;
+    border: 1px solid transparent !important;
+    border-radius: var(--ox-radius) !important;
+    background: transparent !important;
+    color: var(--ox-muted) !important;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+body.ox-app #main .ox-icon-action:hover {
+    border-color: var(--ox-border) !important;
+    background: var(--ox-surface-2) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app #main .ox-icon-action.is-danger:hover {
+    border-color: var(--ox-prio-high-border) !important;
+    background: var(--ox-red-bg) !important;
+    color: var(--ox-red) !important;
+}
+
+/* --------------------------------------------------------------------------
+   User story cards
+   -------------------------------------------------------------------------- */
+body.ox-app #main .cls-user-story-card {
+    overflow: hidden;
+    margin-bottom: 12px !important;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg) !important;
+    box-shadow: var(--ox-shadow-xs) !important;
+}
+
+body.ox-app #main .cls-userstory-card-head {
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px !important;
+    cursor: pointer;
+}
+
+body.ox-app #main .cls-userstory-card-head > div {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.ox-app #main .cls-userstory-card-head .us-id {
+    flex: none;
+}
+
+body.ox-app #main .cls-userstory-card-head .cls-story-name {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+body.ox-app #main .cls-userstory-card-head .name {
+    overflow: hidden;
+    color: var(--ox-ink);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.ox-app #main .ox-sep {
+    margin: 0 8px;
+    color: var(--ox-subtle);
+    font-weight: 400;
+}
+
+body.ox-app #main .cls-userstory-card-head .cls-status {
+    flex: none;
+}
+
+body.ox-app #main .cls-userstory-card-head .status-select {
+    min-height: 32px;
+    padding: 4px 28px 4px 10px;
+    border: 1px solid var(--ox-border-strong);
+    border-radius: var(--ox-radius);
+    background-color: var(--ox-surface);
+    color: var(--ox-text);
+    font-size: 13px;
+}
+
+body.ox-app #main .cls-userstory-card-head .cls-action-buttons {
+    display: flex !important;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+}
+
+body.ox-app #main .cls-userstory-card-head .cls-action-buttons > div {
+    width: auto !important;
+    padding: 0 !important;
+}
+
+body.ox-app #main .cls-userstory-card-head .view-tasks-btn {
+    min-height: 32px;
+    margin-left: 4px;
+}
+
+body.ox-app #main .cls-user-card-details {
+    padding: 8px 20px 16px !important;
+    border-top: 1px solid var(--ox-border);
+}
+
+body.ox-app #main .cls-user-card-details .row-content {
+    padding: 6px 0;
+}
+
+body.ox-app #main .cls-user-card-details .h6,
+body.ox-app #main .cls-user-card-details .h6 p {
+    color: var(--ox-muted) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+body.ox-app #main .cls-user-card-details hr {
+    margin: 4px 0 !important;
+    border-color: var(--ox-border);
+    opacity: 1;
+}
+
+body.ox-app #main .toggle-suggestion-button,
+body.ox-app #main .toggle-poker-button {
+    border-radius: var(--ox-radius) !important;
+}
+
+body.ox-app #main .toggle-suggestion-button h4,
+body.ox-app #main .toggle-poker-button h4 {
+    margin: 0;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Task cards
+   -------------------------------------------------------------------------- */
+body.ox-app #main .cls-task-card {
+    overflow: hidden;
+    margin-bottom: 12px !important;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg) !important;
+    box-shadow: var(--ox-shadow-xs) !important;
+}
+
+body.ox-app #main .cls-task-card .cls-task-header {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--ox-border);
+    background: var(--ox-surface) !important;
+}
+
+body.ox-app #main .cls-task-card .card-title.cls-task-header-details {
+    flex: 1 1 200px;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    color: var(--ox-ink) !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.ox-app #main .cls-task-card .cls-action-buttons {
+    display: flex !important;
+    width: auto !important;
+    align-items: center;
+    gap: 2px;
+}
+
+body.ox-app #main .cls-task-body {
+    padding: 14px 16px 16px !important;
+}
+
+body.ox-app #main .ox-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px 24px;
+    margin: 0;
+}
+
+body.ox-app #main .ox-fields dt {
+    margin-bottom: 2px;
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body.ox-app #main .ox-fields dd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--ox-ink);
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+body.ox-app #main .ox-mini-progress {
+    position: relative;
+    overflow: hidden;
+    width: 64px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--ox-surface-3);
+}
+
+body.ox-app #main .ox-mini-progress > span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background: var(--ox-primary);
+}
+
+body.ox-app #main .ox-task-desc {
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--ox-border);
+    color: var(--ox-text);
+    font-size: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Product dashboard
+   -------------------------------------------------------------------------- */
+body.ox-app #main #card-row > [class*="col-"] {
+    margin-bottom: 16px;
+}
+
+body.ox-app #main #card-row .card {
+    height: 100%;
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg) !important;
+    background: var(--ox-surface) !important;
+    box-shadow: var(--ox-shadow-xs) !important;
+    color: var(--ox-text) !important;
+}
+
+body.ox-app #main #card-row .card-selector {
+    cursor: pointer;
+}
+
+body.ox-app #main #card-row .card-selector:hover {
+    border-color: var(--ox-brand-200) !important;
+    box-shadow: var(--ox-shadow-sm) !important;
+}
+
+body.ox-app #main #card-row .card-title {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px !important;
+    color: var(--ox-ink) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+body.ox-app #main #card-row .card-title br {
+    display: none;
+}
+
+body.ox-app #main #card-row .cls-cardHeaderTitle {
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+body.ox-app #main #card-row .cls-cardHeaderIcon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 !important;
+    border-radius: var(--ox-radius);
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-700) !important;
+    font-size: 14px;
+    animation: none !important;
+}
+
+body.ox-app #main #card-row .card-text,
+body.ox-app #main #card-row .card-text b,
+body.ox-app #main #card-row .list-group-item b {
+    color: var(--ox-muted) !important;
+    font-size: 13px;
+    font-weight: 500 !important;
+}
+
+body.ox-app #main #card-row .row {
+    border-bottom: 1px solid var(--ox-border);
+}
+
+body.ox-app #main #card-row .row:last-child {
+    border-bottom: 0;
+}
+
+body.ox-app #main #card-row .badge {
+    padding: 0 !important;
+    background: none !important;
+    color: var(--ox-ink) !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+body.ox-app #main #card-row .list-group-item {
+    padding: 8px 0 !important;
+    border-bottom: 1px solid var(--ox-border) !important;
+}
+
+body.ox-app #main .card .card-title.text-center,
+body.ox-app #main .card h5.card-title {
+    color: var(--ox-ink);
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left !important;
+}
+
+/* --------------------------------------------------------------------------
+   Permissions
+   -------------------------------------------------------------------------- */
+/* Columns rather than a grid so short modules don't stretch to the tallest */
+body.ox-app #main .ox-perm-grid {
+    columns: 3 280px;
+    column-gap: 12px;
+    margin-top: 12px;
+}
+
+body.ox-app #main .ox-perm-module {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    break-inside: avoid;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+}
+
+body.ox-app #main .ox-perm-module .cls-module-select {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 !important;
+    padding: 10px 14px !important;
+    border-bottom: 1px solid var(--ox-border);
+    background: var(--ox-surface-2);
+    border-radius: var(--ox-radius-lg) var(--ox-radius-lg) 0 0;
+}
+
+body.ox-app #main .ox-perm-module h5 {
+    margin: 0 !important;
+    color: var(--ox-ink);
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+body.ox-app #main .ox-perm-module .cls-sub-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 !important;
+}
+
+body.ox-app #main .ox-perm-module .cls-sub-select label {
+    margin: 0 !important;
+    color: var(--ox-muted) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}
+
+body.ox-app #main .ox-perm-module .checkbox-container {
+    display: flex !important;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 14px 12px !important;
+}
+
+body.ox-app #main .ox-perm-module .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 4px 0;
+}
+
+body.ox-app #main .ox-perm-module .checkbox-item label {
+    margin: 0 !important;
+    color: var(--ox-text) !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+}
+
+body.ox-app #main .ox-perm-module .form-check-input {
+    flex: none;
+    margin: 0 !important;
+}
+
+body.ox-app #main .cls-main-select {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+body.ox-app #main .cls-main-select label {
+    margin: 0 !important;
+}
+
+body.ox-app #main .cls-submit {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    margin: 16px -16px -16px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--ox-border);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(6px);
+    border-radius: 0 0 var(--ox-radius-lg) var(--ox-radius-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Admin settings
+   -------------------------------------------------------------------------- */
+body.ox-app #main .cls-sidebarContent h4 {
+    margin-bottom: 4px;
+    color: var(--ox-ink);
+    font-size: 18px !important;
+    font-weight: 600 !important;
+}
+
+body.ox-app #main .cls-sidebarContent h4 + br {
+    display: none;
+}
+
+body.ox-app #main .cls-sidebarContent > div > h4 {
+    margin-bottom: 16px;
+}
+
+body.ox-app #main .cls-sidebarContent .form-label {
+    color: var(--ox-text) !important;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Calendar – past day numbers stay readable (≥ 4.5:1)
+   -------------------------------------------------------------------------- */
+body.ox-app #main .calendar .fc-day-past:not(.fc-day-today):not(.fc-day-other) .fc-daygrid-day-number,
+body.ox-app #main .fc-day-past:not(.fc-day-other) .fc-daygrid-day-number {
+    color: var(--ox-muted) !important;
+}
+
+body.ox-app #main .ox-icon-action i {
+    color: inherit !important;
+    font-size: 16px !important;
+}
+
+/* Page refinements – small screens */
+@media (max-width: 767.98px) {
+    body.ox-app #main .cls-backlog-action-buttons,
+    body.ox-app #main .cls-backlog-action,
+    body.ox-app #main .cls-backlog-left-side-buttons,
+    body.ox-app #main .cls-backlog-buttons-left-side,
+    body.ox-app #main .cls-backlog-buttons-right-side,
+    body.ox-app #main .cls-task-action-buttons {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100%;
+        margin: 0 0 8px !important;
+        padding: 0 !important;
+    }
+
+    body.ox-app #main .cls-backlog-action-buttons > *,
+    body.ox-app #main .cls-backlog-buttons-left-side > *,
+    body.ox-app #main .cls-backlog-buttons-right-side > * {
+        margin: 0 !important;
+    }
+
+    body.ox-app #main .cls-task-action-buttons .search-box,
+    body.ox-app #main .cls-search-button {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: auto !important;
+    }
+
+    body.ox-app #main .cls-userstory-card-head {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    body.ox-app #main .cls-userstory-card-head .cls-story-name {
+        display: block !important;
+        flex: 1 1 calc(100% - 80px);
+        order: 0;
+    }
+
+    body.ox-app #main .cls-userstory-card-head .name {
+        white-space: normal;
+    }
+
+    body.ox-app #main .cls-userstory-card-head .cls-status,
+    body.ox-app #main .cls-userstory-card-head .cls-action-buttons {
+        display: flex !important;
+        flex: 1 1 auto;
+    }
+
+    body.ox-app #main .cls-userstory-card-head .ox-sep {
+        margin: 0 4px;
+    }
+
+    body.ox-app #main .cls-user-card-details {
+        padding: 8px 16px 16px !important;
+    }
+
+    body.ox-app #main .ox-perm-grid {
+        columns: 1;
+    }
 }

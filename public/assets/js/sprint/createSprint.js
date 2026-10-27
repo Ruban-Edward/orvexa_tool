@@ -774,7 +774,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             data.backlogItems.forEach((backlogItem, bIndex) => {
                 // const $backlogItem = $('<li class="list-group-item"></li>')
-                //     .html(`${backlogItem.name} - <span style="color: #117a45; font-weight: bold">${backlogItem.priority}</span>`);
+                //     .html(`${backlogItem.name} - <span style="color: #167a40; font-weight: bold">${backlogItem.priority}</span>`);
                 const $backlogItem = $('<li class="list-group-item"></li>')
                     .html(`${backlogItem.name}`);
                 $backlogList.append($backlogItem);
@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log(isChecked);
                 }
                 const $task = $('<li class="list-group-item"></li>')
-                    .append(`<input type="checkbox" class="user-story-checkbox" id="${taskId}" value="${task[0]}" ${isChecked}> <label for="${taskId}">${task[1]} - <span style="color: #0d261c; font-weight: bold">${task[2]}</span> - <span style="color: #117a45; font-weight: bold">${task[3]}</span></label>`);
+                    .append(`<input type="checkbox" class="user-story-checkbox" id="${taskId}" value="${task[0]}" ${isChecked}> <label for="${taskId}">${task[1]} - <span style="color: #102018; font-weight: bold">${task[2]}</span> - <span style="color: #167a40; font-weight: bold">${task[3]}</span></label>`);
                 $taskList.append($task);
 
 

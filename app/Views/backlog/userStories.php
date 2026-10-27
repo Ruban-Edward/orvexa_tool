@@ -19,27 +19,17 @@ $user_story_id = 0;
 //     $user_story_id = $data[0]['user_story_id'];
 // }
 ?>
-<div class="">
-    <ul class="cls-userStory-details">
-        <li>
-            <span class="h6 cls-product-name">Product name: </span> <span class="cls-product-name-item"><?=trim(ucfirst(strtolower($productName)));?></span>
-        </li>
-        <span class="bar">|</span>
-        <li>
-            <span class="h6 cls-product-name">Backlog item name: </span> <span class="cls-product-name-item"><?=trim(ucfirst(strtolower($backlogItemName)));?></span>
-        </li>
-        <span class="bar">|</span>
-        <li>
-            <span class="h6 cls-product-name">No of user stories: </span> <span class="cls-product-name-item"><?=$data['story_count']?> </span>
-        </li>
-    </ul>
-</div>
+<dl class="ox-context">
+    <div><dt>Product</dt><dd><?= esc(trim(ucfirst(strtolower($productName)))); ?></dd></div>
+    <div><dt>Backlog item</dt><dd><?= esc(trim(ucfirst(strtolower($backlogItemName)))); ?></dd></div>
+    <div><dt>User stories</dt><dd><?= (int) $data['story_count'] ?></dd></div>
+</dl>
 
 <div class=" d-flex justify-content-between flex-wrap flex-md-nowrap cls-backlog-action-buttons">
 
     <div class="cls-backlog-buttons-left-side">
         <?php if (has_permission("backlog/addepic")): ?>
-        <button class="btn primary_button flex-start" data-bs-toggle="modal" data-bs-target="#epicAddModal">
+        <button class="btn button-secondary flex-start" data-bs-toggle="modal" data-bs-target="#epicAddModal">
             <i class="icon-plus-circle sprintListIcon"></i> Add epic
         </button>
         <?php endif;?>
@@ -53,7 +43,7 @@ $user_story_id = 0;
 
         <?php if (has_permission("backlog/uploaduserstories")): ?>
 
-        <button type="button" class="btn primary_button" data-bs-toggle="modal" data-bs-target="#fileUploadModal">
+        <button type="button" class="btn button-secondary" data-bs-toggle="modal" data-bs-target="#fileUploadModal">
             <i class="icon-upload"></i> Import user stories
         </button>
 

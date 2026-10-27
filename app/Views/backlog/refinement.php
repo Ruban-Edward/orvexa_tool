@@ -1,9 +1,7 @@
 
-<div class="row ">
-        <ul class="col heading">
-            <li><h5><span class="h6">Product name : </span><?= trim(ucfirst(strtolower($data['productName']))); ?></h5></li>
-        </ul>
-</div>
+<dl class="ox-context">
+    <div><dt>Product</dt><dd><?= esc(trim(ucfirst(strtolower($data['productName'])))); ?></dd></div>
+</dl>
 <div class="container">
   <div class="page">
     <div class="row">

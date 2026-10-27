@@ -1,10 +1,7 @@
 
-<div class="row ">
-        <ul class="col heading">
-            <li><h5 class="cls-product-head-name"><span class="h6">Product name : </span><?= trim(ucfirst(strtolower($data['product_name']))); ?></h5></li>
-            <span class="bar">
-        </ul>
-</div>
+<dl class="ox-context">
+    <div><dt>Product</dt><dd><?= esc(trim(ucfirst(strtolower($data['product_name'])))); ?></dd></div>
+</dl>
 
 
 <div class="d-flex justify-content-between cls-backlog-action mb-2">
@@ -23,7 +20,7 @@
         <?php if(has_permission('backlog/refinement')): ?>
           
           <a href="<?= ASSERT_PATH . "backlog/refinement?pid=" . $data['p_id']; ?>">
-            <button class="btn primary_button"><i class="fas fa-retweet"></i> Refinement</button>
+            <button class="btn button-secondary"><i class="icon-shuffle"></i> Refinement</button>
           </a>
         
         <?php endif;?>

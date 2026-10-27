@@ -128,7 +128,7 @@ if (!empty($sprintId)) {
 
                             <!-- Right side: Attendees with input boxes -->
                             <div class="col-md-6">
-                                <p style=" color: #117a45 ;"><strong>Meeting Attendees</strong></p>
+                                <p style=" color: #167a40 ;"><strong>Meeting Attendees</strong></p>
 
 
                                 <form class="row g-3 needs-validation" id="timeLogForm" method="POST" novalidate>

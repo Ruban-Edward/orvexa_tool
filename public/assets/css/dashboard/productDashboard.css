@@ -61,7 +61,7 @@
     }
 .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(31, 184, 101, 0.3);
+        box-shadow: 0 4px 8px rgba(66, 214, 116, 0.3);
 }
 .card, .btn, .nav-link {
         transition: all 0.3s ease;
@@ -131,7 +131,7 @@ b, strong {
 .custom-select:focus {
     border-color: #80bdff;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(31, 184, 101, .25);
+    box-shadow: 0 0 0 0.2rem rgba(66, 214, 116, .25);
 }
 
 .main-content .bg-card-1{

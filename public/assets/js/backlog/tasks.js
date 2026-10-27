@@ -238,52 +238,36 @@ if (typeof m_tasks !== 'undefined') {
             return `
             <div class='col-md-12'>
                 <div class='card cls-task-card'>
-                    <div class='row card-header cls-task-header'>
-                        <div class='col-sm-2 card-text cls-task-header-details'>Redmine ID: ${task.external_id ?? '—'}</div>
-                        <div class='col-sm-7 card-title cls-task-header-details'>${task.task_title}</div>
-                        <div class='col-sm-3 cls-action-buttons'>
-                            <span class='cls-priority priority-box ${task.priority.toLowerCase()}'>${task.priority}</span>
+                    <div class='card-header cls-task-header'>
+                        <span class='ox-id-chip' title='Redmine ID'>#${task.external_id ?? '—'}</span>
+                        <div class='card-title cls-task-header-details'>${task.task_title}</div>
+                        <span class='ox-status-pill'>${task.task_status}</span>
+                        <span class='cls-priority priority-box ${task.priority.toLowerCase()}'>${task.priority}</span>
+                        <div class='cls-action-buttons'>
                             ${userPermissions.updateTask ? `
-                            <button type='button' class='btn btn-link editButton ' data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="addform('edit', ${task.external_id})" data-toggle="tooltip" data-placement="top" title="Update">
-                                <i class='bi bi-pencil-square'></i>
+                            <button type='button' class='btn btn-link editButton ox-icon-action' data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="addform('edit', ${task.external_id})" data-toggle="tooltip" data-placement="top" title="Update" aria-label="Update">
+                                <i class='icon-edit-2'></i>
                             </button>`: ``}
                             ${userPermissions.deleteTask ? `
-                            <button type='button' class='btn btn-link ' onclick='deleteTask(${task.external_id})' data-toggle="tooltip" data-placement="top" title="Delete">
-                                <i class='bi bi-trash'></i>
+                            <button type='button' class='btn btn-link ox-icon-action is-danger' onclick='deleteTask(${task.external_id})' data-toggle="tooltip" data-placement="top" title="Delete" aria-label="Delete">
+                                <i class='icon-trash-2'></i>
                             </button>
                             `: ``}
                         </div>
                     </div>
                     <div class='card-body-content cls-task-body'>
-                        <div class='row text-left'>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>Start date: </strong>${startDate}</div>
-                            </div>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>End date: </strong>${endDate}</div>
-                            </div>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>Percentage completed: </strong> <span class=''>${task.completed_percentage}</span></div>
-                            </div>
-                        </div>
-                        <div class='row text-left'>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>Estimated hours: </strong>${task.estimated_hours}</div>
-                            </div>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>Tracker: </strong> <span class=''>${task.tracker_name}</span></div>
-                            </div>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>Assignee: </strong> <span class=''>${task.first_name}</span></div>
-                            </div>
-                        </div>
-                        <div class='row text-left'>
-                            <div class='col-sm-4'>
-                                <div class='card-text'><strong>Status: </strong>${task.task_status}</div>
-                            </div>
-                        </div>
-                    <div class=row'>
-                        <div class='card-text'><strong>Description: </strong>${task.task_description}</div>
+                        <dl class='ox-fields'>
+                            <div><dt>Assignee</dt><dd>${task.first_name}</dd></div>
+                            <div><dt>Tracker</dt><dd>${task.tracker_name}</dd></div>
+                            <div><dt>Start date</dt><dd>${startDate}</dd></div>
+                            <div><dt>End date</dt><dd>${endDate}</dd></div>
+                            <div><dt>Estimated hours</dt><dd>${task.estimated_hours}</dd></div>
+                            <div><dt>Completed</dt><dd>
+                                <span class='ox-mini-progress'><span style='width:${Math.min(100, Math.max(0, Number(task.completed_percentage) || 0))}%'></span></span>
+                                ${task.completed_percentage}%
+                            </dd></div>
+                        </dl>
+                        <p class='ox-task-desc'>${task.task_description}</p>
                     </div>
                 </div>
             </div>

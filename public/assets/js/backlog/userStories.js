@@ -587,12 +587,12 @@ if (typeof m_userStories !== "undefined") {
             <div class="card cls-user-story-card">
                 <div class="card-header cls-userstory-card-head d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#story-${index}">
                     <div class="col-sm-2 align-items-center us-id">
-                        <p>USID :<strong> US_${story.user_story_id}</strong></p>
+                        <span class="ox-id-chip">US_${story.user_story_id}</span>
                     </div>
                     <div class="col-sm-5 d-flex flex-direction-row cls-story-name">
                         <div class="name">${
                           story.as_a_an
-                        }<strong> -> </strong>${story.i_want}<strong> -> </strong>${story.so_that}</div>
+                        }<span class="ox-sep" aria-hidden="true">→</span>${story.i_want}<span class="ox-sep" aria-hidden="true">→</span>${story.so_that}</div>
                     </div>
                     <div class="col-sm-2 cls-status">
                         
@@ -620,7 +620,7 @@ if (typeof m_userStories !== "undefined") {
                               userPermissions.updateUserStory
                                 ? `
                             <div class='col-sm-3 d-flex justify-content-center'>
-                                <button type="button" id="update${story.user_story_id}" class="btn btn-link btn-sm" onclick="openEditModal(${story.user_story_id})" data-toggle="tooltip" data-placement="top" title="Update"><i class='bi bi-pencil-square'></i></button>
+                                <button type="button" id="update${story.user_story_id}" class="btn btn-link btn-sm ox-icon-action" onclick="openEditModal(${story.user_story_id})" data-toggle="tooltip" data-placement="top" title="Update" aria-label="Update"><i class='icon-edit-2'></i></button>
                             </div>`
                                 : ``
                             }
@@ -628,8 +628,8 @@ if (typeof m_userStories !== "undefined") {
                               userPermissions.deleteUserStory
                                 ? `
                             <div class='col-sm-3'>
-                                <button type='button' class='btn btn-link delete-btn text-center' onclick="deleteUserStory(${story.user_story_id},${pId},${pblId}, '${story.status_name}', event)" data-toggle="tooltip" data-placement="top" title="Delete">
-                                    <i class='bi bi-trash'></i>
+                                <button type='button' class='btn btn-link delete-btn text-center ox-icon-action is-danger' aria-label="Delete" onclick="deleteUserStory(${story.user_story_id},${pId},${pblId}, '${story.status_name}', event)" data-toggle="tooltip" data-placement="top" title="Delete">
+                                    <i class='icon-trash-2'></i>
                                 </button>
                             </div>`
                                 : ``

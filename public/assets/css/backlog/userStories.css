@@ -1001,3 +1001,33 @@ option:disabled {
 
 
 }
+
+/* --------------------------------------------------------------------------
+   Orvexa UI refresh: collapsible sections use the palette's Sage border
+   -------------------------------------------------------------------------- */
+body.ox-app #main .comment-section,
+body.ox-app #main .poker-planning-section {
+    border: 1px solid var(--ox-border) !important;
+    border-radius: var(--ox-radius-lg) !important;
+    background: var(--ox-surface) !important;
+    box-shadow: none !important;
+}
+
+body.ox-app #main .toggle-suggestion-button,
+body.ox-app #main .toggle-poker-button {
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface-2) !important;
+}
+
+body.ox-app #main .toggle-suggestion-button h4,
+body.ox-app #main .toggle-poker-button h4 {
+    color: var(--ox-ink) !important;
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+body.ox-app #main .toggle-suggestion-button span,
+body.ox-app #main .toggle-poker-button span {
+    color: var(--ox-muted);
+    font-size: 11px;
+}

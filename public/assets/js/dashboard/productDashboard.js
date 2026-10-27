@@ -1,3 +1,21 @@
+// Orvexa chart palette (validated for colour-blind separation and 3:1 contrast on white).
+// Categorical order is fixed: green, blue, amber, violet, rose.
+const OX_CHART = {
+    green: '#1f9450',
+    greenFill: 'rgba(31, 148, 80, 0.12)',
+    blue: '#2f6fd1',
+    amber: '#b7741a',
+    violet: '#7b5bd6',
+    rose: '#d1495b',
+    neutral: '#6f7c74',
+    categorical: ['#1f9450', '#2f6fd1', '#b7741a', '#7b5bd6', '#d1495b'],
+};
+if (typeof Chart !== 'undefined') {
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+    Chart.defaults.color = '#5e6e64';
+    Chart.defaults.borderColor = '#e3eadc';
+}
+
 
 if(typeof productDashboard !== 'undefined') {
     
@@ -43,8 +61,9 @@ if(typeof productDashboard !== 'undefined') {
                 datasets: [{
                     label: 'Completed Hours',
                     data: completedHours,
-                    backgroundColor: '#63a4ff',
-                    borderWidth: 1
+                    backgroundColor: OX_CHART.green,
+                    borderRadius: 4,
+                    borderWidth: 0
                 }]
             },
             options: {
@@ -121,14 +140,16 @@ if(typeof productDashboard !== 'undefined') {
                 datasets: [{
                     label: 'Velocity',
                     data: velocityData,
-                    borderColor: 'rgb(26, 240, 26)',
-                    backgroundColor: 'rgb(26, 240, 26,0.3)',
-                    tension: 0.1,
+                    borderColor: OX_CHART.green,
+                    backgroundColor: OX_CHART.greenFill,
+                    borderWidth: 2,
+                    tension: 0.3,
                     fill: true,
-                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointRadius: 4,
+                    pointBackgroundColor: OX_CHART.green,
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                    pointHoverBorderColor: OX_CHART.green
                 }]
             },
             options: {
@@ -224,9 +245,10 @@ if(typeof productDashboard !== 'undefined') {
                         notStartedPercentage,
                         onHoldPercentage
                     ],
-                    backgroundColor: ['#34be34', '#63a4ff','#E62020', '#d85733'],
-                    hoverBackgroundColor: ['#000080', '#000080', '#3A50A3', '#3A50A3'],
-                    borderWidth: 1
+                    // Completed, In progress, Not in progress, On hold
+                    backgroundColor: [OX_CHART.green, OX_CHART.blue, OX_CHART.neutral, OX_CHART.amber],
+                    borderColor: '#fff',
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -247,7 +269,8 @@ if(typeof productDashboard !== 'undefined') {
                         display: true,
                         color: '#FFFFFF',
                         formatter: function(value, context) {
-                            return value.toFixed(1) + '%';
+                            // Skip empty slices so their labels don't pile up
+                            return value > 0 ? value.toFixed(1) + '%' : '';
                         },
                         font: {
                             weight: 'bold',
@@ -302,9 +325,10 @@ if(typeof productDashboard !== 'undefined') {
                     datasets: [{
                         label: 'Daily Sprint Hours',
                         data: actualHours,
-                        borderColor: 'rgb(26, 240, 26)',
-                        backgroundColor: 'rgb(26, 240, 26,0.3)',
-                        tension: 0.1,
+                        borderColor: OX_CHART.green,
+                        backgroundColor: OX_CHART.greenFill,
+                        borderWidth: 2,
+                        tension: 0.3,
                         fill: true
                     }]
                 },
@@ -507,13 +531,9 @@ if(typeof productDashboard !== 'undefined') {
                 labels: Object.keys(statusCounts),
                 datasets: [{
                     data: Object.values(statusCounts),
-                    backgroundColor: [
-                        '#E62020',
-                        '#FC9918',
-                        '#63a4ff',
-                        '#34be34',
-                        '#c9b80a'
-                    ]
+                    backgroundColor: OX_CHART.categorical,
+                    borderColor: '#fff',
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -524,6 +544,7 @@ if(typeof productDashboard !== 'undefined') {
                     },
                     datalabels: {
                         formatter: (value, context) => {
+                            if (!value) return '';
                             let total = context.chart._metasets[0].total;
                             let percentage = (value / total * 100).toFixed(1) + '%';
                             return percentage;

@@ -21,7 +21,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 24px;
-            background: #f6f8f7;
+            background: #f7faf3;
             color: #2c3a32;
             font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -31,7 +31,7 @@
             width: 100%;
             max-width: 440px;
             padding: 40px 32px;
-            border: 1px solid #e3e8e5;
+            border: 1px solid #e3eadc;
             border-radius: 16px;
             background: #fff;
             box-shadow: 0 1px 2px rgba(16, 27, 21, 0.05);
@@ -60,7 +60,7 @@
 
         h1 {
             margin: 0 0 8px;
-            color: #101b15;
+            color: #102018;
             font-size: 22px;
             font-weight: 650;
             letter-spacing: -0.01em;
@@ -88,7 +88,7 @@
             border: 1px solid #cdd6d0;
             border-radius: 8px;
             background: #fff;
-            color: #101b15;
+            color: #102018;
             font-size: 14px;
             font-weight: 600;
             text-decoration: none;
@@ -97,12 +97,12 @@
         .button:hover { background: #f9fbfa; }
 
         .button.primary {
-            border-color: #117a45;
-            background: #117a45;
-            color: #fff;
+            border-color: #34c466;
+            background: #42d674;
+            color: #102018;
         }
 
-        .button.primary:hover { background: #10613a; }
+        .button.primary:hover { background: #34c466; }
     </style>
 </head>
 <body>

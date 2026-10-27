@@ -20,12 +20,12 @@
                     <i class="icon-plus-circle sprintListIcon"></i> <span> Add new permission</span>
                 </button>
                 <!-- Button to open modal for editing permission -->
-                <button data-bs-toggle="modal" data-bs-target="#permissionModal" class="btn primary_button"
+                <button data-bs-toggle="modal" data-bs-target="#permissionModal" class="button-secondary"
                     onclick="permissionModal('update')">
                     <i class="icon-edit sprintListIcon"></i> <span> Edit permission</span>
                 </button>
                 <!-- Button to open modal for deleting permission -->
-                <button data-bs-toggle="modal" data-bs-target="#permissionModal" class="btn primary_button"
+                <button data-bs-toggle="modal" data-bs-target="#permissionModal" class="button-secondary"
                     onclick="permissionModal('delete')">
                     <i class="icon-trash sprintListIcon"></i> <span> Delete permission</span>
                 </button>
@@ -76,14 +76,16 @@
                     $group_permissions[$module_name][] = $value;
                 }
 
-                // Displaying grouped permissions
+                // Displaying grouped permissions, one card per module
+                echo "<div class='ox-perm-grid'>";
                 foreach ($group_permissions as $module_name => $permissions) {
+                    echo "<section class='ox-perm-module'>";
                     echo "<div class='cls-module-select'>";
-                    echo "<h5>" . ucwords("{$module_name} module") . "</h5>";
+                    echo "<h5>" . esc(ucwords($module_name)) . "</h5>";
                     // Select All Checkbox for the module
                     echo "<div class='cls-sub-select'>";
                     echo "<input type='checkbox' class='form-check-input form-check-primary' id='selectAll_{$module_name}' data-module='{$module_name}'>";
-                    echo "<label for='selectAll_{$module_name}' class='form-check-label cls-all'>Select This Module</label><br>";
+                    echo "<label for='selectAll_{$module_name}' class='form-check-label cls-all'>All</label>";
                     echo "</div>";
                     echo "</div>";
                     echo "<div class='checkbox-container'>";
@@ -94,12 +96,13 @@
                         echo "<div class='checkbox-item'>";
                         echo "<input type='checkbox' class='form-check-input form-check-primary module-checkbox' 
                                     value='{$value['permission_id']}' id='{$value['permission_name']}_{$key}' name='permissions[]' data-module='{$module_name}'>";
-                        echo "<label for='{$value['permission_name']}_{$key}' class='form-check-label'>{$formatted_permission_name}</label>";
+                        echo "<label for='{$value['permission_name']}_{$key}' class='form-check-label'>" . esc($formatted_permission_name) . "</label>";
                         echo "</div>";
                     }
                     echo "</div>";
-                    echo "<br>";
+                    echo "</section>";
                 }
+                echo "</div>";
                 ?>
 
                 <!-- Submit Button -->

@@ -634,7 +634,7 @@ if (typeof calendar !== "undefined") {
                 const attendeeDiv = document.createElement("div");
                 attendeeDiv.className = "d-flex align-items-center mb-3";
                 attendeeDiv.innerHTML = `
-                      <label style="color: #117a45; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${
+                      <label style="color: #167a40; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${
                         index + 1
                       }. ${attendee.trim()}</label>
                       <input type="hidden" name="attendees[${index}][id]" value="${ids[
@@ -2271,7 +2271,7 @@ if (typeof calendar !== "undefined") {
               title: "Validation Error!",
               html: errorMessage,
               icon: "error",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             });
           } else if (response.update) {
@@ -2279,7 +2279,7 @@ if (typeof calendar !== "undefined") {
               title: "Success!",
               text: "Group Updated Successfully",
               icon: "success",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             }).then((result) => {
               if (result.isConfirmed) {
@@ -2291,7 +2291,7 @@ if (typeof calendar !== "undefined") {
               title: "Success!",
               text: "Group Deleted Successfully",
               icon: "success",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             }).then((result) => {
               if (result.isConfirmed) {
@@ -2303,7 +2303,7 @@ if (typeof calendar !== "undefined") {
               title: "Warning!",
               text: "Failed to Delete a Group",
               icon: "warning",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             });
           } else if (response.empty === true) {
@@ -2311,7 +2311,7 @@ if (typeof calendar !== "undefined") {
               title: "Warning!",
               text: "Add members to the group",
               icon: "warning",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             });
           } else if (response.success) {
@@ -2319,7 +2319,7 @@ if (typeof calendar !== "undefined") {
               title: "Success!",
               text: "Group Created Successfully",
               icon: "success",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             }).then((result) => {
               if (result.isConfirmed) {
@@ -2331,7 +2331,7 @@ if (typeof calendar !== "undefined") {
               title: "Warning",
               text: "Failed to create group for meeting",
               icon: "warning",
-              confirmButtonColor: "#117a45",
+              confirmButtonColor: "#167a40",
               confirmButtonText: "OK",
             });
           }
@@ -2341,7 +2341,7 @@ if (typeof calendar !== "undefined") {
             title: "Error",
             text: "An error occurred while creating the group",
             icon: "error",
-            confirmButtonColor: "#117a45",
+            confirmButtonColor: "#167a40",
             confirmButtonText: "OK",
           });
         },

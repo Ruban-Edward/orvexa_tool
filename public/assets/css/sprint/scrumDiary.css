@@ -124,7 +124,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 #submit-btn:hover {
     background-color: var(--ox-brand-700);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(31, 184, 101, 0.3);
+    box-shadow: 0 5px 15px rgba(66, 214, 116, 0.3);
 }
 
 @media (max-width: 768px) {

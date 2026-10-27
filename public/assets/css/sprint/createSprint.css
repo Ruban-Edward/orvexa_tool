@@ -309,7 +309,7 @@ label {
 
 .form-control:focus {
     border-color: var(--ox-brand-600);
-    box-shadow: 0 0 0 0.2rem rgba(31, 184, 101, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(66, 214, 116, 0.25);
 } */
 
 .remove-task {
@@ -558,7 +558,7 @@ h5, .h5 {
   
   .process-step.active .icon-container {
     background-color: var(--ox-brand-600);
-    box-shadow: 0 0 0 5px rgba(31, 184, 101, 0.2);
+    box-shadow: 0 0 0 5px rgba(66, 214, 116, 0.2);
   }
   
   .process-step.active .icon-container i {

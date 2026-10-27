@@ -112,7 +112,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                             
 
                         <?php else: ?>
-                            <p class="text-center">No backlog items found</p>
+                            <p class="ox-card-empty">No backlog items found</p>
                         <?php endif; ?>
                     </div>
                 
@@ -159,7 +159,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                             </div>
                         </div>
                     <?php else: ?>
-                        <p class="text-center">No user stories data available.</p>
+                        <p class="ox-card-empty">No user stories yet</p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -169,10 +169,10 @@ $runningSprints=$data['runningSprints'] ?? [];
         <div class="col-md-3">
             <form action="<?= base_url() ?>sprint/navsprintview" method="get" class="card bg-card-3 card-selector" id="currentSprint-submit" data-toggle="tooltip" title="view sprint details">
                 <input type="text" name="sprint_id" value="<?= $currentSprintDetails['sprint_id'] ?? 0 ?>" hidden>
-                <div class="card-body text-white mt-2" >
+                <div class="card-body">
                     <h5 class="card-title text-start align-items-center mb-4 cls-currentsprint"><i class="fas fa-tachometer-alt fa-fade cls-cardHeaderIcon"></i>Current sprint</h5>
                     <?php if (!empty($currentSprintDetails)): ?>
-                        <div class="row mx-0 py-2 align-items-center .cls-currentsprintcontent">
+                        <div class="row mx-0 py-2 align-items-center cls-currentsprintcontent">
                             <p class="card-text col-sm-8 px-0 my-0">
                                 <b class="text-left">Sprint version  </b> 
                             </p>
@@ -205,7 +205,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                             </div>
                         </div>
                     <?php else: ?>
-                        <p class="text-center text-white mt-4 cls-currentsprintcontent">No sprint is currently active.</p>
+                        <p class="ox-card-empty cls-currentsprintcontent">No sprint is currently active.</p>
                     <?php endif; ?>
                 </div>
             </form>
@@ -242,15 +242,15 @@ $runningSprints=$data['runningSprints'] ?? [];
                                 } else{
                                     $color = 'text-dark';
                                 }
-                                echo "<li class='list-group-item border-0 d-flex justify-content-between align-items-center bg-transparent text-white'>
+                                echo "<li class='list-group-item border-0 d-flex justify-content-between align-items-center bg-transparent'>
                                         <b>{$label}</b>
-                                        <span class='badge px-3 text-white'>{$pending_tasks}</span>
+                                        <span class='badge px-3'>{$pending_tasks}</span>
                                     </li>";
                             }
                             ?>
                         </ul>
                     <?php else: ?>
-                        <p class="text-center text-white mt-4">No pending tasks found.</p>
+                        <p class="ox-card-empty">No pending tasks found.</p>
                     <?php endif; ?>
                 </div>
             </div>

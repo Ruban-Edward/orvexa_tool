@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/app-theme.css?v=15">
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-pro.css?v=1">
     <link rel="preload" href="<?= ASSERT_PATH ?>assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-ui.css?v=1">
+    <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-ui.css?v=2">
    
     <script src="<?=ASSERT_PATH?>assets/js/dashboard/exceljs.min.js"> </script>
 

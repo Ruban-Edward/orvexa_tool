@@ -117,7 +117,7 @@
 
     .sync-icon {
         font-size: 2.5rem;
-        color: #117a45;
+        color: #167a40;
         margin-bottom: 15px;
     }
 
