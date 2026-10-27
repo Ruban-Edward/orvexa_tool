@@ -9,30 +9,44 @@
 }
 
 :root {
-    --ox-brand-50: #effbf3;
-    --ox-brand-400: #40d37c;
-    --ox-brand-500: #1fb865;
-    --ox-brand-700: #117a45;
-    --ox-brand-800: #10613a;
-    --ox-brand-900: #0d261c;
-    --ox-ink: #101b15;
-    --ox-text: #2c3a32;
-    --ox-muted: #66746c;
-    --ox-subtle: #8c988f;
-    --ox-border: #e3e8e5;
-    --ox-border-strong: #cdd6d0;
+    /* Brand palette (matches orvexa-ui.css) */
+    --ox-primary: #42d674;
+    --ox-fresh: #80ef80;
+    --ox-pistachio: #e3f0a3;
+    --ox-sage: #badba2;
+    --ox-deep: #102018;
+    --ox-soft-white: #f7faf3;
+
+    --ox-brand-50: #eefbf2;
+    --ox-brand-500: #34c466;
+    --ox-brand-600: #1f9450;
+    --ox-brand-700: #167a40;
+    --ox-ink: var(--ox-deep);
+    --ox-text: #27362d;
+    --ox-muted: #5e6e64;
+    --ox-subtle: #8a9a8f;
+    --ox-border: #e3eadc;
+    --ox-border-strong: #cad5c2;
     --ox-red: #d92d20;
+    --ox-red-bg: #fef1f0;
+    --ox-ring: 0 0 0 4px rgba(66, 214, 116, 0.28);
     --ox-font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 body.ox-auth {
     margin: 0;
-    padding: 0;
     min-height: 100vh;
-    background: #ffffff;
+    background: var(--ox-soft-white);
     color: var(--ox-text);
     font-family: var(--ox-font);
     font-size: 14px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -42,22 +56,25 @@ body.ox-auth {
 
 .ox-auth-shell {
     display: grid;
-    grid-template-columns: minmax(380px, 1fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(420px, 0.9fr) minmax(0, 1.1fr);
     min-height: 100vh;
     min-height: 100dvh;
 }
 
-/* Form column */
+/* --------------------------------------------------------------------------
+   Form column
+   -------------------------------------------------------------------------- */
 .ox-auth-panel {
     display: flex;
     flex-direction: column;
-    padding: 32px 48px;
+    padding: 32px 56px;
+    background: #ffffff;
 }
 
 .ox-auth-brand img {
     display: block;
-    height: 34px;
     width: auto;
+    height: 36px;
 }
 
 .ox-auth-card {
@@ -65,14 +82,39 @@ body.ox-auth {
     max-width: 380px;
     margin: auto;
     padding: 48px 0;
+    animation: ox-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ox-auth-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 4px 10px 4px 8px;
+    border: 1px solid var(--ox-sage);
+    border-radius: 999px;
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-700);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ox-auth-eyebrow::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ox-primary);
+    box-shadow: 0 0 0 3px rgba(66, 214, 116, 0.25);
+    content: "";
 }
 
 .ox-auth-card h1 {
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     color: var(--ox-ink);
-    font-size: 28px;
-    font-weight: 650;
-    letter-spacing: -0.02em;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
 }
 
 .ox-auth-lead {
@@ -86,17 +128,17 @@ body.ox-auth {
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 20px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid #fecdca;
     border-radius: 10px;
-    background: #fef3f2;
+    background: var(--ox-red-bg);
     color: #b42318;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
 }
 
 .ox-auth-alert svg {
-    flex-shrink: 0;
+    flex: none;
     width: 18px;
     height: 18px;
     margin-top: 1px;
@@ -111,18 +153,42 @@ body.ox-auth {
     margin-bottom: 6px;
     color: var(--ox-ink);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
+}
+
+.ox-input {
+    position: relative;
+}
+
+.ox-input-icon {
+    position: absolute;
+    top: 13px;
+    left: 14px;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--ox-subtle);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+    transition: stroke 0.15s ease;
+}
+
+.ox-input:focus-within .ox-input-icon {
+    stroke: var(--ox-brand-700);
 }
 
 .ox-auth .form-control {
-    height: 44px;
-    padding: 0 14px;
+    height: 46px;
+    padding: 0 14px 0 44px;
     border: 1px solid var(--ox-border-strong);
     border-radius: 10px;
-    background: #fff;
+    background: #ffffff;
     color: var(--ox-ink);
     font-size: 15px;
-    box-shadow: 0 1px 2px rgba(16, 27, 21, 0.05);
+    box-shadow: 0 1px 2px rgba(16, 32, 24, 0.04);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -130,79 +196,175 @@ body.ox-auth {
     color: var(--ox-subtle);
 }
 
-.ox-auth .form-control:focus {
-    border-color: var(--ox-brand-500);
-    outline: 0;
-    box-shadow: 0 0 0 4px rgba(31, 184, 101, 0.18);
+.ox-auth .form-control:hover {
+    border-color: var(--ox-sage);
 }
 
+.ox-auth .form-control:focus {
+    border-color: var(--ox-primary);
+    box-shadow: var(--ox-ring);
+    outline: 0;
+}
+
+.ox-auth .cls-password .form-control {
+    padding-right: 48px;
+}
+
+/* Bootstrap's validation icons collide with ours */
+.ox-auth .was-validated .form-control:valid,
 .ox-auth .was-validated .form-control:invalid {
-    border-color: var(--ox-red);
     background-image: none;
+    padding-right: 14px;
+}
+
+.ox-auth .was-validated .cls-password .form-control:valid,
+.ox-auth .was-validated .cls-password .form-control:invalid {
+    padding-right: 48px;
 }
 
 .ox-auth .was-validated .form-control:valid {
     border-color: var(--ox-border-strong);
-    background-image: none;
+}
+
+.ox-auth .was-validated .form-control:invalid {
+    border-color: var(--ox-red);
+}
+
+.ox-auth .was-validated .form-control:invalid:focus {
+    box-shadow: 0 0 0 4px rgba(217, 45, 32, 0.15);
 }
 
 .ox-auth .invalid-feedback,
 .ox-auth .cls-error-msg {
     margin-top: 6px;
     color: var(--ox-red);
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.cls-password {
-    position: relative;
+.ox-auth .cls-error-msg:empty {
+    display: none;
 }
 
-.cls-password .form-control {
-    padding-right: 44px;
-}
-
-#togglePassword {
+.ox-reveal {
     position: absolute;
-    top: 22px;
-    right: 6px;
+    top: 5px;
+    right: 5px;
+    z-index: 2;
     display: grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
     border-radius: 8px;
-    color: var(--ox-subtle);
-    font-size: 17px;
+    background: transparent;
+    color: var(--ox-muted);
     cursor: pointer;
-    transform: translateY(-50%);
 }
 
-#togglePassword:hover {
-    background: #f1f4f2;
+.ox-reveal:hover {
+    background: var(--ox-soft-white);
     color: var(--ox-ink);
 }
 
-.ox-auth-submit.btn {
-    width: 100%;
-    height: 44px;
-    margin-top: 8px;
-    border: 1px solid var(--ox-brand-700);
-    border-radius: 10px;
-    background: var(--ox-brand-700);
-    color: #fff;
-    font-size: 15px;
+.ox-reveal:focus-visible {
+    box-shadow: var(--ox-ring);
+    outline: 0;
+}
+
+.ox-reveal svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.ox-reveal .ox-eye-off,
+.ox-reveal[aria-pressed="true"] .ox-eye {
+    display: none;
+}
+
+.ox-reveal[aria-pressed="true"] .ox-eye-off {
+    display: block;
+}
+
+.ox-caps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 0 0;
+    color: #93530b;
+    font-size: 12px;
     font-weight: 600;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(16, 27, 21, 0.1);
 }
 
-.ox-auth-submit.btn:hover,
-.ox-auth-submit.btn:focus-visible {
-    border-color: var(--ox-brand-800);
-    background: var(--ox-brand-800);
-    color: #fff;
+.ox-caps::before {
+    content: "⇪";
+    font-size: 13px;
 }
 
-.ox-auth-submit.btn:focus-visible {
-    box-shadow: 0 0 0 4px rgba(31, 184, 101, 0.25);
+/* Primary action: Primary Green with Deep Green text, as in the app */
+.ox-auth-submit {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 48px;
+    margin-top: 8px;
+    border: 1px solid var(--ox-brand-500);
+    border-radius: 10px;
+    background: var(--ox-primary);
+    color: var(--ox-deep);
+    font-size: 15px;
+    font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 16px -6px rgba(31, 148, 80, 0.55);
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.ox-auth-submit:hover {
+    background: var(--ox-brand-500);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 10px 22px -8px rgba(31, 148, 80, 0.6);
+}
+
+.ox-auth-submit:active {
+    transform: translateY(1px);
+}
+
+.ox-auth-submit:focus-visible {
+    box-shadow: var(--ox-ring);
+    outline: 0;
+}
+
+.ox-spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(16, 32, 24, 0.25);
+    border-top-color: var(--ox-deep);
+    border-radius: 50%;
+    animation: ox-spin 0.7s linear infinite;
+}
+
+.ox-auth-submit.is-loading {
+    pointer-events: none;
+}
+
+.ox-auth-submit.is-loading .ox-spinner {
+    display: block;
+}
+
+.ox-auth-help {
+    margin: 20px 0 0;
+    color: var(--ox-muted);
+    font-size: 13px;
+    text-align: center;
 }
 
 .ox-auth-footer {
@@ -210,31 +372,398 @@ body.ox-auth {
     font-size: 12px;
 }
 
-/* Visual column */
-.ox-auth-visual {
+/* --------------------------------------------------------------------------
+   Brand stage
+   -------------------------------------------------------------------------- */
+.ox-auth-stage {
     position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 12px;
-    padding: 48px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
     overflow: hidden;
+    margin: 12px;
+    padding: 56px 56px 44px;
     border-radius: 24px;
-    /* matches the illustration's own background so the image blends in */
-    background: #16261b;
+    background:
+        radial-gradient(60% 50% at 85% 10%, rgba(66, 214, 116, 0.28), transparent 70%),
+        radial-gradient(50% 45% at 5% 100%, rgba(227, 240, 163, 0.16), transparent 70%),
+        var(--ox-deep);
+    color: #dfe9e1;
+    isolation: isolate;
 }
 
-.ox-auth-visual picture,
-.ox-auth-visual img {
+/* Faint dot grid */
+.ox-auth-stage::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(rgba(186, 219, 162, 0.16) 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
+    mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
+    content: "";
+}
+
+.ox-stage-copy {
+    max-width: 520px;
+}
+
+.ox-stage-eyebrow {
+    margin: 0 0 16px;
+    color: var(--ox-sage);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.ox-stage-copy h2 {
+    margin: 0 0 16px;
+    color: #ffffff;
+    font-size: clamp(30px, 3.2vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+}
+
+.ox-stage-copy h2 span {
+    background: linear-gradient(90deg, var(--ox-pistachio) 0%, var(--ox-fresh) 50%, var(--ox-primary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.ox-stage-copy > p:last-child {
+    max-width: 420px;
+    margin: 0;
+    color: #a9bcae;
+    font-size: 15px;
+}
+
+/* Product preview */
+.ox-stage-preview {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    max-width: 560px;
+}
+
+.ox-mock {
+    padding: 18px;
+    border: 1px solid rgba(186, 219, 162, 0.16);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+    box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    animation: ox-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ox-mock-sprint {
+    grid-row: span 2;
+    animation-delay: 0.1s;
+}
+
+.ox-mock-burn {
+    animation-delay: 0.2s;
+}
+
+.ox-mock-toast {
+    animation-delay: 0.3s;
+}
+
+.ox-mock-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.ox-mock-tag,
+.ox-mock-title {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ox-mock-live,
+.ox-mock-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(66, 214, 116, 0.14);
+    color: var(--ox-fresh);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.ox-mock-live::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ox-primary);
+    animation: ox-blink 1.8s ease-in-out infinite;
+    content: "";
+}
+
+.ox-mock-sprint-body {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.ox-ring {
+    --p: 0;
+    position: relative;
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: conic-gradient(var(--ox-primary) calc(var(--p) * 1%), rgba(255, 255, 255, 0.1) 0);
+    text-align: center;
+}
+
+.ox-ring::before {
+    position: absolute;
+    inset: 9px;
+    border-radius: 50%;
+    background: #15291e;
+    content: "";
+}
+
+.ox-ring strong,
+.ox-ring small {
+    position: relative;
+}
+
+.ox-ring strong {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.ox-ring small {
+    color: #a9bcae;
+    font-size: 11px;
+}
+
+.ox-mock dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+}
+
+.ox-mock dl div {
+    display: flex;
+    flex-direction: column;
+}
+
+.ox-mock dt {
+    color: #93a898;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.ox-mock dd {
+    margin: 0;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.ox-mock-roles {
+    display: flex;
+    margin-top: 18px;
+}
+
+.ox-mock-roles span {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-right: -4px;
+    border: 2px solid #17301f;
+    border-radius: 50%;
+    background: var(--ox-sage);
+    color: var(--ox-deep);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.ox-mock-roles span:nth-child(2) { background: var(--ox-pistachio); }
+.ox-mock-roles span:nth-child(3) { background: var(--ox-fresh); }
+.ox-mock-roles span:nth-child(4) { background: var(--ox-primary); }
+
+.ox-mock-burn svg {
     display: block;
     width: 100%;
-    max-width: 720px;
-    height: auto;
+    height: 72px;
+    overflow: visible;
 }
 
-.ox-auth-visual img {
-    -webkit-mask-image: radial-gradient(70% 65% at 50% 50%, #000 50%, transparent 100%);
-    mask-image: radial-gradient(70% 65% at 50% 50%, #000 50%, transparent 100%);
+.ox-burn-grid {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 1;
+}
+
+.ox-burn-ideal {
+    fill: none;
+    stroke: rgba(186, 219, 162, 0.45);
+    stroke-dasharray: 4 5;
+    stroke-width: 1.5;
+}
+
+.ox-burn-area {
+    fill: rgba(66, 214, 116, 0.16);
+}
+
+.ox-burn-line {
+    fill: none;
+    stroke: var(--ox-primary);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    animation: ox-draw 1.4s 0.4s ease-out forwards;
+}
+
+.ox-burn-dot {
+    fill: var(--ox-primary);
+    stroke: var(--ox-deep);
+    stroke-width: 2;
+}
+
+.ox-mock-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+.ox-toast-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--ox-primary);
+}
+
+.ox-toast-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--ox-deep);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.ox-mock-toast strong {
+    display: block;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ox-mock-toast small {
+    color: #a9bcae;
+    font-size: 12px;
+}
+
+/* Scrum flow */
+.ox-stage-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ox-stage-flow li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #a9bcae;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ox-stage-flow li + li::before {
+    width: 18px;
+    height: 1px;
+    background: rgba(186, 219, 162, 0.35);
+    content: "";
+}
+
+/* --------------------------------------------------------------------------
+   Motion
+   -------------------------------------------------------------------------- */
+@keyframes ox-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ox-draw {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes ox-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+@keyframes ox-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ox-auth *,
+    .ox-auth *::before {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        animation-delay: 0s !important;
+    }
+
+    .ox-burn-line {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1199.98px) {
+    .ox-auth-stage {
+        padding: 44px 40px 36px;
+    }
+
+    .ox-stage-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .ox-mock-sprint {
+        grid-row: auto;
+    }
+
+    .ox-mock-burn {
+        display: none;
+    }
 }
 
 @media (max-width: 991.98px) {
@@ -242,15 +771,33 @@ body.ox-auth {
         grid-template-columns: 1fr;
     }
 
-    .ox-auth-visual {
+    .ox-auth-stage {
         display: none;
     }
 
     .ox-auth-panel {
-        padding: 24px 20px;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 24px;
+        border-top: 4px solid var(--ox-primary);
+        background: #ffffff;
     }
 
     .ox-auth-card {
-        padding: 32px 0;
+        padding: 40px 0;
+    }
+
+    .ox-auth-footer {
+        text-align: center;
+    }
+}
+
+@media (max-width: 479.98px) {
+    .ox-auth-card h1 {
+        font-size: 26px;
+    }
+
+    .ox-auth-brand img {
+        height: 32px;
     }
 }

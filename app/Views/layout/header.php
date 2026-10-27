@@ -18,9 +18,16 @@
         } catch (e) {}
     </script>
     <div id="loader" role="status" aria-live="polite">
-        <div class="app-loader-mark">
-            <img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_06_app_icon.png" alt="">
+        <div class="ox-loader-card">
+            <div class="ox-loader-mark">
+                <span class="ox-loader-orbit" aria-hidden="true"></span>
+                <img src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_06_app_icon.png" alt="" width="44" height="44">
+            </div>
+            <div class="ox-loader-text">
+                <strong>Loading</strong>
+                <span class="ox-loader-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            </div>
+            <span class="ox-loader-track" aria-hidden="true"></span>
         </div>
-        <span class="app-loader-label">Loading</span>
     </div>
     <div class="ox-progress" id="oxProgress" aria-hidden="true"></div>

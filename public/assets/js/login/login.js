@@ -1,62 +1,49 @@
-// for signup function
-// function signup(){
-//     document.getElementById("loginForm").action = "signup"
-//     document.getElementById('login-or-signup-msg').innerHTML = "Signup with redmine";
-//     document.getElementById('login-to-signup-change').innerHTML = "Already have an account?<a  href='' onclick='return login()' id='login-to-signup-changelink'> Login</a>";
-//     return false;
-// }
-
-
-// for Login function
-// function login(){
-//     document.getElementById("loginForm").action = "login"
-//     document.getElementById('login-or-signup-msg').innerHTML = "Get Started";
-//     document.getElementById('login-to-signup-change').innerHTML = "Don't have an account?<a  href='' onclick='return signup()' id='login-to-signup-changelink'>Sign up</a>";
-//     return false;
-// }
-
-// document.addEventListener('DOMContentLoaded', (event) => {
-//     function setFullHeight() {
-//         var screenHeight = window.innerHeight;
-//         var screenWidth = window.innerWidth;
-//         var body = document.querySelector('body');
-//         body.style.height = screenHeight + 'px';
-//         body.style.width = screenWidth + 'px';
-//     }
-    
-//     // Set height initially
-//     setFullHeight();
-// });
-
-// Example starter JavaScript for disabling form submissions if there are invalid fields
+// Sign-in page: client-side validation, password reveal, Caps Lock hint and submit state
 (function () {
     'use strict';
-    window.addEventListener('load', function () {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
-        var validation = Array.prototype.filter.call(forms, function (form) {
-            form.addEventListener('submit', function (event) {
-                if (form.checkValidity() === false) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    }, false);
-})();
 
-// toggle function for password visible and hide
-const togglePassword = document.querySelector('#togglePassword');
-const password = document.querySelector('#password');
-togglePassword.addEventListener('click', () => {
-    // Toggle the type attribute using
-    // getAttribure() method
-    const type = password
-        .getAttribute('type') === 'password' ?
-        'text' : 'password';
-    password.setAttribute('type', type);
-    // Toggle the eye and bi-eye icon
-    togglePassword.classList.toggle('bi-eye');
-});
+    const form = document.getElementById('loginForm');
+    const password = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
+    const capsWarning = document.getElementById('capsWarning');
+    const submit = document.getElementById('signInButton');
+
+    // Bootstrap-style validation; show a busy button only when the form will actually submit
+    form.addEventListener('submit', function (event) {
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            submit.classList.add('is-loading');
+            submit.setAttribute('aria-busy', 'true');
+            submit.querySelector('.ox-submit-label').textContent = 'Signing in…';
+        }
+        form.classList.add('was-validated');
+    }, false);
+
+    // Restore the button if the page is shown again from the back/forward cache
+    window.addEventListener('pageshow', function () {
+        submit.classList.remove('is-loading');
+        submit.removeAttribute('aria-busy');
+        submit.querySelector('.ox-submit-label').textContent = 'Sign in';
+    });
+
+    togglePassword.addEventListener('click', function () {
+        const show = password.getAttribute('type') === 'password';
+        password.setAttribute('type', show ? 'text' : 'password');
+        togglePassword.setAttribute('aria-pressed', String(show));
+        togglePassword.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        password.focus();
+    });
+
+    const updateCaps = function (event) {
+        if (typeof event.getModifierState === 'function') {
+            capsWarning.hidden = !event.getModifierState('CapsLock');
+        }
+    };
+    password.addEventListener('keydown', updateCaps);
+    password.addEventListener('keyup', updateCaps);
+    password.addEventListener('blur', function () {
+        capsWarning.hidden = true;
+    });
+})();
