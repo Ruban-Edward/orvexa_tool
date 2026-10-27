@@ -11,15 +11,15 @@ This document is a technical overview of the repository as inspected. It is inte
 | Area | Technology | Evidence in repository |
 |---|---|---|
 | Application framework | CodeIgniter 4 | `composer.json`, `app/Config`, `spark` |
-| Language/runtime | PHP 8.1+; Docker image uses PHP 8.5.12-FPM | `composer.json`, `Dockerfile` |
-| Database | MySQL 8.3 | `docker-compose.yml` |
+| Language/runtime | PHP 8.2+ (CodeIgniter 4.7.5); Docker image uses PHP 8.5.12-FPM | `composer.json`, `Dockerfile` |
+| Database | MySQL 8.4 LTS | `docker-compose.yml` |
 | Web server | Nginx 1.27 Alpine | `docker-compose.yml`, `docker/nginx/default.conf` |
 | Database driver | MySQLi / PDO MySQL extension | `app/Config/Database.php`, `Dockerfile` |
 | Front end | Server-rendered PHP views, CSS, JavaScript, Bootstrap-style UI assets | `app/Views`, `public/assets`, `public/support` |
 | Real-time capability | Ratchet WebSockets | `composer.json`, `app/Websockets/PockerServer.php` |
 | External integration | Redmine API client | `kbsali/redmine-api`, sync controllers/models |
 | Reports/files | Dompdf and PhpSpreadsheet | `composer.json`, sprint/report controllers |
-| Testing | PHPUnit 10.5 and CodeIgniter test support | `tests`, `composer.json` |
+| Testing | PHPUnit 11.5 and CodeIgniter test support | `tests`, `composer.json` |
 
 ## 3. Repository structure
 

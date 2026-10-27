@@ -43,9 +43,9 @@ See [docs/ORVEXA_COMMANDS.md](docs/ORVEXA_COMMANDS.md) for the full command refe
 
 ## Technology and architecture
 
-- PHP 8.5.12-FPM and CodeIgniter 4
-- MySQL 8.3 and Nginx 1.27
-- Docker Compose and PHPUnit 10.5
+- PHP 8.5.12-FPM and CodeIgniter 4.7.5
+- MySQL 8.4 LTS and Nginx 1.27
+- Docker Compose and PHPUnit 11.5
 - Redmine synchronization, report exports, background jobs, and WebSockets
 
 The application follows CodeIgniter MVC. Routes are defined in `app/Config/Routes.php`; authentication and ACL filters protect modules; controllers call models/services; and views render the interface.
