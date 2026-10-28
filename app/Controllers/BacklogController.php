@@ -517,6 +517,25 @@ class BacklogController extends BaseController
      * @return Response
      * Purpose: This function is used to get Backlogitem details with limit,offset,filters applied
      */
+    /**
+     * Undo a backlog item deletion (the "Undo" action of the delete toast).
+     */
+    public function restoreBacklog(): Response
+    {
+        $pblId = (int) $this->request->getGet('pblid');
+        $pId = (int) $this->request->getGet('pid');
+        if (!has_permission('backlog/deletebacklogitem') || $this->backlogItemModel->productOf('backlog', $pblId) !== $pId || !authenticateUser($pId)) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot restore this backlog item.']);
+        }
+
+        $res = $this->backlogItemModel->restoreItem($pblId, ['orvexa_backlog_item', 'backlog_item_id']);
+        if ($res) {
+            Events::trigger('log_actions', formActionData("updateBacklog", $pblId, $pId, "Backlog item ID {$pblId} is restored"));
+        }
+
+        return $this->response->setJSON(['success' => $res]);
+    }
+
     public function filterBacklogItem(): Response
     {
         // Retrieve JSON input from the request and decode it into an associative array
@@ -534,6 +553,7 @@ class BacklogController extends BaseController
             return $this->response->setJSON([
                 'status' => 'success',
                 'data' => $filteredData,
+                'total' => $this->backlogModel->lastTotal,
             ]);
         } else {
             // If no filter criteria are provided, return an error message in JSON format

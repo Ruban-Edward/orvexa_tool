@@ -72,6 +72,7 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('getbacklogItemById', 'BacklogController::getbacklogItemById');
     $routes->post('updatebacklog', 'BacklogController::updateBacklog');
     $routes->post('deletebacklogitem', 'BacklogController::deleteBacklog');
+    $routes->post('restorebacklogitem', 'BacklogController::restoreBacklog');
     $routes->post('changebacklogstatus', 'BacklogController::changeBacklogStatus');
     $routes->post('historydata', 'BacklogController::historyDataDetails');
 
@@ -82,6 +83,7 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('addUserStory', 'UserStoryController::addUserStory');
     $routes->post('updateUserStory', 'UserStoryController::updateUserStory');
     $routes->post('deleteuserstory/(:num)/(:num)/(:num)', 'UserStoryController::deleteUserStory/$1/$2/$3');
+    $routes->post('restoreuserstory/(:num)/(:num)/(:num)', 'UserStoryController::restoreUserStory/$1/$2/$3');
     $routes->post('userstoryByEpic/(:num)', 'UserStoryController::userstoryByEpic/$1');
     $routes->get('userstory/details/(:num)', 'UserStoryController::getUserStoryDetails/$1');
     $routes->get('downloadUserStories', 'UserStoryController::downloadUserStories');
@@ -94,6 +96,7 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('addTasks/(:num)/(:num)/(:num)', 'TaskController::addTasks/$1/$2/$3');
     $routes->post('updateTaskById/(:num)/(:num)/(:num)', 'TaskController::updateTasks/$1/$2/$3');
     $routes->post('deletetask/(:num)/(:num)/(:num)', 'TaskController::deleteTasks/$1/$2/$3');
+    $routes->post('restoretask/(:num)/(:num)/(:num)', 'TaskController::restoreTasks/$1/$2/$3');
     $routes->post('getTaskById/(:num)', 'TaskController::getTaskById/$1');
 
     $routes->post('insertPokerPlanning', 'PockerController::insertPokerPlanning');
@@ -136,6 +139,8 @@ $routes->group('sprint', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('fetchMembers', 'SprintController::fetchMembers');
     $routes->post('fetchScrumTasks', 'SprintController::fetchScrumTasks');
     $routes->post('changeSprintStatusById/(:num)', 'SprintController::changeSprintStatusById/$1');
+    $routes->get('board/(:num)', 'SprintController::boardTasks/$1');
+    $routes->post('moveTask', 'SprintController::moveTask');
     $routes->post('applySelection', 'SprintController::getSprintSelectionList');
 });
 // Same URL as before (the sprint-list JS posts here) but now behind the auth + ACL filters.
@@ -182,6 +187,13 @@ $routes->group('report', ['filter' => ['auth', 'acl']], function ($routes) {
 $routes->group('admin', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('manageUser', 'AdminController::userList');
     $routes->post('updaterole', 'AdminController::updateRole');
+    $routes->post('users/save', 'AdminController::saveUser');
+    $routes->post('users/status', 'AdminController::setUserStatus');
+    $routes->post('users/resetPassword', 'AdminController::resetUserPassword');
+    $routes->get('users/activity/(:num)', 'AdminController::userActivity/$1');
+    $routes->get('users/import/template', 'AdminController::importTemplate');
+    $routes->post('users/import/preview', 'AdminController::importPreview');
+    $routes->post('users/import/commit', 'AdminController::importCommit');
     $routes->get('setPermissionPage', 'AdminController::setPermissionPage');
     $routes->post('setPermissions', 'AdminController::setPermission');
     $routes->post('searchrole', 'AdminController::searchRole');
@@ -216,6 +228,20 @@ $routes->group('admin', ['filter' => ['auth', 'acl']], function ($routes) {
 
 $routes->group('notification', ['filter' => 'auth'], function ($routes) {
     $routes->get('notificationDetails', 'NotificationController::notificationDetails');
+    $routes->get('unreadCount', 'NotificationController::unreadCount');
+    $routes->post('markRead', 'NotificationController::markRead');
+});
+
+/**
+ * @purpose    Personal pages and the global search used by the header
+ */
+$routes->group('', ['filter' => ['auth', 'acl']], function ($routes) {
+    $routes->get('mywork', 'MyWorkController::index');
+    $routes->get('search', 'SearchController::index');
+    $routes->get('profile', 'ProfileController::index');
+    $routes->post('profile/password', 'ProfileController::changePassword');
+    $routes->post('profile/details', 'ProfileController::updateDetails');
+    $routes->get('profile/checkUsername', 'ProfileController::checkUsername');
 });
 
 /**
@@ -226,17 +252,3 @@ $routes->group('notification', ['filter' => 'auth'], function ($routes) {
 // for accesssing all the urls
 $routes->get('/(:any)', 'AuthController::index', ['filter' => ['auth', 'loginpage']]);
 
-/**
- * Routes Configuration for Notes
- *
- * @category   Routes
- * @package    App
- * @author     Jeril
- * @created    27 August 2024
- * @purpose    Defines routes for managing notes in the application. Includes endpoints for creating and retrieving notes.
- *             These routes are protected by authentication and access control filters.
- */
-$routes->group('notes', ['filter' => ['auth', 'acl']], function ($routes) {
-    $routes->post('createnotes', 'NotesController::insertNotes');
-    $routes->post('getnotes', 'NotesController::getNotes');
-});

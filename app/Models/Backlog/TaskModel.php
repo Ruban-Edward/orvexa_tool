@@ -7,6 +7,11 @@ use App\Models\BaseModel;
 
 class TaskModel extends BaseModel
 {
+    /**
+     * Total rows matching the last getTasks() filter, ignoring limit/offset.
+     */
+    public int $lastTotal = 0;
+
     // Table for insertion
     protected $table = "orvexa_task";
 
@@ -165,7 +170,8 @@ class TaskModel extends BaseModel
     
         public function updateTaskById($args)
         {
-            $sql = "UPDATE orvexa_task SET task_title=:task_title:,task_description=:description:,assignee_id=:assignee:,priority=:priority:,task_status=:status:,tracker_id=:tracker_id:,completed_percentage=:completed_percentage:,estimated_hours=:estimated_time:,start_date=:start_date:,end_date=:end_date: 
+            $sql = "UPDATE orvexa_task SET task_title=:task_title:,task_description=:description:,assignee_id=:assignee:,priority=:priority:,task_status=:status:,tracker_id=:tracker_id:,completed_percentage=:completed_percentage:,estimated_hours=:estimated_time:,start_date=:start_date:,end_date=:end_date:,
+                    r_user_id_updated=:author_id:,updated_date=:updated_date:
                     WHERE task_id=:task_id:";
             $this->query($sql, [
                 'task_id' => $args['task_id'],
@@ -180,7 +186,8 @@ class TaskModel extends BaseModel
                 'author_id' => $args['author_id'],
                 'completed_percentage' => $args['completed_percentage'],
                 'estimated_time' => $args['estimated_hours'],
-                'updated_on' => $args['updated_on']
+                'updated_on' => $args['updated_on'],
+                'updated_date' => date('Y-m-d H:i:s'),
             ]);
             if ($sql) {
                 return 1;
@@ -262,7 +269,7 @@ class TaskModel extends BaseModel
                      * 
                  From 
                      orvexa_task 
-                 Where ";
+                 Where task_id = :id: AND is_deleted = 'N'";
  
          $query = $this->query($sql, ['id' => $id]);
          if ($query) {
@@ -292,7 +299,7 @@ class TaskModel extends BaseModel
                     i.estimated_hours
                 FROM 
                     orvexa_task i
-                INNER JOIN 
+                LEFT JOIN 
                     orvexa_user u ON i.assignee_id = u.external_employee_id 
                 INNER JOIN 
                     orvexa_task_status ts ON i.task_status = ts.id
@@ -325,23 +332,11 @@ class TaskModel extends BaseModel
 
         $params['id'] = $filter['UId'];
 
-        if (!empty($filter['limit'])) {
-            $sql .= " limit :limit:";
-            $params['limit'] = $filter['limit'];
-        } else {
-            $sql .= " limit :limit:";
-            $params['limit'] = 10;
-        }
-        if (!empty($filter['offset'])) {
-            $sql .= " offset :offset:";
-            $params['offset'] = $filter['offset'];
-        } else {
-            $sql .= " offset :offset:";
-            $params['offset'] = 0;
+        $this->lastTotal = (int) $this->query("SELECT COUNT(*) AS total FROM ($sql) AS filtered", $params)->getRow()->total;
 
-        }
+        $sql .= " ORDER BY i.task_id DESC LIMIT " . max(1, min(100, (int) ($filter['limit'] ?? 10)))
+              . " OFFSET " . max(0, (int) ($filter['offset'] ?? 0));
 
-        $query = $this->db->query($sql, $params);
         $query = $this->query($sql, $params);
         if ($query->getNumRows() > 0) {
             return $query->getResultArray();

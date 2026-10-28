@@ -7,6 +7,7 @@ $navSections = [
         'label' => null,
         'items' => [
             ['url' => 'dashboard/dashboardView', 'icon' => 'grid', 'label' => 'Dashboard', 'match' => ['dashboard']],
+            ['url' => 'mywork', 'icon' => 'check-square', 'label' => 'My work', 'match' => ['mywork']],
         ],
     ],
     [

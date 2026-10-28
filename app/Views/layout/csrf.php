@@ -37,16 +37,36 @@ $csrfHeader = config('Security')->headerName;
         wrapped.__oxCsrf = true;
         XMLHttpRequest.prototype.open = wrapped;
     }
+    // Remember when the header was already set, so it is never sent twice ("tok, tok" fails verification)
+    var xhrSetHeader = XMLHttpRequest.prototype.setRequestHeader;
+    XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
+        if (String(name).toLowerCase() === HEADER.toLowerCase()) { this.__csrfSet = true; }
+        return xhrSetHeader.apply(this, arguments);
+    };
     XMLHttpRequest.prototype.send = function () {
         var meta = this.__csrf;
-        if (meta && !SAFE.test(meta.method) && sameOrigin(meta.url)) {
+        if (!this.__csrfSet && meta && !SAFE.test(meta.method) && sameOrigin(meta.url)) {
             try { this.setRequestHeader(HEADER, TOKEN); } catch (e) { /* already sent */ }
         }
         return xhrSend.apply(this, arguments);
     };
-    installXhr();
-    document.addEventListener('DOMContentLoaded', installXhr);
-    window.addEventListener('load', installXhr);
+    // jQuery requests get the header from a prefilter as well, because tools such as the
+    // debug toolbar replace XMLHttpRequest.prototype.open and drop the wrapper above
+    function installJquery() {
+        var jq = window.jQuery;
+        if (!jq || !jq.ajaxPrefilter || jq.__oxCsrf) { return; }
+        jq.__oxCsrf = true;
+        jq.ajaxPrefilter(function (options, original, jqXHR) {
+            if (!options.crossDomain && !SAFE.test(options.type || 'GET')) {
+                jqXHR.setRequestHeader(HEADER, TOKEN);
+            }
+        });
+    }
+    function install() { installXhr(); installJquery(); }
+    window.oxCsrfInstall = install;
+    install();
+    document.addEventListener('DOMContentLoaded', install);
+    window.addEventListener('load', install);
 
     // fetch()
     if (window.fetch) {

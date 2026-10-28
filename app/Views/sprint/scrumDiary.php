@@ -1,6 +1,6 @@
 <form id="scrumDiaryForm" action="<?= ASSERT_PATH ?>sprint/scrumdiary?sprint_id=<?= $_GET['sprint_id'] ?>" method="post">
     <div class="date-picker">
-        <input type="date" id="date-picker" name="date">
+        <input type="date" id="date-picker" name="date" aria-label="Scrum date">
     </div>
     <div class="container">
         <div class="input-area">

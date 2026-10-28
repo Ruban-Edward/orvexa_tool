@@ -130,11 +130,6 @@ if (typeof m_userStories !== "undefined") {
     };
   });
   document.addEventListener("DOMContentLoaded", function () {
-    if (totalCount == 0) {
-      document.getElementById("empty").style.display = "block";
-    } else {
-      document.getElementById("empty").style.display = "none";
-    }
 
     function updateUserStories() {
       var selectedEpics = $(".epic-checkbox:checked");
@@ -363,7 +358,7 @@ if (typeof m_userStories !== "undefined") {
     label.classList.add("selected-email");
     label.innerHTML = `
         <span>${email}</span>
-        <span class="remove-email" onclick="removeSelectedEmail(this, '${email}')">&times;</span>`;
+        <button type="button" class="remove-email" aria-label="Remove ${email}" onclick="removeSelectedEmail(this, '${email}')"><i class="icon-x" aria-hidden="true"></i></button>`;
     selectedEmailsContainer.appendChild(label);
   }
 
@@ -389,58 +384,24 @@ if (typeof m_userStories !== "undefined") {
     .addEventListener("keydown", filterEmails);
 
   document.addEventListener("DOMContentLoaded", () => {
-    const searchBox = document.querySelector(".search-box");
-    const searchBtn = document.getElementById("search_btn");
-    const searchInput = document.getElementById("backlogSearchInput");
-
-    searchBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      searchBox.classList.toggle("expanded");
-      if (searchBox.classList.contains("expanded")) {
-        searchInput.focus();
-      }
-    });
-
-    // Close search box when clicking outside
-    document.addEventListener("click", function (e) {
-      if (!searchBox.contains(e.target)) {
-        searchBox.classList.remove("expanded");
-      }
-    });
-
     const filterBtn = document.getElementById("filter_btn");
-    const closeFilterSidebarBtn = document.getElementById(
-      "closeFilterSidebarBtn"
-    );
     const filterSidebar = document.getElementById("filterSidebar");
-
-    // Open the filter sidebar
-    filterBtn.addEventListener("click", () => {
-      filterSidebar.classList.add("open");
+    const setPanel = (open) => {
+      filterSidebar.classList.toggle("open", open);
+      filterBtn?.setAttribute("aria-expanded", String(open));
+    };
+    filterBtn?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setPanel(!filterSidebar.classList.contains("open"));
     });
-
-    // Close the filter sidebar
-    closeFilterSidebarBtn.addEventListener("click", () => {
-      filterSidebar.classList.remove("open");
+    document.getElementById("closeFilterSidebarBtn")?.addEventListener("click", () => {
+      setPanel(false);
+      filterBtn?.focus();
     });
-
-    // Optionally close the sidebar when clicking outside of it
     document.addEventListener("click", (event) => {
-      if (!filterSidebar.contains(event.target) && event.target !== filterBtn) {
-        filterSidebar.classList.remove("open");
+      if (filterSidebar.classList.contains("open") && !filterSidebar.contains(event.target) && !event.target.closest("#filter_btn")) {
+        setPanel(false);
       }
-    });
-
-    // Handling filter form submission
-    document.addEventListener("click", function (e) {
-      if (!searchBox.contains(e.target)) {
-        if (searchInput.value) {
-          searchBox.classList.add("expanded");
-        } else {
-          searchBox.classList.remove("expanded");
-        }
-      }
-      //   console.log("expand", searchBox.contains(e.target));
     });
   });
 
@@ -966,138 +927,118 @@ if (typeof m_userStories !== "undefined") {
       });
     }
 
-    // Function to update pagination controls
-    function updatePaginationControls() {
-      const totalPages = Math.ceil(totalCount / rowsPerPage);
-      document.getElementById(
-        "pageInfo"
-      ).textContent = `Page ${currentPage} of ${totalPages}`;
-      document.getElementById(
-        "pageInfo"
-      ).textContent = `Page ${currentPage} of ${totalPages}`;
-      document.getElementById("prevPage").style.visibility =
-        currentPage > 1 ? "visible" : "hidden";
-      document.getElementById("nextPage").style.visibility =
-        currentPage < totalPages ? "visible" : "hidden";
+    const searchInput = document.getElementById("backlogSearchInput");
+    const statusSelect = document.getElementById("statusFilter");
+    const epicSelect = document.getElementById("epicFilter");
+    // Remembered per user and per backlog item (epics belong to the backlog item)
+    const filterStore = Ox.store("filters:stories:" + pblId);
+    const saved = filterStore.load();
+    if (saved) {
+      Ox.setSelectValues(statusSelect, saved.status || []);
+      Ox.setSelectValues(epicSelect, saved.epic || []);
+      searchInput.value = saved.search || "";
+    }
+    const values = (el) => [...el.selectedOptions].map((o) => o.value).filter(Boolean);
+    const hasFilters = () => values(statusSelect).length > 0 || values(epicSelect).length > 0 || searchInput.value.trim() !== "";
+    const pager = Ox.pager(document.getElementById("paginationControls"), {
+      scope: "stories",
+      onChange: () => applyFilters(),
+    });
+
+    function reloadStories() {
+      pager.reset();
+      applyFilters();
     }
 
-    // Event listeners for pagination controls
-    document.getElementById("prevPage").addEventListener("click", () => {
-      if (currentPage > 1) {
-        currentPage--;
-        applyFilters();
-      }
-    });
+    function resetFilters() {
+      Ox.setSelectValues(statusSelect, []);
+      Ox.setSelectValues(epicSelect, []);
+      searchInput.value = "";
+      reloadStories();
+    }
 
-    document.getElementById("nextPage").addEventListener("click", () => {
-      const totalPages = Math.ceil(totalCount / rowsPerPage);
-      if (currentPage < totalPages) {
-        currentPage++;
-        applyFilters();
+    function renderFilterState() {
+      const count = values(statusSelect).length + values(epicSelect).length;
+      const badge = document.getElementById("noti");
+      if (badge) {
+        badge.textContent = count;
+        badge.hidden = count === 0;
       }
-    });
+      Ox.chips(document.getElementById("storyChips"), Ox.chipsFor([
+        { el: statusSelect, group: "Status", onRemove: reloadStories },
+        { el: epicSelect, group: "Epic", onRemove: reloadStories },
+      ], { el: searchInput, onRemove: reloadStories }), resetFilters);
+      filterStore.save({ status: values(statusSelect), epic: values(epicSelect), search: searchInput.value.trim() });
+    }
 
-    //For applying the filter
-    //For applying the filter
-    applyFilters();
+    function showEmpty() {
+      const filtered = hasFilters();
+      const addBtn = document.getElementById("addUserStoriesBtn");
+      Ox.empty(document.getElementById("empty"), filtered ? {
+        icon: "filter",
+        title: "No user stories match your filters",
+        text: "Try removing a filter or changing your search.",
+        actions: [{ label: "Clear filters", icon: "x", onClick: resetFilters }],
+      } : {
+        icon: "file-text",
+        title: "No user stories yet",
+        text: "Describe what users need from this backlog item, one story at a time.",
+        actions: addBtn ? [{ label: "Write the first user story", icon: "plus", primary: true, onClick: () => addBtn.click() }] : [],
+      });
+      document.getElementById("storyTools").hidden = !filtered;
+    }
+
+    let storyRequest = null;
     function applyFilters() {
-      const filterSidebar = document.getElementById("filterSidebar");
-      filterSidebar.classList.remove("open");
-
-      const searchText = document
-        .getElementById("backlogSearchInput")
-        .value.toLowerCase();
-      const statusFilter = $("#statusFilter").val();
-      const epicFilter = $("#epicFilter").val();
-      console.log("status :", statusFilter);
-      let filter = {
-        id: pblId,
-        status: statusFilter,
-        epic: epicFilter,
-        search: searchText,
-        limit: rowsPerPage,
-        offset: (currentPage - 1) * rowsPerPage,
-      };
-      console.log(filter);
-      $.ajax({
+      document.getElementById("filterSidebar").classList.remove("open");
+      renderFilterState();
+      storyRequest?.abort();
+      storyRequest = $.ajax({
         url: assert_path + "backlog/filterUserStories",
         type: "POST",
-        headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
         data: JSON.stringify({
-          filter: filter,
+          filter: {
+            id: pblId,
+            status: values(statusSelect),
+            epic: values(epicSelect),
+            search: searchInput.value.trim().toLowerCase(),
+            limit: pager.size,
+            offset: pager.offset,
+          },
         }),
         contentType: "application/json",
         dataType: "json",
         success: function (response) {
-          console.log("Server Response:", response);
-          if (response && response.data) {
-            filteredStories = response.data;
-            displayStories(filteredStories); // Redisplay the stories based on the new data
-            countNumberOfFilters();
-            updatePaginationControls();
-            if (filteredStories.length == 0) {
-              document.getElementById("userStoryContainer").style.display =
-                "none";
-              document.getElementById("empty").style.display = "block";
-              document.getElementById("pageInfo").style.display = "none";
-            } else {
-              document.getElementById("userStoryContainer").style.display =
-                "block";
-              document.getElementById("empty").style.display = "none";
-            }
-          } else {
-            filteredStories = []; // Clear the filtered stories if no data is returned
+          filteredStories = response?.data || [];
+          const total = Number(response?.total) || 0;
+          pager.render(total);
+          document.getElementById("userStoryContainer").style.display = total ? "block" : "none";
+          document.getElementById("empty").style.display = total ? "none" : "block";
+          if (total) {
+            document.getElementById("storyTools").hidden = false;
             displayStories(filteredStories);
-            updatePaginationControls();
+          } else {
+            showEmpty();
           }
         },
-        error: function () {},
+        error: function (xhr, status) {
+          if (status !== "abort") Ox.toast("User stories could not be loaded. Please try again.", { type: "error" });
+        },
       });
     }
+    window.reloadUserStories = applyFilters;
 
-    function countNumberOfFilters() {
-      let numberOfFilters = document.getElementById("noti");
-      numberOfFilters.style.display = "block";
-      let formData = $("#filterOptionsForm").serializeArray();
-
-      let filledFieldsCount = formData.filter(function (field) {
-        return field.value.trim() !== "";
-      }).length;
-      if (filledFieldsCount > 0) {
-        numberOfFilters.textContent = formData;
-      } else {
-        numberOfFilters.style.display = "none";
-      }
-    }
-
-    $("#backlogSearchInput").on("input", applyFilters);
+    let storySearchTimer;
+    $("#backlogSearchInput").on("input", () => {
+      clearTimeout(storySearchTimer);
+      storySearchTimer = setTimeout(reloadStories, 250);
+    });
     $("#filterOptionsForm").on("submit", function (event) {
       event.preventDefault();
-      applyFilters();
+      reloadStories();
     });
     $("#resetFiltersBtn").on("click", resetFilters);
-    function resetFilters() {
-      console.log("rest code");
-      document.getElementById("statusFilter").value = "";
-      document.getElementById("epicFilter").value = "";
-      applyFilters();
-    }
-
-
-    function countNumberOfFilters() {
-      let numberOfFilters = document.getElementById("noti");
-      numberOfFilters.style.display = "block";
-      let formData = $("#filterOptionsForm").serializeArray();
-
-      let filledFieldsCount = formData.filter(function (field) {
-        return field.value.trim() !== "";
-      }).length;
-      if (filledFieldsCount > 0) {
-        numberOfFilters.textContent = filledFieldsCount;
-      } else {
-        numberOfFilters.style.display = "none";
-      }
-    }
+    applyFilters();
   });
 
   function clearModalContent() {
@@ -1217,74 +1158,11 @@ if (typeof m_userStories !== "undefined") {
         confirmButtonText: "OK",
       });
     } else {
-      Swal.fire({
-        icon: "question",
-        title: "Are you sure?",
-        text: "Deleted User story can't be recovered",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Only proceed with deletion if "Yes" is clicked
-          $.ajax({
-            url:
-              assert_path +
-              `backlog/deleteuserstory/` +
-              pId +
-              `/` +
-              pblId +
-              `/` +
-              userId,
-            method: "POST",
-            success: function (response) {
-              if (response.success) {
-                Swal.fire({
-                  icon: "success",
-                  title: "User story",
-                  text: response.message,
-                  confirmButtonText: "OK",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    window.location.href =
-                      assert_path +
-                      `backlog/userstories?pid=` +
-                      pId +
-                      `&pblid=` +
-                      pblId;
-                  }
-                });
-              } else {
-                Swal.fire({
-                  icon: "warning",
-                  title: "User story",
-                  text: response.message,
-                  confirmButtonText: "OK",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    window.location.href =
-                      assert_path +
-                      `backlog/userstories?pid=` +
-                      pId +
-                      `&pblid=` +
-                      pblId;
-                  }
-                });
-              }
-            },
-            error: function () {
-              // Display SweetAlert on error
-              Swal.fire({
-                title: "Error",
-                text: "An error occurred while processing the request.",
-                icon: "warning",
-                confirmButtonText: "OK",
-              });
-            },
-          });
-        }
+      Ox.undoableDelete({
+        label: "User story",
+        deleteUrl: `${assert_path}backlog/deleteuserstory/${pId}/${pblId}/${userId}`,
+        restoreUrl: `${assert_path}backlog/restoreuserstory/${pId}/${pblId}/${userId}`,
+        onChange: () => window.reloadUserStories?.(),
       });
     }
   }

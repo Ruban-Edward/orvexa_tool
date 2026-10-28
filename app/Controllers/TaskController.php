@@ -12,6 +12,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Services\NotificationService;
 use CodeIgniter\Events\Events;
 use CodeIgniter\HTTP\Response;
 
@@ -181,6 +182,7 @@ class TaskController extends BaseController
              $actionData = 'Task ID : ' . $result . " is added";
              $action = formActionData(__FUNCTION__, $pblid, $pId, $actionData);
              Events::trigger('log_actions', $action);
+             (new NotificationService())->taskAssigned((int) $result, (int) session('employee_id'));
              return $this->response->setJSON(['success' => true, 'message' => 'Task Created Successfully']);
          }
      
@@ -218,6 +220,8 @@ class TaskController extends BaseController
 
         // Fetch the task details before updating for comparison
         $before = $this->taskModel->getTaskbyTaskId($taskId)[0];
+        $notifications = new NotificationService();
+        $assigneeBefore = $notifications->assigneeOf((int) $taskId);
 
         // Prepare the data to update the task
         $updateTask = [
@@ -315,6 +319,9 @@ class TaskController extends BaseController
             $actionData = (empty($changes)) ? "No changes" : trim($changes, " |");
             $action = formActionData(__FUNCTION__, $pblid, $pId, $actionData);
             Events::trigger('log_actions', $action);
+            if ($notifications->assigneeOf((int) $taskId) !== $assigneeBefore) {
+                $notifications->taskAssigned((int) $taskId, (int) session('employee_id'));
+            }
             return $this->response->setJSON(['success' => true, 'message' => 'Task updated successfully']);
         }
 
@@ -347,8 +354,13 @@ class TaskController extends BaseController
 
      public function deleteTasks($pid, $pblid, $tId): Response
      {
-         // Delete the task from the local orvexa_task table.
-         $res = $this->backlogItemModel->deleteItem($tId, ['orvexa_task']);
+         // Routes with arguments are not matched by the ACL filter, so check here
+         if (!has_permission('backlog/deletetask') || $this->backlogItemModel->productOf('task', (int) $tId) !== (int) $pid || !authenticateUser($pid)) {
+             return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot delete this task.']);
+         }
+
+         // Soft-delete the task (restorable through restoreTasks)
+         $res = $this->backlogItemModel->deleteItem($tId, ['orvexa_task', 'task_id']);
      
          // Check if the deletion was successful
          if ($res) {
@@ -367,6 +379,23 @@ class TaskController extends BaseController
      
          // If the deletion failed, return a JSON response indicating failure
          return $this->response->setJSON(['success' => false]);
+     }
+
+     /**
+      * Undo a task deletion (the "Undo" action of the delete toast).
+      */
+     public function restoreTasks($pid, $pblid, $tId): Response
+     {
+         if (!has_permission('backlog/deletetask') || $this->backlogItemModel->productOf('task', (int) $tId) !== (int) $pid || !authenticateUser($pid)) {
+             return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot restore this task.']);
+         }
+
+         $res = $this->backlogItemModel->restoreItem($tId, ['orvexa_task', 'task_id']);
+         if ($res) {
+             Events::trigger('log_actions', formActionData('updateTasks', $pblid, $pid, 'Task ID: ' . $tId . ' is restored'));
+         }
+
+         return $this->response->setJSON(['success' => $res]);
      }
 
      public function filterTasks()
@@ -421,6 +450,7 @@ class TaskController extends BaseController
              return $this->response->setJSON([
                  'status' => 'success',
                  'data' => $filteredData,
+                 'total' => $this->taskModel->lastTotal,
              ]);
          } else {
              // If no filter is provided, return an error message as a JSON response

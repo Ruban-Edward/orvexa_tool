@@ -6,6 +6,11 @@ use App\Models\BaseModel;
 
 class BacklogModel extends BaseModel
 {
+    /**
+     * Total rows matching the last list filter, ignoring limit/offset.
+     */
+    public int $lastTotal = 0;
+
     public function productNameExists(string $productName, ?int $excludeProductId = null): bool
     {
         $sql = 'SELECT 1 FROM orvexa_product WHERE LOWER(product_name) = LOWER(?) AND is_deleted = ?';
@@ -586,7 +591,11 @@ class BacklogModel extends BaseModel
         }
 
         $sql .= "
-            GROUP BY bi.backlog_item_id
+            GROUP BY bi.backlog_item_id";
+
+        $this->lastTotal = (int) $this->db->query("SELECT COUNT(*) AS total FROM ($sql) AS filtered", $params)->getRow()->total;
+
+        $sql .= "
             ORDER BY
                 CASE
                     WHEN bst.status_name = 'In Sprint' THEN 0

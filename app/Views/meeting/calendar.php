@@ -510,7 +510,7 @@ if (!empty($sprintId)) {
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th class="cls-membersth"><input type="checkbox" id="selectAllMembers">
+                                            <th class="cls-membersth"><input type="checkbox" id="selectAllMembers" aria-label="Select all members">
                                                 Select all</th>
                                             <th class="cls-membersth">User name</th>
                                         </tr>

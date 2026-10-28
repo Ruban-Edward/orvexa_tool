@@ -65,7 +65,7 @@
         <form method="post" id="filterForm">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="filter-heading">Filter</h3>
-                <button type="button" id='closeBtn' class="btn-filterclose" id='wrong' aria-label="Close"></button>
+                <button type="button" id='closeBtn' class="btn-close" aria-label="Close filters"></button>
             </div>
             <div id="date">
                 <!-- Date Filters -->
@@ -132,7 +132,7 @@
             <!-- Sprint Filters -->
             <div id="sprint" class="mb-3">
                 <label for="sprintname" class="form-label filter-text">Sprint Name:</label>
-                <select name="sprintname[]" id="sprintname" placeholser="Select Sprint Name" class="form-select select"
+                <select name="sprintname[]" id="sprintname" class="form-select select"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['sprint_name_result'] as $sprintName): ?>
                         <option><?= $sprintName['sprint_name'] ?></option>

@@ -121,11 +121,16 @@ class AuthController extends BaseController
             'first_name' => $firstName,
             'employee_id' => $employeeId,
             'role_id' => $roleId,
-            'is_user_logged' => true
+            'is_user_logged' => true,
+            'must_change_password' => ($user[0]->password_reset_required ?? 'N') === 'Y',
         ];
         $this->session->set($user_session);
         // set the user login action in scrum db
         $this->addLogin(LOGIN_ACTION);
+        // A temporary password set by an admin must be replaced before anything else
+        if ($user_session['must_change_password']) {
+            return redirect()->to(ASSERT_PATH . 'profile#password')->with('error', 'Please choose a new password to finish signing in.');
+        }
         // redirect to the originally requested page – only to a local path (no open redirect)
         if (is_string($url) && preg_match('#^[A-Za-z0-9_\-./?=&%]+$#', $url) && ! str_contains($url, '//')) {
             return redirect()->to(ASSERT_PATH . ltrim($url, '/'));

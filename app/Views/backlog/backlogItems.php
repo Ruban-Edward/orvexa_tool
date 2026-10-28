@@ -9,8 +9,9 @@
       <div class="cls-action-button">
         <?php if(has_permission('backlog/addbacklog')): ?>
         
-          <button id="backlog" class="btn primary_button" data-bs-toggle="modal" data-bs-target="#backlogModal" onclick="return addbacklog()">
-            <i class="icon-plus-circle sprintListIcon"></i> Add backlog
+          <button id="backlog" type="button" class="btn primary_button" data-bs-toggle="modal" data-bs-target="#backlogModal" onclick="return addbacklog()"
+                  data-shortcut="new" aria-keyshortcuts="n" title="Add backlog item (N)">
+            <i class="icon-plus-circle sprintListIcon" aria-hidden="true"></i> Add backlog
           </button>
         
         <?php endif;?>
@@ -33,16 +34,11 @@
         <ul class="header_button">
 
           <li class="me-2">
-            <div class="dropdown">
-              <div class="search-container">
-                <div class="search-box">
-                  <input type="text" id="backlogSearchInput" class="search-input" placeholder="Search backlog">
-                  <button id="search_btn" class="search-button">
-                    <i class="bi bi-search"></i>
-                    <span class="cls-action-name">Search</span>
-                  </button>
-                </div>
-              </div>
+            <div class="ox-search">
+              <i class="icon-search" aria-hidden="true"></i>
+              <label class="visually-hidden" for="backlogSearchInput">Search backlog items</label>
+              <input type="search" id="backlogSearchInput" class="form-control" placeholder="Search backlog">
+            </div>
           </li>
 
           <li class="me-2">
@@ -57,10 +53,11 @@
 
           <li>
             <div class="dropdown ">
-              <button id="filter_btn" class="button-secondary d-flex align-items-center justify-content-center">
-                <i class="icon-filter me-1"></i> 
+              <button id="filter_btn" type="button" class="btn btn-secondary ox-filter-btn" data-shortcut="filter" aria-keyshortcuts="f"
+                      aria-controls="filterSidebar" aria-expanded="false" title="Filters (F)">
+                <i class="icon-filter" aria-hidden="true"></i>
                 <span class="cls-action-name">Filter</span>
-                <span id="noti" class="badge badge-pill badge-danger"></span>
+                <span id="noti" class="ox-filter-count" hidden></span>
               </button>
             </div>
 
@@ -70,13 +67,14 @@
   <?php endif;?>
   
 </div>
+<div class="ox-chips" id="backlogChips" hidden></div>
 
 <div class="modal fade" id="backlogModal" tabindex="-1" aria-labelledby="backlogModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div id="size" class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalTitle">Add backlog items</h5>
-        <button type="button" class="btn-closes" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body form-container">
         <form class="row g-3 needs-validation" id="addbacklogform" method="POST" enctype="multipart/form-data" novalidate>
@@ -187,36 +185,26 @@
           <!-- Table rows will be inserted here -->
         </tbody>
       </table>
-      <!-- Pagination Controls -->
-      <div id="paginationControls" class="d-flex justify-content-between align-items-center mt-3">
-        <button id="prevPage" class="button-secondary">Prev</button>
-        <span id="pageInfo" class="mx-3"></span>
-        <button id="nextPage" class="button-secondary">Next</button>
-      </div>
+      <div id="paginationControls"></div>
     </div>
   </div>
 </div>
 
-<div class="empty-content" id="empty">
-  <div class="row mt-5 text-center cls-norecFound">
-    <span class="bi bi-emoji-frown cls-noProductIcon"></span>
-    <h2>No backlog items found</h2>
-  </div>
-</div>
+<div class="empty-content" id="empty" style="display:none"></div>
 
 
 <!-- Sidebar for filter -->
-<div id="filterSidebar" class="filter-sidebar">
+<aside id="filterSidebar" class="filter-sidebar" aria-label="Backlog filters">
   <div class="sidebar-content">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h4 class="filter-heading">Filter</h4>
-      <button type="button" id="closeFilterSidebarBtn" class=" btn-filterclose align-item-center"></button>
+      <button type="button" id="closeFilterSidebarBtn" class="btn-close" aria-label="Close filters"></button>
     </div>
     <form id="filterOptionsForm">
       <div class="mb-3">
         <label for="filterBacklogType" class="form-label filter-text">Backlog item type</label>
         <!-- <select id="filterBacklogType" class="form-select"> -->
-        <select name="sprintname[]" id="filterBacklogType" placeholser="Select Sprint Name" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
+        <select name="sprintname[]" id="filterBacklogType" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
           <!-- <option value="">All</option> -->
           <?php foreach ($data['tracker'] as $val) : ?>
             <option value="<?= $val['tracker_id']; ?>"><?= trim(ucfirst(strtolower($val['tracker']))); ?></option>
@@ -227,7 +215,7 @@
         <label for="filterCustName" class="form-label filter-text">Customer name</label>
         <!-- <select id="filterCustName" class="form-select"> -->
           <!-- <option value="">All</option> -->
-          <select name="sprintname[]" id="filterCustName" placeholser="Select Sprint Name" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
+          <select name="sprintname[]" id="filterCustName" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
           <?php foreach ($data['backlog_item_customer'] as $val) : ?>
             <option value="<?= $val['customer_id']; ?>"><?= trim(ucfirst(strtolower($val['customer_name']))); ?></option>
           <?php endforeach; ?>
@@ -235,7 +223,7 @@
       </div>
       <div class="mb-3">
         <label for="filterPriority" class="form-label filter-text">Priority</label>
-        <select name="sprintname[]" id="filterPriority" placeholser="Select Sprint Name" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
+        <select name="sprintname[]" id="filterPriority" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
         <!-- <select id="filterPriority" class="form-select"> -->
           <!-- <option value="">All</option> -->
           <option value="H">High</option>
@@ -247,7 +235,7 @@
         <label for="filterStatus" class="form-label filter-text">Status</label>
         <!-- <select id="filterStatus" class="form-select"> -->
           <!-- <option value="">All</option> -->
-          <select name="sprintname[]" id="filterStatus" placeholser="Select Sprint Name" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
+          <select name="sprintname[]" id="filterStatus" class="form-select select" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
           <?php foreach ($data['backlog_item_status'] as $val) : ?>
             <option value="<?= $val['status_id']; ?>"><?= trim(ucfirst(strtolower($val['status_name']))); ?></option>
           <?php endforeach; ?>
@@ -259,7 +247,7 @@
       </div>
     </form>
   </div>
-</div>
+</aside>
 <!--backlog History Modal -->
 <div class="modal fade" id="sprintHistory" tabindex="-1" aria-labelledby="sprinthistory" aria-hidden="true"
   data-bs-backdrop="static">
@@ -271,12 +259,12 @@
       </div>
       <div class="modal-body">
         <div class="date-filter mb-2" style="display:flex;">
-          <label for="">Start date</label>
+          <label for="startDate">Start date</label>
           <input type="text" class="form-control mb-2 flatpickr-no-config flatpickr-input" id="startDate"
             name="startDate" accept="" placeholder="YYYY-MM-DD" readonly="readonly" required
             style=" margin: 0px 20px; width: auto;">
-          <label for="">End date</label>
-          <input type="text" class="form-control mb-2 flatpickr-no-config flatpickr-input" id="endDate" name="startDate"
+          <label for="endDate">End date</label>
+          <input type="text" class="form-control mb-2 flatpickr-no-config flatpickr-input" id="endDate" name="endDate"
             accept="" placeholder="YYYY-MM-DD" readonly="readonly" required
             style="margin: 0px 20px;width: auto;">
           <button id="filterButton" class="btn primary_button" style=" height: 37px; width: 75px;">Filter</button>
@@ -284,10 +272,7 @@
         </div>
         <!-- <div class="history-date"></div> -->
         <ul class="data-list" id="dataList"></ul>
-        <div class="pagination">
-          <button id="history-previous" class=" button-secondary">Previous</button>
-          <button id="history-next" class=" button-secondary">Next</button>
-        </div>
+        <div id="historyPager"></div>
       </div>
     </div>
   </div>
@@ -308,4 +293,5 @@
 
   // module name 
   const m_backlogItems = [];
+  document.addEventListener("DOMContentLoaded", () => Ox.guardModal(document.getElementById("backlogModal"), document.getElementById("addbacklogform")));
 </script>

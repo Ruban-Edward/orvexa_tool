@@ -1,470 +1,355 @@
 if (typeof m_tasks !== 'undefined') {
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const filterBtn = document.getElementById("filter_btn");
-        const closeFilterSidebarBtn = document.getElementById("closeFilterSidebarBtn");
-        const filterSidebar = document.getElementById("filterSidebar");
-
-        // Open the filter sidebar
-        filterBtn.addEventListener("click", () => {
-            filterSidebar.classList.add("open");
-        });
-
-        // Close the filter sidebar
-        closeFilterSidebarBtn.addEventListener("click", () => {
-            filterSidebar.classList.remove("open");
-        });
-
-        // Optionally close the sidebar when clicking outside of it
-        document.addEventListener("click", (event) => {
-            if (!filterSidebar.contains(event.target) && event.target !== filterBtn) {
-                filterSidebar.classList.remove("open");
-            }
-        });
-
-        // Handling filter form submission
-        const filterForm = document.getElementById("filterOptionsForm");
-        if (filterForm) {
-            filterForm.addEventListener("submit", (event) => {
-                event.preventDefault(); // Prevent form submission
-            });
-        }
-
-        // serach
-        const searchBox = document.querySelector('.search-box');
-        const searchBtn = document.getElementById('search_btn');
-        const searchInput = document.getElementById('backlogSearchInput');
-
-        searchBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            searchBox.classList.toggle('expanded');
-            if (searchBox.classList.contains('expanded')) {
-                searchInput.focus();
-            }
-        });
-
-        // Close search box when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!searchBox.contains(e.target)) {
-                searchBox.classList.remove('expanded');
-            }
-        });
-
-
-    });
-
-    (() => {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        const completedPercentage = document.getElementById('completed_percentage');
-
-        completedPercentage.addEventListener('input', function () {
-            if (this.value > 100) {
-                this.setCustomValidity('Maximum completed percentage is 100');
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else {
-                this.setCustomValidity('');
-                this.classList.add('is-valid');
-                this.classList.remove('is-invalid');
-            }
-        });
-
-        // Loop over them and prevent submission
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
-
-    function addform(name, id) {
-        $("#addTaskModal").modal("show");
-        taskId = id; // Assuming taskId is a global variable or defined elsewhere
-
-        if (name === "add") {
-            document.getElementById("taskDetailsForm").reset();
-            document.getElementById("add_tasks").innerText = "Add task";
-            document.getElementById("submitTaskBtn").innerText = "Add";
-            document.getElementById("formOperation").value = "insertTask"; // Set the value to "insertTask"
-        } else if (name === "edit") {
-            document.getElementById("taskDetailsForm").reset();
-            document.getElementById("add_tasks").innerText = "Edit Task";
-            document.getElementById("submitTaskBtn").innerText = "Update task";
-
-            $.ajax({
-                url: assertPath + "backlog/getTaskById/" + taskId,
-                method: "POST",
-                dataType: "json",
-                success: function (response) {
-                    console.log(response);
-                    if (response) {
-                        $("#task_title").val(response[0].task_title);
-                        $("#task_description").val(response[0].task_description);
-                        $("#task_tracker").val(response[0].tracker_id);
-                        $("#task_statuses").val(response[0].task_status);
-                        $("#task_priority").val(response[0].priority);
-                        $("#task_assignee").val(response[0].assignee_id);
-                        if (response[0].start_date === null) {
-                            strtDate = '';
-                        } else {
-                            strtDate = response[0].start_date.trim().split(" ")[0];
-                        }
-                        $("#start_date").val(strtDate);
-                        if (response[0].end_date === null) {
-                            endDate = '';
-                        } else {
-                            endDate = response[0].end_date.trim().split(" ")[0];
-                        }
-                        $("#end_date").val(endDate);
-                        $("#completed_percentage").val(response[0].completed_percentage);
-                        $("#estimated_time").val(response[0].estimated_hours);
-                        // alert(response[0].estimated_hours);
-                        // console.log(strtDate);
-                        // console.log(endDate);
-                        // console.log(response[0].completed_percentage);
-                        // console.log(response[0].estimated_hours);
-
-                        document.getElementById("formOperation").value = "updateTask"; // Set the value to "updateTask"
-                    } else {
-                        console.error("Invalid response data:", response);
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.error("AJAX request failed:", textStatus, errorThrown);
-                },
-            });
-        }
-    }
-
-
-    $(document).ready(function () {
-        $("#taskDetailsForm").on("submit", function (e) {
-            e.preventDefault();
-            if (!this.checkValidity()) {
-                e.stopPropagation();
-                return false;
-            }
-            let formData = $(this).serialize();
-            formData += "&taskbutton=1";
-            let operation = $("#formOperation").val();
-            console.log(operation);
-            let url =
-                operation === "insertTask"
-                    ? assertPath + "backlog/addTasks/" + pid + "/" + pblid + "/" + userStoryId
-                    : assertPath + "backlog/updateTaskById/" + pid + "/" + pblid + "/" + taskId;
-            $.ajax({
-                url: url,
-                method: "POST",
-                data: formData,
-                dataType: "json",
-                success: function (response) {
-                    console.log(response);
-                    if (response.success) {
-                        $("#addTaskModal").modal("hide");
-                        $(".modal-backdrop").remove();
-                        Swal.fire({
-                            title: "Success",
-                            text: response.message ||
-                                (operation === "insertTask"
-                                    ? "Task successfully added."
-                                    : "Task successfully updated."),
-                            icon: "success",
-                            confirmButtonText: "OK",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload();
-                            }
-                        });
-                    } else if (response.error) {
-                        // Handle server-side validation errors
-                        let errorMessage = '';
-                        for (const [field, message] of Object.entries(response.error)) {
-                            errorMessage += `<strong>${field}:</strong> ${message}<br>`;
-                        }
-                        Swal.fire({
-                            title: "Validation Error!",
-                            html: errorMessage,
-                            icon: "warning",
-                            confirmButtonText: "OK",
-                        });
-                    }
-                },
-                error: function () {
-                    // Handle AJAX error
-                    Swal.fire({
-                        title: "Error",
-                        text: "An unexpected error occurred while processing your request.",
-                        icon: "error",
-                        confirmButtonText: "OK",
-                    });
-                },
-            });
-        });
-    });
-
-
-
-
-    document.addEventListener('DOMContentLoaded', function (event) {
-        const rowsPerPage = 10; // Number of tasks to display per page
-        let currentPage = 1;
-        // let filteredTasks = tasks; // Assume tasks is already defined and contains all task details
-        let page = 1;
-        filterTable();
-
-        function displayTasks(filteredTasks) {
-            // console.log("filtered tasks");
-            // console.log(filteredTasks);
-            if (filteredTasks == null) {
-                filteredTasks = [];
-            }
-
-            const startIndex = (page - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-            tasksToDisplay = filteredTasks.slice(startIndex, endIndex);
-            const taskContainer = document.getElementById('taskList');
-            taskContainer.innerHTML = tasksToDisplay.map(task => createTaskCard(task)).join('');
-        }
-
-        function createTaskCard(task) {
-            const startDate = task.start_date ? task.start_date.trim().split(" ")[0] : "-";
-            const endDate = task.end_date ? task.end_date.trim().split(" ")[0] : "-";
-            return `
-            <div class='col-md-12'>
-                <div class='card cls-task-card'>
-                    <div class='card-header cls-task-header'>
-                        <span class='ox-id-chip' title='Redmine ID'>#${task.external_id ?? '—'}</span>
-                        <div class='card-title cls-task-header-details'>${task.task_title}</div>
-                        <span class='ox-status-pill'>${task.task_status}</span>
-                        <span class='cls-priority priority-box ${task.priority.toLowerCase()}'>${task.priority}</span>
-                        <div class='cls-action-buttons'>
-                            ${userPermissions.updateTask ? `
-                            <button type='button' class='btn btn-link editButton ox-icon-action' data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="addform('edit', ${task.external_id})" data-toggle="tooltip" data-placement="top" title="Update" aria-label="Update">
-                                <i class='icon-edit-2'></i>
-                            </button>`: ``}
-                            ${userPermissions.deleteTask ? `
-                            <button type='button' class='btn btn-link ox-icon-action is-danger' onclick='deleteTask(${task.external_id})' data-toggle="tooltip" data-placement="top" title="Delete" aria-label="Delete">
-                                <i class='icon-trash-2'></i>
-                            </button>
-                            `: ``}
-                        </div>
-                    </div>
-                    <div class='card-body-content cls-task-body'>
-                        <dl class='ox-fields'>
-                            <div><dt>Assignee</dt><dd>${task.first_name}</dd></div>
-                            <div><dt>Tracker</dt><dd>${task.tracker_name}</dd></div>
-                            <div><dt>Start date</dt><dd>${startDate}</dd></div>
-                            <div><dt>End date</dt><dd>${endDate}</dd></div>
-                            <div><dt>Estimated hours</dt><dd>${task.estimated_hours}</dd></div>
-                            <div><dt>Completed</dt><dd>
-                                <span class='ox-mini-progress'><span style='width:${Math.min(100, Math.max(0, Number(task.completed_percentage) || 0))}%'></span></span>
-                                ${task.completed_percentage}%
-                            </dd></div>
-                        </dl>
-                        <p class='ox-task-desc'>${task.task_description}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        }
-
-
-        function updatePaginationControls() {
-            const totalPages = Math.ceil(totalCount / rowsPerPage);
-            document.getElementById(
-                "pageInfo"
-            ).textContent = `Page ${currentPage} of ${totalPages}`;
-            document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages}`;
-            document.getElementById("prevPage").style.visibility = currentPage > 1 ? "visible" : "hidden";
-            document.getElementById("nextPage").style.visibility = currentPage < totalPages ? "visible" : "hidden";
-        }
-
-        // Event listeners for pagination controls
-        document.getElementById("prevPage").addEventListener("click", () => {
-            if (currentPage > 1) {
-                currentPage--;
-                filterTable();
-            }
-        });
-
-        document.getElementById("nextPage").addEventListener("click", () => {
-            const totalPages = Math.ceil(totalCount / rowsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                filterTable();
-
-            }
-        });
-
-
-        function filterTable() {
-
-            const filterSidebar = document.getElementById("filterSidebar");
-            filterSidebar.classList.remove('open');
-            
-            let filter = {
-                UId: userStoryId,
-                priorityFilter: $("#filterPriority").val(),
-                statusFilter: $("#filterstatus").val(),
-                search: $("#backlogSearchInput").val(),
-                limit: rowsPerPage,
-                offset: (currentPage - 1) * rowsPerPage
-            };
-            $.ajax({
-                url: assertPath + "backlog/filterTasks",
-                type: "POST",
-                headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
-                data: JSON.stringify({ filter: filter }),
-                contentType: "application/json",
-                dataType: "json",
-                success: function (response) {
-                    if (response) {
-                        displayTasks(response.data)
-                        updatePaginationControls();
-                        countNumberOfFilters();
-                    } else {
-                        console.error("Invalid response format");
-                    }
-                    if (response.data == 0) {
-                        document.getElementById('main-page').style.display = "none";
-                        document.getElementById('empty').style.display = "block";
-                    } else {
-                        document.getElementById('main-page').style.display = "block";
-                        document.getElementById('empty').style.display = "none";
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", status, error);
-                    console.error("Response Text:", xhr.responseText);
-                },
-            });
-        }
-        $("#backlogSearchInput").on("input", filterTable);
-        function resetFilters() {
-            document.getElementById('filterPriority').value = '';
-            document.getElementById('filterstatus').value = '';
-            filterTable();
-        }
-
-        document.getElementById('resetFiltersBtn').addEventListener('click', resetFilters);
-        $("#filterformAction").on("submit", function (event) {
-            event.preventDefault(); // Prevent form submission
-            filterTable(); // Apply filters
-        });
-
-        function countNumberOfFilters(){
-            let numberOfFilters = document.getElementById("noti");
-            numberOfFilters.style.display="block";
-            let formData = $("#filterformAction").serializeArray();
-            // console.log("formdata",formData);
-            let filledFieldsCount = formData.filter(function(field) {
-                return field.value.trim() !== "";
-            }).length;
-            if(filledFieldsCount>0){
-                numberOfFilters.textContent = filledFieldsCount;
-            }
-            else{
-                numberOfFilters.style.display="none";
-            }
-        }
-
-
-    });
-
-
     var taskId = 0;
-    document.addEventListener("DOMContentLoaded", function () {
-        const labels = document.querySelectorAll("label");
+    const esc = Ox.esc;
+    const filterSidebar = document.getElementById('filterSidebar');
+    const filterBtn = document.getElementById('filter_btn');
+    const searchInput = document.getElementById('backlogSearchInput');
+    const prioritySelect = document.getElementById('filterPriority');
+    const statusSelect = document.getElementById('filterstatus');
+    const taskForm = document.getElementById('taskDetailsForm');
+    const taskModalEl = document.getElementById('addTaskModal');
+    const taskModal = () => bootstrap.Modal.getOrCreateInstance(taskModalEl);
+    // Task filters are remembered per user, across all user stories
+    const filterStore = Ox.store('filters:tasks');
 
-        labels.forEach((label) => {
-            const inputId = label.getAttribute("for");
-            const inputElement = document.getElementById(inputId);
-
-            // Check if the input element exists and if it has the 'required' attribute
-            if (inputElement && inputElement.hasAttribute('required')) {
-                label.classList.add("label-with-asterisk");
-            }
-        });
-    });
-
-
-    if (totalCount == 0) {
-        document.getElementById("main-page").style.display = "none";
-        document.getElementById("searchDropdown").style.display = "none";
-        // document.getElementById("filterDropdown").style.display = "none";
-        document.getElementById('empty').style.display = "block";
-    }
-    else {
-        document.getElementById('empty').style.display = "none";
-    }
-
-
-
-
-
-    function deleteTask(id) {
-        
-        Swal.fire({
-            title: "Are you sure?",
-            text: "Deleted task can't be recovered",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes",
-            cancelButtonText: "No",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: assertPath + "backlog/deletetask/" + pid + "/" + pblid + "/" + id,
-                    method: "POST",
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.success) {
-                            // Assuming your backend responds with a success field
-                            Swal.fire(
-                                "Deleted!",
-                                "Task has been deleted.",
-                                "success"
-                            ).then(() => {
-                                window.location.href =
-                                    assertPath +
-                                    "backlog/tasks?pid=" +
-                                    pid +
-                                    "&pblid=" +
-                                    pblid +
-                                    "&usid=" +
-                                    userStoryId;
-                            });
-                        } else {
-                            console.error("Invalid response data:", response);
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.error("AJAX request failed:", textStatus, errorThrown);
-                    },
-                });
-            } else {
-                console.log("Deletion cancelled");
-            }
-        });
-    }
-
-
-    const startDatePicker = flatpickr("#start_date", {
-        onChange: function (selectedDates, dateStr, instance) {
+    const startDatePicker = flatpickr('#start_date', {
+        onChange: function (selectedDates, dateStr) {
             endDatePicker.set('minDate', dateStr);
         }
     });
-    const endDatePicker = flatpickr("#end_date", {
-        minDate: "today" // or another default value if needed
+    const endDatePicker = flatpickr('#end_date', {});
+
+    // -----------------------------------------------------------------
+    // Filter panel
+    // -----------------------------------------------------------------
+    function setFilterPanel(open) {
+        filterSidebar.classList.toggle('open', open);
+        filterBtn.setAttribute('aria-expanded', String(open));
+        if (open) setTimeout(() => filterSidebar.querySelector('.multiselect-dropdown, select')?.focus(), 50);
+    }
+    filterBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        setFilterPanel(!filterSidebar.classList.contains('open'));
+    });
+    document.getElementById('closeFilterSidebarBtn').addEventListener('click', () => {
+        setFilterPanel(false);
+        filterBtn.focus();
+    });
+    document.addEventListener('click', event => {
+        if (filterSidebar.classList.contains('open') && !filterSidebar.contains(event.target) && !event.target.closest('#filter_btn')) {
+            setFilterPanel(false);
+        }
     });
 
+    // Restore the last filters before the first load
+    const saved = filterStore.load();
+    if (saved) {
+        Ox.setSelectValues(prioritySelect, saved.priority || []);
+        Ox.setSelectValues(statusSelect, saved.status || []);
+        searchInput.value = saved.search || '';
+    }
 
+    const pager = Ox.pager(document.getElementById('taskPager'), {
+        scope: 'tasks',
+        onChange: () => loadTasks(),
+    });
+
+    const selectedValues = select => [...select.selectedOptions].map(o => o.value).filter(Boolean);
+    const hasFilters = () => selectedValues(prioritySelect).length > 0 || selectedValues(statusSelect).length > 0 || searchInput.value.trim() !== '';
+
+    function clearFilters() {
+        Ox.setSelectValues(prioritySelect, []);
+        Ox.setSelectValues(statusSelect, []);
+        searchInput.value = '';
+        pager.reset();
+        loadTasks();
+    }
+
+    function renderFilterState() {
+        const count = selectedValues(prioritySelect).length + selectedValues(statusSelect).length;
+        const badge = document.getElementById('noti');
+        badge.textContent = count;
+        badge.hidden = count === 0;
+        Ox.chips(document.getElementById('taskChips'), Ox.chipsFor([
+            { el: prioritySelect, group: 'Priority', onRemove: reload },
+            { el: statusSelect, group: 'Status', onRemove: reload },
+        ], { el: searchInput, onRemove: reload }), clearFilters);
+        filterStore.save({ priority: selectedValues(prioritySelect), status: selectedValues(statusSelect), search: searchInput.value.trim() });
+    }
+
+    function reload() {
+        pager.reset();
+        loadTasks();
+    }
+
+    // -----------------------------------------------------------------
+    // List
+    // -----------------------------------------------------------------
+    function createTaskCard(task) {
+        const date = value => value && value.trim() !== '-' ? esc(value.trim().split(' ')[0]) : '—';
+        const done = Math.min(100, Math.max(0, Number(task.completed_percentage) || 0));
+        return `
+            <div class="col-md-12" data-task="${Number(task.task_id)}">
+                <div class="card cls-task-card">
+                    <div class="card-header cls-task-header">
+                        <span class="ox-id-chip" title="Task ID">#${Number(task.task_id)}</span>
+                        <div class="card-title cls-task-header-details">${esc(task.task_title)}</div>
+                        <span class="ox-status-pill">${esc(task.task_status)}</span>
+                        <span class="cls-priority priority-box ${esc(String(task.priority).toLowerCase())}">${esc(task.priority)}</span>
+                        <div class="cls-action-buttons">
+                            ${userPermissions.updateTask ? `
+                            <button type="button" class="btn btn-link ox-icon-action" data-edit="${Number(task.task_id)}" title="Edit task" aria-label="Edit task ${esc(task.task_title)}">
+                                <i class="icon-edit-2" aria-hidden="true"></i>
+                            </button>` : ''}
+                            ${userPermissions.deleteTask ? `
+                            <button type="button" class="btn btn-link ox-icon-action is-danger" data-delete="${Number(task.task_id)}" title="Delete task" aria-label="Delete task ${esc(task.task_title)}">
+                                <i class="icon-trash-2" aria-hidden="true"></i>
+                            </button>` : ''}
+                        </div>
+                    </div>
+                    <div class="card-body-content cls-task-body">
+                        <dl class="ox-fields">
+                            <div><dt>Assignee</dt><dd>${esc(task.first_name || 'Unassigned')}</dd></div>
+                            <div><dt>Tracker</dt><dd>${esc(task.tracker_name)}</dd></div>
+                            <div><dt>Start date</dt><dd>${date(task.start_date)}</dd></div>
+                            <div><dt>End date</dt><dd>${date(task.end_date)}</dd></div>
+                            <div><dt>Estimated hours</dt><dd>${esc(task.estimated_hours)}</dd></div>
+                            <div><dt>Completed</dt><dd>
+                                <span class="ox-mini-progress"><span style="width:${done}%"></span></span> ${done}%
+                            </dd></div>
+                        </dl>
+                        <p class="ox-task-desc">${esc(task.task_description)}</p>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function showEmpty() {
+        const filtered = hasFilters();
+        Ox.empty(document.getElementById('empty'), filtered ? {
+            icon: 'filter',
+            title: 'No tasks match your filters',
+            text: 'Try removing a filter or changing your search.',
+            actions: [{ label: 'Clear filters', icon: 'x', onClick: clearFilters }],
+        } : {
+            icon: 'check-square',
+            title: 'No tasks yet',
+            text: 'Break this user story into tasks so the team can pick them up.',
+            actions: userPermissions.addTask ? [{ label: 'Create first task', icon: 'plus', primary: true, onClick: () => addform('add') }] : [],
+        });
+        document.getElementById('taskTools').hidden = !filtered;
+    }
+
+    let request = null;
+    function loadTasks() {
+        request?.abort();
+        renderFilterState();
+        request = $.ajax({
+            url: assertPath + 'backlog/filterTasks',
+            type: 'POST',
+            data: JSON.stringify({
+                filter: {
+                    UId: userStoryId,
+                    priorityFilter: selectedValues(prioritySelect),
+                    statusFilter: selectedValues(statusSelect),
+                    search: searchInput.value.trim(),
+                    limit: pager.size,
+                    offset: pager.offset,
+                }
+            }),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (response) {
+                const tasks = response?.data || [];
+                const total = Number(response?.total) || 0;
+                if (!hasFilters()) document.getElementById('taskTotal').textContent = total;
+                document.getElementById('taskList').innerHTML = tasks.map(createTaskCard).join('');
+                pager.render(total);
+                document.getElementById('main-page').hidden = total === 0;
+                document.getElementById('empty').hidden = total !== 0;
+                if (total === 0) showEmpty(); else document.getElementById('taskTools').hidden = false;
+            },
+            error: function (xhr, status) {
+                if (status !== 'abort') Ox.toast('Tasks could not be loaded. Please try again.', { type: 'error' });
+            },
+        });
+    }
+
+    let searchTimer;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(reload, 250);
+    });
+    document.getElementById('filterformAction').addEventListener('submit', event => {
+        event.preventDefault();
+        setFilterPanel(false);
+        reload();
+    });
+    document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        setFilterPanel(false);
+        clearFilters();
+    });
+
+    document.getElementById('taskList').addEventListener('click', event => {
+        const edit = event.target.closest('[data-edit]');
+        const remove = event.target.closest('[data-delete]');
+        if (edit) addform('edit', Number(edit.dataset.edit));
+        if (remove) deleteTask(Number(remove.dataset.delete));
+    });
+
+    // -----------------------------------------------------------------
+    // Add / edit modal
+    // -----------------------------------------------------------------
+    Ox.guardModal(taskModalEl, taskForm);
+
+    function resetTaskForm() {
+        taskForm.reset();
+        taskForm.classList.remove('was-validated');
+        startDatePicker.clear();
+        endDatePicker.clear();
+    }
+
+    function addform(name, id) {
+        resetTaskForm();
+        taskId = id || 0;
+        const adding = name === 'add';
+        document.getElementById('add_tasks').textContent = adding ? 'Add task' : 'Edit task';
+        document.getElementById('submitTaskBtn').textContent = adding ? 'Add task' : 'Update task';
+        document.getElementById('submitAddAnother').hidden = !adding;
+        document.getElementById('formOperation').value = adding ? 'insertTask' : 'updateTask';
+        taskModal().show();
+        if (adding) {
+            setTimeout(() => document.getElementById('task_title').focus(), 200);
+            return;
+        }
+
+        $.ajax({
+            url: assertPath + 'backlog/getTaskById/' + taskId,
+            method: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                const task = response && response[0];
+                if (!task) {
+                    taskModal().hide();
+                    Ox.toast('This task could not be found. It may have been deleted.', { type: 'error' });
+                    return;
+                }
+                $('#task_title').val(task.task_title);
+                $('#task_description').val(task.task_description);
+                $('#task_statuses').val(task.task_status);
+                $('#task_priority').val(task.priority);
+                $('#task_assignee').val(task.assignee_id ?? '');
+                startDatePicker.setDate(task.start_date ? task.start_date.split(' ')[0] : null, false);
+                endDatePicker.setDate(task.end_date ? task.end_date.split(' ')[0] : null, false);
+                $('#completed_percentage').val(task.completed_percentage);
+                $('#estimated_time').val(task.estimated_hours);
+                taskForm.oxMarkClean();
+                document.getElementById('task_title').focus();
+            },
+            error: function () {
+                Ox.toast('The task could not be loaded. Please try again.', { type: 'error' });
+            },
+        });
+    }
+    window.addform = addform;
+
+    function saveTask(formData, operation) {
+        const url = operation === 'insertTask'
+            ? assertPath + 'backlog/addTasks/' + pid + '/' + pblid + '/' + userStoryId
+            : assertPath + 'backlog/updateTaskById/' + pid + '/' + pblid + '/' + taskId;
+        return $.ajax({ url, method: 'POST', data: formData + '&taskbutton=1', dataType: 'json' });
+    }
+
+    function showValidationErrors(errors) {
+        const list = Object.values(errors).map(message => `<li>${esc(message)}</li>`).join('');
+        Swal.fire({ title: 'Please check the form', html: `<ul class="text-start mb-0">${list}</ul>`, icon: 'warning' });
+    }
+
+    taskForm.addEventListener('submit', event => {
+        event.preventDefault();
+        taskForm.classList.add('was-validated');
+        if (!taskForm.checkValidity()) {
+            taskForm.querySelector(':invalid')?.focus();
+            return;
+        }
+        const operation = document.getElementById('formOperation').value;
+        const another = event.submitter?.value === 'another';
+        const buttons = taskForm.querySelectorAll('[type="submit"]');
+        buttons.forEach(b => { b.disabled = true; });
+
+        saveTask($(taskForm).serialize(), operation)
+            .done(response => {
+                if (response.success) {
+                    Ox.toast(operation === 'insertTask' ? 'Task added' : 'Task updated');
+                    loadTasks();
+                    if (another) {
+                        const keep = { status: $('#task_statuses').val(), priority: $('#task_priority').val(), assignee: $('#task_assignee').val() };
+                        resetTaskForm();
+                        $('#task_statuses').val(keep.status);
+                        $('#task_priority').val(keep.priority);
+                        $('#task_assignee').val(keep.assignee);
+                        taskForm.oxMarkClean();
+                        document.getElementById('task_title').focus();
+                    } else {
+                        taskForm.dataset.saved = '1';
+                        taskModal().hide();
+                    }
+                } else if (response.error) {
+                    showValidationErrors(response.error);
+                } else {
+                    Ox.toast(response.message || 'The task could not be saved.', { type: 'error' });
+                }
+            })
+            .fail(() => Ox.toast('The task could not be saved. Please try again.', { type: 'error' }))
+            .always(() => buttons.forEach(b => { b.disabled = false; }));
+    });
+
+    document.getElementById('completed_percentage').addEventListener('input', function () {
+        this.setCustomValidity(this.value > 100 || this.value < 0 ? 'Use a value from 0 to 100' : '');
+    });
+
+    // Quick add: a title is enough; the rest can be filled in later
+    document.getElementById('quickAddTask')?.addEventListener('submit', event => {
+        event.preventDefault();
+        const input = document.getElementById('quickAddTitle');
+        const title = input.value.trim();
+        if (title.length < 3) {
+            Ox.toast('A task title needs at least 3 characters.', { type: 'error' });
+            input.focus();
+            return;
+        }
+        input.disabled = true;
+        const data = $.param({ task_title: title, task_description: title, task_status: 1, priority: 'L', assignee_id: '' });
+        saveTask(data, 'insertTask')
+            .done(response => {
+                if (response.success) {
+                    input.value = '';
+                    Ox.toast('Task added — open it to add details');
+                    loadTasks();
+                } else if (response.error) {
+                    showValidationErrors(response.error);
+                }
+            })
+            .fail(() => Ox.toast('The task could not be added. Please try again.', { type: 'error' }))
+            .always(() => { input.disabled = false; input.focus(); });
+    });
+
+    // -----------------------------------------------------------------
+    // Delete with Undo
+    // -----------------------------------------------------------------
+    function deleteTask(id) {
+        document.querySelector(`[data-task="${id}"]`)?.classList.add('is-removing');
+        Ox.undoableDelete({
+            label: 'Task',
+            deleteUrl: `${assertPath}backlog/deletetask/${pid}/${pblid}/${id}`,
+            restoreUrl: `${assertPath}backlog/restoretask/${pid}/${pblid}/${id}`,
+            onChange: loadTasks,
+        }).then(ok => {
+            if (!ok) document.querySelector(`[data-task="${id}"]`)?.classList.remove('is-removing');
+        });
+    }
+    window.deleteTask = deleteTask;
+
+    loadTasks();
 }

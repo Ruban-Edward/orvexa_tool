@@ -393,6 +393,48 @@ class BacklogItemModel extends BaseModel
 
 
     /**
+     * Product an item belongs to, whether or not it is deleted.
+     *
+     * @param string $type backlog | story | task
+     */
+    public function productOf(string $type, int $id): ?int
+    {
+        $sql = match ($type) {
+            'backlog' => "SELECT bi.r_product_id AS product_id FROM orvexa_backlog_item bi WHERE bi.backlog_item_id = :id:",
+            'story'   => "SELECT bi.r_product_id AS product_id FROM orvexa_user_story us
+                          INNER JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
+                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
+                          WHERE us.user_story_id = :id:",
+            'task'    => "SELECT bi.r_product_id AS product_id FROM orvexa_task t
+                          INNER JOIN orvexa_user_story us ON us.user_story_id = t.r_user_story_id
+                          INNER JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
+                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
+                          WHERE t.task_id = :id:",
+        };
+        $row = $this->query($sql, ['id' => $id])->getRow();
+
+        return $row ? (int) $row->product_id : null;
+    }
+
+    /**
+     * Undo a soft delete made by deleteItem().
+     */
+    public function restoreItem($id, $input)
+    {
+        $table = $this->db->escapeIdentifiers($input[0]);
+        $key = $this->db->escapeIdentifiers($input[1]);
+
+        $sql = "UPDATE {$table}
+                    SET is_deleted = 'N'
+                    WHERE {$key} = :id: AND is_deleted = 'Y'";
+        $this->query($sql, [
+            'id' => $id
+        ]);
+
+        return $this->db->affectedRows() > 0;
+    }
+
+    /**
      * Summary of checkBacklogItem
      * @return bool
      * Purpose: Used to check the backlog item is actually present or not for the given product id

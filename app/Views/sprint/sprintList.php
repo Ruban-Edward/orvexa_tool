@@ -95,7 +95,7 @@
     <form method="post" id="filterForm">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h3 class="filter-heading">Filter</h3>
-            <button type="button" class="btn-filterclose" id="closeBtn" aria-label="Close"></button>
+            <button type="button" class="btn-close" id="closeBtn" aria-label="Close filters"></button>
         </div>
 
         <!-- Date Filters -->

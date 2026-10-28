@@ -9,6 +9,11 @@ use LDAP\Result;
 
 class UserStoryModel extends BaseModel
 {
+    /**
+     * Total rows matching the last list filter, ignoring limit/offset.
+     */
+    public int $lastTotal = 0;
+
     // Table for insertion
     protected $table = "orvexa_user_story";
 
@@ -381,6 +386,8 @@ class UserStoryModel extends BaseModel
          $sql.=" GROUP BY u.user_story_id ";
          
          $params['pblId'] = $filter['id'];
+
+         $this->lastTotal = (int) $this->db->query("SELECT COUNT(*) AS total FROM ($sql) AS filtered", $params)->getRow()->total;
  
          if (!empty($filter['limit'])) {
              $sql .= " limit :limit:";

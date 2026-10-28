@@ -452,7 +452,7 @@ if(typeof productDashboard !== 'undefined') {
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr.responseText); 
-                        alert('Failed to fetch pending tasks. Please try again.');
+                        Ox.toast('Pending tasks could not be loaded. Please try again.', { type: 'error' });
                     }
                 });
             }

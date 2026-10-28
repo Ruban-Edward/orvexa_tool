@@ -2,12 +2,10 @@
 <script src="<?= ASSERT_PATH ?>support/extensions/flatpickr/flatpickr.min.js"></script>
 <script src="<?= ASSERT_PATH ?>support/static/js/pages/date-picker.js"></script>
 
-<!-- Include the Chart.js DataLabels plugin -->
-<script src="<?= ASSERT_PATH ?>support/extensions/chart.js/chartjs-plugin-datalabels.js"></script>
-
 <script>
     // Pass the base URL from PHP to JavaScript
     var baseUrl = '<?php echo base_url(); ?>';
+    var oxUserId = <?= (int) session('employee_id') ?>;
 
     // ---------------------------------------------------------------------
     // Sidebar: collapsible on desktop (remembered), off-canvas on small screens
@@ -95,6 +93,9 @@
         }
     }
 
+    const NOTICE_ICONS = { task_assigned: 'user-plus', story_comment: 'message-square', sprint_status: 'zap' };
+    let unreadCount = 0;
+
     $(document).ready(function() {
         $('#notification-icon').on('click', function(event) {
             event.stopPropagation();
@@ -105,6 +106,20 @@
             }
         });
         notification();
+
+        // Keep the badge fresh with a cheap count; skip while the tab is hidden
+        setInterval(function() {
+            if (document.visibilityState !== 'visible') return;
+            $.ajax({
+                url: baseUrl + 'notification/unreadCount',
+                method: 'GET',
+                dataType: 'json',
+                global: false,
+                success: response => {
+                    if ((response?.unread ?? 0) !== unreadCount) notification();
+                }
+            });
+        }, 60000);
 
         $(document).on('click', function(event) {
             const $target = $(event.target);
@@ -117,11 +132,47 @@
         });
 
         $('#meeting-filters').on('change', 'input[name="meetingFilter"]', function() {
-            const showMeetings = this.value === 'meetings';
-            $('.meeting').toggle(showMeetings);
-            $('.upcoming-sprints-list').toggle(!showMeetings);
+            const group = this.value;
+            $('#meeting-list > li').each(function() {
+                $(this).toggle($(this).data('group') === group);
+            });
+        });
+
+        // Opening an activity item marks it read first (keepalive survives the navigation)
+        $('#meeting-list').on('click', '.activity-item a', function() {
+            const item = $(this).closest('.activity-item');
+            if (item.hasClass('is-unread')) {
+                markRead([item.data('id')]);
+            }
+        });
+
+        $('#markAllRead').on('click', function() {
+            markRead([]);
+            $('#meeting-list .activity-item').removeClass('is-unread');
         });
     });
+
+    function markRead(ids) {
+        const body = new URLSearchParams();
+        ids.forEach(id => body.append('ids[]', id));
+        fetch(baseUrl + 'notification/markRead', { method: 'POST', body, keepalive: true })
+            .then(response => response.json())
+            .then(data => setUnread(data.unread ?? 0))
+            .catch(() => {});
+    }
+
+    function setUnread(count) {
+        unreadCount = count;
+        $('#meeting-count').remove();
+        if (count > 0) {
+            $('#notification-icon').append(`<span class="badge" id="meeting-count">${count > 9 ? '9+' : count}</span>`)
+                .attr('aria-label', `Notifications, ${count} unread`);
+        } else {
+            $('#notification-icon').attr('aria-label', 'Notifications');
+        }
+        $('#activity-count').text(count > 9 ? '9+' : count).prop('hidden', count === 0);
+        $('#markAllRead').prop('hidden', count === 0);
+    }
 
     function notification() {
         $.ajax({
@@ -130,34 +181,47 @@
             dataType: 'json',
             global: false, // background refresh: don't trigger the page loader
             success: function(response) {
-                const meetings = response?.meetings ?? [];
-                const sprints = response?.sprints ?? [];
-                if (meetings.length > 0 || sprints.length > 0) {
-                    $('#meeting-filters').show();
-                    renderMeetings(meetings, sprints);
-                    $('#no-meetings-message').hide();
-                    $('#meetings').prop('checked', true).trigger('change');
-                } else {
-                    $('#meeting-list').empty();
-                    $('#meeting-count').remove();
-                    $('#meeting-filters').hide();
-                    $('#no-meetings-message').show();
-                }
+                renderNotifications(response?.activity ?? [], response?.meetings ?? [], response?.sprints ?? []);
+                setUnread(response?.unread ?? 0);
+                $('#no-meetings-message').hide();
+                $('#meeting-filters input:checked').trigger('change');
             },
             error: function() {
+                $('#meeting-list').empty();
                 $('#no-meetings-message').find('span').text('Failed to load notifications');
                 $('#no-meetings-message').show();
             }
         });
     }
 
-    // Render the user's meetings and upcoming scrum activities
-    function renderMeetings(meetings, sprints) {
-        const total = meetings.length + sprints.length;
-        $('#meeting-count').remove();
-        $('#notification-icon').append(`<span class="badge" id="meeting-count">${total > 9 ? '9+' : total}</span>`);
+    function timeAgo(value) {
+        const seconds = Math.max(0, (Date.now() - new Date(String(value).replace(' ', 'T')).getTime()) / 1000);
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+        return formatDate(value);
+    }
 
+    // Render activity, meetings and upcoming scrum events into one list, tagged by tab
+    function renderNotifications(activity, meetings, sprints) {
         const list = $('#meeting-list').empty();
+        const empty = (group, icon, text) => list.append(
+            `<li class="ox-empty-inline" data-group="${group}"><i class="icon-${icon}" aria-hidden="true"></i><span>${text}</span></li>`);
+
+        activity.forEach(function(item) {
+            list.append(`
+                <li class="activity-item ox-notice${item.is_read === 'N' ? ' is-unread' : ''}" data-group="activity" data-id="${Number(item.notification_id)}">
+                    <a class="ox-notice-link" href="${baseUrl}${escapeHtml(item.link)}">
+                        <div class="ox-notice-icon"><i class="icon-${NOTICE_ICONS[item.type] || 'bell'}" aria-hidden="true"></i></div>
+                        <div class="ox-notice-body">
+                            <div class="ox-notice-title">${escapeHtml(item.title)}</div>
+                            <div class="ox-notice-meta">${escapeHtml(item.message || '')}</div>
+                            <div class="ox-notice-time">${escapeHtml(timeAgo(item.created_date))}</div>
+                        </div>
+                    </a>
+                </li>`);
+        });
 
         meetings.forEach(function(meeting) {
             const link = meeting.meeting_link;
@@ -168,7 +232,7 @@
                     : `<div class="meeting-link">${escapeHtml(link)}</div>`;
 
             list.append(`
-                <li class="meeting ox-notice">
+                <li class="meeting ox-notice" data-group="meetings">
                     <div class="ox-notice-icon"><i class="icon-video" aria-hidden="true"></i></div>
                     <div class="ox-notice-body">
                         <div class="ox-notice-title">${escapeHtml(meeting.meeting_type_name)}</div>
@@ -183,7 +247,7 @@
 
         sprints.forEach(function(sprint) {
             list.append(`
-                <li class="upcoming-sprints-list ox-notice">
+                <li class="upcoming-sprints-list ox-notice" data-group="upcoming-scrum">
                     <a class="ox-notice-link" href="${baseUrl}sprint/navsprintview?sprint_id=${encodeURIComponent(sprint.sprint_id)}">
                         <div class="ox-notice-icon"><i class="icon-zap" aria-hidden="true"></i></div>
                         <div class="ox-notice-body">
@@ -194,12 +258,9 @@
                 </li>`);
         });
 
-        if (meetings.length === 0) {
-            list.append('<li class="meeting ox-empty-inline"><i class="icon-calendar" aria-hidden="true"></i><span>No meetings scheduled</span></li>');
-        }
-        if (sprints.length === 0) {
-            list.append('<li class="upcoming-sprints-list ox-empty-inline"><i class="icon-zap" aria-hidden="true"></i><span>No upcoming scrum events</span></li>');
-        }
+        if (activity.length === 0) empty('activity', 'bell-off', "You're all caught up");
+        if (meetings.length === 0) empty('meetings', 'calendar', 'No meetings scheduled');
+        if (sprints.length === 0) empty('upcoming-scrum', 'zap', 'No upcoming scrum events');
     }
 
     // ---------------------------------------------------------------------
@@ -270,9 +331,12 @@
         return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
     }
 </script>
+<script src="<?= ASSERT_PATH ?>assets/js/layout/ux.js?v=<?= filemtime(FCPATH . 'assets/js/layout/ux.js') ?>"></script>
+<script src="<?= ASSERT_PATH ?>assets/js/layout/search.js?v=<?= filemtime(FCPATH . 'assets/js/layout/search.js') ?>"></script>
 
 <?php if (isset($view) && is_file(FCPATH . 'assets/js/' . $view . '.js')) {
-    echo "<script type='text/javascript' src='" . JS_PATH . $view . ".js'></script>";
+    // Versioned by modification time so browsers never run a stale page script
+    echo "<script type='text/javascript' src='" . JS_PATH . $view . ".js?v=" . filemtime(FCPATH . 'assets/js/' . $view . '.js') . "'></script>";
 } ?>
 </body>
 

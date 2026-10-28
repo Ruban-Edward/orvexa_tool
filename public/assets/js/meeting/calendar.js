@@ -387,7 +387,7 @@ if (typeof calendar !== "undefined") {
               }
             },
             error: function (error) {
-              alert("An error occurred while fetching meeting detail.");
+              Ox.toast("Meeting details could not be loaded. Please try again.", { type: "error" });
             },
           });
         } else if (info.event.extendedProps.eventType === "Sprint") {
@@ -562,7 +562,7 @@ if (typeof calendar !== "undefined") {
               }
             },
             error: function (error) {
-              alert("An error occurred while fetching sprint detail.");
+              Ox.toast("Sprint details could not be loaded. Please try again.", { type: "error" });
             },
           });
         }
@@ -1169,7 +1169,7 @@ if (typeof calendar !== "undefined") {
       label.classList.add("selected-email");
       label.innerHTML = `
         <span>${email.trim()}</span>
-        <span class="remove-email" onclick="removeEmail(this)">x</span>`;
+        <button type="button" class="remove-email" aria-label="Remove" onclick="removeEmail(this)"><i class="icon-x" aria-hidden="true"></i></button>`;
       selectedEmailsContainer.appendChild(label);
     });
     var isRecurring = meeting[0].recurrance_meeting_id != null;
@@ -1426,7 +1426,7 @@ if (typeof calendar !== "undefined") {
     label.classList.add("selected-email");
     label.innerHTML = `
         <span>${email}</span>
-        <span class="remove-email" onclick="removeSelectedEmail(this, '${email}')">&times;</span>`;
+        <button type="button" class="remove-email" aria-label="Remove ${email}" onclick="removeSelectedEmail(this, '${email}')"><i class="icon-x" aria-hidden="true"></i></button>`;
     selectedEmailsContainer.appendChild(label);
   }
 
@@ -1899,6 +1899,8 @@ if (typeof calendar !== "undefined") {
     paginationControls.innerHTML = "";
     const prevButton = document.createElement("button");
     prevButton.className = "btn btn-primary p-1 m-1";
+    prevButton.type = "button";
+    prevButton.setAttribute("aria-label", "Previous page");
     prevButton.style.borderRadius = "50%";
     prevButton.style.height = "25px";
     prevButton.style.width = "25px";
@@ -1910,6 +1912,8 @@ if (typeof calendar !== "undefined") {
     });
     const nextButton = document.createElement("button");
     nextButton.className = "btn btn-primary p-1 m-1";
+    nextButton.type = "button";
+    nextButton.setAttribute("aria-label", "Next page");
     nextButton.style.borderRadius = "50%";
     nextButton.style.height = "25px";
     nextButton.style.width = "25px";
@@ -2752,7 +2756,7 @@ if (typeof calendar !== "undefined") {
             label.classList.add("selected-email");
             label.innerHTML = `
                 <span>${member.first_name.trim()}</span>
-                <span class="remove-email" onclick="removeEmail(this)">x</span>`;
+                <button type="button" class="remove-email" aria-label="Remove" onclick="removeEmail(this)"><i class="icon-x" aria-hidden="true"></i></button>`;
             selectedEmailsContainer.appendChild(label);
             selectedEmailsInput.value = selectedEmails.join(",");
           });

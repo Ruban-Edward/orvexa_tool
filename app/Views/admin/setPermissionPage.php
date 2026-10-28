@@ -44,7 +44,7 @@
             </div>
             <div class="cls-body">
                 <!-- Dropdown to select user role, with data-url attribute for fetching permissions -->
-                <select class="form-select" id="selectUser" name="selectUser" required>
+                <select class="form-select" id="selectUser" name="selectUser" aria-label="User role" required>
                     <option value="" disabled selected>-- Select role --</option>
                     <?php foreach ($data['roles'] as $value) {
                         echo "<option value='{$value['role_id']}'>{$value['role_name']}</option>";

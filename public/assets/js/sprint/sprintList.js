@@ -295,7 +295,7 @@ if (typeof m_sprintList !== "undefined") {
             <button class='removeBtnstyle' type="submit" data-bs-toggle="modal" data-toggle="tooltip" data-placement="top"  title="Click to edit sprint"><i class="far fa-edit"></i></button>
 
         </form>
-                    <button class='dropdown-item ' style=" padding-right : 10px; " type='button' data-bs-toggle='modal' data-bs-target='#meetingModal' onclick='showMeetingModal(${JSON.stringify(
+                    <button class='dropdown-item ' style=" padding-right : 10px; " type='button' aria-label='Schedule a meeting' data-bs-toggle='modal' data-bs-target='#meetingModal' onclick='showMeetingModal(${JSON.stringify(
                       item
                     )})'><i class="fas fa-user-friends" data-toggle="tooltip" data-placement="top"  title="Click to schedule meeting"></i></button>
       `;

@@ -2,66 +2,46 @@
 
 if (typeof m_backlogItems !== 'undefined') {
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const filterBtn = document.getElementById("filter_btn");
-        const closeFilterSidebarBtn = document.getElementById(
-            "closeFilterSidebarBtn"
-        );
-        const filterSidebar = document.getElementById("filterSidebar");
+    const esc = Ox.esc;
+    const filterSidebar = document.getElementById("filterSidebar");
+    const filterBtn = document.getElementById("filter_btn");
+    const searchInput = document.getElementById("backlogSearchInput");
+    const filterSelects = () => [
+        { el: document.getElementById("filterBacklogType"), group: "Type", onRemove: reloadBacklog },
+        { el: document.getElementById("filterCustName"), group: "Customer", onRemove: reloadBacklog },
+        { el: document.getElementById("filterPriority"), group: "Priority", onRemove: reloadBacklog },
+        { el: document.getElementById("filterStatus"), group: "Status", onRemove: reloadBacklog },
+    ];
+    // Backlog filters are remembered per user and per product (customers/types differ by product)
+    const filterStore = Ox.store("filters:backlog:" + pId);
 
-        // Open the filter sidebar
-        filterBtn.addEventListener("click", () => {
-            filterSidebar.classList.add("open");
-        });
-
-        // Close the filter sidebar
-        closeFilterSidebarBtn.addEventListener("click", () => {
-            filterSidebar.classList.remove("open");
-        });
-
-        // Optionally close the sidebar when clicking outside of it
-        document.addEventListener("click", (event) => {
-            if (!filterSidebar.contains(event.target) && event.target !== filterBtn) {
-                filterSidebar.classList.remove("open");
-            }
-        });
-
-        // Handling filter form submission
-        const filterForm = document.getElementById("filterOptionsForm");
-        if (filterForm) {
-            filterForm.addEventListener("submit", (event) => {
-                event.preventDefault(); // Prevent form submission
-            });
+    function setFilterPanel(open) {
+        if (!filterSidebar) return;
+        filterSidebar.classList.toggle("open", open);
+        filterBtn?.setAttribute("aria-expanded", String(open));
+    }
+    filterBtn?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setFilterPanel(!filterSidebar.classList.contains("open"));
+    });
+    document.getElementById("closeFilterSidebarBtn")?.addEventListener("click", () => {
+        setFilterPanel(false);
+        filterBtn?.focus();
+    });
+    document.addEventListener("click", (event) => {
+        if (filterSidebar?.classList.contains("open") && !filterSidebar.contains(event.target) && !event.target.closest("#filter_btn")) {
+            setFilterPanel(false);
         }
-
-        // serach box to get open
-        const searchBox = document.querySelector('.search-box');
-        const searchBtn = document.getElementById('search_btn');
-        const searchInput = document.getElementById('backlogSearchInput');
-
-        searchBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            searchBox.classList.toggle('expanded');
-            if (searchBox.classList.contains('expanded')) {
-                searchInput.focus();
-            }
-        });
-
-        // Close search box when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!searchBox.contains(e.target)) {
-                searchBox.classList.remove('expanded');
-            }
-        });
     });
 
-    // If the total count remains 0 then no backlog will be displayed
+    const savedFilters = filterStore.load();
+    if (savedFilters) {
+        filterSelects().forEach(({ el }) => Ox.setSelectValues(el, savedFilters[el.id] || []));
+        if (searchInput) searchInput.value = savedFilters.search || "";
+    }
+
     if (totalCount == 0) {
         document.getElementById("refinement").style.display = "none";
-        document.getElementById("mainPage").style.display = "none";
-        document.getElementById("empty").style.display = "block";
-    } else {
-        document.getElementById("empty").style.display = "none";
     }
 
     // To difine the sort order
@@ -178,56 +158,27 @@ if (typeof m_backlogItems !== 'undefined') {
     // Function to dynamically generate the table body with pagination
     function generateTableBody(data) {
         const tableBody = document.getElementById("tableBody");
-        tableBody.innerHTML = "";
-
-
-        data.forEach((item) => {
-            const row = document.createElement("tr");
-            row.setAttribute("data-order", item.order_by); // Add order_by as data attribute for sortable
-            row.setAttribute("data-backlog-id", item.backlog_id); // Add backlog_id as data attribute
-
-            row.innerHTML =
-                `
-            <td class="capitalize-text text-center"><a href=` +
-                assert_path +
-                `backlog/backlogitemdetails?pid=` +
-                pId +
-                `&pblid=${item.backlog_item_id} " data-toggle="tooltip" data-placement="top" title="Click to view the details of backlog item ${item.backlog_item_name}">${item.backlog_item_name}</a></td>
-            <td class="capitalize-text text-center" >${item.tracker}</td>
-            <td class="capitalize-text text-center">${item.customer_name}</td>
-            <td class="capitalize-text text-center">${item.completed}/${item.total}</td>
-            <td class="capitalize-text text-center">
-                <div class="priority-${item.priority}">${item.priority}</div>
-            </td>          
-             <td class="capitalize-text text-center">
-                    <select class="status-select" onchange="updateStatus(this, ${item.backlog_item_id})">
-                        ${statuses.map(s => `
-                            <option value="${s.status_id}" ${item.r_module_status_id == s.status_id ? 'selected' : ''}>
-                                ${s.status_name}
-                            </option>
-                        `).join('')}
+        tableBody.innerHTML = data.map((item) => {
+            const id = Number(item.backlog_item_id);
+            const name = esc(item.backlog_item_name);
+            return `<tr data-backlog-id="${id}">
+                <td class="capitalize-text text-center"><a href="${assert_path}backlog/backlogitemdetails?pid=${pId}&pblid=${id}" title="View details of ${name}">${name}</a></td>
+                <td class="capitalize-text text-center">${esc(item.tracker)}</td>
+                <td class="capitalize-text text-center">${esc(item.customer_name)}</td>
+                <td class="capitalize-text text-center">${Number(item.completed) || 0}/${Number(item.total) || 0}</td>
+                <td class="capitalize-text text-center"><div class="priority-${esc(item.priority)}">${esc(item.priority)}</div></td>
+                <td class="capitalize-text text-center">
+                    <select class="status-select form-select form-select-sm" aria-label="Status of ${name}" onchange="updateStatus(this, ${id})">
+                        ${statuses.map(s => `<option value="${Number(s.status_id)}" ${item.r_module_status_id == s.status_id ? "selected" : ""}>${esc(s.status_name)}</option>`).join("")}
                     </select>
                 </td>
-              <td data-label='Action' class='action_button custom-action-buttons'>
-                  ${userPermissions.viewUserStories ? `
-                      <a href='${assert_path}backlog/userstories?pid=${pId}&pblid=${item.backlog_item_id}'><i class="icon-book-open" data-toggle="tooltip" data-placement="top" title="View / add user stories"></i></a>
-                  ` : ``}
-                  
-                  ${userPermissions.updateBacklog ? `
-                      <a href="#" id="backlog" data-bs-toggle="modal" data-bs-target="#backlogModal" onclick="editbacklog(${item.backlog_item_id})" data-toggle="tooltip" data-placement="top" title="Update backlog">
-                        <i class="icon-edit"></i>
-                      </a>` : ``}
-                    ${userPermissions.deleteBacklog ? `
-                      <a href="#" onclick="confirmDelete(${item.backlog_item_id})"><i class="icon-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i></a>` : ``}
-                  
-              </td>
-
-
-        `;
-            tableBody.appendChild(row);
-
-        });
-        updatePaginationControls(data);
+                <td data-label="Action" class="action_button custom-action-buttons">
+                    ${userPermissions.viewUserStories ? `<a class="ox-icon-action" href="${assert_path}backlog/userstories?pid=${pId}&pblid=${id}" title="View or add user stories" aria-label="User stories of ${name}"><i class="icon-book-open" aria-hidden="true"></i></a>` : ""}
+                    ${userPermissions.updateBacklog ? `<button type="button" class="btn btn-link ox-icon-action" onclick="editbacklog(${id})" title="Edit backlog item" aria-label="Edit ${name}"><i class="icon-edit" aria-hidden="true"></i></button>` : ""}
+                    ${userPermissions.deleteBacklog ? `<button type="button" class="btn btn-link ox-icon-action is-danger" onclick="confirmDelete(${id})" title="Delete backlog item" aria-label="Delete ${name}"><i class="icon-trash" aria-hidden="true"></i></button>` : ""}
+                </td>
+            </tr>`;
+        }).join("");
     }
 
     let orderNum = 0;
@@ -242,128 +193,104 @@ if (typeof m_backlogItems !== 'undefined') {
         filterTable();
     }
 
-    // Function to filter the table data
-    function filterTable() {
-        const filterSidebar = document.getElementById("filterSidebar");
-        filterSidebar.classList.remove('open');
+    const pager = Ox.pager(document.getElementById("paginationControls"), {
+        scope: "backlog",
+        onChange: () => filterTable(),
+    });
+    const values = (el) => el ? [...el.selectedOptions].map(o => o.value).filter(Boolean) : [];
+    const hasFilters = () => filterSelects().some(({ el }) => values(el).length) || (searchInput && searchInput.value.trim() !== "");
 
-        // All the req filter values are stored inside filter array
-        let filter = {
-            pid: pId,
-            priorityFilter: $("#filterPriority").val(),
-            statusFilter: $("#filterStatus").val(),
-            BtypeFilter: $("#filterBacklogType").val(),
-            custName: $("#filterCustName").val(),
-            limit: rowsPerPage,
-            offset: (currentPage - 1) * rowsPerPage,
-            sort: order
-        };
-        if (totalCount > 0) {
-            filter.searchQuery = $("#backlogSearchInput").val().toLowerCase();
-        } else {
-            filter.searchQuery = ''; // or remove this line if you want it undefined
+    function reloadBacklog() {
+        pager.reset();
+        filterTable();
+    }
+
+    function resetFilters() {
+        filterSelects().forEach(({ el }) => Ox.setSelectValues(el, []));
+        if (searchInput) searchInput.value = "";
+        reloadBacklog();
+    }
+
+    function renderFilterState() {
+        const count = filterSelects().reduce((n, { el }) => n + values(el).length, 0);
+        const badge = document.getElementById("noti");
+        if (badge) {
+            badge.textContent = count;
+            badge.hidden = count === 0;
         }
-        console.log(filter);
-        $.ajax({
-            url: assert_path + "backlog/filterBacklogItem",
-            type: "POST",
-            headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
-            data: JSON.stringify({
-                filter: filter
-            }),
-            contentType: "application/json",
-            dataType: "json",
-            success: function (response) {
-                console.log("Server Response:", response);
-                if (response && response.data) {
-                    if (response.data.length === 0) {                        $("#tableBody").html("<tr><td colspan='100%' class='text-center'>No Data Found</td></tr>");                        $("#mainPage").hide();                        $("#empty").show();
-                    } else {                        $("#mainPage").show();                        $("#empty").hide();
-                        // To call generatetable to display the array
-                        generateTableBody(response.data);
-                        // To Update the pagination 
-                        updatePaginationControls(response.data);
-                        // To show the number of filters applied on the button
-                        countNumberOfFilters();
-                    }
-                } else {
-                    console.error("Invalid response format");
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX Error:", status, error);
-                console.error("Response Text:", xhr.responseText);
-            },
+        Ox.chips(document.getElementById("backlogChips"), Ox.chipsFor(filterSelects(), { el: searchInput, onRemove: reloadBacklog }), resetFilters);
+        const state = { search: searchInput ? searchInput.value.trim() : "" };
+        filterSelects().forEach(({ el }) => { state[el.id] = values(el); });
+        filterStore.save(state);
+    }
+
+    function showEmpty() {
+        const filtered = hasFilters();
+        Ox.empty(document.getElementById("empty"), filtered ? {
+            icon: "filter",
+            title: "No backlog items match your filters",
+            text: "Try removing a filter or changing your search.",
+            actions: [{ label: "Clear filters", icon: "x", onClick: resetFilters }],
+        } : {
+            icon: "layers",
+            title: "This product has no backlog items yet",
+            text: "Add the first item to start planning work for this product.",
+            actions: document.getElementById("backlog") ? [{ label: "Add first backlog item", icon: "plus", primary: true, onClick: () => document.getElementById("backlog").click() }] : [],
         });
     }
 
-    // To remove the applied filter
-    function resetFilters() {
-        document.getElementById('filterPriority').value = '';
-        document.getElementById('filterStatus').value = '';
-        document.getElementById('backlogSearchInput').value = '';
-        document.getElementById('filterBacklogType').value = '';
-        document.getElementById('filterCustName').value = '';
-        filterTable();
+    let backlogRequest = null;
+    function filterTable() {
+        setFilterPanel(false);
+        renderFilterState();
+        backlogRequest?.abort();
+        const filter = {
+            pid: pId,
+            priorityFilter: values(document.getElementById("filterPriority")),
+            statusFilter: values(document.getElementById("filterStatus")),
+            BtypeFilter: values(document.getElementById("filterBacklogType")),
+            custName: values(document.getElementById("filterCustName")),
+            searchQuery: searchInput ? searchInput.value.trim().toLowerCase() : "",
+            limit: pager.size,
+            offset: pager.offset,
+            sort: order,
+        };
+        backlogRequest = $.ajax({
+            url: assert_path + "backlog/filterBacklogItem",
+            type: "POST",
+            data: JSON.stringify({ filter }),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (response) {
+                const rows = response?.data || [];
+                const total = Number(response?.total) || 0;
+                generateTableBody(rows);
+                pager.render(total);
+                $("#mainPage").toggle(total > 0);
+                $("#empty").toggle(total === 0);
+                if (total === 0) showEmpty();
+            },
+            error: function (xhr, status) {
+                if (status !== "abort") Ox.toast("Backlog items could not be loaded. Please try again.", { type: "error" });
+            },
+        });
     }
-    document.querySelector('.apply-reset-filters-btn').addEventListener('click', resetFilters);
-
-
-    // Function to update pagination controls
-    function updatePaginationControls() {
-        const totalPages = Math.ceil(totalCount / rowsPerPage);
-        document.getElementById(
-            "pageInfo"
-        ).textContent = `Page ${currentPage} of ${totalPages}`;
-        document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages}`;
-        document.getElementById("prevPage").style.visibility = currentPage > 1 ? "visible" : "hidden";
-        document.getElementById("nextPage").style.visibility = currentPage < totalPages ? "visible" : "hidden";
-    }
-
-    // Event listeners for pagination controls
-    document.getElementById("prevPage").addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            filterTable();
-            console.log("prev");
-
-        }
-    });
-    document.getElementById("nextPage").addEventListener("click", () => {
-        const totalPages = Math.ceil(totalCount / rowsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            filterTable();
-
-        }
+    document.querySelector(".apply-reset-filters-btn")?.addEventListener("click", () => {
+        setFilterPanel(false);
+        resetFilters();
     });
 
-    // Event listeners for search and filter functionalities
-    $("#backlogSearchInput").on("input", filterTable);
+    let backlogSearchTimer;
+    $("#backlogSearchInput").on("input", () => {
+        clearTimeout(backlogSearchTimer);
+        backlogSearchTimer = setTimeout(reloadBacklog, 250);
+    });
     $("#filterOptionsForm").on("submit", function (event) {
-        event.preventDefault(); // Prevent form submission
-        filterTable(); // Apply filters
-
+        event.preventDefault();
+        reloadBacklog();
     });
-    // Call genertetableheader and filtertable automatically
     generateTableHeader();
     filterTable();
-
-    // To show the number of filters applied on the button
-    function countNumberOfFilters() {
-        let numberOfFilters = document.getElementById("noti");
-        numberOfFilters.style.display = "block";
-        let formData = $("#filterOptionsForm").serializeArray();
-
-        let filledFieldsCount = formData.filter(function (field) {
-            return field.value.trim() !== "";
-        }).length;
-        if (filledFieldsCount > 0) {
-            numberOfFilters.textContent = filledFieldsCount;
-        }
-        else {
-            numberOfFilters.style.display = "none";
-        }
-    }
 
     // Function to define whether the model performs add or update function
     function addbacklog() {
@@ -392,6 +319,7 @@ if (typeof m_backlogItems !== 'undefined') {
                 console.log("here");
                 console.log(response);
                 if (response) {
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById("backlogModal")).show();
                     $("#productname").val(response.product_name);
                     $("#priority").val(response.priority);
                     $("#backlogitemname").val(response.backlog_item_name);
@@ -411,6 +339,7 @@ if (typeof m_backlogItems !== 'undefined') {
                     } else {
                         $('#fileList').append(`<li class="list-group-item">No files attached</li>`);
                     }
+                    document.getElementById("addbacklogform").oxMarkClean?.();
                 } else {
                     console.error("Invalid response data:", response);
                 }
@@ -437,72 +366,13 @@ if (typeof m_backlogItems !== 'undefined') {
         });
     }
 
-    // To delete the backlog 
+    // Delete immediately (soft delete on the server) and offer Undo
     function confirmDelete(id) {
-        // To get the details of the backlog
-        $.ajax({
-            url: assert_path + "backlog/getbacklogItemById?pid=" + id, // Replace with the correct endpoint to get the status
-            method: "POST",
-            success: function (response) {
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this!",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes",
-                    cancelButtonText: "No",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: assert_path + "backlog/deletebacklogitem?pid=" + pId + "&pblid=" + id,
-                            method: "POST",
-                            success: function (response) {
-                                // Handle success response
-                                if (response.success) {
-                                    Swal.fire(
-                                        "Deleted!",
-                                        response.message,
-                                        "success"
-                                    ).then((result) => {
-                                        if (result.isConfirmed) {
-                                            // Redirect to another page
-                                            window.location.href =
-                                                assert_path + "backlog/backlogitems?pid=" + pId;
-                                        }
-                                    });
-                                } else {
-                                    Swal.fire(
-                                        "Warning!",
-                                        response.message,
-                                        "warning"
-                                    ).then((result) => {
-                                        if (result.isConfirmed) {
-                                            // Redirect to another page
-                                            window.location.href =
-                                                assert_path + "backlog/backlogitems?pid=" + pId;
-                                        }
-                                    });
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                // Handle error
-                                Swal.fire("Error!", "Something went wrong.", "error");
-                            },
-                        });
-                    }
-                });
-                // }
-            },
-            error: function (xhr, status, error) {
-                // Handle error
-                Swal.fire(
-                    "Error!",
-                    "Something went wrong while fetching the status.",
-                    "error"
-                );
-            },
+        Ox.undoableDelete({
+            label: "Backlog item",
+            deleteUrl: assert_path + "backlog/deletebacklogitem?pid=" + pId + "&pblid=" + id,
+            restoreUrl: assert_path + "backlog/restorebacklogitem?pid=" + pId + "&pblid=" + id,
+            onChange: filterTable,
         });
     }
 
@@ -655,14 +525,10 @@ if (typeof m_backlogItems !== 'undefined') {
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    Swal.fire({
-                                        title: "Success!",
-                                        text: data.message || actionMessage,
-                                        icon: "success",
-                                        confirmButtonText: "OK",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
+                                    form.dataset.saved = "1";
+                                    bootstrap.Modal.getOrCreateInstance(document.getElementById("backlogModal")).hide();
+                                    Ox.toast(data.message || actionMessage);
+                                    filterTable();
                                 } else {
                                     let errorMessage = "An error occurred.";
                                     if (data.error) {
@@ -723,14 +589,15 @@ if (typeof m_backlogItems !== 'undefined') {
     // For backlog History
     let activities = [];
     let filteredActivities = [];
-    let currentpage = 1;
-    const perPageItem = 8;
+    const historyPager = Ox.pager(document.getElementById('historyPager'), {
+        scope: 'backlog-history',
+        sizes: [8, 20, 50],
+        onChange: () => displayActivities(),
+    });
 
     document.getElementById('backloghistory').addEventListener('click', loadActivities);
     document.getElementById('clearHistory').addEventListener('click', clearHistory);
     document.getElementById('filterButton').addEventListener('click', filterActivities);
-    document.getElementById('history-previous').addEventListener('click', () => changePage(-1));
-    document.getElementById('history-next').addEventListener('click', () => changePage(1));
 
     // Get the history details
     function loadActivities() {
@@ -781,7 +648,7 @@ if (typeof m_backlogItems !== 'undefined') {
             return activityDate >= startDate && activityDate <= endDate;
         });
 
-        currentpage = 1;
+        historyPager.reset();
         displayActivities();
     }
 
@@ -796,17 +663,12 @@ if (typeof m_backlogItems !== 'undefined') {
             noDataMessage.textContent = 'No data found';
             dataList.appendChild(noDataMessage);
 
-            // Hide pagination when no data
-            document.querySelector('.pagination').style.display = 'none';
+            historyPager.render(0);
             return;
         }
 
-        // Show pagination when there's data
-        document.querySelector('.pagination').style.display = 'flex';
-
-        const startIndex = (currentpage - 1) * perPageItem;
-        const endIndex = startIndex + perPageItem;
-        const activitiesToDisplay = filteredActivities.slice(startIndex, endIndex);
+        historyPager.render(filteredActivities.length);
+        const activitiesToDisplay = filteredActivities.slice(historyPager.offset, historyPager.offset + historyPager.size);
 
         let currentDate = null;
 
@@ -832,43 +694,13 @@ if (typeof m_backlogItems !== 'undefined') {
             dataList.appendChild(li);
         });
 
-        updatePaginationButtons();
     }
 
-    // To update te pagination of History
-    function updatePaginationButtons() {
-        const totalPages = Math.ceil(filteredActivities.length / perPageItem);
-        if (filteredActivities.length < perPageItem && currentPage === 1) {
-            document.getElementById("history-previous").style.visibility = "hidden";
-            document.getElementById("history-next").style.visibility = "hidden";
-        }
-        else if (currentpage === totalPages) {
-            document.getElementById("history-next").style.visibility = "hidden";
-            document.getElementById('history-previous').style.visibility = "visible";
-        }
-        else if (currentpage === 1) {
-            document.getElementById("history-previous").style.visibility = "hidden";
-            document.getElementById('history-next').style.visibility = "visible";
-        } else {
-            document.getElementById("history-previous").style.visibility = "visible";
-            document.getElementById("history-next").style.visibility = "visible";
-        }
-    }
-    
-    // To change the page in history
-    function changePage(direction) {
-        const newPage = currentpage + direction;
-        const totalPages = Math.ceil(filteredActivities.length / perPageItem);
-        if (newPage >= 1 && newPage <= totalPages) {
-            currentpage = newPage;
-            displayActivities();
-        }
-    }
     // To clear the history each time it gets closed
     function clearHistory() {
         activities = [];
         filteredActivities = [];
-        currentpage = 1;
+        historyPager.reset();
         displayActivities();
     }
 
@@ -877,7 +709,7 @@ if (typeof m_backlogItems !== 'undefined') {
     // To rest the filter applied
     function resetActivities() {
         filteredActivities = [...activities];
-        currentpagee = 1;
+        historyPager.reset();
 
         // Clear filter inputs
         document.getElementById('startDate').value = '';

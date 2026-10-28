@@ -122,7 +122,7 @@
                     <div class="label">Sprint status:</div>
                     <div class="value">
                         <?php if (has_permission('sprint/updateSprintStatus')): ?>
-                            <select class="form-select" name="sprintStatus" id="sprintStatus">
+                            <select class="form-select" name="sprintStatus" id="sprintStatus" aria-label="Sprint status">
                                 <?php
                                 foreach ($data['sprintStatus'] as $key => $value) {
                                     $check = $value['status_name'] === $data['sprintDetails'][0]['sprint_status_name'] ? " selected" : "";
@@ -233,6 +233,19 @@
     </div>
     <div class="collapse" id="exampleCollapse2">
         <div class="card-body">
+            <div class="ox-board-bar">
+                <div class="ox-segmented" role="radiogroup" aria-label="Sprint board layout">
+                    <input type="radio" name="sprintLayout" id="sprintLayoutBoard" value="board" checked>
+                    <label for="sprintLayoutBoard"><i class="icon-columns" aria-hidden="true"></i> Board</label>
+                    <input type="radio" name="sprintLayout" id="sprintLayoutTable" value="table">
+                    <label for="sprintLayoutTable"><i class="icon-list" aria-hidden="true"></i> Table</label>
+                </div>
+                <label class="ox-board-mine"><input type="checkbox" class="form-check-input" id="boardOnlyMine"> Only my tasks</label>
+                <span class="ox-board-hint" id="boardHint">Drag cards between columns, or focus a card and use ← →</span>
+            </div>
+            <div id="sprintBoard" class="ox-board" aria-describedby="boardHint"></div>
+            <div class="visually-hidden" aria-live="polite" id="boardStatus"></div>
+            <div id="sprintTable" hidden>
             <div class="filter-container" id='filter-element'>
                 <div class="backlogCotainer">
                     <div id='filterBlock'>
@@ -273,6 +286,7 @@
                 </table>
 
 
+            </div>
             </div>
         </div>
         <nav aria-label="Page navigation" id="myNav" class="pagenav">
@@ -462,7 +476,7 @@
             <div class="modal-body">
                 <form id="scrumRetrospectiveForm" action="" method="post">
                     <div class="date-picker">
-                        <input type="date" id="date-picker" name="date">
+                        <input type="date" id="date-picker" name="date" aria-label="Retrospective date">
                     </div>
                     <div class="feedback-section">
                         <div class="feedback-type">
@@ -487,7 +501,7 @@
                             </div>
                             <div class="form-group-content">
                                 <textarea id="general" name="general" placeholder="General comments"></textarea>
-                                <button type="button" id="mic" class="mic-button"
+                                <button type="button" id="mic" class="mic-button" aria-label="Dictate with the microphone"
                                     onclick="voiceRecognition('mic','general')">
                                     <i class="bi bi-mic"></i>
                                 </button>
@@ -519,7 +533,7 @@
             <div class="modal-body">
                 <form id="scrumDiaryForm" action="" method="post">
                     <div class="datepicker">
-                        <input type="date" id="datepicker" name="date">
+                        <input type="date" id="datepicker" name="date" aria-label="Date">
                     </div>
                     <div class="input-area">
                         <div class="form-group">
@@ -558,7 +572,7 @@
                             <div class="form-group-content">
                                 <textarea id="generalDailyScrum" name="general"
                                     placeholder="General comments"></textarea>
-                                <button type="button" id="micButton" class="mic-button"
+                                <button type="button" id="micButton" class="mic-button" aria-label="Dictate with the microphone"
                                     onclick="voiceRecognition('micButton','generalDailyScrum')">
                                     <i class="bi bi-mic"></i>
                                 </button>
@@ -578,3 +592,4 @@
         </div>
     </div>
 </div>
+<script src="<?= ASSERT_PATH ?>assets/js/sprint/sprintBoard.js?v=<?= filemtime(FCPATH . 'assets/js/sprint/sprintBoard.js') ?>"></script>

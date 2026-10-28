@@ -9,6 +9,7 @@
 </head>
 
 <body class="ox-app">
+    <a class="ox-skip" href="#main">Skip to main content</a>
     <script>
         // Restore the collapsed sidebar before first paint to avoid a layout jump
         try {

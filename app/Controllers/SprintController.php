@@ -17,6 +17,7 @@ use DateTime;
 use Config\SprintModelConfig;
 use App\Services\EmailService;
 use App\Services\NotesService;
+use App\Services\NotificationService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -1352,6 +1353,7 @@ class SprintController extends BaseController
                     "action_date" => $this->currentDateTime
                );
                $this->historyModel->logActions($action);
+               (new NotificationService())->sprintStatusChanged((int) $data['sprint_id'], (int) $this->userId);
                return $this->response->setJSON(['success' => true]);
           } else {
                return $this->response->setJSON(['success' => false]);
@@ -1441,6 +1443,58 @@ class SprintController extends BaseController
           return $this->response->setJSON(['success' => true, "data" => $data]);
      }
 
+     /**
+      * Sprint board data: columns and the sprint's tasks.
+      */
+     public function boardTasks($sprintId): Response
+     {
+          $sprint = $this->sprintModel->getSprint($sprintId);
+          $products = array_column($this->backlogModel->getUserProduct($this->userId), 'product_id');
+          if (empty($sprint) || !in_array($sprint[0]['r_product_id'] ?? null, $products)) {
+               return $this->response->setStatusCode(403)->setJSON(['success' => false]);
+          }
+
+          return $this->response->setJSON([
+               'success' => true,
+               'columns' => $this->sprintModelConfig->boardColumns,
+               'tasks' => $this->sprintModel->getBoardTasks((int) $sprintId),
+               'canMove' => has_permission('backlog/updateTaskById'),
+          ]);
+     }
+
+     /**
+      * Drag-and-drop on the sprint board: set a task's status.
+      */
+     public function moveTask(): Response
+     {
+          $sprintId = (int) $this->request->getPost('sprint_id');
+          $taskId = (int) $this->request->getPost('task_id');
+          $statusId = (int) $this->request->getPost('status_id');
+
+          $allowed = array_merge(...array_column($this->sprintModelConfig->boardColumns, 'statuses'));
+          $sprint = $this->sprintModel->getSprint($sprintId);
+          $products = array_column($this->backlogModel->getUserProduct($this->userId), 'product_id');
+          if (!has_permission('backlog/updateTaskById') || empty($sprint) || !in_array($sprint[0]['r_product_id'] ?? null, $products)
+               || !in_array($statusId, $allowed, true) || !$this->sprintModel->isTaskInSprint($taskId, $sprintId)) {
+               return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'This task cannot be moved.']);
+          }
+
+          $percentage = $this->request->getPost('completed_percentage');
+          $percentage = is_numeric($percentage) ? max(0, min(100, (int) $percentage)) : null;
+          $this->sprintModel->moveBoardTask($taskId, $statusId, (int) $this->userId, $percentage);
+          $this->historyModel->logActions([
+               "r_user_id" => $this->userId,
+               "r_action_type_id" => 2,
+               "product_id" => $sprint[0]['r_product_id'],
+               "r_module_id" => 8,
+               "reference_id" => $sprintId,
+               "action_data" => "Task ID {$taskId} moved on the sprint board",
+               "action_date" => $this->currentDateTime
+          ]);
+
+          return $this->response->setJSON(['success' => true]);
+     }
+
      public function changeSprintStatusById($sprintId)
      {
           $data = [
@@ -1449,6 +1503,7 @@ class SprintController extends BaseController
                'userId' => $this->userId
           ];
           $this->sprintModel->alterSprintStatusById($data);
+          (new NotificationService())->sprintStatusChanged((int) $sprintId, (int) $this->userId);
           return $this->response->setJSON(['success' => true, "data" => $data]);
      }
 

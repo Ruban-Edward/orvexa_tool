@@ -46,7 +46,8 @@ class UserModel extends BaseModel
                     external_employee_id,
                     r_role_id,
                     external_api_key,
-                    password
+                    password,
+                    password_reset_required
                 FROM
                     orvexa_user
                 WHERE
@@ -63,23 +64,103 @@ class UserModel extends BaseModel
         $stored = (string) $user->password;
         $plain  = (string) $input['password'];
 
-        $isModernHash = str_starts_with($stored, '$2y$') || str_starts_with($stored, '$argon');
-        if ($isModernHash) {
-            $valid = password_verify($plain, $stored);
-        } else {
-            // Legacy unsalted MD5 – compare in constant time, then upgrade below.
-            $valid = hash_equals(strtolower($stored), md5($plain));
-        }
-        if (! $valid) {
+        if (! $this->passwordMatches($plain, $stored)) {
             return [];
         }
-        if (! $isModernHash || password_needs_rehash($stored, PASSWORD_DEFAULT)) {
+        if (! $this->isModernHash($stored) || password_needs_rehash($stored, PASSWORD_DEFAULT)) {
             $this->db->table('orvexa_user')
                 ->where('user_id', $user->user_id)
                 ->update(['password' => password_hash($plain, PASSWORD_DEFAULT)]);
         }
         unset($user->password);
         return [$user];
+    }
+
+    private function isModernHash(string $stored): bool
+    {
+        return str_starts_with($stored, '$2y$') || str_starts_with($stored, '$argon');
+    }
+
+    /**
+     * Supports modern (bcrypt/argon) hashes and legacy unsalted MD5, compared in constant time.
+     */
+    private function passwordMatches(string $plain, string $stored): bool
+    {
+        return $this->isModernHash($stored)
+            ? password_verify($plain, $stored)
+            : hash_equals(strtolower($stored), md5($plain));
+    }
+
+    /**
+     * Profile details for the signed-in user, including the role name.
+     */
+    public function getProfile(int $employeeId): ?array
+    {
+        $sql = "SELECT u.user_id, u.external_username, u.external_employee_id, u.first_name, u.last_name, u.email_id,
+                       u.date_of_birth, u.created_date, r.role_name
+                FROM orvexa_user u
+                LEFT JOIN orvexa_role r ON r.role_id = u.r_role_id
+                WHERE u.external_employee_id = :id: AND u.is_deleted = 'N'";
+
+        return $this->query($sql, ['id' => $employeeId])->getRowArray();
+    }
+
+    /**
+     * Whether a username is used by anyone other than the given user (case-insensitive,
+     * like the login lookup).
+     */
+    public function usernameTaken(string $username, int $exceptEmployeeId): bool
+    {
+        return $this->db->table('orvexa_user')
+            ->where('LOWER(external_username)', strtolower($username))
+            ->where('external_employee_id !=', $exceptEmployeeId)
+            ->countAllResults() > 0;
+    }
+
+    /**
+     * Save the details a user may change themselves.
+     */
+    public function updateOwnDetails(int $employeeId, array $details): bool
+    {
+        return $this->db->table('orvexa_user')
+            ->where(['external_employee_id' => $employeeId, 'is_deleted' => 'N'])
+            ->update($details + ['updated_date' => date('Y-m-d H:i:s')]);
+    }
+
+    /**
+     * The user's role on each product they belong to (product id => role name).
+     */
+    public function getProductRoles(int $employeeId): array
+    {
+        $rows = $this->db->table('orvexa_product_user pu')
+            ->select('pu.r_product_id, r.role_name')
+            ->join('orvexa_role r', 'r.role_id = pu.r_role_id')
+            ->where(['pu.r_user_id' => $employeeId, 'pu.is_deleted' => 'N'])
+            ->get()->getResultArray();
+
+        return array_column($rows, 'role_name', 'r_product_id');
+    }
+
+    /**
+     * Replace the password after confirming the current one.
+     */
+    public function changePassword(int $employeeId, string $current, string $new): bool
+    {
+        $row = $this->db->table('orvexa_user')
+            ->select('password')
+            ->where(['external_employee_id' => $employeeId, 'is_deleted' => 'N'])
+            ->get()->getRowArray();
+        if (! $row || ! $this->passwordMatches($current, (string) $row['password'])) {
+            return false;
+        }
+
+        return $this->db->table('orvexa_user')
+            ->where('external_employee_id', $employeeId)
+            ->update([
+                'password'                => password_hash($new, PASSWORD_DEFAULT),
+                'password_reset_required' => 'N',
+                'updated_date'            => date('Y-m-d H:i:s'),
+            ]);
     }
 
 

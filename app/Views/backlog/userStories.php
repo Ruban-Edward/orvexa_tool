@@ -35,8 +35,8 @@ $user_story_id = 0;
         <?php endif;?>
 
         <?php if (has_permission("backlog/addUserStory")): ?>
-        <button id="addUserStoriesBtn" class="btn primary_button" data-has-epics="<?=!empty($epic) ? 'true' : 'false'?>"
-            onclick="openAddModal()">
+        <button id="addUserStoriesBtn" type="button" class="btn primary_button" data-has-epics="<?=!empty($epic) ? 'true' : 'false'?>"
+            onclick="openAddModal()" data-shortcut="new" aria-keyshortcuts="n" title="Add user story (N)">
             <i class="icon-plus-circle sprintListIcon"></i> Add user story
         </button>
         <?php endif;?>
@@ -64,44 +64,28 @@ $user_story_id = 0;
                 class="icon-download"></i> <span class="cls-action-buttons">Export </span></a>
 
         <div class="dropdown">
-            <button id="filter_btn" class="button-secondary">
-                <i class="icon-filter"></i> <span class="cls-action-buttons"> Filter</span>
-                <span id="noti" class="badge badge-pill badge-danger"></span>
+            <button id="filter_btn" type="button" class="btn btn-secondary ox-filter-btn" data-shortcut="filter" aria-keyshortcuts="f"
+                    aria-controls="filterSidebar" aria-expanded="false" title="Filters (F)">
+                <i class="icon-filter" aria-hidden="true"></i> <span class="cls-action-buttons"> Filter</span>
+                <span id="noti" class="ox-filter-count" hidden></span>
             </button>
         </div>
         <?php endif?>
     </div>
 </div>
-<?php if ($data['story_count'] > 0): ?>
-<div class="mt-3 d-flex justify-content-end">
-    <div class="search-container">
-        <div class="search-box">
-            <input type="text" id="backlogSearchInput" class="search-input" placeholder="Search user story">
-            <button id="search_btn" class="search-button">
-                <i class="bi bi-search"></i>
-                <span>Search</span>
-            </button>
-        </div>
+<div class="mt-3 d-flex justify-content-end" id="storyTools" <?= $data['story_count'] > 0 ? '' : 'hidden' ?>>
+    <div class="ox-search">
+        <i class="icon-search" aria-hidden="true"></i>
+        <label class="visually-hidden" for="backlogSearchInput">Search user stories</label>
+        <input type="search" id="backlogSearchInput" class="form-control" placeholder="Search user stories">
     </div>
 </div>
-<?php endif?>
-<?php if ($data['story_count'] > 0): ?>
+<div class="ox-chips" id="storyChips" hidden></div>
+
 <div id="userStoryContainer" class="userstory-container"></div>
+<div id="paginationControls"></div>
 
-<div id="paginationControls" class="d-flex justify-content-between align-items-center mt-3">
-    <button id="prevPage" class="button-secondary">Prev</button>
-    <span id="pageInfo" class="mx-3"></span>
-    <button id="nextPage" class="button-secondary">Next</button>
-</div>
-
-<?php endif?>
-
-<div id="empty" class="align-items-center justify-content-center">
-    <div class="text-center" style="margin:100px;">
-        <h1 class="display-1 text-primary mb-4"><span class="bi bi-emoji-frown cls-noProductIcon"></span></h1>
-        <h2 class="card-title text-primary mb-4">No user story found</h2>
-    </div>
-</div>
+<div id="empty" style="display:none"></div>
 
 
 <div class="modal" id="epicAddModal" tabindex="-1" aria-labelledby="userstoryModalLabel" aria-hidden="true"
@@ -110,7 +94,7 @@ $user_story_id = 0;
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addTitle">Add epic</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form class="row g-3 needs-validation" id="addEpicform"
@@ -156,7 +140,7 @@ $user_story_id = 0;
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addStoryTitle">Add userstory</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form class="row g-3 needs-validation" id="addUserStoryform"
@@ -295,7 +279,7 @@ foreach ($epic as $value): ?>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="fileUploadModalLabel">Import user stories</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="fileUploadForm" action="<?php echo base_url('backlog/uploaduserstories'); ?>" method="POST"
@@ -326,7 +310,7 @@ foreach ($epic as $value): ?>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="brainstormingModal">Brainstorming meeting</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form class="row g-3 needs-validation" id="brainstormMeetForm" method="POST" novalidate>
@@ -546,16 +530,16 @@ foreach ($epic as $value): ?>
 </div>
 
 <!-- Sidebar for filter -->
-<div id="filterSidebar" class="filter-sidebar">
+<aside id="filterSidebar" class="filter-sidebar" aria-label="User story filters">
     <div class="sidebar-content">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h3 class="filter-heading">Filters</h3>
-            <button type="button" id="closeFilterSidebarBtn" class="btn-filterclose align-item-center"></button>
+            <button type="button" id="closeFilterSidebarBtn" class="btn-close" aria-label="Close filters"></button>
         </div>
         <form id="filterOptionsForm">
             <div class="mb-3">
                 <label for="statusFilter" class="form-label filter-text">Filter by status</label>
-                <select name="sprintname[]" id="statusFilter" placeholser="Select Sprint Name"
+                <select name="sprintname[]" id="statusFilter"
                     class="form-select select" multiple multiselect-search="true" multiselect-select-all="true"
                     multiselect-max-items="1">
                     <?php foreach ($status as $value): ?>
@@ -566,7 +550,7 @@ foreach ($epic as $value): ?>
             </div>
             <div class="mb-3">
                 <label for="epicFilter" class="form-label filter-text">Filter by epic description</label>
-                <select name="sprintname[]" id="epicFilter" placeholser="Select Sprint Name" class="form-select select"
+                <select name="sprintname[]" id="epicFilter" class="form-select select"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($epic as $value) {
     echo '<option value="' . trim(ucfirst(strtolower($value["epic_id"]))) . '">' . trim(ucfirst(strtolower($value["epic_description"]))) . '</option>';
@@ -575,11 +559,11 @@ foreach ($epic as $value): ?>
             </div>
             <div class="d-flex justify-content-between mt-4">
                 <button type="submit" class="btn primary_button apply-filters-btn" id="applyfilter">Apply</button>
-                <button type="reset" class="btn button-secondary " id="resetFiltersBtn">Reset</button>
+                <button type="button" class="btn button-secondary " id="resetFiltersBtn">Reset</button>
             </div>
         </form>
     </div>
-</div>
+</aside>
 
 <!-- M -->
 

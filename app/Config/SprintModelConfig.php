@@ -91,6 +91,14 @@ class SprintModelConfig extends BaseConfig
      //Pending task status for Dashboard Controller
      public $pendingTaskStatuses = [1, 2, 4, 8, 16];
 
+     // Sprint board columns: the task statuses each column holds, and the status a card gets when dropped there
+     public $boardColumns = [
+          ['key' => 'todo', 'label' => 'To do', 'statuses' => [1, 8], 'drop' => 1],
+          ['key' => 'progress', 'label' => 'In progress', 'statuses' => [2, 4, 16], 'drop' => 2],
+          ['key' => 'testing', 'label' => 'Testing', 'statuses' => [19, 18, 17], 'drop' => 19],
+          ['key' => 'done', 'label' => 'Done', 'statuses' => [7, 3, 5, 20, 6, 21], 'drop' => 7],
+     ];
+
      //Task priorities
      public $priorities = [1, 2, 3];
 

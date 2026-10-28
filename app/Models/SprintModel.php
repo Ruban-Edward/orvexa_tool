@@ -307,12 +307,14 @@ class SprintModel extends BaseModel
      {
           $query = "SELECT orvexa_user.external_employee_id AS id,
                   CONCAT(orvexa_user.first_name,' ',orvexa_user.last_name) AS name,
-                  orvexa_role.role_name
+                  COALESCE(product_role.role_name, orvexa_role.role_name) AS role_name
                   FROM orvexa_product_user
                   INNER JOIN orvexa_user
                   ON orvexa_user.external_employee_id = orvexa_product_user.r_user_id
                   INNER JOIN orvexa_role
                   ON orvexa_role.role_id=orvexa_user.r_role_id
+                  LEFT JOIN orvexa_role AS product_role
+                  ON product_role.role_id = orvexa_product_user.r_role_id
                   WHERE orvexa_product_user.r_product_id = :r_product_id:
                   AND orvexa_product_user.is_deleted = 'N'";
           $result = $this->query($query, ["r_product_id" => $productId]);
@@ -466,6 +468,50 @@ class SprintModel extends BaseModel
       * @return array
       * Method to fetch task associated with particular sprint
       */
+     /**
+      * Flat task list for the sprint board.
+      */
+     public function getBoardTasks(int $sprintId): array
+     {
+          $query = "SELECT t.task_id, t.task_title, t.task_status AS status_id, ts.name AS status_name, t.priority,
+                         IFNULL(t.completed_percentage, 0) AS completed_percentage, t.assignee_id, u.first_name AS assignee,
+                         us.user_story_id, e.r_backlog_item_id AS backlog_item_id, bi.r_product_id AS product_id
+                    FROM orvexa_sprint_task st
+                    INNER JOIN orvexa_task t ON t.task_id = st.r_task_id AND t.is_deleted = 'N'
+                    INNER JOIN orvexa_task_status ts ON ts.id = t.task_status
+                    INNER JOIN orvexa_user_story us ON us.user_story_id = t.r_user_story_id
+                    INNER JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
+                    INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
+                    LEFT JOIN orvexa_user u ON u.external_employee_id = t.assignee_id
+                    WHERE st.r_sprint_id = :id: AND st.is_deleted = 'N'
+                    GROUP BY t.task_id
+                    ORDER BY FIELD(t.priority, 'H', 'M', 'L'), t.task_id";
+
+          return $this->query($query, ['id' => $sprintId])->getResultArray();
+     }
+
+     public function isTaskInSprint(int $taskId, int $sprintId): bool
+     {
+          return $this->db->table('orvexa_sprint_task')
+               ->where(['r_task_id' => $taskId, 'r_sprint_id' => $sprintId, 'is_deleted' => 'N'])
+               ->countAllResults() > 0;
+     }
+
+     /**
+      * Move a board card: change the task status. Completed also means 100% done,
+      * unless an explicit percentage is given (used when undoing a move).
+      */
+     public function moveBoardTask(int $taskId, int $statusId, int $userId, ?int $percentage = null): void
+     {
+          $query = "UPDATE orvexa_task
+                    SET task_status = :status:,
+                        completed_percentage = COALESCE(:percentage:, IF(:status: = 7, 100, completed_percentage)),
+                        r_user_id_updated = :user:,
+                        updated_date = :now:
+                    WHERE task_id = :id: AND is_deleted = 'N'";
+          $this->query($query, ['status' => $statusId, 'user' => $userId, 'id' => $taskId, 'percentage' => $percentage, 'now' => date('Y-m-d H:i:s')]);
+     }
+
      public function getSprintTask($sprintId)
      {
           $query = "SELECT DISTINCT
@@ -518,11 +564,15 @@ class SprintModel extends BaseModel
                     orvexa_user.external_employee_id AS emp_id,
                     CONCAT(orvexa_user.first_name,' ',orvexa_user.last_name) AS name,
                     orvexa_user.external_username as email_id,
-                    orvexa_role.role_name
+                    COALESCE(product_role.role_name, orvexa_role.role_name) AS role_name
 				FROM orvexa_sprint_user
 				INNER JOIN orvexa_user ON
                     orvexa_sprint_user.r_user_id = orvexa_user.external_employee_id
                     INNER JOIN orvexa_role ON orvexa_role.role_id=orvexa_user.r_role_id
+                    INNER JOIN orvexa_sprint ON orvexa_sprint.sprint_id = orvexa_sprint_user.r_sprint_id
+                    LEFT JOIN orvexa_product_user ON orvexa_product_user.r_product_id = orvexa_sprint.r_product_id
+                         AND orvexa_product_user.r_user_id = orvexa_user.external_employee_id AND orvexa_product_user.is_deleted = 'N'
+                    LEFT JOIN orvexa_role AS product_role ON product_role.role_id = orvexa_product_user.r_role_id
 				WHERE orvexa_sprint_user.r_sprint_id = :id:
                     AND orvexa_sprint_user.is_deleted = 'N'";
           $result = $this->query($query, ["id" => $sprintId]);

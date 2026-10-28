@@ -39,6 +39,11 @@
         <?php endif; ?>
 
         <div class="ox-topbar-actions">
+            <button type="button" class="ox-search-trigger" id="oxSearchTrigger" aria-haspopup="dialog" aria-controls="oxSearch" aria-label="Search (Ctrl+K)">
+                <i class="icon-search" aria-hidden="true"></i>
+                <span class="ox-search-trigger-text">Search…</span>
+                <kbd class="ox-kbd" data-shortcut>Ctrl K</kbd>
+            </button>
             <div class="ox-notify">
                 <button type="button" class="ox-iconbtn notification-icon" id="notification-icon" aria-label="Notifications" aria-controls="meetingDetails">
                     <i class="icon-bell" aria-hidden="true"></i>
@@ -66,13 +71,17 @@
                         </div>
                     </li>
                     <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="<?= ASSERT_PATH ?>profile"><i class="icon-user" aria-hidden="true"></i> My profile</a></li>
+                    <li><a class="dropdown-item" href="<?= ASSERT_PATH ?>mywork"><i class="icon-check-square" aria-hidden="true"></i> My work</a></li>
+                    <li><button type="button" class="dropdown-item" onclick="Ox.showShortcuts()"><i class="icon-command" aria-hidden="true"></i> Keyboard shortcuts <kbd class="ox-kbd ms-auto">?</kbd></button></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="<?= ASSERT_PATH ?>logout"><i class="icon-log-out" aria-hidden="true"></i> Sign out</a></li>
                 </ul>
             </div>
         </div>
     </header>
 
-    <main id="main" class="main-content">
+    <main id="main" class="main-content" tabindex="-1">
         <?php if (isset($title) && $title !== ''): ?>
             <div class="ox-page-header">
                 <h1 class="cls-h2"><?= $title ?></h1>
@@ -83,5 +92,22 @@
             echo $this->include($view);
         } ?>
     </main>
+</div>
+
+<div class="ox-search-dialog" id="oxSearch" role="dialog" aria-modal="true" aria-label="Search" hidden>
+    <div class="ox-search-panel">
+        <div class="ox-search-field">
+            <i class="icon-search" aria-hidden="true"></i>
+            <input type="search" id="oxSearchInput" aria-label="Search everything" placeholder="Search products, backlog, stories, tasks, sprints…" autocomplete="off"
+                   role="combobox" aria-expanded="false" aria-controls="oxSearchResults" aria-autocomplete="list">
+            <kbd class="ox-kbd">Esc</kbd>
+        </div>
+        <div class="ox-search-results" id="oxSearchResults" role="listbox" aria-label="Search results"></div>
+        <div class="ox-search-foot">
+            <span><kbd class="ox-kbd">↑</kbd><kbd class="ox-kbd">↓</kbd> to move</span>
+            <span><kbd class="ox-kbd">Enter</kbd> to open</span>
+            <span>Tip: type <b>#123</b> to find an item by ID</span>
+        </div>
+    </div>
 </div>
 <?= $this->include('layout/footer') ?>

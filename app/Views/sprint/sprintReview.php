@@ -88,7 +88,7 @@
                     <label for="dateInput" class="form-label labelReview">Review Date</label>
                 </div>
                 <div class="col-2">
-                    <input type="date" class="form-control" id="date-picker" name="reviewDate" disabled required>
+                    <input type="date" class="form-control" id="date-picker" name="reviewDate" aria-label="Review date" disabled required>
                 </div>
 
             </div>
@@ -97,7 +97,7 @@
             <div class="mb-3">
                 <textarea class="form-control" id="lessonsLearned" rows="3" name="generalReview"
                     placeholder="Enter general review here" required></textarea>
-                <button type="button" id="micButton" class="mic-button"
+                <button type="button" id="micButton" class="mic-button" aria-label="Dictate the general review"
                     onclick="voiceRecognition('micButton','lessonsLearned')">
                     <i class="bi bi-mic"></i>
                 </button>
@@ -125,7 +125,7 @@
             <div class="mb-3" id="codeReviewReason" style="display: none;">
                 <textarea class="form-control" id="codeReviewReasonText" rows="2" name="codeReview"
                     placeholder="Reason for not completing code review"></textarea>
-                <button type="button" id="mic" class="mic-button"
+                <button type="button" id="mic" class="mic-button" aria-label="Dictate the code review reason"
                     onclick="voiceRecognition('mic','codeReviewReasonText')">
                     <i class="bi bi-mic"></i>
                 </button>
@@ -144,7 +144,7 @@
                         <thead>
                             <tr>
                                 <th>
-                                    <input type="checkbox" id="selectAllMembers">
+                                    <input type="checkbox" id="selectAllMembers" aria-label="Select all members">
                                 </th>
                                 <th>User Name</th>
                                 <th>Role</th>

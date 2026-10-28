@@ -144,7 +144,7 @@
             <button class="cls-delete form-label">Delete role</button>
             <form class="needs-validation" id="deleteRoleForm" style="display:none;">
                 <div class="deleteRole" id="deleteRole">
-                    <select class="form-select" id="deleteRoleSelect" name="deleteRoleSelect" required>
+                    <select class="form-select" id="deleteRoleSelect" name="deleteRoleSelect" aria-label="Role to delete" required>
                         <option value="" disabled selected>Select the role</option>
                     </select>
                     <button type="submit" class="btn primary_button cls-icons"><i class="bi bi-trash"></i>

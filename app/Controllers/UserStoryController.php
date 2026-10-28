@@ -12,6 +12,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Services\NotificationService;
 use CodeIgniter\Events\Events;
 use CodeIgniter\HTTP\Response;
 
@@ -502,6 +503,23 @@ class UserStoryController extends BaseController
      * @return response
      * Purpose:  This function is used to get Userstories details with limit,offset,filters applied
      */
+    /**
+     * Undo a user story deletion (the "Undo" action of the delete toast).
+     */
+    public function restoreUserStory($pId, $pblId, $usId): Response
+    {
+        if (!has_permission('backlog/deleteuserstory') || $this->backlogItemModel->productOf('story', (int) $usId) !== (int) $pId || !authenticateUser($pId)) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot restore this user story.']);
+        }
+
+        $res = $this->backlogItemModel->restoreItem($usId, ['orvexa_user_story', 'user_story_id']);
+        if ($res) {
+            Events::trigger('log_actions', formActionData("updateUserStory", $pblId, $pId, "User Story ID {$usId} is restored"));
+        }
+
+        return $this->response->setJSON(['success' => $res]);
+    }
+
     public function filterUserStories(): Response
     {
         // Retrieve the JSON input from the request and decode it into an associative array
@@ -519,6 +537,7 @@ class UserStoryController extends BaseController
             return $this->response->setJSON([
                 'status' => 'success',
                 'data' => $filteredData,
+                'total' => $this->userStoryModel->lastTotal,
             ]);
         } else {
             // Return a JSON response indicating an error, with the missing filter information
@@ -570,6 +589,11 @@ class UserStoryController extends BaseController
      */
     public function deleteUserStory($pId, $pblId, $usId): Response
     {
+        // Routes with arguments are not matched by the ACL filter, so check here
+        if (!has_permission('backlog/deleteuserstory') || $this->backlogItemModel->productOf('story', (int) $usId) !== (int) $pId || !authenticateUser($pId)) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot delete this user story.']);
+        }
+
         // Retrieve the status ID of the user story to be deleted
         $userStoryStatusId = ($this->userStoryModel->getUserStoryById($usId))[0]['status_id'];
 
@@ -657,6 +681,7 @@ class UserStoryController extends BaseController
 
         // Check if the insertion was successful
         if ($res) {
+            (new NotificationService())->storyCommented((int) $array['r_user_story_id'], (int) $array['r_user_id']);
             // If successful, return the updated list of comments as a JSON response with a success status
             return $this->response->setJSON([
                 'status' => 'success',

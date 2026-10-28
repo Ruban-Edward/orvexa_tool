@@ -3335,3 +3335,1775 @@ body.ox-app #main .ox-icon-action i {
         columns: 1;
     }
 }
+
+/* --------------------------------------------------------------------------
+   Global search (header trigger + Ctrl/⌘ K palette)
+   -------------------------------------------------------------------------- */
+body.ox-app .ox-search-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 240px;
+    height: 36px;
+    margin-right: 6px;
+    padding: 0 8px 0 11px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface-2);
+    color: var(--ox-subtle);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease !important;
+}
+
+body.ox-app .ox-search-trigger:hover {
+    border-color: var(--ox-border-strong);
+    background: var(--ox-surface);
+    color: var(--ox-muted);
+}
+
+body.ox-app .ox-search-trigger:focus-visible {
+    outline: 0;
+    box-shadow: var(--ox-ring);
+}
+
+.ox-search-trigger > i {
+    font-size: 15px;
+}
+
+.ox-search-trigger-text {
+    flex: 1;
+    text-align: left;
+}
+
+.ox-kbd {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 6px;
+    border: 1px solid var(--ox-border);
+    border-bottom-width: 2px;
+    border-radius: var(--ox-radius-sm);
+    background: var(--ox-surface);
+    color: var(--ox-muted);
+    font-family: var(--ox-font);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.ox-search-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 12vh 16px 16px;
+    background: rgba(16, 32, 24, 0.42);
+    backdrop-filter: blur(2px);
+    animation: ox-fade-in 0.12s ease-out both;
+}
+
+.ox-search-dialog[hidden] {
+    display: none;
+}
+
+body.ox-search-open {
+    overflow: hidden;
+}
+
+.ox-search-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(640px, 100%);
+    max-height: min(560px, 76vh);
+    overflow: hidden;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-xl);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-lg);
+}
+
+.ox-search-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+.ox-search-field > i {
+    color: var(--ox-brand-600);
+    font-size: 18px;
+}
+
+body.ox-app .ox-search-field input {
+    flex: 1;
+    min-width: 0;
+    height: 56px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ox-ink);
+    font-size: 16px;
+}
+
+.ox-search-field input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.ox-search-results {
+    flex: 1;
+    min-height: 0;
+    padding: 6px;
+    overflow-y: auto;
+}
+
+.ox-search-group {
+    padding: 10px 10px 4px;
+    color: var(--ox-subtle);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+body.ox-app .ox-search-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: var(--ox-radius);
+    color: var(--ox-text);
+    text-decoration: none;
+    scroll-margin: 6px;
+}
+
+body.ox-app .ox-search-item[aria-selected="true"] {
+    background: var(--ox-pistachio-tint);
+    color: var(--ox-ink);
+}
+
+.ox-search-icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--ox-radius);
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-700);
+    font-size: 15px;
+}
+
+.ox-search-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.ox-search-title,
+.ox-search-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ox-search-title {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ox-search-title mark {
+    padding: 0;
+    border-radius: 2px;
+    background: var(--ox-pistachio);
+    color: var(--ox-deep);
+}
+
+.ox-search-sub {
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+.ox-search-id {
+    flex-shrink: 0;
+    color: var(--ox-subtle);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.ox-search-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 36px 16px;
+    color: var(--ox-muted);
+    font-size: 13px;
+}
+
+.ox-search-results[aria-busy="true"] {
+    opacity: 0.6;
+}
+
+.ox-search-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    padding: 9px 16px;
+    border-top: 1px solid var(--ox-border);
+    background: var(--ox-surface-2);
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+.ox-search-foot .ox-kbd {
+    margin-right: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Notifications: activity feed, unread state, tabs
+   -------------------------------------------------------------------------- */
+body.ox-app .ox-notify-tabs {
+    display: flex;
+    margin: 10px 12px 2px;
+}
+
+body.ox-app .ox-notify-tabs label {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ox-tab-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 16px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--ox-primary);
+    color: var(--ox-deep);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.ox-tab-count[hidden] {
+    display: none;
+}
+
+body.ox-app .ox-link-btn {
+    padding: 2px 4px;
+    border: 0;
+    border-radius: var(--ox-radius-sm);
+    background: none;
+    color: var(--ox-brand-700);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body.ox-app .ox-link-btn:hover {
+    color: var(--ox-brand-800);
+    text-decoration: underline;
+}
+
+.ox-notice.is-unread .ox-notice-link {
+    background: var(--ox-brand-50);
+}
+
+.ox-notice.is-unread .ox-notice-link:hover {
+    background: var(--ox-brand-100);
+}
+
+.ox-notice.is-unread .ox-notice-body {
+    position: relative;
+    flex: 1;
+    padding-right: 14px;
+}
+
+.ox-notice.is-unread .ox-notice-body::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--ox-primary);
+}
+
+.ox-notice-time {
+    margin-top: 2px;
+    color: var(--ox-subtle);
+    font-size: 11px;
+}
+
+/* --------------------------------------------------------------------------
+   My work
+   -------------------------------------------------------------------------- */
+.ox-mywork {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ox-mywork .ox-pagebar {
+    margin-bottom: 0;
+}
+
+.ox-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.ox-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 16px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-xs);
+}
+
+.ox-kpi-value {
+    color: var(--ox-ink);
+    font-size: 24px;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.ox-kpi-value.is-danger {
+    color: var(--ox-red);
+}
+
+.ox-kpi-label {
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body.ox-app .ox-mywork-product {
+    width: auto;
+    min-width: 170px;
+}
+
+.ox-mywork-group[hidden],
+.ox-mywork-empty[hidden],
+.ox-task-row[hidden] {
+    display: none !important;
+}
+
+.ox-mywork-group .ox-panel-title .ox-stat-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+}
+
+.ox-task-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ox-task-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--ox-border);
+}
+
+.ox-task-row:first-child {
+    border-top: 0;
+}
+
+.ox-task-row:hover {
+    background: var(--ox-surface-2);
+}
+
+body.ox-app #main .ox-task-row [class^="priority-"] {
+    flex-shrink: 0;
+}
+
+body.ox-app .ox-task-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+.ox-task-title {
+    overflow: hidden;
+    color: var(--ox-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ox-task-main:hover .ox-task-title {
+    color: var(--ox-brand-700);
+}
+
+.ox-task-path {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    color: var(--ox-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.ox-task-path i {
+    flex-shrink: 0;
+    color: var(--ox-subtle);
+    font-size: 11px;
+}
+
+.ox-task-meta {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+}
+
+body.ox-app .ox-task-meta a.ox-tag {
+    text-decoration: none;
+}
+
+.ox-task-due {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 62px;
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.ox-task-due.is-overdue {
+    color: var(--ox-red);
+    font-weight: 600;
+}
+
+.ox-task-progress {
+    width: 56px;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--ox-surface-3);
+}
+
+.ox-task-progress > span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--ox-gradient);
+}
+
+/* --------------------------------------------------------------------------
+   Profile
+   -------------------------------------------------------------------------- */
+.ox-profile {
+    display: grid;
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+}
+
+.ox-profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 22px 22px;
+    text-align: center;
+}
+
+.ox-profile-avatar {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    margin-bottom: 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ox-fresh), var(--ox-primary));
+    color: var(--ox-deep);
+    font-size: 30px;
+    font-weight: 700;
+    box-shadow: 0 0 0 4px var(--ox-brand-50);
+}
+
+.ox-profile-id {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+body.ox-app .ox-profile-id h2 {
+    margin: 0;
+    color: var(--ox-ink);
+    font-size: 18px;
+    font-weight: 650;
+}
+
+.ox-profile-facts {
+    width: 100%;
+    margin: 20px 0 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ox-border);
+    text-align: left;
+}
+
+.ox-profile-facts > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+.ox-profile-facts dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ox-muted);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.ox-profile-facts dt i {
+    color: var(--ox-subtle);
+}
+
+.ox-profile-facts dd {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.ox-app .ox-profile-work {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface-2);
+    color: var(--ox-text);
+    font-size: 13px;
+    text-align: left;
+    text-decoration: none;
+}
+
+body.ox-app .ox-profile-work:hover {
+    border-color: var(--ox-sage);
+    background: var(--ox-brand-50);
+}
+
+.ox-profile-work > span:nth-child(2) {
+    flex: 1;
+}
+
+.ox-profile-work strong {
+    color: var(--ox-ink);
+}
+
+.ox-profile-side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.ox-profile-products {
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+}
+
+body.ox-app .ox-profile-products a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: var(--ox-radius);
+    color: inherit;
+    text-decoration: none;
+}
+
+body.ox-app .ox-profile-products a:hover {
+    background: var(--ox-surface-2);
+}
+
+.ox-profile-product-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ox-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ox-profile-product-meta {
+    flex-shrink: 0;
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+.ox-profile-form {
+    max-width: 420px;
+    padding: 18px;
+}
+
+@media (max-width: 1199.98px) {
+    body.ox-app .ox-search-trigger {
+        width: 36px;
+        margin-right: 0;
+        padding: 0;
+        justify-content: center;
+        border-color: transparent;
+        background: transparent;
+        color: var(--ox-muted);
+    }
+
+    .ox-search-trigger-text,
+    .ox-search-trigger .ox-kbd {
+        display: none;
+    }
+
+    .ox-profile {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .ox-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ox-task-row {
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        padding: 12px 14px;
+    }
+
+    .ox-task-main {
+        flex-basis: calc(100% - 50px);
+    }
+
+    .ox-task-meta {
+        flex-wrap: wrap;
+        width: 100%;
+        padding-left: 40px;
+    }
+
+    .ox-search-dialog {
+        padding-top: 8px;
+    }
+
+    .ox-search-foot {
+        display: none;
+    }
+
+    .ox-profile-product-meta {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Toasts (with Undo)
+   -------------------------------------------------------------------------- */
+.ox-toasts {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1090;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.ox-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 260px;
+    max-width: min(440px, calc(100vw - 32px));
+    padding: 10px 10px 10px 14px;
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-deep);
+    color: var(--ox-soft-white);
+    font-size: 14px;
+    box-shadow: var(--ox-shadow-lg);
+    pointer-events: auto;
+    animation: ox-toast-in 0.18s ease-out both;
+}
+
+.ox-toast.is-leaving {
+    animation: ox-toast-out 0.18s ease-in both;
+}
+
+.ox-toast > i {
+    flex-shrink: 0;
+    color: var(--ox-primary);
+    font-size: 17px;
+}
+
+.ox-toast.is-error > i {
+    color: #fda29b;
+}
+
+.ox-toast-text {
+    flex: 1;
+}
+
+body.ox-app .ox-toast-action {
+    padding: 4px 10px;
+    border: 0;
+    border-radius: var(--ox-radius-sm);
+    background: rgba(66, 214, 116, 0.16);
+    color: var(--ox-fresh);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+body.ox-app .ox-toast-action:hover {
+    background: rgba(66, 214, 116, 0.28);
+}
+
+body.ox-app .ox-toast-close {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--ox-radius-sm);
+    background: transparent;
+    color: var(--ox-sage);
+    cursor: pointer;
+}
+
+body.ox-app .ox-toast-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+body.ox-app .ox-toast button:focus-visible {
+    outline: 2px solid var(--ox-primary);
+    outline-offset: 1px;
+}
+
+@keyframes ox-toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ox-toast-out {
+    to { opacity: 0; transform: translateY(8px); }
+}
+
+/* --------------------------------------------------------------------------
+   Filter button count, chips, pager, quick add, empty actions
+   -------------------------------------------------------------------------- */
+body.ox-app .ox-filter-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+body.ox-app .ox-filter-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--ox-primary);
+    color: var(--ox-deep);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+body.ox-app .ox-filter-count[hidden],
+body.ox-app .ox-chips[hidden],
+body.ox-app .ox-pager[hidden] {
+    display: none !important;
+}
+
+body.ox-app .ox-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 14px;
+}
+
+.ox-chips-label {
+    margin-right: 2px;
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ox-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    max-width: 100%;
+    padding: 2px 2px 2px 10px;
+    border: 1px solid var(--ox-sage);
+    border-radius: 999px;
+    background: var(--ox-brand-50);
+    color: var(--ox-deep);
+    font-size: 12px;
+}
+
+.ox-chip > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ox-chip b {
+    color: var(--ox-brand-700);
+    font-weight: 600;
+}
+
+body.ox-app .ox-chip button {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ox-brand-700);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+body.ox-app .ox-chip button:hover {
+    background: var(--ox-brand-100);
+    color: var(--ox-deep);
+}
+
+body.ox-app .ox-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-top: 16px;
+    color: var(--ox-muted);
+    font-size: 13px;
+}
+
+.ox-pager-info b {
+    color: var(--ox-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.ox-pager-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+body.ox-app .ox-pager-btn {
+    display: inline-grid;
+    place-items: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface);
+    color: var(--ox-text);
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+body.ox-app .ox-pager-btn:hover:not(:disabled) {
+    border-color: var(--ox-border-strong);
+    background: var(--ox-surface-2);
+}
+
+body.ox-app .ox-pager-btn.is-current {
+    border-color: var(--ox-primary);
+    background: var(--ox-primary);
+    color: var(--ox-deep);
+    font-weight: 700;
+}
+
+body.ox-app .ox-pager-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.ox-pager-gap {
+    padding: 0 4px;
+    color: var(--ox-subtle);
+}
+
+body.ox-app .ox-pager-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+body.ox-app .ox-pager-size select {
+    width: auto;
+}
+
+body.ox-app .ox-quick-add {
+    display: flex;
+    width: min(340px, 100%);
+}
+
+body.ox-app .ox-quick-add .form-control {
+    border-radius: var(--ox-radius) 0 0 var(--ox-radius);
+}
+
+body.ox-app .ox-quick-add .btn {
+    margin-left: -1px;
+    border-radius: 0 var(--ox-radius) var(--ox-radius) 0;
+}
+
+.ox-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+body.ox-app #main .is-removing {
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.15s ease !important;
+}
+
+body.ox-app .remove-email {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+body.ox-app .remove-email:hover {
+    background: rgba(16, 32, 24, 0.1);
+}
+
+.ox-shortcuts {
+    width: 100%;
+    font-size: 14px;
+    text-align: left;
+}
+
+.ox-shortcuts td {
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+.ox-shortcuts td:first-child {
+    width: 40%;
+    white-space: nowrap;
+}
+
+body.ox-app .dropdown-item .ox-kbd {
+    margin-left: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Sprint board (drag and drop)
+   -------------------------------------------------------------------------- */
+.ox-board-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    margin-bottom: 16px;
+}
+
+body.ox-app .ox-board-bar .ox-segmented label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+body.ox-app .ox-board-mine {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--ox-text);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.ox-board-hint {
+    margin-left: auto;
+    color: var(--ox-subtle);
+    font-size: 12px;
+}
+
+.ox-board[hidden],
+.ox-board-mine[hidden],
+.ox-board-hint[hidden] {
+    display: none !important;
+}
+
+.ox-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.ox-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-surface-2);
+    transition: border-color 0.12s ease, background-color 0.12s ease !important;
+}
+
+.ox-col.is-over {
+    border-color: var(--ox-primary);
+    background: var(--ox-brand-50);
+    box-shadow: var(--ox-ring);
+}
+
+.ox-col-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px 8px;
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ox-col-head .ox-badge-count {
+    margin-left: auto;
+}
+
+.ox-col-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--ox-subtle);
+}
+
+.ox-col-dot.is-progress { background: #f79009; }
+.ox-col-dot.is-testing { background: var(--ox-blue); }
+.ox-col-dot.is-done { background: var(--ox-primary); }
+
+.ox-col-list {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 4px 10px 12px;
+    list-style: none;
+}
+
+.ox-col-empty {
+    padding: 18px 8px;
+    border: 1px dashed var(--ox-border-strong);
+    border-radius: var(--ox-radius);
+    color: var(--ox-subtle);
+    font-size: 12px;
+    text-align: center;
+}
+
+.ox-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface);
+    box-shadow: var(--ox-shadow-xs);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.ox-board.is-readonly .ox-card {
+    cursor: default;
+    touch-action: auto;
+}
+
+.ox-card:hover {
+    border-color: var(--ox-border-strong);
+}
+
+.ox-card:focus-visible {
+    outline: 0;
+    border-color: var(--ox-primary);
+    box-shadow: var(--ox-ring);
+}
+
+.ox-card.is-dragging {
+    opacity: 0.35;
+}
+
+.ox-card.is-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    box-shadow: var(--ox-shadow-lg);
+    pointer-events: none;
+    cursor: grabbing;
+}
+
+body.ox-dragging,
+body.ox-dragging * {
+    cursor: grabbing !important;
+}
+
+.ox-card-top,
+.ox-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.ox-card-id {
+    color: var(--ox-subtle);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+body.ox-app .ox-card-title {
+    color: var(--ox-ink);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+body.ox-app .ox-card-title:hover {
+    color: var(--ox-brand-700);
+}
+
+.ox-card-who {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ox-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.ox-card-avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ox-fresh), var(--ox-primary));
+    color: var(--ox-deep);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.ox-card-status {
+    flex-shrink: 0;
+    color: var(--ox-muted);
+    font-size: 11px;
+}
+
+.ox-card .ox-task-progress {
+    width: 100%;
+    height: 4px;
+}
+
+body.ox-app #main .ox-card [class^="priority-"] {
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 11px !important;
+}
+
+@media (max-width: 767.98px) {
+    .ox-board {
+        grid-template-columns: repeat(4, minmax(240px, 82vw));
+        scroll-snap-type: x mandatory;
+    }
+
+    .ox-col {
+        scroll-snap-align: start;
+    }
+
+    .ox-board-hint {
+        margin-left: 0;
+    }
+
+    .ox-toasts {
+        right: 12px;
+        left: 12px;
+        bottom: 12px;
+        align-items: stretch;
+    }
+
+    .ox-toast {
+        max-width: none;
+    }
+
+    body.ox-app .ox-pager {
+        justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ox-toast,
+    .ox-toast.is-leaving {
+        animation: none;
+    }
+}
+
+/* Close buttons: one consistent icon button (page stylesheets strip Bootstrap's icon) */
+body.ox-app .btn-close {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    box-sizing: content-box;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 8px;
+    border: 0;
+    border-radius: var(--ox-radius);
+    background: transparent !important;
+    color: var(--ox-muted) !important;
+    font-size: 0 !important;
+    opacity: 1 !important;
+    filter: none !important;
+    cursor: pointer;
+}
+
+body.ox-app .btn-close::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M3 3l10 10M13 3L3 13' stroke='black' stroke-width='2' stroke-linecap='round'/%3e%3c/svg%3e") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M3 3l10 10M13 3L3 13' stroke='black' stroke-width='2' stroke-linecap='round'/%3e%3c/svg%3e") center / contain no-repeat;
+}
+
+body.ox-app .btn-close:hover {
+    background: var(--ox-surface-3) !important;
+    color: var(--ox-ink) !important;
+}
+
+body.ox-app .btn-close:focus-visible {
+    outline: 0;
+    box-shadow: var(--ox-ring) !important;
+}
+
+/* List toolbars: keep "Add + quick add" and "search + filter" on one line where there is room */
+body.ox-app .ox-pagebar > .ox-pagebar-actions:has(.ox-quick-add) {
+    flex: 1 1 420px;
+    flex-wrap: nowrap;
+    min-width: 0;
+}
+
+body.ox-app .ox-pagebar > .ox-pagebar-actions:has(.ox-quick-add) .ox-quick-add {
+    flex: 1 1 auto;
+    min-width: 180px;
+    max-width: 380px;
+}
+
+body.ox-app .ox-pagebar > .ox-pagebar-actions:has(.ox-filter-btn) {
+    flex-wrap: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    body.ox-app .ox-pagebar > .ox-pagebar-actions:has(.ox-quick-add),
+    body.ox-app .ox-pagebar > .ox-pagebar-actions:has(.ox-filter-btn) {
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+    }
+
+    body.ox-app .ox-pagebar > .ox-pagebar-actions:has(.ox-filter-btn) .ox-search {
+        flex: 1 1 auto;
+        width: auto;
+    }
+}
+
+/* Closed filter panels sit off-screen: keep them out of the Tab order too */
+body.ox-app .filter-sidebar {
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s !important;
+}
+
+body.ox-app .filter-sidebar.open {
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s !important;
+}
+
+/* Skip link: first stop for keyboard users */
+body.ox-app .ox-skip {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 1100;
+    padding: 8px 14px;
+    border-radius: var(--ox-radius);
+    background: var(--ox-deep);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-150%);
+}
+
+body.ox-app .ox-skip:focus {
+    outline: 2px solid var(--ox-primary);
+    outline-offset: 2px;
+    transform: none;
+}
+body.ox-app #main:focus { outline: none; }
+
+/* --------------------------------------------------------------------------
+   Manage users
+   -------------------------------------------------------------------------- */
+.ox-users .ox-pagebar {
+    margin-bottom: 16px;
+}
+
+.ox-users-summary {
+    color: var(--ox-muted);
+    font-size: 13px;
+}
+
+.ox-users-summary b {
+    color: var(--ox-ink);
+}
+
+body.ox-app .ox-users-filters {
+    flex-wrap: wrap;
+}
+
+body.ox-app .ox-users-filters .form-select {
+    width: auto;
+    min-width: 150px;
+}
+
+body.ox-app .ox-users-table {
+    font-size: 14px;
+}
+
+body.ox-app .ox-users-table th {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--ox-border);
+    background: var(--ox-surface-2);
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+body.ox-app .ox-users-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ox-border);
+    vertical-align: middle;
+}
+
+body.ox-app .ox-users-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+body.ox-app .ox-users-table tbody tr:hover td {
+    background: var(--ox-surface-2);
+}
+
+body.ox-app .ox-users-table tr.is-inactive td {
+    color: var(--ox-muted);
+}
+
+body.ox-app .ox-users-table tr.is-inactive .ox-user-avatar {
+    background: var(--ox-surface-3);
+    color: var(--ox-muted);
+}
+
+.ox-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ox-user-avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ox-fresh), var(--ox-primary));
+    color: var(--ox-deep);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ox-user-name-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    color: var(--ox-ink);
+    font-weight: 600;
+}
+
+.ox-user-meta,
+.ox-muted {
+    color: var(--ox-muted);
+    font-size: 12px;
+}
+
+.ox-user-products {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+body.ox-app .ox-user-actions {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.ox-optional {
+    color: var(--ox-subtle);
+    font-weight: 400;
+}
+
+.ox-product-picks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+    max-height: 220px;
+    padding: 4px;
+    overflow-y: auto;
+}
+
+body.ox-app .ox-product-pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+body.ox-app .ox-product-pick:has(input:checked) {
+    border-color: var(--ox-sage);
+    background: var(--ox-brand-50);
+}
+
+.ox-product-picks-tools {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.ox-credentials {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+    background: var(--ox-surface-2);
+    text-align: left;
+}
+
+.ox-credentials > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ox-credentials span {
+    color: var(--ox-muted);
+    font-size: 13px;
+}
+
+.ox-credentials code {
+    padding: 2px 8px;
+    border-radius: var(--ox-radius-sm);
+    background: var(--ox-surface);
+    color: var(--ox-deep);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    user-select: all;
+}
+
+body.ox-app .ox-users-table {
+    min-width: 900px;
+}
+
+body.ox-app .ox-pager-size select {
+    min-width: 76px;
+    padding-right: 30px;
+}
+
+@media (min-width: 1200px) {
+    body.ox-app .ox-users-filters {
+        flex-wrap: nowrap;
+    }
+}
+
+/* Manage users: product roles, import, activity */
+body.ox-app .ox-product-pick {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    cursor: default;
+}
+
+body.ox-app .ox-product-pick-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+body.ox-app .ox-product-pick select:disabled {
+    opacity: 0.55;
+}
+
+.ox-product-picks {
+    max-height: 280px;
+}
+
+body.ox-app .ox-import-drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 28px 20px;
+    border: 2px dashed var(--ox-sage);
+    border-radius: var(--ox-radius-lg);
+    background: var(--ox-brand-50);
+    text-align: center;
+}
+
+.ox-import-drop > i {
+    color: var(--ox-brand-700);
+    font-size: 26px;
+}
+
+body.ox-app .ox-import-drop .form-control {
+    max-width: 420px;
+}
+
+.ox-import-help {
+    margin-top: 18px;
+    font-size: 13px;
+}
+
+body.ox-app .ox-import-help h6 {
+    color: var(--ox-ink);
+    font-weight: 600;
+}
+
+.ox-import-help ul {
+    margin-bottom: 12px;
+    padding-left: 18px;
+}
+
+.ox-import-help code {
+    color: var(--ox-brand-800);
+}
+
+.ox-import-summary {
+    font-size: 14px;
+}
+
+body.ox-app .ox-import-table {
+    max-height: 52vh;
+    border: 1px solid var(--ox-border);
+    border-radius: var(--ox-radius);
+}
+
+body.ox-app .ox-import-table .ox-users-table {
+    min-width: 960px;
+    font-size: 13px;
+}
+
+body.ox-app .ox-import-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+body.ox-app .ox-users-table tr.is-invalid-row td {
+    background: var(--ox-red-bg);
+}
+
+.ox-import-errors {
+    margin: 0;
+    padding-left: 16px;
+    color: #b42318;
+    font-size: 12px;
+}
+
+body.ox-app .ox-activity {
+    width: min(440px, 100vw);
+    border-left: 1px solid var(--ox-border);
+    background: var(--ox-surface);
+}
+
+body.ox-app .ox-activity .offcanvas-header {
+    align-items: flex-start;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+body.ox-app .ox-activity .offcanvas-title {
+    color: var(--ox-ink);
+    font-weight: 650;
+}
+
+.ox-timeline {
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+}
+
+.ox-timeline-item {
+    position: relative;
+    padding: 0 0 16px 20px;
+    border-left: 2px solid var(--ox-border);
+    margin-left: 6px;
+}
+
+.ox-timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: -6px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--ox-surface);
+    border-radius: 999px;
+    background: var(--ox-primary);
+}
+
+.ox-timeline-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.ox-timeline-head time {
+    margin-left: auto;
+    color: var(--ox-subtle);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.ox-timeline-text {
+    color: var(--ox-text);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.ox-timeline-text b {
+    color: var(--ox-ink);
+}
+
+/* Profile: personal details */
+body.ox-app .ox-details-form {
+    max-width: none;
+}
+
+.ox-username-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 20px;
+}
+
+.ox-username-status.is-free {
+    color: var(--ox-brand-700);
+}
+
+.ox-username-status.is-taken,
+.ox-username-status.is-invalid {
+    color: var(--ox-red);
+}
+
+.ox-username-status.is-checking {
+    color: var(--ox-subtle);
+}
+
+body.ox-app .ox-details-form .invalid-feedback:empty {
+    display: none !important;
+}

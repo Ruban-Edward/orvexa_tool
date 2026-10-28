@@ -363,7 +363,7 @@
                                 <thead>
                                     <tr >
                                         <th class="cls-membersth" style="padding: 13px 10px 10px 30px;">
-                                            <input type="checkbox" id="selectAllMembers">
+                                            <input type="checkbox" id="selectAllMembers" aria-label="Select all members">
                                         </th>
                                         <th class="cls-membersth">User name</th>
                                         <th class="cls-membersth">Role</th>
