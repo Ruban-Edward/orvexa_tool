@@ -25,7 +25,7 @@ class Acl implements FilterInterface
         $userRoleId = $session->get('role_id');
 
         // Get the current URL
-        $currentURL = $request->getUri()->getRoutePath();
+        $currentURL = strtolower(trim($request->getUri()->getRoutePath(), '/'));
 
         // Load models
         $permissionModel = model(PermissionModel::class);
@@ -33,7 +33,8 @@ class Acl implements FilterInterface
 
         if ($userRoleId != '1') {
             // Get the required permission for the current URL
-            $permission = $permissionModel->where('routes_url', $currentURL)->first();
+            $permission = $permissionModel->where('LOWER(routes_url)', $currentURL, false)
+                ->where('is_deleted', 'N')->first();
 
             if ($permission) {
                 $permissionId = $permission['permission_id'];

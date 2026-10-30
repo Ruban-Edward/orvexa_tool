@@ -10,6 +10,7 @@
 if (!function_exists('has_permission')) {
     function has_permission($routeUrl)
     {
+        $routeUrl = trim((string) $routeUrl, '/');
         // Start the session
         $session = session();
         
@@ -27,7 +28,7 @@ if (!function_exists('has_permission')) {
             $permissionModel = model(\App\Models\Admin\PermissionModel::class);
             
             // Get the permission record for the given route URL
-            $permission = $permissionModel->where('routes_url', $routeUrl)
+            $permission = $permissionModel->where('LOWER(routes_url)', strtolower($routeUrl), false)
             ->where('is_deleted', 'N')
             ->first();
 

@@ -56,7 +56,7 @@ body.ox-auth {
 
 .ox-auth-shell {
     display: grid;
-    grid-template-columns: minmax(420px, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(420px, 1.1fr) minmax(0, 0.9fr);
     min-height: 100vh;
     min-height: 100dvh;
 }
@@ -65,10 +65,16 @@ body.ox-auth {
    Form column
    -------------------------------------------------------------------------- */
 .ox-auth-panel {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     flex-direction: column;
     padding: 32px 56px;
     background: #ffffff;
+}
+
+.ox-auth-brand {
+    align-self: flex-end;
 }
 
 .ox-auth-brand img {
@@ -368,6 +374,7 @@ body.ox-auth {
 }
 
 .ox-auth-footer {
+    align-self : flex-end;
     color: var(--ox-subtle);
     font-size: 12px;
 }
@@ -376,6 +383,8 @@ body.ox-auth {
    Brand stage
    -------------------------------------------------------------------------- */
 .ox-auth-stage {
+    grid-column: 1;
+    grid-row: 1;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -776,6 +785,7 @@ body.ox-auth {
     }
 
     .ox-auth-panel {
+        grid-column: 1;
         min-height: 100vh;
         min-height: 100dvh;
         padding: 24px;

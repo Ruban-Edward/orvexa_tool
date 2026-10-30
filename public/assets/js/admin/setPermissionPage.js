@@ -383,3 +383,69 @@ if (typeof setPermissionPage !== "undefined") {
     });
   })();
 }
+
+// Keeping permissions in step with the tool: reuse or create permissions for
+// features the code checks, and remove ones that point at removed features
+if (typeof setPermissionPage !== "undefined") {
+  const post = (url, data) => $.post(baseUrl + url, data, null, "json");
+  const reload = () => setTimeout(() => window.location.reload(), 900);
+
+  $(document).on("click", "[data-relink]", function () {
+    const button = this;
+    button.disabled = true;
+    post("admin/permissions/relink", { permission_id: button.dataset.relink, route: button.dataset.route })
+      .done((response) => {
+        if (!response.success) {
+          Ox.toast(response.message || "The permission could not be updated.", { type: "error" });
+          button.disabled = false;
+          return;
+        }
+        Ox.toast(`${button.textContent.trim().replace(/^Use /, "")} now controls ${button.dataset.route}`);
+        reload();
+      })
+      .fail(() => {
+        Ox.toast("The permission could not be updated.", { type: "error" });
+        button.disabled = false;
+      });
+  });
+
+  $(document).on("click", "[data-create-route]", function () {
+    permissionModal("add");
+    document.getElementById("newPermissionForm").reset();
+    document.getElementById("routesURLModel").value = this.dataset.createRoute;
+    document.getElementById("permissionNameModal").value = this.dataset.createName;
+    if (this.dataset.createModule !== "0") document.getElementById("moduleModel").value = this.dataset.createModule;
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("permissionModal")).show();
+  });
+
+  function removeStale(ids) {
+    return post("admin/permissions/cleanup", { ids })
+      .done((response) => {
+        if (!response.success) {
+          Ox.toast(response.message || "Nothing was removed.", { type: "error" });
+          return;
+        }
+        Ox.toast(`${response.removed} unused ${response.removed === 1 ? "permission" : "permissions"} removed`);
+        reload();
+      })
+      .fail(() => Ox.toast("The permissions could not be removed.", { type: "error" }));
+  }
+
+  $(document).on("click", "[data-remove]", function () {
+    removeStale([this.dataset.remove]);
+  });
+
+  $("#removeAllStale").on("click", function () {
+    const ids = $("[data-stale]").map((i, el) => el.dataset.stale).get();
+    Swal.fire({
+      title: `Remove ${ids.length} unused ${ids.length === 1 ? "permission" : "permissions"}?`,
+      text: "They point to features that are no longer in the tool, so no role loses access to anything.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Remove",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) removeStale(ids);
+    });
+  });
+}

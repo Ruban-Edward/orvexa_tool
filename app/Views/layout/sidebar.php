@@ -1,4 +1,5 @@
 <?php
+$permissionCatalog = new \App\Services\PermissionCatalog();
 $currentPath = trim(uri_string(), '/');
 
 // Each item: url, icon (Feather name), label, optional permission and the path prefixes that mark it active
@@ -58,7 +59,10 @@ $isActive = static function (array $prefixes) use ($currentPath): bool {
     <nav class="ox-sidenav">
         <?php foreach ($navSections as $section): ?>
             <?php
-            $items = array_filter($section['items'], static fn ($item) => ! isset($item['permission']) || has_permission($item['permission']));
+            $items = array_filter($section['items'], static function ($item) use ($permissionCatalog): bool {
+                return $permissionCatalog->routeExists($item['url'])
+                    && (! isset($item['permission']) || has_permission($item['permission']));
+            });
             if ($items === []) {
                 continue;
             }

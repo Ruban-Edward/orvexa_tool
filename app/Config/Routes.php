@@ -200,6 +200,8 @@ $routes->group('admin', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('syncUser', 'AdminController::userSync');
     $routes->post('getSpecificPermissions', 'AdminController::getSpecificPermissions');
     $routes->post('setNewPermission', 'AdminController::setNewPermission');
+    $routes->post('permissions/relink', 'AdminController::relinkPermission');
+    $routes->post('permissions/cleanup', 'AdminController::cleanupPermissions');
     $routes->get('getPermissionName', 'AdminController::getPermissionName');
     $routes->post('deletePermission/(:num)', 'AdminController::deletePermission/$1');
     $routes->get('getPermissionDetails/(:num)', 'AdminController::getPermissionDetails/$1');

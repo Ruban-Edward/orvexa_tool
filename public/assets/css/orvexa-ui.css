@@ -5107,3 +5107,80 @@ body.ox-app .ox-details-form {
 body.ox-app .ox-details-form .invalid-feedback:empty {
     display: none !important;
 }
+
+/* Role permissions: live comparison with the tool */
+.ox-perm-sync {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 16px;
+    color: var(--ox-muted);
+    font-size: 13px;
+}
+
+.ox-perm-sync > i {
+    color: var(--ox-brand-600);
+}
+
+.ox-perm-sync b {
+    color: var(--ox-ink);
+}
+
+body.ox-app .ox-perm-alert {
+    margin-bottom: 16px;
+}
+
+body.ox-app .ox-perm-alert.is-warning {
+    border-color: #fedf89;
+    background: #fffcf5;
+}
+
+body.ox-app .ox-perm-alert.is-warning .ox-panel-title i {
+    color: var(--ox-amber);
+}
+
+.ox-perm-alert-text {
+    margin: 0;
+    padding: 12px 18px 0;
+    color: var(--ox-text);
+    font-size: 13px;
+}
+
+.ox-perm-list {
+    margin: 0;
+    padding: 8px 18px 14px;
+    list-style: none;
+}
+
+.ox-perm-list > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ox-border);
+}
+
+.ox-perm-list > li:last-child {
+    border-bottom: 0;
+}
+
+.ox-perm-list > li > div:first-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    min-width: 0;
+}
+
+.ox-perm-list code {
+    color: var(--ox-brand-800);
+    font-size: 13px;
+}
+
+.ox-perm-actions {
+    display: flex;
+    gap: 6px;
+}

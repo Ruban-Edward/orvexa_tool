@@ -13,6 +13,7 @@ namespace App\Controllers;
 
 use Config\SprintModelConfig;
 use App\Services\InviteMailer;
+use App\Services\PermissionCatalog;
 use CodeIgniter\Events\Events;
 use CodeIgniter\HTTP\Response;
 
@@ -77,11 +78,25 @@ class AdminController extends BaseController
         $roles = $this->roleModelObj->getRoles();
         array_shift($roles);
 
-        // Get roles, permissions, and modules from the AdminModel
+        // Compare the stored permissions with the routes and checks in the tool right now
+        $permissions = $this->adminModelObj->getPermissions();
+        $catalog = new PermissionCatalog();
+        $state = $catalog->classify($permissions);
+        $liveModules = array_flip(array_column($state['live'], 'r_module_id'));
+        $staleModules = array_flip(array_column($state['stale'], 'r_module_id'));
+        // A module whose only permissions are stale (e.g. Redmine sync) is gone from the tool
+        $modules = array_values(array_filter($this->adminModelObj->getModule(),
+            static fn ($m) => isset($liveModules[$m['module_id']]) || !isset($staleModules[$m['module_id']])));
+
         $permissionData = [
             'roles' => $roles,
-            'permissions' => $this->adminModelObj->getPermissions(),
-            'module' => $this->adminModelObj->getModule(),
+            'permissions' => $state['live'],
+            'stale' => $state['stale'],
+            'missing' => $state['missing'],
+            'targets' => $catalog->availableTargets($permissions),
+            'module' => $modules,
+            'routeCount' => count($catalog->routes()),
+            'checkCount' => count($catalog->codeChecks()),
         ];
 
         // Return the view for setting permissions with the permission data
@@ -96,10 +111,11 @@ class AdminController extends BaseController
     {
         // Get the selected user and permissions from the POST request
         $selectUser = $this->request->getPost('selectUser');
-        $permissions = $this->request->getPost('permissions');
+        // An empty selection is valid: it removes all permissions from the role.
+        $permissions = $this->request->getPost('permissions') ?? [];
 
         // Check if input data is valid
-        if (!isset($selectUser) || !isset($permissions) || !is_array($permissions)) {
+        if (!isset($selectUser) || !is_array($permissions)) {
             // Handle the error
             return $this->response->setJSON(['success' => false]);
         }
@@ -113,6 +129,7 @@ class AdminController extends BaseController
 
         // Validate and insert new permissions
         $validData = [];
+        $deleteData = [];
         foreach ($permissionsToAdd as $permission) {
             $data = [
                 'r_role_id' => $selectUser,
@@ -739,8 +756,87 @@ class AdminController extends BaseController
     /**
      * Set a new permission
      */
+    /**
+     * Point an existing (stale) permission at a feature that is checked in the code.
+     */
+    public function relinkPermission(): Response
+    {
+        if ($denied = $this->denyUnlessCanEditPermissions()) {
+            return $denied;
+        }
+        $permissionId = (int) $this->request->getPost('permission_id');
+        $route = trim((string) $this->request->getPost('route'), '/ ');
+        if ($error = $this->invalidPermissionRoute($route, $permissionId)) {
+            return $this->response->setJSON(['success' => false, 'message' => $error]);
+        }
+        $this->db()->table('orvexa_permission')->where('permission_id', $permissionId)->update(['routes_url' => $route]);
+
+        return $this->response->setJSON(['success' => true]);
+    }
+
+    /**
+     * Remove permissions that nothing in the tool uses any more.
+     */
+    public function cleanupPermissions(): Response
+    {
+        if ($denied = $this->denyUnlessCanEditPermissions()) {
+            return $denied;
+        }
+        $ids = array_filter(array_map('intval', (array) $this->request->getPost('ids')));
+        $catalog = new PermissionCatalog();
+        $stale = array_map('intval', array_column($catalog->classify($this->adminModelObj->getPermissions())['stale'], 'permission_id'));
+        // Only permissions that are really unused can be removed this way
+        $ids = array_values(array_intersect($ids, $stale));
+        if ($ids === []) {
+            return $this->response->setJSON(['success' => false, 'message' => 'There is nothing to remove.']);
+        }
+        $this->db()->table('orvexa_permission')->whereIn('permission_id', $ids)->update(['is_deleted' => 'Y']);
+        $this->db()->table('orvexa_role_permission')->whereIn('r_permission_id', $ids)->update(['is_deleted' => 'Y']);
+
+        return $this->response->setJSON(['success' => true, 'removed' => count($ids)]);
+    }
+
+    /**
+     * @return string|null why the route can't be used for a permission
+     */
+    private function invalidPermissionRoute(string $route, int $exceptPermissionId = 0): ?string
+    {
+        if ($route === '') {
+            return 'Choose the feature (route) this permission controls.';
+        }
+        $catalog = new PermissionCatalog();
+        if (!$catalog->routeExists($route) && !isset($catalog->codeChecks()[strtolower($route)])) {
+            return "\"{$route}\" is not a route or screen check in the tool.";
+        }
+        $duplicate = $this->db()->table('orvexa_permission')
+            ->where('routes_url', $route)->where('is_deleted', 'N')->where('permission_id !=', $exceptPermissionId)
+            ->countAllResults();
+
+        return $duplicate ? 'Another permission already controls this feature.' : null;
+    }
+
+    private function denyUnlessCanEditPermissions(): ?Response
+    {
+        if (has_permission('admin/setPermissions')) {
+            return null;
+        }
+
+        return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You do not have permission to change permissions.']);
+    }
+
+    private function db()
+    {
+        return \Config\Database::connect();
+    }
+
     public function setNewPermission()
     {
+        if ($denied = $this->denyUnlessCanEditPermissions()) {
+            return $denied;
+        }
+        if ($error = $this->invalidPermissionRoute(trim((string) $this->request->getPost('routesURLModel'), '/ '))) {
+            return $this->response->setJSON(['validation' => true, 'errors' => ['routesURLModel' => $error]]);
+        }
         // Check if the set permission button was clicked
         if ($this->request->getPost('setPermissionButton')) {
             // Prepare permission data from POST request
@@ -798,6 +894,9 @@ class AdminController extends BaseController
      */
     public function deletePermission($id)
     {
+        if ($denied = $this->denyUnlessCanEditPermissions()) {
+            return $denied;
+        }
         $result = $this->permissionModelObj->deletePermission($id);
 
         if ($result) {
@@ -823,6 +922,13 @@ class AdminController extends BaseController
      */
     public function updatePermission()
     {
+        if ($denied = $this->denyUnlessCanEditPermissions()) {
+            return $denied;
+        }
+        $route = trim((string) $this->request->getPost('routesURLModel'), '/ ');
+        if ($error = $this->invalidPermissionRoute($route, (int) $this->request->getPost('editPermissionNameModel'))) {
+            return $this->response->setJSON(['success' => false, 'validation' => true, 'errors' => ['routesURLModel' => $error]]);
+        }
 
         $deleteDetails = $this->request->getPost();
 

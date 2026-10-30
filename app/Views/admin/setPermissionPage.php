@@ -32,6 +32,65 @@
             </div>
         </div>
     </div>
+    <!-- How the stored permissions compare with the tool right now -->
+    <p class="ox-perm-sync">
+        <i class="icon-refresh-cw" aria-hidden="true"></i>
+        Checked against the tool just now: <b><?= (int) $data['routeCount'] ?></b> routes and <b><?= (int) $data['checkCount'] ?></b> screen checks.
+        Only permissions for features that exist are listed below.
+    </p>
+
+    <?php if ($data['missing']): ?>
+        <section class="ox-panel ox-perm-alert is-warning" aria-labelledby="missingTitle">
+            <header class="ox-panel-head">
+                <h2 class="ox-panel-title" id="missingTitle"><i class="icon-alert-triangle" aria-hidden="true"></i> Features without a permission <span class="ox-badge-count"><?= count($data['missing']) ?></span></h2>
+            </header>
+            <p class="ox-perm-alert-text">The tool checks these features, but no permission exists for them, so only Super Admins can use them. Create a permission (or reuse a matching old one), then grant it to roles below.</p>
+            <ul class="ox-perm-list">
+                <?php foreach ($data['missing'] as $item): ?>
+                    <li>
+                        <div>
+                            <code><?= esc($item['routes_url']) ?></code>
+                            <span class="ox-muted">checked in <?= esc(implode(', ', array_map('basename', $item['files']))) ?></span>
+                        </div>
+                        <div class="ox-perm-actions">
+                            <?php if ($item['suggestion']): ?>
+                                <button type="button" class="btn btn-primary btn-sm" data-relink="<?= (int) $item['suggestion']['permission_id'] ?>" data-route="<?= esc($item['routes_url'], 'attr') ?>">
+                                    Use <?= esc(ucwords(str_replace('_', ' ', strtolower($item['suggestion']['permission_name'])))) ?>
+                                </button>
+                            <?php endif; ?>
+                            <button type="button" class="btn btn-secondary btn-sm" data-create-route="<?= esc($item['routes_url'], 'attr') ?>" data-create-name="<?= esc(ucwords(str_replace('_', ' ', strtolower($item['name']))), 'attr') ?>" data-create-module="<?= (int) ($item['module_id'] ?? 0) ?>">
+                                Create permission
+                            </button>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif; ?>
+
+    <?php if ($data['stale']): ?>
+        <section class="ox-panel ox-perm-alert" aria-labelledby="staleTitle">
+            <header class="ox-panel-head">
+                <h2 class="ox-panel-title" id="staleTitle"><i class="icon-archive" aria-hidden="true"></i> No longer in the tool <span class="ox-badge-count"><?= count($data['stale']) ?></span></h2>
+                <button type="button" class="btn btn-secondary btn-sm" id="removeAllStale">Remove all</button>
+            </header>
+            <p class="ox-perm-alert-text">These permissions point to features that were removed (for example Redmine sync) or to a route that does not exist. Granting them has no effect.</p>
+            <ul class="ox-perm-list">
+                <?php foreach ($data['stale'] as $item): ?>
+                    <li data-stale="<?= (int) $item['permission_id'] ?>">
+                        <div>
+                            <b><?= esc(ucwords(str_replace('_', ' ', strtolower($item['permission_name'])))) ?></b>
+                            <span class="ox-muted"><?= esc(ucwords($item['module_name'])) ?> · <code><?= esc($item['routes_url']) ?></code></span>
+                        </div>
+                        <div class="ox-perm-actions">
+                            <button type="button" class="btn btn-link ox-icon-action is-danger" data-remove="<?= (int) $item['permission_id'] ?>" title="Remove" aria-label="Remove <?= esc($item['permission_name'], 'attr') ?>"><i class="icon-trash-2" aria-hidden="true"></i></button>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif; ?>
+
     <!-- Form to submit user role and permissions -->
     <form id="permissionsForm">
 
@@ -96,7 +155,7 @@
                         echo "<div class='checkbox-item'>";
                         echo "<input type='checkbox' class='form-check-input form-check-primary module-checkbox' 
                                     value='{$value['permission_id']}' id='{$value['permission_name']}_{$key}' name='permissions[]' data-module='{$module_name}'>";
-                        echo "<label for='{$value['permission_name']}_{$key}' class='form-check-label'>" . esc($formatted_permission_name) . "</label>";
+                        echo "<label for='{$value['permission_name']}_{$key}' class='form-check-label' title='" . esc($value['routes_url'], 'attr') . "'>" . esc($formatted_permission_name) . "</label>";
                         echo "</div>";
                     }
                     echo "</div>";
@@ -166,9 +225,15 @@
                     <div class="col-md-10" id="routesURL">
                         <label for="routesURLModel" class="form-label">URL routes name</label>
                         <input type="text" class="form-control" id="routesURLModel" name="routesURLModel"
-                            placeholder="Eg: backlog/addBacklog" required>
-                        <div class="valid-feedback">Looks good!</div>
-                        <div class="invalid-feedback">Please provide a meeting title.</div>
+                            placeholder="Start typing, e.g. backlog/" list="routeTargets" autocomplete="off" required
+                            aria-describedby="routesURLHelp">
+                        <datalist id="routeTargets">
+                            <?php foreach ($data['targets'] as $target): ?>
+                                <option value="<?= esc($target, 'attr') ?>"></option>
+                            <?php endforeach; ?>
+                        </datalist>
+                        <div class="form-text" id="routesURLHelp">Suggestions come from the routes and screen checks in the tool that have no permission yet.</div>
+                        <div class="invalid-feedback" id="routesURLError">Choose a route that exists in the tool.</div>
                     </div>
 
                     <!-- delete modal -->

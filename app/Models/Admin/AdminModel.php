@@ -221,6 +221,8 @@ class AdminModel extends BaseModel
         $sql = "SELECT 
                     p.permission_id, 
                     p.permission_name, 
+                    p.routes_url,
+                    p.r_module_id,
                     m.module_name 
                 FROM 
                     orvexa_permission as p 
