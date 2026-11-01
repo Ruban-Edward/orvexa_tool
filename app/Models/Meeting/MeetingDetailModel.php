@@ -378,6 +378,7 @@ class MeetingDetailModel extends Model
         //query to fetch the specific meeting details
         $sql = "SELECT
             md.meeting_details_id,
+            md.meeting_title,
             mt.meeting_type_name,
             md.r_meeting_type_id,
             md.meeting_start_date,

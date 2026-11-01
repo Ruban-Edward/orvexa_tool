@@ -73,6 +73,7 @@ class CustomReportController extends BaseController
 
 
         $reportType = $this->resolveReportType($reportType);
+        $reportName = $reportType === 'Meet' ? 'Meeting' : $reportType;
         $method = "get{$reportType}ReportView";
         $dropdowns = $this->model->reportDropDowns($reportType);
         $details = call_user_func_array([$this->model, $method], []);
@@ -85,20 +86,20 @@ class CustomReportController extends BaseController
             }
             $breadcrumbs = [
                 'Home' => ASSERT_PATH . 'dashboard/dashboardView',
-                "{$reportType} Report" => ''
+                "{$reportName} Report" => ''
             ];
             return $this->template_view('dashboard/CustomReportView', [
                 'data' => $details,
                 'report' => ["{$reportType}Report"],
                 'drops' => $dropdowns,
                 'message' => $message ?? null
-            ], "{$reportType} Report", $breadcrumbs);
+            ], "{$reportName} Report", $breadcrumbs);
         } else {
             $breadcrumbs = [
                 'Home' => ASSERT_PATH . 'dashboard/dashboardView',
                 "No Data" => ''
             ];
-            return $this->template_view('dashboard/NodataView', $view_data = "Records", $title = "{$reportType} Report", $breadcrumbs);
+            return $this->template_view('dashboard/NodataView', $view_data = "Records", $title = "{$reportName} Report", $breadcrumbs);
         }
     }
 

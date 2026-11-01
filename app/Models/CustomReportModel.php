@@ -29,7 +29,7 @@ class CustomReportModel extends BaseModel
     {
         $query = '
         SELECT 
-            mt.meeting_type_name AS "Meeting Name",
+            md.meeting_title AS "Meeting Name",
             ut.first_name AS "Creator",
             pt.product_name AS "Product Name",
             md.meeting_start_date AS "Meeting Date",
@@ -47,7 +47,7 @@ class CustomReportModel extends BaseModel
         WHERE 
             md.is_deleted = "N"
         GROUP BY 
-            md.meeting_details_id, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description
+            md.meeting_details_id, md.meeting_title, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description
         ORDER BY 
             md.meeting_start_date DESC, md.meeting_start_time DESC;
       
@@ -68,7 +68,7 @@ class CustomReportModel extends BaseModel
     {
         // Define the initial select fields
         $selectFields = '
-            mt.meeting_type_name AS "Meeting Name",
+            md.meeting_title AS "Meeting Name",
             ut.first_name AS "Creator",
             pt.product_name AS "Product Name",
             md.meeting_start_date AS "Meeting Date",
@@ -145,7 +145,7 @@ class CustomReportModel extends BaseModel
 
         // Group by necessary fields
         $query .= " GROUP BY 
-                        md.meeting_details_id, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description";
+                        md.meeting_details_id, md.meeting_title, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description";
 
         // Order by date
         $query .= " ORDER BY md.meeting_start_date DESC, md.meeting_start_time DESC";

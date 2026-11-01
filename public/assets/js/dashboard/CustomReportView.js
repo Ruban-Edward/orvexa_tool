@@ -169,7 +169,8 @@ document.addEventListener("DOMContentLoaded", function () {
             sidebar.classList.remove('validation-error');
             let serializedData = $(this).serialize();
             console.log(serializedData); // For demonstration purposes
-            applyFilter(filterBtn.dataset.param, serializedData,true);
+            const formType = document.getElementById("applyfilter").dataset.report;
+            applyFilter(formType, serializedData, true);
         }
     });
 });
@@ -251,9 +252,10 @@ function flashcard(message) {
 
 // Reset form and apply filters
 function resetsubmit() {
-    document.getElementById("filterForm").reset();
-    console.log(filterBtn.dataset.param);
-    applyFilter(filterBtn.dataset.param, $("#filterForm").serialize(),false);
+    const filterForm = document.getElementById("filterForm");
+    filterForm.reset();
+    const formType = document.getElementById("applyfilter").dataset.report;
+    applyFilter(formType, $(filterForm).serialize(), false);
 }
 
 /**
@@ -340,7 +342,7 @@ function generateTableBody(data) {
                 ele.classList.add(`priority-${item[key]}`);
                 ele.setAttribute("data-toggle", "tooltip");
                 ele.setAttribute("data-placement", "top");
-                ele.setAttribute("title", `Priority: ${priorityMapping[item[key]] || priority}`);
+                ele.setAttribute("title", `Priority: ${priorityMapping[item[key]] || item[key]}`);
                 ele.textContent = stripHtmlTags(item[key]);
                 cell.appendChild(ele);
             } 

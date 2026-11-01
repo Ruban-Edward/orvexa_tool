@@ -293,7 +293,9 @@
                 });
             } else {
                 element.addEventListener('submit', event => {
-                    if (!event.defaultPrevented) showLoader();
+                    setTimeout(() => {
+                        if (!event.defaultPrevented) showLoader();
+                    }, 0);
                 });
             }
         });

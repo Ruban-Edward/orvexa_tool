@@ -773,7 +773,7 @@ if (typeof calendar !== "undefined") {
           const state = meetingState(m, now);
           out.push({
             id: "meeting-event-" + m.meeting_details_id,
-            title: m.meeting_type_name,
+            title: m.meeting_title || m.meeting_type_name,
             start: m.meeting_start_date + "T" + m.meeting_start_time,
             end: (m.meeting_end_date || m.meeting_start_date) + "T" + m.meeting_end_time,
             classNames: ["ox-evt", "ox-" + state],
@@ -1205,7 +1205,9 @@ if (typeof calendar !== "undefined") {
   function removeEmail(element) {
     var email = element.previousElementSibling.innerText;
     var selectedEmailsInput = document.getElementById("selectedEmailsInput");
-    var selectedEmails = selectedEmailsInput.value.split(",");
+    var selectedEmails = selectedEmailsInput.value
+      .split(",")
+      .filter((selectedEmail) => selectedEmail !== "");
     selectedEmails = selectedEmails.filter(function (e) {
       // Remove the email from the array
       return e !== email;
@@ -1262,6 +1264,15 @@ if (typeof calendar !== "undefined") {
     }
 
     function updateFormFields(meetingType) {
+      const recurrenceFields = [
+        document.getElementById("recurrence_meeting"),
+        document.getElementById("sprint_start_date"),
+        document.getElementById("sprint_end_date"),
+      ];
+      recurrenceFields.forEach((field) => {
+        field.required = meetingType === "3";
+      });
+
       if (meetingType === "3") {
         $(
           "#recurrence_meeting_container,#sprint_start_date_container,#sprint_end_date_container,#sprint_div"
@@ -1411,7 +1422,9 @@ if (typeof calendar !== "undefined") {
 
   function updateSelectedEmails(email) {
     // Check if email is already selected
-    var selectedEmails = selectedEmailsInput.value.split(",");
+    var selectedEmails = selectedEmailsInput.value
+      .split(",")
+      .filter((selectedEmail) => selectedEmail !== "");
     if (selectedEmails.includes(email)) {
       return; // Do nothing if email is already selected
     }

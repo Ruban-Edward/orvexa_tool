@@ -180,8 +180,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="sprintDuration" class="form-label">Start Date</label>
-                        <!-- <label for="startDate" class="form-label">Start Date</label> -->
+                        <label for="startDate" class="form-label">Start Date</label>
                         <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input" id="startDate"
                             name="startDate" accept="" placeholder="Select Date" readonly="readonly" required>
                         <!-- <input type="date" class="form-control" id="startDate" name="startDate" required> -->
@@ -190,8 +189,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <!-- <label for="sprintDuration" class="form-label">Sprint Duration</label> -->
-                        <label for="sprintDuration" class="form-label">End date</label>
+                        <label for="endDate" class="form-label">End date</label>
                         <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input" id="endDate"
                             name="endDate" accept="" placeholder="Select Date" readonly="readonly" required>
                         <!-- <input type="date" class="form-control" id="endDate" name="endDate" required> -->
@@ -241,8 +239,8 @@
             <?php endif; ?>
             <!-- Form Field: Select User Stories section -->
             <div class="card mb-4 main-div" id="userStories">
-                <div class="card-header" onclick="toggleCollapse('exampleCollapse1')" data-bs-toggle="collapse" data-bs-target="#SelectUserStories"
-                    aria-expanded="false" aria-controls="SelectUserStories">
+                <div class="card-header" data-bs-toggle="collapse" data-bs-target="#exampleCollapse1"
+                    aria-expanded="false" aria-controls="exampleCollapse1">
                     <h5 class="mb-0 headerName">
                         <div class="row " style="align-items: center; justify-content: space-between;">
                             <div class="col-2 d-flex justify-content-start">
@@ -340,8 +338,8 @@
             </div>
             <!-- Form Field: Add Members -->
             <div class="card mb-4 main-div" id="addMembers">
-                <div class="card-header"  onclick="toggleCollapse('exampleCollapse2')" data-bs-toggle="collapse" data-bs-target="#AddMembers" aria-expanded="false"
-                    aria-controls="AddMembers">
+                <div class="card-header" data-bs-toggle="collapse" data-bs-target="#exampleCollapse2" aria-expanded="false"
+                    aria-controls="exampleCollapse2">
                     <h5 class="mb-0 headerName">
                         Scrum members
                         <!-- <i class="fas fa-chevron-down float-end collapsible-icon"></i> -->
@@ -386,8 +384,8 @@
             <?php if (!$data['edit']): ?>
                 <!-- Form Field: Sprint Planning -->
                 <div class="card mb-4 main-div" id="sprintSettingBlock">
-                    <div class="card-header" onclick="toggleCollapse('exampleCollapse3')" data-bs-toggle="collapse" data-bs-target="#sprintSettingCollapse"
-                        aria-expanded="false" aria-controls="sprintSettingCollapse">
+                    <div class="card-header" data-bs-toggle="collapse" data-bs-target="#exampleCollapse3"
+                        aria-expanded="false" aria-controls="exampleCollapse3">
                         <h5 class="mb-0 headerName">
                             Sprint plan
                             <!-- <i class="fas fa-chevron-down float-end collapsible-icon"></i> -->

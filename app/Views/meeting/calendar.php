@@ -250,7 +250,7 @@ if (!empty($sprintId)) {
                         <!-- Form Field: Recurrence Count -->
                         <div class="col-md-6" id="recurrence_meeting_container" style="display: none;">
                             <label for="recurrence_meeting" id="labelok" class="form-label">Recurrence meeting</label>
-                            <select class="form-select" id="recurrence_meeting" name="recurrance_meeting_id" required>
+                            <select class="form-select" id="recurrence_meeting" name="recurrance_meeting_id">
                                 <option value="" disabled selected>Select the recurrence</option>
                                 <option value="0">None</option>
                                 <option value="1">Daily</option>
@@ -270,7 +270,7 @@ if (!empty($sprintId)) {
                             <label for="sprint_start_date" class="form-label">Recurrence start date</label>
                             <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input"
                                 id="sprint_start_date" name="sprint_start_date" accept=""
-                                placeholder="Select recurrence start date" required>
+                                placeholder="Select recurrence start date">
                             <div class="invalid-feedback">Please choose a recurrence start date.</div>
                         </div>
 
@@ -279,25 +279,29 @@ if (!empty($sprintId)) {
                             <label for="sprint_end_date" class="form-label">Recurrence end date</label>
                             <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input"
                                 id="sprint_end_date" name="sprint_end_date" accept=""
-                                placeholder="Select recurrence end date" required>
+                                placeholder="Select recurrence end date">
                             <div class="invalid-feedback">Please choose a recurrence end date.</div>
                         </div>
 
                         <!-- Form Field: Meeting Duration -->
                         <div class="col-md-6">
-                            <label for="meeting_duration" class="form-label" style="margin-right: 130px;">Hours</label>
-                            <label for="meeting_duration" class="form-label">Minutes</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="meeting_duration_hours"
-                                    name="meeting_duration_hours" min="0" max="24" placeholder="0">
-                                <input type="number" class="form-control" id="meeting_duration_minutes"
-                                    name="meeting_duration_minutes" min="0" max="59" placeholder="00" required>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label for="meeting_duration_hours" class="form-label">Hours</label>
+                                    <input type="number" class="form-control" id="meeting_duration_hours"
+                                        name="meeting_duration_hours" min="0" max="24" placeholder="0">
+                                </div>
+                                <div class="col-6">
+                                    <label for="meeting_duration_minutes" class="form-label">Minutes</label>
+                                    <input type="number" class="form-control" id="meeting_duration_minutes"
+                                        name="meeting_duration_minutes" min="0" max="59" placeholder="00" required>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Form Field: Meeting Start Date -->
                         <div class="col-md-3" id="meeting_start_date_container">
-                            <label for="meeting_start__date" class="form-label">Meeting start date</label>
+                            <label for="meeting_start_date" class="form-label">Meeting start date</label>
                             <input type="text" class="form-control mb-3 flatpickr-no-config flatpickr-input"
                                 id="meeting_start_date" name="meeting_start_date" accept="" placeholder="Select date"
                                 required>

@@ -243,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         $('#createSprintForm').on('submit', function (e) {
             e.preventDefault();
+            tinymce.triggerSave();
             if (!this.checkValidity()) {
                 e.stopPropagation();
                 this.classList.add('was-validated');
@@ -277,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#editSprintForm').on('submit', function (e) {
             e.preventDefault();
 
+            tinymce.triggerSave();
             if (!this.checkValidity()) {
                 e.stopPropagation();
                 this.classList.add('was-validated');
@@ -1550,18 +1552,4 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial update
     updateProcessFlow();
 });
-function toggleCollapse(collapseId) {
-    var collapseElement = document.getElementById(collapseId);
-    var icon = collapseElement.previousElementSibling.querySelector('.collapsible-icon');
-
-    if (collapseElement.classList.contains('show')) {
-        $(collapseElement).collapse('hide');
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-    } else {
-        $(collapseElement).collapse('show');
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
-    }
-}
 }
