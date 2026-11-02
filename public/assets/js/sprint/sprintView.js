@@ -1272,7 +1272,7 @@ if (typeof m_sprintView !== 'undefined') {
         GeneralELementsHeading.innerHTML = "General";
         var GeneralElementsData = document.createElement('div');
         GeneralElementsData.setAttribute('class', 'pros');
-        GeneralElementsData.innerHTML = reviewData['General'];
+        GeneralElementsData.textContent = reviewData['General'] || '';
         GeneralELements.appendChild(GeneralELementsHeading)
         GeneralELements.appendChild(GeneralElementsData)
 
@@ -1285,7 +1285,7 @@ if (typeof m_sprintView !== 'undefined') {
             challengeFacedStatus.setAttribute('class', '');
             var challengeFacedElementData = document.createElement('div');
             challengeFacedElementData.setAttribute('class', 'pros');
-            challengeFacedElementData.innerHTML = reviewData.challengeFaced['notes'];
+            challengeFacedElementData.textContent = reviewData.challengeFaced['notes'] || '';
             challengeFacedElement.appendChild(challengeFacedElementHeader)
             //challengeFacedElement.appendChild(challengeFacedStatus)
             challengeFacedElement.appendChild(challengeFacedElementData)
@@ -1310,7 +1310,7 @@ if (typeof m_sprintView !== 'undefined') {
             codeReviewStatus.textContent = "no";
             var codeReviewElementData = document.createElement('div');
             codeReviewElementData.setAttribute('class', 'pros');
-            codeReviewElementData.innerHTML = reviewData['codeReview']['notes'];
+            codeReviewElementData.textContent = reviewData['codeReview']['notes'] || '';
             codeReviewElement.appendChild(codeReviewElementHeader)
             //codeReviewElement.appendChild(codeReviewStatus)
             codeReviewElement.appendChild(codeReviewElementData)
@@ -1325,9 +1325,8 @@ if (typeof m_sprintView !== 'undefined') {
             codeReviewStatus.textContent = "yes";
             var codeReviewElementData = document.createElement('div');
             codeReviewElementData.setAttribute('class', 'pros');
-            codeReviewElementData.innerHTML = "<b>Code reviewers: </b>";
-            let reviewersText = reviewData['codeReview']['reviewers'].join(', ');
-            codeReviewElementData.innerHTML += reviewersText;
+            let reviewersText = Array.isArray(reviewData['codeReview']['reviewers']) ? reviewData['codeReview']['reviewers'].join(', ') : '';
+            codeReviewElementData.textContent = "Code reviewers: " + reviewersText;
             codeReviewElement.appendChild(codeReviewElementHeader)
             codeReviewElement.appendChild(codeReviewElementData)
             console.log(codeReviewElementHeader);
@@ -1346,7 +1345,7 @@ if (typeof m_sprintView !== 'undefined') {
             sprintGoalElementStatus.setAttribute('class', '');
             var sprintGoalElementData = document.createElement('div');
             sprintGoalElementData.setAttribute('class', 'pros');
-            sprintGoalElementData.innerHTML = reviewData['sprintGoal']['notes'];
+            sprintGoalElementData.textContent = reviewData['sprintGoal']['notes'] || '';
             sprintGoalElement.appendChild(sprintGoalElementHeader)
             //sprintGoalElement.appendChild(sprintGoalElementStatus)
             sprintGoalElement.appendChild(sprintGoalElementData)

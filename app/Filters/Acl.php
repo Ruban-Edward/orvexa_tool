@@ -32,6 +32,11 @@ class Acl implements FilterInterface
         $rolePermissionModel = model(RolePermissionModel::class);
 
         if ($userRoleId != '1') {
+            // Strict defense-in-depth: non-admin users must never access admin routes
+            if (str_starts_with($currentURL, 'admin/') || $currentURL === 'admin') {
+                return redirect()->to('/no_access');
+            }
+
             // Get the required permission for the current URL
             $permission = $permissionModel->where('LOWER(routes_url)', $currentURL, false)
                 ->where('is_deleted', 'N')->first();

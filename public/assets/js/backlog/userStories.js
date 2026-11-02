@@ -1533,6 +1533,16 @@ if (typeof m_userStories !== "undefined") {
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
+    function escapeHtml(v) {
+      if (v === null || v === undefined) return "";
+      return String(v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function createCommentElement(comment) {
       generateCommentId(1);
 
@@ -1543,10 +1553,10 @@ if (typeof m_userStories !== "undefined") {
       const formattedDate = new Date(comment.timestamp).toLocaleString();
       commentDiv.innerHTML = `
               <div class="comment-content">
-                  <p class="comment-content"><strong>${comment.recipient}:</strong> ${comment.text}</p>
-                  <span class="comment-timestamp">${comment.date}</span>
+                  <p class="comment-content"><strong>${escapeHtml(comment.recipient)}:</strong> ${escapeHtml(comment.text)}</p>
+                  <span class="comment-timestamp">${escapeHtml(comment.date)}</span>
               </div>
-              <i class="icon-twitch me-1"></i> <button class="btn-link reply-btn reply-button" id="reply-button-${comment.id}">Reply</button>
+              <i class="icon-twitch me-1"></i> <button class="btn-link reply-btn reply-button" id="reply-button-${encodeURIComponent(comment.id)}">Reply</button>
               <div class="replies" ></div> <!-- Container for nested replies -->
           `;
       console.log("comment.id");
@@ -1561,7 +1571,7 @@ if (typeof m_userStories !== "undefined") {
       replyDiv.style.display = "block";
       replyDiv.dataset.id = reply.id;
       replyDiv.innerHTML = `
-              <p><strong>${reply.recipient}:</strong> ${reply.text}</p>`;
+              <p><strong>${escapeHtml(reply.recipient)}:</strong> ${escapeHtml(reply.text)}</p>`;
       return replyDiv;
     }
 

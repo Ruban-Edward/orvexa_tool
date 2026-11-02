@@ -30,33 +30,19 @@ services:
     container_name: orvexa_mysql
     # 8.4 LTS: the existing accounts use mysql_native_password, which 8.4 disables by default
     command: --mysql-native-password=ON --sql-mode=""
-    ports:
-      - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: orvexa
-      MYSQL_USER: orvexa
-      MYSQL_PASSWORD: orvexa
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-orvexa}
+      MYSQL_USER: ${MYSQL_USER:-orvexa}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-orvexa}
     volumes:
       - orvexa_mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
       interval: 10s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
-
-  adminer:
-    image: adminer:latest
-    container_name: orvexa_adminer
-    ports:
-      - "8081:8080"
-    environment:
-      ADMINER_DEFAULT_SERVER: mysql
-    depends_on:
-      mysql:
-        condition: service_healthy
     restart: unless-stopped
 
 volumes:

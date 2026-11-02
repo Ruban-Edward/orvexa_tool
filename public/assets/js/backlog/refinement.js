@@ -1,5 +1,15 @@
 if (typeof m_refinement !== 'undefined') {
 
+    function escapeHtml(v) {
+        if (v === null || v === undefined) return '';
+        return String(v)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     let sortColumn = 'order_by';
     let sortOrder = 1; // 1 for ascending, -1 for descending
 
@@ -40,14 +50,14 @@ if (typeof m_refinement !== 'undefined') {
             row.setAttribute('data-order', item.order_by); // Add order_by as data attribute for sortable
             row.setAttribute('data-backlog-id', item.backlog_item_id); // Add backlog_id as data attribute
             row.innerHTML = `
-            <td class="drag-handle capitalize-text text-center">${item.backlog_order}</td>
-            <td class="drag-handle capitalize-text text-center">${item.backlog_item_name}</td>
-            <td class="drag-handle capitalize-text text-center">${item.tracker}</td>
-            <td class="drag-handle capitalize-text text-center">${item.customer_name}</td>
+            <td class="drag-handle capitalize-text text-center">${escapeHtml(item.backlog_order)}</td>
+            <td class="drag-handle capitalize-text text-center">${escapeHtml(item.backlog_item_name)}</td>
+            <td class="drag-handle capitalize-text text-center">${escapeHtml(item.tracker)}</td>
+            <td class="drag-handle capitalize-text text-center">${escapeHtml(item.customer_name)}</td>
             <td class="drag-handle capitalize-text text-center">
-                <div class="priority-${item.priority}">${item.priority}</div>
+                <div class="priority-${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</div>
             </td>
-            <td class="drag-handle text-center">${item.status_name}</td>
+            <td class="drag-handle text-center">${escapeHtml(item.status_name)}</td>
         `;
             tableBody.appendChild(row);
         });

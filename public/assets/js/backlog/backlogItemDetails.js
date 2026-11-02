@@ -1,5 +1,15 @@
 if (typeof m_backlogItemDetails !== 'undefined') {
 
+  function escapeHtml(v) {
+    if (v === null || v === undefined) return '';
+    return String(v)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   let activities = [];
   let filteredActivities = [];
   let currentpage = 1;
@@ -149,9 +159,9 @@ if (typeof m_backlogItemDetails !== 'undefined') {
       li.innerHTML = `
                 <div class="activity-item">
                     <div class="activity-header">
-                        <span class="time col-sm-2 capitalize">${activity.time}</span>
-                        <span class="icon col-sm-2 capitalize">${activity.icon}</span>
-                        <span class="title capitalize">${activity.title}${activity.data} <p><span class="source">${activity.source}</span></p></span>
+                        <span class="time col-sm-2 capitalize">${escapeHtml(activity.time)}</span>
+                        <span class="icon col-sm-2 capitalize">${escapeHtml(activity.icon)}</span>
+                        <span class="title capitalize">${escapeHtml(activity.title)}${escapeHtml(activity.data)} <p><span class="source">${escapeHtml(activity.source)}</span></p></span>
                     </div>
                 </div>
             `;

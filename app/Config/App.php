@@ -199,4 +199,12 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->CSPEnabled = (bool) env('app.CSPEnabled', $this->CSPEnabled);
+        $this->forceGlobalSecureRequests = (bool) env('app.forceGlobalSecureRequests', $this->forceGlobalSecureRequests);
+    }
 }

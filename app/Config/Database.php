@@ -27,13 +27,13 @@ class Database extends Config
     public array $default = [
         'DSN' => '',
         'hostname' => 'localhost',
-        'username' => 'root',
-        'password' => 'root',
-        'database' => 'orvexa',
+        'username' => '',
+        'password' => '',
+        'database' => '',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => true,
-        'DBDebug' => true,
+        'DBDebug' => false,
         'charset' => 'utf8mb4',
         'DBCollat' => 'utf8mb4_general_ci',
         'swapPre' => '',
@@ -163,8 +163,8 @@ class Database extends Config
     public array $tests = [
         'DSN'         => '',
         'hostname'    => 'localhost',
-        'username'    => 'root',
-        'password'    => 'root',
+        'username'    => '',
+        'password'    => '',
         'database'    => 'orvexa_test',
         'DBDriver'    => 'MySQLi',
         'DBPrefix'    => '',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE FOR CI DEVS
@@ -191,6 +191,9 @@ class Database extends Config
     {
         parent::__construct();
 
+        $this->default['DBDebug'] = (ENVIRONMENT !== 'production');
+        $this->custom['DBDebug']  = (ENVIRONMENT !== 'production');
+
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
@@ -202,13 +205,13 @@ class Database extends Config
     public array $custom = [
         'DSN' => '',
         'hostname' => 'localhost',
-        'username' => 'root',
-        'password' => 'root',
+        'username' => '',
+        'password' => '',
         'database' => '',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => false,
-        'DBDebug' => true,
+        'DBDebug' => false,
         'charset' => 'utf8mb4',
         'DBCollat' => 'utf8mb4_general_ci',
         'swapPre' => '',

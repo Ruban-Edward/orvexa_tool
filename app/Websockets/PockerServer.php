@@ -20,8 +20,12 @@ class PockerServer implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $msg) {
         $data = json_decode($msg, true);
+        if (!is_array($data)) {
+            return;
+        }
+
         $action = $data['action'] ?? null;
-        $username = $data['user'] ?? null;
+        $username = isset($data['user']) ? substr(preg_replace('/[^a-zA-Z0-9_\. -]/', '', (string)$data['user']), 0, 50) : null;
 
         switch ($action) {
             case 'reveal':
@@ -31,13 +35,20 @@ class PockerServer implements MessageComponentInterface {
                 $this->handleRestart();
                 break;
             case 'updateVotes':
-                $this->updateVotes($username, $data['value']);
+                if (!empty($username) && isset($data['value'])) {
+                    $val = substr(strip_tags((string)$data['value']), 0, 10);
+                    $this->updateVotes($username, $val);
+                }
                 break;
             case 'exit':
-                $this->handleExit($from, $username);
+                if (!empty($username)) {
+                    $this->handleExit($from, $username);
+                }
                 break;
             case 'join':
-                $this->handleJoin($from, $username);
+                if (!empty($username)) {
+                    $this->handleJoin($from, $username);
+                }
                 break;
         }
     }

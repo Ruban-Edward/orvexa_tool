@@ -22,5 +22,7 @@ RUN chown -R www-data:www-data /var/www/html/writable \
     && find /var/www/html/writable -type d -exec chmod 775 {} \; \
     && find /var/www/html/writable -type f -exec chmod 664 {} \;
 
+USER www-data
+
 EXPOSE 9000
 CMD ["php-fpm"]

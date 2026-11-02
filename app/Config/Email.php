@@ -6,8 +6,8 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = 'rubanedward769@gmail.com';
-    public string $fromName   = '';
+    public string $fromEmail  = '';
+    public string $fromName   = 'Orvexa';
     public string $recipients = '';
 
     /**
@@ -38,12 +38,12 @@ class Email extends BaseConfig
     /**
      * SMTP Username    
      */
-    public string $SMTPUser = 'rubanedward769@gmail.com';
+    public string $SMTPUser = '';
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'fkgo lrps djzp wdad';
+    public string $SMTPPass = '';
 
     /**
      * SMTP Port
@@ -123,4 +123,16 @@ class Email extends BaseConfig
      * Enable notify message from server
      */
     public bool $DSN = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->fromEmail = env('email.fromEmail', $this->fromEmail);
+        $this->fromName  = env('email.fromName', $this->fromName);
+        $this->SMTPHost  = env('email.SMTPHost', $this->SMTPHost);
+        $this->SMTPUser  = env('email.SMTPUser', $this->SMTPUser);
+        $this->SMTPPass  = env('email.SMTPPass', $this->SMTPPass);
+        $this->SMTPPort  = (int) env('email.SMTPPort', $this->SMTPPort);
+    }
 }

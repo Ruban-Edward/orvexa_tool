@@ -14,7 +14,7 @@
 </pre> -->
 
 <!-- ASSERT_PATH ?>sprint/navsprintview?sprint_id= //$_GET['sprint_id'] -->
-<form id="scrumRetrospectiveForm" action="<?= ASSERT_PATH ?>sprint/sprintretrospective?sprint_id=<?= $_GET['sprint_id'] ?>" method="post">
+<form id="scrumRetrospectiveForm" action="<?= ASSERT_PATH ?>sprint/sprintretrospective?sprint_id=<?= esc($_GET['sprint_id'] ?? '') ?>" method="post">
     <div class="date-picker">
         <input type="date" id="date-picker" name="date">
     </div>

@@ -23,6 +23,13 @@ class Encryption extends BaseConfig
      */
     public string $key = '';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->key = env('encryption.key', $this->key);
+    }
+
     /**
      * --------------------------------------------------------------------------
      * Previous Encryption Keys

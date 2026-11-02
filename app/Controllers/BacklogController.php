@@ -244,24 +244,39 @@ class BacklogController extends BaseController
             // Get document types and files from the request
             $documentTypes = $this->request->getPost('fileType');
             $files = $this->request->getFiles()['fileInput'];
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'zip'];
+            $maxSizeBytes = 10 * 1024 * 1024; // 10MB
 
             foreach ($files as $key => $file) {
+                if (!$file || !$file->isValid() || $file->hasMoved()) {
+                    continue;
+                }
+
+                $ext = strtolower($file->getClientExtension());
+                if (!in_array($ext, $allowedExtensions, true)) {
+                    continue;
+                }
+
+                if ($file->getSize() > $maxSizeBytes) {
+                    continue;
+                }
+
                 // Get the document type for the current file
-                $documentType = $documentTypes[$key];
+                $documentType = $documentTypes[$key] ?? null;
                 // Define the path to save the file
                 $filePath = WRITEPATH . 'uploads';
-                // Get the original file name
-                $fileName = $file->getName();
-                // Move the uploaded file to the designated directory
-                $file->move($filePath, $fileName);
+                // Sanitize client filename for metadata and use random filename on disk
+                $clientName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $file->getClientName());
+                $storedName = $file->getRandomName();
+                $file->move($filePath, $storedName);
 
                 // Prepare data for the document record
                 $data = [
                     'r_module_id' => BACKLOG_MODULE, // Define the module ID (backlog module in this case)
                     'r_document_type_id' => $documentType, // Document type ID
                     'r_reference_id' => $insertId, // The backlog ID (reference ID)
-                    'document_name' => $fileName,
-                    'document_path' => $filePath . DIRECTORY_SEPARATOR . $fileName,
+                    'document_name' => $clientName,
+                    'document_path' => $filePath . DIRECTORY_SEPARATOR . $storedName,
                     'r_user_id_created' => $employeeId, // ID of the user who created the record
                     'is_deleted' => 'N', // Mark the record as not deleted
                 ];
@@ -272,7 +287,7 @@ class BacklogController extends BaseController
                 // Retrieve the name of the document type for logging purposes
                 $documentTypeName = $this->documentModel->getDocumentType($documentType);
                 // Prepare log data indicating that a document was added
-                $actionData = $documentTypeName[0]['document_type'] . " " . $fileName . ' is Added';
+                $actionData = ($documentTypeName[0]['document_type'] ?? 'Document') . " " . $clientName . ' is Added';
                 // Form action data and trigger the logging event
                 $action = formActionData(__FUNCTION__, $insertId, $pId, $actionData);
                 Events::trigger('log_actions', $action);
@@ -439,20 +454,36 @@ class BacklogController extends BaseController
             if ($this->request->getFiles()) {
                 $documentTypes = $this->request->getPost('fileType');
                 $files = $this->request->getFiles()['fileInput'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'zip'];
+                $maxSizeBytes = 10 * 1024 * 1024; // 10MB
 
                 foreach ($files as $key => $file) {
-                    $documentType = $documentTypes[$key];
+                    if (!$file || !$file->isValid() || $file->hasMoved()) {
+                        continue;
+                    }
+
+                    $ext = strtolower($file->getClientExtension());
+                    if (!in_array($ext, $allowedExtensions, true)) {
+                        continue;
+                    }
+
+                    if ($file->getSize() > $maxSizeBytes) {
+                        continue;
+                    }
+
+                    $documentType = $documentTypes[$key] ?? null;
                     $filePath = WRITEPATH . 'uploads';  // Define the file path for uploads
-                    $fileName = $file->getName();  // Get the uploaded file name
-                    $file->move($filePath, $fileName);  // Move the file to the specified directory
+                    $clientName = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $file->getClientName());
+                    $storedName = $file->getRandomName();
+                    $file->move($filePath, $storedName);
 
                     // Prepare data for inserting the file details into the database
                     $data = [
                         'r_module_id' => BACKLOG_MODULE,  // module ID
                         'r_document_type_id' => $documentType,  // document type
                         'r_reference_id' => $updatebacklog['backlog_item_id'],  // backlog ID
-                        'document_name' => $fileName,  // file name
-                        'document_path' => $filePath . DIRECTORY_SEPARATOR . $fileName,  // file path
+                        'document_name' => $clientName,  // file name
+                        'document_path' => $filePath . DIRECTORY_SEPARATOR . $storedName,  // file path
                         'r_user_id_created' => session('employee_id'),  // user ID of the creator
                         'is_deleted' => 'N',  // is_deleted flag
                     ];
@@ -462,7 +493,7 @@ class BacklogController extends BaseController
                     $result = $this->documentModel->insertDocument($data);
 
                     // Log the document addition action
-                    $actionData = $documentTypeName[0]['document_type'] . " " . $fileName . " is added";
+                    $actionData = ($documentTypeName[0]['document_type'] ?? 'Document') . " " . $clientName . " is added";
                     $action = formActionData(__FUNCTION__, $pblId, $pId, $actionData);
                     Events::trigger('log_actions', $action);
                 }
