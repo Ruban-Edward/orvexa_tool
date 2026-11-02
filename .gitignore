@@ -1,2 +1,11 @@
 writable
 docs/ORVEXA_COMMANDS.md
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Sensitive database dumps and archives
+database_sample/*.zip
+*.bak
