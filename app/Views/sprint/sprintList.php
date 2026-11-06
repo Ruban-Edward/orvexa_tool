@@ -50,7 +50,7 @@
                     </li>
                     <li>
 
-                        <button id="filter_btn" class=" button-secondary style-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button id="filter_btn" class=" button-secondary style-button" type="button" aria-controls="filterSidebar" aria-expanded="false">
                             <i class="icon-filter mt-1 me-1"></i><span>Filter</span>
                             <span id="noti" class="badge badge-pill badge-danger"></span>
 

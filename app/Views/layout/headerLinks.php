@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-pro.css?v=1">
     <link rel="preload" href="<?= ASSERT_PATH ?>assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-ui.css?v=<?= filemtime(FCPATH . 'assets/css/orvexa-ui.css') ?>">
-    <?php foreach (['tokens', 'glass', 'motion', 'shell-glass', 'cards-glass', 'shell-motion', 'background'] as $oxSheet): ?>
+    <?php foreach (['tokens', 'glass', 'motion', 'shell-glass', 'cards-glass', 'shell-motion', 'background', 'ux-polish'] as $oxSheet): ?>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/<?= $oxSheet ?>.css?v=<?= filemtime(FCPATH . 'assets/css/' . $oxSheet . '.css') ?>">
     <?php endforeach; ?>
 

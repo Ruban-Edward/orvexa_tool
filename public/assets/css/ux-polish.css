@@ -1,0 +1,323 @@
+/*
+ * UX polish: glass content cards, motion (tokens only, transform/opacity)
+ * and small fixes found while reviewing every screen.
+ * Loaded last in layout/headerLinks.php (after background.css).
+ */
+
+/* ==========================================================================
+   1. Glass content cards
+   Translucent + sheen + bright edge. No backdrop-filter on purpose: it would
+   make these cards a containing block for fixed children (modals, filter
+   panels) and a stacking context that hides dropdowns overflowing the card.
+   ========================================================================== */
+body.ox-app #main :is(
+    .card, .product-card, .ox-panel, .ox-stat-card, .ox-kpi, .ox-side-card,
+    .ox-perm-module, .cls-sidebar, .cls-header, .cls-select, .header-elementsprintview,
+    .custom-table, .ox-story-line, .ox-context > div, #myTabContent, #calendar
+),
+body.ox-app #main > .header {
+    border-color: var(--glass-card-border) !important;
+    background-color: var(--glass-card-bg) !important;
+    background-image: var(--glass-card-sheen) !important;
+    box-shadow: var(--glass-card-shadow) !important;
+}
+
+/* Inner sections let the card glass show instead of painting white bands */
+body.ox-app #main :is(.card, .ox-panel, .custom-table, .cls-sidebar, #myTabContent, .ox-perm-module)
+    :is(.card-header, .card-body, .card-footer, thead, tbody, tr, .table-responsive,
+        .cls-userstory-card-head, .cls-task-header, .comment-section, .toggle-suggestion-button,
+        .poker-planning-section, .toggle-poker-button, .ox-profile-work, .cls-sidebarContent,
+        .cls-checkbox, .custom-card-header),
+body.ox-app #main .table-responsive {
+    background-color: transparent !important;
+}
+
+/* Bootstrap tables paint every cell with --bs-table-bg */
+body.ox-app #main .table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: color-mix(in srgb, var(--ox-surface-3) 45%, transparent);
+    --bs-table-hover-bg: color-mix(in srgb, var(--ox-brand-50) 80%, transparent);
+    background-color: transparent;
+}
+
+body.ox-app #main .table > thead > tr > *,
+body.ox-app #main .table thead.header_color th {
+    background-color: color-mix(in srgb, var(--ox-surface-3) 55%, transparent) !important;
+}
+
+body.ox-app #main .table > tbody > tr:hover > * {
+    background-color: color-mix(in srgb, var(--ox-brand-50) 80%, transparent) !important;
+}
+
+/* Floating side panels (filters, user activity): strong glass with real blur */
+body.ox-app :is(.filter-sidebar, .sidebar-filter, #filterSidebar, .offcanvas) {
+    border-color: var(--glass-border-strong) !important;
+    background: var(--glass-bg-strong) !important;
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-strong) !important;
+}
+
+/* Undo toasts: dark glass, light text */
+body.ox-app .ox-toast {
+    background: var(--glass-dark-bg);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    backdrop-filter: var(--glass-backdrop);
+    border: 1px solid color-mix(in srgb, var(--ox-sage) 22%, transparent);
+}
+
+/* Primary buttons: a soft top sheen over Primary Green */
+body.ox-app #main .btn-primary,
+body.ox-app #main .primary_button,
+body.ox-app .modal .btn-primary {
+    background-image: linear-gradient(180deg, color-mix(in srgb, #ffffff 22%, transparent), transparent 60%) !important;
+}
+
+/* ==========================================================================
+   2. Motion (ui-motion-design: tokens only, transform/opacity, ≤ 300ms)
+   ========================================================================== */
+@keyframes ox-rise-in {
+    from { opacity: 0; transform: translateY(var(--distance-md)); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ox-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* `translate` composes with Popper's / existing inline transforms */
+@keyframes ox-drop-in {
+    from { opacity: 0; translate: 0 calc(var(--distance-sm) * -1); }
+    to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes ox-pop-in {
+    from { opacity: 0; transform: scale(var(--scale-enter)); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ox-pop-out {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: scale(var(--scale-enter)); }
+}
+
+@keyframes ox-slide-down {
+    from { opacity: 0; translate: 0 calc(var(--distance-md) * -1); }
+    to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes ox-toast-rise {
+    from { opacity: 0; transform: translateY(var(--distance-md)); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ox-toast-leave {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateX(var(--distance-lg)); }
+}
+
+/* Page enter: the blocks of the page rise in, staggered 30ms, first 6 only.
+   fill-mode is `backwards`, never `both`: a held final transform (even identity)
+   would make the block a containing block for the modals and panels inside it.
+   Fixed layers (modals, panels, toasts) are excluded. */
+body.ox-app #main > :not(.modal, .offcanvas, .toast-container, .filter-sidebar, .sidebar-filter, #filterSidebar, aside, script, style, template, [hidden]) {
+    animation: ox-rise-in var(--dur-slow) var(--ease-enter) backwards;
+}
+body.ox-app #main > :nth-child(2) { animation-delay: 30ms; }
+body.ox-app #main > :nth-child(3) { animation-delay: 60ms; }
+body.ox-app #main > :nth-child(4) { animation-delay: 90ms; }
+body.ox-app #main > :nth-child(5) { animation-delay: 120ms; }
+body.ox-app #main > :nth-child(n+6) { animation-delay: 150ms; }
+
+/* Rows and list items fade in as they are rendered (also after filtering/paging) */
+body.ox-app #main .table > tbody > tr,
+body.ox-app #main :is(#userStoryContainer, #taskList, .ox-product-list, .ox-mywork-group ul) > * {
+    animation: ox-fade var(--dur-base) var(--ease-enter) both;
+}
+body.ox-app #main .table > tbody > tr:nth-child(2),
+body.ox-app #main :is(#userStoryContainer, #taskList) > :nth-child(2) { animation-delay: 30ms; }
+body.ox-app #main .table > tbody > tr:nth-child(3),
+body.ox-app #main :is(#userStoryContainer, #taskList) > :nth-child(3) { animation-delay: 60ms; }
+body.ox-app #main .table > tbody > tr:nth-child(4),
+body.ox-app #main :is(#userStoryContainer, #taskList) > :nth-child(4) { animation-delay: 90ms; }
+body.ox-app #main .table > tbody > tr:nth-child(5),
+body.ox-app #main :is(#userStoryContainer, #taskList) > :nth-child(5) { animation-delay: 120ms; }
+body.ox-app #main .table > tbody > tr:nth-child(n+6),
+body.ox-app #main :is(#userStoryContainer, #taskList) > :nth-child(n+6) { animation-delay: 150ms; }
+
+/* Clickable cards lift on hover; the shadow swaps instantly (never animated) */
+body.ox-app #main :is(.product-card, .ox-product-card, a.ox-profile-work, .ox-stat-card, .ox-kpi) {
+    transition: transform var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard) !important;
+}
+body.ox-app #main :is(.product-card, .ox-product-card, a.ox-profile-work):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-card-shadow-hover) !important;
+}
+
+body.ox-app .ox-card {
+    transition: transform var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+}
+body.ox-app .ox-board:not(.is-readonly) .ox-card:not(.is-ghost):not(.is-dragging):hover {
+    transform: translateY(-1px);
+}
+
+/* Press feedback */
+body.ox-app :is(.btn, .button-secondary, .primary_button, .blue-button, .ox-iconbtn, .ox-icon-action, .ox-user-btn, .ox-search-trigger):not(:disabled):active {
+    transform: scale(var(--scale-press));
+}
+
+/* Sidebar links */
+body.ox-app #sidebar .ox-sidenav-link {
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard) !important;
+}
+
+/* Dropdowns and popovers */
+body.ox-app .dropdown-menu.show {
+    animation: ox-drop-in var(--dur-fast) var(--ease-enter) backwards;
+}
+
+body.ox-app #meetingDetails.ox-popover {
+    transition: opacity var(--dur-fast) var(--ease-enter), transform var(--dur-fast) var(--ease-enter), visibility var(--dur-fast) !important;
+}
+
+/* Bootstrap modals: fade + scale in, faster out (Bootstrap reads these durations) */
+body.ox-app .modal.fade {
+    transition: opacity var(--dur-base) var(--ease-standard);
+}
+body.ox-app .modal.fade .modal-dialog {
+    transform: scale(var(--scale-enter));
+    transition: transform var(--dur-base) var(--ease-enter);
+}
+body.ox-app .modal.show .modal-dialog {
+    transform: none;
+}
+body.ox-app .modal.fade:not(.show) .modal-dialog {
+    transition-duration: var(--dur-fast);
+    transition-timing-function: var(--ease-exit);
+}
+body.ox-app .modal-backdrop.fade {
+    transition: opacity var(--dur-base) var(--ease-standard);
+}
+
+/* Tabs and offcanvas */
+body.ox-app .tab-pane.fade,
+body.ox-app .fade:not(.modal):not(.modal-backdrop) {
+    transition: opacity var(--dur-fast) var(--ease-standard);
+}
+body.ox-app .offcanvas {
+    transition: transform var(--dur-slow) var(--ease-standard) !important;
+}
+body.ox-app .filter-sidebar {
+    transition: transform var(--dur-slow) var(--ease-standard), visibility 0s linear var(--dur-slow) !important;
+}
+body.ox-app .filter-sidebar.open {
+    transition: transform var(--dur-slow) var(--ease-standard), visibility 0s !important;
+}
+
+/* Collapsible sections (sprint view, poker, suggestions): Bootstrap animates
+   height; open instantly instead and fade the content in */
+body.ox-app .collapsing {
+    transition: none !important;
+}
+body.ox-app .collapse.show {
+    animation: ox-fade var(--dur-base) var(--ease-enter) both;
+}
+
+/* SweetAlert2 dialogs */
+body.ox-app .swal2-popup.swal2-show {
+    animation: ox-pop-in var(--dur-base) var(--ease-enter) backwards;
+}
+body.ox-app .swal2-popup.swal2-hide {
+    animation: ox-pop-out var(--dur-fast) var(--ease-exit) both;
+}
+
+/* Flash message and undo toasts */
+body.ox-app .global-flash-message {
+    animation: ox-slide-down var(--dur-base) var(--ease-enter) backwards;
+}
+body.ox-app .ox-toast {
+    animation: ox-toast-rise var(--dur-base) var(--ease-enter) backwards;
+}
+body.ox-app .ox-toast.is-leaving {
+    animation: ox-toast-leave var(--dur-fast) var(--ease-exit) both;
+}
+
+/* ==========================================================================
+   4. Fixes found in the screen review
+   ========================================================================== */
+
+/* Filter side panels opened 50px off-screen (right: -300px but translateX(-250px)).
+   Anchor them at the right edge and slide by their own width, whatever it is. */
+body.ox-app .filter-sidebar {
+    right: 0 !important;
+    transform: translateX(100%) !important;
+}
+body.ox-app .filter-sidebar.open {
+    transform: none !important;
+}
+
+/* Phones: off-canvas panels parked off-screen and the wide report table made
+   the page wider than the screen (the browser zoomed out). */
+@media (max-width: 767.98px) {
+    html:has(body.ox-app),
+    body.ox-app {
+        overflow-x: clip;
+    }
+
+    /* Wide tables scroll inside their own box */
+    body.ox-app #main .custom-table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Sprint view header: the action buttons wrap under the title */
+    body.ox-app #main .header-elementsprintview {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    body.ox-app #main #navbarNavDropdown {
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
+    body.ox-app #main #navbarNavDropdown .navbar-nav {
+        flex-flow: row wrap;
+        gap: 6px;
+    }
+}
+
+/* Sprint list and reports: the empty filter-count badge showed as a red dash */
+body.ox-app #noti:empty {
+    display: none !important;
+}
+
+/* The dragged board card lives in <body>, outside #main, so it lost the
+   priority-chip style; give the ghost the same chip */
+body.ox-app .ox-card.is-ghost [class^="priority-"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+body.ox-app .ox-card.is-ghost .priority-H { background: var(--ox-prio-high-bg); color: var(--ox-prio-high); }
+body.ox-app .ox-card.is-ghost .priority-M { background: var(--ox-prio-med-bg); color: var(--ox-prio-med); }
+body.ox-app .ox-card.is-ghost .priority-L { background: var(--ox-prio-low-bg); color: var(--ox-prio-low); }
+
+/* ==========================================================================
+   5. Forced colors
+   ========================================================================== */
+@media (forced-colors: active) {
+    body.ox-app #main :is(.card, .product-card, .ox-panel, .ox-stat-card, .ox-kpi, .ox-side-card, .custom-table) {
+        background: Canvas !important;
+        border-color: CanvasText !important;
+        box-shadow: none !important;
+    }
+}

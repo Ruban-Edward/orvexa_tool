@@ -595,9 +595,9 @@ if (typeof m_backlogItems !== 'undefined') {
         onChange: () => displayActivities(),
     });
 
-    document.getElementById('backloghistory').addEventListener('click', loadActivities);
-    document.getElementById('clearHistory').addEventListener('click', clearHistory);
-    document.getElementById('filterButton').addEventListener('click', filterActivities);
+    document.getElementById('backloghistory')?.addEventListener('click', loadActivities);
+    document.getElementById('clearHistory')?.addEventListener('click', clearHistory);
+    document.getElementById('filterButton')?.addEventListener('click', filterActivities);
 
     // Get the history details
     function loadActivities() {

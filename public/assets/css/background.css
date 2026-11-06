@@ -5,8 +5,8 @@
  * Static: never animated. Loaded after shell-glass.css in layout/headerLinks.php.
  */
 :root {
-    --bg-glow-pistachio: color-mix(in srgb, var(--ox-pistachio) 45%, transparent);
-    --bg-glow-fresh: color-mix(in srgb, var(--ox-fresh) 30%, transparent);
+    --bg-glow-pistachio: color-mix(in srgb, var(--ox-pistachio) 60%, transparent);
+    --bg-glow-fresh: color-mix(in srgb, var(--ox-fresh) 35%, transparent);
     --bg-glow-sage: color-mix(in srgb, var(--ox-sage) 35%, transparent);
 }
 

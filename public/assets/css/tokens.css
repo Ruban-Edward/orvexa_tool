@@ -34,6 +34,18 @@
 
     --glass-radius: var(--ox-radius-lg, 12px);
 
+    /* Content cards: translucent, no blur (the soft background has nothing to blur,
+       and blur would trap fixed/overflowing children). The "glass" reads from the
+       translucency, a bright top edge and a soft top sheen. */
+    --glass-card-bg: color-mix(in srgb, var(--ox-surface, #ffffff) 70%, transparent);
+    --glass-card-sheen: linear-gradient(180deg, color-mix(in srgb, #ffffff 60%, transparent) 0%, transparent 48%);
+    --glass-card-border: color-mix(in srgb, #ffffff 75%, var(--ox-border, #e3eadc));
+    --glass-card-shadow: 0 1px 0 color-mix(in srgb, #ffffff 80%, transparent) inset, 0 8px 24px -14px rgba(16, 32, 24, 0.18), 0 1px 2px rgba(16, 32, 24, 0.05);
+    --glass-card-shadow-hover: 0 1px 0 color-mix(in srgb, #ffffff 80%, transparent) inset, 0 16px 32px -16px rgba(16, 32, 24, 0.26), 0 2px 4px rgba(16, 32, 24, 0.06);
+
+    /* Dark glass (Deep Green) for the undo toasts */
+    --glass-dark-bg: color-mix(in srgb, var(--ox-deep, #102018) 88%, transparent);
+
     /* Resolved surface values. Components read only these; they switch below.
        Default = solid (browsers without backdrop-filter). */
     --glass-bg-subtle: var(--glass-fill-solid-subtle);
@@ -67,5 +79,8 @@
         --glass-backdrop: none;
         --glass-backdrop-strong: none;
         --glass-backdrop-scrim: none;
+        --glass-card-bg: var(--ox-surface, #ffffff);
+        --glass-card-sheen: none;
+        --glass-dark-bg: var(--ox-deep, #102018);
     }
 }
