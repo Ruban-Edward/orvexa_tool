@@ -1,0 +1,102 @@
+/*
+ * Phase B7: glass and motion on the login page (user/login.php).
+ * Overrides login.css using the shared tokens. Requires tokens.css, motion.css
+ * and background.css (for the --bg-glow-* palette glows).
+ */
+
+/* --------------------------------------------------------------------------
+   Form column: palette glows behind a strong glass card
+   -------------------------------------------------------------------------- */
+.ox-auth-panel {
+    background:
+        radial-gradient(70% 45% at 100% 0%, var(--bg-glow-pistachio), transparent 70%),
+        radial-gradient(60% 40% at 0% 100%, var(--bg-glow-fresh), transparent 70%),
+        radial-gradient(50% 35% at 80% 90%, var(--bg-glow-sage), transparent 70%),
+        var(--ox-soft-white);
+}
+
+.ox-auth-card {
+    max-width: 440px;
+    padding: 40px 36px;
+    border: 1px solid var(--glass-border-strong);
+    border-radius: var(--ox-radius-xl, 16px);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Preview stage: the dark mock cards use the token blur (none under reduced transparency)
+   -------------------------------------------------------------------------- */
+.ox-mock {
+    -webkit-backdrop-filter: var(--glass-backdrop-subtle);
+    backdrop-filter: var(--glass-backdrop-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   Motion: tokens only, under 300ms, transform/opacity only
+   -------------------------------------------------------------------------- */
+@keyframes ox-glass-rise {
+    from { opacity: 0; transform: translateY(var(--distance-md)); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ox-glass-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.ox-auth-card,
+.ox-mock {
+    animation: ox-glass-rise var(--dur-slow) var(--ease-enter) both;
+}
+
+/* Stagger ≤ 30ms per item */
+.ox-mock-sprint { animation-delay: 30ms; }
+.ox-mock-burn { animation-delay: 60ms; }
+.ox-mock-toast { animation-delay: 90ms; }
+
+/* No decorative loops: the "In progress" dot is static */
+.ox-mock-live::before {
+    animation: none;
+}
+
+/* The burndown line no longer draws itself (stroke animation); it fades in */
+.ox-burn-line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: ox-glass-fade var(--dur-slow) var(--ease-enter) 90ms both;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+    .ox-auth-panel {
+        background:
+            radial-gradient(90% 40% at 100% 0%, var(--bg-glow-pistachio), transparent 70%),
+            radial-gradient(80% 35% at 0% 100%, var(--bg-glow-fresh), transparent 70%),
+            var(--ox-soft-white);
+    }
+
+    .ox-auth-card {
+        padding: 32px 28px;
+    }
+}
+
+@media (max-width: 479.98px) {
+    .ox-auth-card {
+        padding: 28px 20px;
+    }
+}
+
+@media (forced-colors: active) {
+    .ox-auth-card {
+        background: Canvas;
+        border-color: CanvasText;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}

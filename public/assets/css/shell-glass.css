@@ -1,0 +1,163 @@
+/*
+ * Phase B5: glass on the app shell.
+ * These surfaces are styled with `!important` in orvexa-ui.css, or their markup comes
+ * from Bootstrap / SweetAlert2, so a `.glass` class in the HTML can't win. This file
+ * maps them to the same glass tokens instead. Only tokens here: no ad-hoc blur or colors.
+ * Loaded after glass.css in layout/headerLinks.php.
+ */
+
+/* --------------------------------------------------------------------------
+   Topbar and sidebar (base layers)
+   The blur sits on ::before so these elements don't become a "backdrop root";
+   otherwise dropdowns and popovers inside them couldn't blur the page behind.
+   -------------------------------------------------------------------------- */
+body.ox-app .ox-topbar,
+body.ox-app #sidebar.ox-sidebar {
+    isolation: isolate;
+    background: transparent !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+body.ox-app .ox-topbar {
+    border-bottom: 1px solid var(--glass-border);
+}
+
+body.ox-app #sidebar.ox-sidebar {
+    border-right: 1px solid var(--glass-border);
+}
+
+body.ox-app .ox-topbar::before,
+body.ox-app #sidebar.ox-sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    backdrop-filter: var(--glass-backdrop);
+}
+
+/* Off-canvas sidebar on small screens floats over dimmed content: use the strong tier */
+@media (max-width: 1199.98px) {
+    body.ox-app #sidebar.ox-sidebar::before {
+        background: var(--glass-bg-strong);
+        -webkit-backdrop-filter: var(--glass-backdrop-strong);
+        backdrop-filter: var(--glass-backdrop-strong);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Floating layers (strong tier: they hold small muted text over any content)
+   -------------------------------------------------------------------------- */
+body.ox-app .dropdown-menu,
+body.ox-app #main .dropdown-menu,
+body.ox-app #meetingDetails .cls-meetings,
+body.ox-app .ox-search-panel,
+body.ox-app .modal-content,
+body.ox-app #main .modal-content,
+body.ox-app .swal2-popup,
+body.ox-app .swal2-popup.swal2-toast,
+body.ox-app .toast,
+body.ox-app .global-flash-message {
+    border-color: var(--glass-border-strong) !important;
+    background: var(--glass-bg-strong) !important;
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-strong) !important;
+}
+
+/* Dropdowns are smaller and closer to their trigger: lighter shadow */
+body.ox-app .dropdown-menu,
+body.ox-app #main .dropdown-menu {
+    box-shadow: var(--glass-highlight), var(--glass-shadow) !important;
+}
+
+/* Flash toasts keep their status stripe */
+body.ox-app .global-flash-message.alert-success {
+    border-left: 4px solid var(--ox-brand-500) !important;
+}
+
+body.ox-app .global-flash-message.alert-danger {
+    border-left: 4px solid var(--ox-red) !important;
+}
+
+/* Modal sections let the glass show through instead of painting solid bands */
+body.ox-app .modal-header,
+body.ox-app #main .modal-header {
+    background: transparent !important;
+    border-bottom-color: var(--glass-border) !important;
+}
+
+body.ox-app .modal-footer,
+body.ox-app #main .modal-footer {
+    background: color-mix(in srgb, var(--ox-surface-2) 60%, transparent) !important;
+    border-top-color: var(--glass-border) !important;
+}
+
+body.ox-app .toast-header {
+    background: transparent !important;
+    border-bottom-color: var(--glass-border) !important;
+}
+
+body.ox-app .ox-search-field {
+    border-bottom-color: var(--glass-border);
+}
+
+/* --------------------------------------------------------------------------
+   Remaining blurs, moved from hard-coded values onto tokens
+   (so "reduce transparency" and no-backdrop-filter browsers are covered too)
+   -------------------------------------------------------------------------- */
+
+/* Dimmed overlays */
+body.ox-app .modal-backdrop.show,
+body.ox-app .ox-search-dialog,
+body.ox-app .sidebar-backdrop {
+    -webkit-backdrop-filter: var(--glass-backdrop-scrim);
+    backdrop-filter: var(--glass-backdrop-scrim);
+}
+
+/* Full-page loader */
+body.ox-app #loader {
+    -webkit-backdrop-filter: var(--glass-backdrop-subtle);
+    backdrop-filter: var(--glass-backdrop-subtle);
+}
+
+/* Sticky form action bar */
+body.ox-app #main .cls-submit {
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+}
+
+/* Legacy dark navbar (sprint/sprintView) */
+body.ox-app .navbar {
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    backdrop-filter: var(--glass-backdrop);
+}
+
+/* --------------------------------------------------------------------------
+   Forced colors: system colors, no effects
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+    body.ox-app .ox-topbar::before,
+    body.ox-app #sidebar.ox-sidebar::before {
+        background: Canvas;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    body.ox-app .dropdown-menu,
+    body.ox-app #meetingDetails .cls-meetings,
+    body.ox-app .ox-search-panel,
+    body.ox-app .modal-content,
+    body.ox-app .swal2-popup,
+    body.ox-app .global-flash-message {
+        background: Canvas !important;
+        border-color: CanvasText !important;
+        box-shadow: none !important;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}

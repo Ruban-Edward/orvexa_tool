@@ -1,0 +1,95 @@
+/*
+ * Phase B6: glass on ticket cards (sprint board) and drag helpers (refinement).
+ * Only tokens here. Dashboard widgets stay solid: CLAUDE.md limits glass to floating layers.
+ * Loaded after shell-glass.css in layout/headerLinks.php.
+ */
+
+/* --------------------------------------------------------------------------
+   Sprint board (sprint/sprintView, js/sprint/sprintBoard.js)
+   -------------------------------------------------------------------------- */
+
+/* Columns are a translucent tint (no blur), so the cards on them have something to blur */
+body.ox-app .ox-col {
+    border-color: var(--glass-border);
+    background: color-mix(in srgb, var(--ox-surface-2) 55%, transparent);
+}
+
+body.ox-app .ox-col.is-over {
+    border-color: var(--ox-primary);
+    background: color-mix(in srgb, var(--ox-brand-50) 85%, transparent);
+}
+
+/* Empty-column hint: --ox-subtle was ~3:1; muted keeps 4.5:1 on the translucent column */
+body.ox-app .ox-col-empty {
+    color: var(--ox-muted);
+}
+
+/* Cards: base fill, light blur (a board can hold many cards) */
+body.ox-app .ox-card {
+    border-color: var(--glass-border);
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-backdrop-subtle);
+    backdrop-filter: var(--glass-backdrop-subtle);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-subtle);
+}
+
+body.ox-app .ox-card:hover {
+    border-color: var(--glass-border-strong);
+}
+
+body.ox-app .ox-card:focus-visible {
+    border-color: var(--ox-primary);
+    box-shadow: var(--ox-ring);
+}
+
+/* The card following the pointer: strong glass and a stronger static shadow (class swap, no animation) */
+body.ox-app .ox-card.is-ghost {
+    border-color: var(--glass-border-strong);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Refinement (backlog/refinement): the row being dragged
+   -------------------------------------------------------------------------- */
+body.ox-app .ui-sortable-helper,
+body.ox-app .sortable-helper {
+    border: 1px solid var(--ox-brand-600) !important;
+    background: var(--glass-bg-strong) !important;
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-strong);
+}
+
+body.ox-app .ui-sortable-helper > td,
+body.ox-app .sortable-helper > td {
+    background: transparent !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fallbacks
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-transparency: reduce) {
+    body.ox-app .ox-col {
+        background: var(--ox-surface-2);
+    }
+
+    body.ox-app .ox-col.is-over {
+        background: var(--ox-brand-50);
+    }
+}
+
+@media (forced-colors: active) {
+    body.ox-app .ox-col,
+    body.ox-app .ox-card,
+    body.ox-app .ui-sortable-helper,
+    body.ox-app .sortable-helper {
+        background: Canvas !important;
+        border-color: CanvasText !important;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}

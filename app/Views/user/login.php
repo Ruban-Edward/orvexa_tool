@@ -16,6 +16,9 @@ Updated Date: 16 July 2024
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/bootstrap/css/bootstrap.min.css">
     <link rel="preload" href="<?= ASSERT_PATH ?>assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link href="<?= ASSERT_PATH ?>assets/css/login/login.css?v=9" rel="stylesheet">
+    <?php foreach (['tokens', 'glass', 'motion', 'background', 'login/login-glass'] as $oxSheet): ?>
+    <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/<?= $oxSheet ?>.css?v=<?= filemtime(FCPATH . 'assets/css/' . $oxSheet . '.css') ?>">
+    <?php endforeach; ?>
 
     <?= view('layout/csrf') ?>
     <script src="<?= ASSERT_PATH ?>support/extensions/jquery/jquery.min.js"></script>

@@ -1,0 +1,71 @@
+/*
+ * Orvexa glass tokens.
+ * Built only from the existing --ox-* palette (orvexa-ui.css :root). No new hues.
+ * Fallback values mirror orvexa-ui.css so pages that don't load it (login) still work.
+ * Loaded after orvexa-ui.css; consumed by glass.css and shell-glass.css.
+ */
+:root {
+    /* Translucent fills. Floating layers hold small muted text (--ox-muted, #5e6e64),
+       which needs ≥ 92% white to keep 4.5:1 even over Deep Green content. */
+    --glass-fill-subtle: color-mix(in srgb, var(--ox-surface, #ffffff) 80%, transparent);
+    --glass-fill: color-mix(in srgb, var(--ox-surface, #ffffff) 86%, transparent);
+    --glass-fill-strong: color-mix(in srgb, var(--ox-surface, #ffffff) 92%, transparent);
+
+    /* Opaque fallbacks */
+    --glass-fill-solid: var(--ox-surface, #ffffff);
+    --glass-fill-solid-subtle: var(--ox-surface-2, #fafcf7);
+
+    /* Edges: a light top highlight plus a palette border */
+    --glass-border: color-mix(in srgb, var(--ox-border, #e3eadc) 70%, transparent);
+    --glass-border-strong: var(--ox-border-strong, #cad5c2);
+    --glass-highlight: inset 0 1px 0 color-mix(in srgb, #ffffff 65%, transparent);
+
+    /* Blur (max 24px, never animated) */
+    --glass-blur-subtle: 8px;
+    --glass-blur: 16px;
+    --glass-blur-strong: 24px;
+    --glass-blur-scrim: 2px;   /* dimmed overlays behind modals, search, mobile nav */
+    --glass-saturate: 140%;
+
+    /* Depth reuses the existing shadow scale */
+    --glass-shadow-subtle: var(--ox-shadow-xs, 0 1px 2px rgba(16, 27, 21, 0.05));
+    --glass-shadow: var(--ox-shadow-md, 0 8px 24px -6px rgba(16, 27, 21, 0.12), 0 2px 6px rgba(16, 27, 21, 0.05));
+    --glass-shadow-strong: var(--ox-shadow-lg, 0 20px 48px -12px rgba(16, 27, 21, 0.22));
+
+    --glass-radius: var(--ox-radius-lg, 12px);
+
+    /* Resolved surface values. Components read only these; they switch below.
+       Default = solid (browsers without backdrop-filter). */
+    --glass-bg-subtle: var(--glass-fill-solid-subtle);
+    --glass-bg: var(--glass-fill-solid);
+    --glass-bg-strong: var(--glass-fill-solid);
+    --glass-backdrop-subtle: none;
+    --glass-backdrop: none;
+    --glass-backdrop-strong: none;
+    --glass-backdrop-scrim: none;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root {
+        --glass-bg-subtle: var(--glass-fill-subtle);
+        --glass-bg: var(--glass-fill);
+        --glass-bg-strong: var(--glass-fill-strong);
+        --glass-backdrop-subtle: blur(var(--glass-blur-subtle));
+        --glass-backdrop: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+        --glass-backdrop-strong: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+        --glass-backdrop-scrim: blur(var(--glass-blur-scrim));
+    }
+}
+
+/* Users who ask for less transparency get solid surfaces */
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --glass-bg-subtle: var(--glass-fill-solid-subtle);
+        --glass-bg: var(--glass-fill-solid);
+        --glass-bg-strong: var(--glass-fill-solid);
+        --glass-backdrop-subtle: none;
+        --glass-backdrop: none;
+        --glass-backdrop-strong: none;
+        --glass-backdrop-scrim: none;
+    }
+}

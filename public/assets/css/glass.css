@@ -1,0 +1,49 @@
+/*
+ * Orvexa glass surfaces. Use only on floating layers: topbar, sidebar, modals,
+ * dropdowns, popovers, ticket cards, toasts. Max 2 nested glass layers.
+ * Blur is fixed per class and must never be animated or transitioned.
+ * Fallbacks (no backdrop-filter, reduced transparency) are resolved in tokens.css.
+ */
+.glass,
+.glass-strong,
+.glass-subtle {
+    border: 1px solid var(--glass-border);
+    border-radius: var(--glass-radius);
+    color: var(--ox-text, #27362d);
+}
+
+.glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    backdrop-filter: var(--glass-backdrop);
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+
+.glass-strong {
+    border-color: var(--glass-border-strong);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-backdrop-strong);
+    backdrop-filter: var(--glass-backdrop-strong);
+    box-shadow: var(--glass-highlight), var(--glass-shadow-strong);
+}
+
+.glass-subtle {
+    background: var(--glass-bg-subtle);
+    -webkit-backdrop-filter: var(--glass-backdrop-subtle);
+    backdrop-filter: var(--glass-backdrop-subtle);
+    box-shadow: var(--glass-shadow-subtle);
+}
+
+/* High-contrast / forced colors: system colors, no effects */
+@media (forced-colors: active) {
+    .glass,
+    .glass-strong,
+    .glass-subtle {
+        background: Canvas;
+        color: CanvasText;
+        border-color: CanvasText;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}

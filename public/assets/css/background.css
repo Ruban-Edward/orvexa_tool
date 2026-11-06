@@ -1,0 +1,31 @@
+/*
+ * Ambient app background: soft palette glows fixed behind everything, so glass
+ * surfaces have something to blur. Palette colors only (Pistachio, Fresh, Sage).
+ * Peak strengths are capped so --ox-muted text on the canvas keeps ≥ 4.5:1.
+ * Static: never animated. Loaded after shell-glass.css in layout/headerLinks.php.
+ */
+:root {
+    --bg-glow-pistachio: color-mix(in srgb, var(--ox-pistachio) 45%, transparent);
+    --bg-glow-fresh: color-mix(in srgb, var(--ox-fresh) 30%, transparent);
+    --bg-glow-sage: color-mix(in srgb, var(--ox-sage) 35%, transparent);
+}
+
+/* body.ox-app::before is reserved (hidden legacy accent strip), so use ::after */
+body.ox-app::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(60vmax 45vmax at 100% 0%, var(--bg-glow-pistachio), transparent 70%),
+        radial-gradient(50vmax 40vmax at 0% 100%, var(--bg-glow-fresh), transparent 70%),
+        radial-gradient(45vmax 35vmax at 70% 85%, var(--bg-glow-sage), transparent 70%),
+        var(--ox-canvas);
+}
+
+@media (forced-colors: active), print {
+    body.ox-app::after {
+        display: none;
+    }
+}

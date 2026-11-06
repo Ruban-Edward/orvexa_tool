@@ -1,0 +1,52 @@
+/*
+ * Phase B8 fixes: bring shared shell / control transitions in line with the motion rules
+ * (ui-motion-design skill): no width/margin/left/box-shadow animation, tokens only.
+ * Overrides app-theme.css, orvexa-pro.css and orvexa-ui.css. Loaded after cards-glass.css.
+ */
+
+/* Sidebar: collapse/expand width and the main column offset snap; only the
+   off-canvas slide on small screens (transform) animates */
+body.ox-app #sidebar.ox-sidebar {
+    transition: transform var(--dur-base) var(--ease-standard) !important;
+}
+
+body.ox-app .ox-main-col,
+body.sidebar-collapsed .ox-main-col {
+    transition: none !important;
+}
+
+body.ox-app #sidebar-toggle {
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard) !important;
+}
+
+/* Cards: hover may move (transform) or recolor the border; the shadow swaps instantly */
+body.ox-app .card,
+body.ox-app #main .card,
+body.ox-app #main .product-card {
+    transition: transform var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+}
+
+/* Buttons: color on hover, press feedback via transform; focus rings appear instantly */
+body.ox-app .btn,
+body.ox-app #main .btn,
+body.ox-app #main button,
+body.ox-app #main .primary_button,
+body.ox-app #main .blue-button,
+body.ox-app #main .button-secondary,
+body.ox-app #main .back-button {
+    transition:
+        color var(--dur-fast) var(--ease-standard),
+        background-color var(--dur-fast) var(--ease-standard),
+        border-color var(--dur-fast) var(--ease-standard),
+        transform var(--dur-instant) var(--ease-standard) !important;
+}
+
+/* Form fields: border color only */
+body.ox-app .form-control,
+body.ox-app .form-select,
+body.ox-app #main .form-select,
+body.ox-app #main input:not([type="checkbox"]):not([type="radio"]),
+body.ox-app #main select,
+body.ox-app #main textarea {
+    transition: border-color var(--dur-fast) var(--ease-standard) !important;
+}
