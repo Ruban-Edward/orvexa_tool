@@ -326,7 +326,8 @@ class MeetingDetailModel extends Model
                 SET
                     is_logged =:is_logged:
                 WHERE
-                    meeting_details_id =:meeting_details_id:";
+                    meeting_details_id =:meeting_details_id:
+                    AND is_logged = 'N'";
         $result = $this->db->query($sql, [
             'is_logged' => "Y",
             'meeting_details_id' => $data['meeting_details_id'],

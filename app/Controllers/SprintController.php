@@ -249,47 +249,44 @@ class SprintController extends BaseController
           $viewData = [];
           $backlogItems = [];
 
-          // Iterate through each task
           foreach ($tasks as $item) {
+               $backlogKey = $item['backlog_item_id'] ?? $item['backlog_item_name'];
                $backlogItemName = $item["backlog_item_name"];
                $backlogPriority = $item["priority"];
-               $epicName = $item["epic_name"];
                $userStoryId = $item["user_story_id"];
-               $userStoryName = $item["user_story"];
                $taskId = $item["task_id"];
-               $taskDescription = $item["task_title"];
-               $taskAssignee = $item["assignee_name"];
-               $taskStatus = $item["name"];
-               // Check if the backlog item already exists, if not, initialize it
-               if (!isset($backlogItems[$backlogItemName])) {
-                    $backlogItems[$backlogItemName] = [
+               if (!isset($backlogItems[$backlogKey])) {
+                    $backlogItems[$backlogKey] = [
                          "name" => $backlogItemName,
                          "priority" => $backlogPriority,
-                         "epics" => []
+                         "epics" => [],
+                         "tasks" => [],
                     ];
                }
-               // Check if the epic already exists under the backlog item, if not, initialize it
-               if (!isset($backlogItems[$backlogItemName]["epics"][$epicName])) {
-                    $backlogItems[$backlogItemName]["epics"][$epicName] = [
+
+               $task = [$taskId, $item["task_title"], $item["name"], $item["assignee_name"]];
+               if (empty($userStoryId)) {
+                    $backlogItems[$backlogKey]["tasks"][] = $task;
+                    continue;
+               }
+
+               $epicName = $item["epic_name"];
+               $userStoryName = $item["user_story"];
+               if (!isset($backlogItems[$backlogKey]["epics"][$epicName])) {
+                    $backlogItems[$backlogKey]["epics"][$epicName] = [
                          "name" => $epicName,
                          "userStories" => []
                     ];
                }
-               // Check if the user story already exists under the epic, if not, initialize it
-               if (!isset($backlogItems[$backlogItemName]["epics"][$epicName]["userStories"][$userStoryName])) {
-                    $backlogItems[$backlogItemName]["epics"][$epicName]["userStories"][$userStoryName] = [
+               if (!isset($backlogItems[$backlogKey]["epics"][$epicName]["userStories"][$userStoryName])) {
+                    $backlogItems[$backlogKey]["epics"][$epicName]["userStories"][$userStoryName] = [
                          "userStoryId" => $userStoryId,
                          "name" => $userStoryName,
                          "tasks" => []
                     ];
                }
-               // Add the task to the respective user story
-               $backlogItems[$backlogItemName]["epics"][$epicName]["userStories"][$userStoryName]["tasks"][] = array($taskId, $taskDescription, $taskStatus, $taskAssignee);
+               $backlogItems[$backlogKey]["epics"][$epicName]["userStories"][$userStoryName]["tasks"][] = $task;
           }
-          /**
-           * For each backlog item, add the corresponding epics and user stories
-           * to the view data array.
-           */
           foreach ($backlogItems as $backlogItem) {
                $epicList = [];
                foreach ($backlogItem["epics"] as $epic) {
@@ -309,7 +306,8 @@ class SprintController extends BaseController
                $viewData["backlogItems"][] = [
                     "name" => $backlogItem["name"],
                     "priority" => $backlogItem["priority"],
-                    "epics" => $epicList
+                    "epics" => $epicList,
+                    "tasks" => $backlogItem["tasks"],
                ];
           }
           return $viewData;
@@ -333,9 +331,20 @@ class SprintController extends BaseController
                if (!isset($backlogItems[$backlogItemName])) {
                     $backlogItems[$backlogItemName] = [
                          "backlog" => $backlogItemName,
-                         "epics" => []
+                         "epics" => [],
+                         "directTasks" => []
                     ];
                }
+               if (empty($userStoryId)) {
+                    $backlogItems[$backlogItemName]["directTasks"][] = [
+                         "taskId" => $taskId,
+                         "task" => $tasktitle,
+                         "status" => $taskStatus,
+                         "percentage" => $taskCompletedPercentage,
+                    ];
+                    continue;
+               }
+
                if (!isset($backlogItems[$backlogItemName]["epics"][$epicName])) {
                     $backlogItems[$backlogItemName]["epics"][$epicName] = [
                          "epic" => $epicName,
@@ -370,7 +379,8 @@ class SprintController extends BaseController
                }
                $viewData[] = [
                     "backlog" => $backlogItem["backlog"],
-                    "epics" => $epicList
+                    "epics" => $epicList,
+                    "directTasks" => $backlogItem["directTasks"],
                ];
           }
           return $viewData;

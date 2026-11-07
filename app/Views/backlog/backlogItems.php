@@ -287,6 +287,7 @@
   console.log(totalCount);
   const userPermissions = {
         viewUserStories: <?php echo json_encode(has_permission('backlog/userstories')); ?>,
+        addTasks: <?php echo json_encode(has_permission('backlog/addTasks')); ?>,
         updateBacklog: <?php echo json_encode(has_permission('backlog/updatebacklog')); ?>,
         deleteBacklog: <?php echo json_encode(has_permission('backlog/deletebacklogitem'));?>
     };

@@ -1,0 +1,234 @@
+/* Log efforts page. Tokens only. Selectors are scoped under .ox-efforts so they win over the
+   global table rules in orvexa-ui.css / ux-polish.css, which load after page CSS. */
+
+.ox-efforts-range {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ox-efforts-range .form-control {
+    width: auto;
+}
+
+.ox-efforts-sum {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+/* The panel already frames the table: drop the inner border and shadow */
+body.ox-app #main .ox-efforts .table-responsive {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Bootstrap draws a 2px currentColor line between multiple <tbody> groups */
+body.ox-app #main .ox-efforts .ox-efforts-table > :not(:first-child) {
+    border-top: 0 !important;
+}
+
+body.ox-app #main .ox-efforts .ox-efforts-table thead th.text-end {
+    text-align: right !important;
+}
+
+body.ox-app #main .ox-efforts .ox-efforts-table tbody td {
+    vertical-align: top;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+
+/* Day header row: one band across the table, date left, day total under Hours */
+body.ox-app #main .ox-efforts .ox-efforts-table tbody tr.ox-efforts-day > td,
+body.ox-app #main .ox-efforts .ox-efforts-table tbody tr.ox-efforts-day:hover > td {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    background-color: var(--ox-surface-2) !important;
+    border-bottom: 1px solid var(--ox-border) !important;
+    color: var(--ox-ink);
+    font-weight: 600;
+    text-align: left;
+    vertical-align: middle;
+}
+
+body.ox-app #main .ox-efforts .ox-efforts-table tbody tr.ox-efforts-day > td.text-end {
+    text-align: right;
+}
+
+body.ox-app #main .ox-efforts tbody + tbody tr.ox-efforts-day > td {
+    border-top: 8px solid var(--ox-surface) !important;
+}
+
+.ox-efforts-day i {
+    margin-right: 6px;
+    color: var(--ox-muted);
+}
+
+.ox-efforts-count {
+    margin-left: 8px;
+    color: var(--ox-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ox-efforts-total {
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: var(--ox-green-bg);
+    color: var(--ox-green);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Fixed layout: columns take the widths below and long text wraps, so the table never
+   scrolls sideways */
+body.ox-app #main .ox-efforts .table-responsive {
+    overflow-x: visible;
+}
+
+body.ox-app #main .ox-efforts .ox-efforts-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+body.ox-app #main .ox-efforts .ox-efforts-table td {
+    overflow-wrap: anywhere;
+}
+
+.ox-efforts-table .ox-col-activity { width: 17%; }
+.ox-efforts-table .ox-col-project  { width: 26%; }
+.ox-efforts-table .ox-col-hours    { width: 84px; }
+.ox-efforts-table .ox-col-actions  { width: 96px; }
+
+.ox-efforts-product {
+    display: block;
+    color: var(--ox-ink);
+    font-weight: 600;
+}
+
+.ox-efforts-sub {
+    display: block;
+    margin-top: 4px;
+    color: var(--ox-muted);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.ox-efforts-sub a {
+    font-weight: 600;
+}
+
+.ox-efforts-comment {
+    color: var(--ox-text);
+    line-height: 1.5;
+}
+
+/* Long comments show two lines; the full text appears in a tooltip on hover or focus */
+.ox-efforts-comment-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    white-space: pre-line;
+}
+
+.ox-efforts-comment-text.is-truncated {
+    cursor: help;
+}
+
+.ox-efforts-comment-text.is-truncated:focus-visible {
+    outline: 2px solid var(--ox-primary);
+    outline-offset: 2px;
+    border-radius: var(--ox-radius-sm);
+}
+
+.tooltip.ox-efforts-tip .tooltip-inner {
+    max-width: 420px;
+    text-align: left;
+    white-space: pre-line;
+}
+
+.ox-efforts-hours {
+    color: var(--ox-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.ox-efforts-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Phones: each effort becomes a stacked card instead of a squeezed row */
+@media (max-width: 767.98px) {
+    body.ox-app #main .ox-efforts .ox-efforts-table thead {
+        display: none;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table,
+    body.ox-app #main .ox-efforts .ox-efforts-table tbody,
+    body.ox-app #main .ox-efforts .ox-efforts-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table tbody tr:not(.ox-efforts-day) {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        border-bottom: 1px solid var(--ox-border);
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table tbody tr:not(.ox-efforts-day) > td {
+        display: block;
+        border-bottom: 0 !important;
+        padding: 6px 16px !important;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table tbody tr:not(.ox-efforts-day) > td:first-child {
+        padding-top: 14px !important;
+    }
+
+    .ox-efforts-activity,
+    .ox-efforts-project,
+    .ox-efforts-comment {
+        grid-column: 1 / -1;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table td.ox-efforts-hours {
+        text-align: left !important;
+        align-self: center;
+        padding-bottom: 12px !important;
+    }
+
+    .ox-efforts-actions {
+        padding-bottom: 8px !important;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table tr.ox-efforts-day {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table tr.ox-efforts-day > td {
+        display: block;
+    }
+
+    body.ox-app #main .ox-efforts .ox-efforts-table tr.ox-efforts-day > td:last-child {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .ox-efforts-range {
+        width: 100%;
+    }
+
+    .ox-efforts-range .form-control {
+        flex: 1 1 120px;
+    }
+}

@@ -4,14 +4,18 @@ $canAdd = has_permission('backlog/addTasks');
 <dl class="ox-context">
     <div><dt>Product</dt><dd><?= esc(trim(ucfirst(strtolower($data['product_name'])))) ?></dd></div>
     <div><dt>Backlog item</dt><dd><?= esc(trim(ucfirst(strtolower($data['backlog_item_name'])))); ?></dd></div>
-    <div><dt>User story</dt><dd><?= "US_" . (int) $data['user_story_id'] ?></dd></div>
+    <?php if ($data['user_story_id']): ?>
+        <div><dt>User story</dt><dd><?= "US_" . (int) $data['user_story_id'] ?></dd></div>
+    <?php endif; ?>
     <div><dt>Tasks</dt><dd id="taskTotal"><?= (int) $data['task_count'] ?></dd></div>
 </dl>
+<?php if ($data['user_story']): ?>
 <p class="ox-story-line">
     <b>As a / an</b> <?= esc(trim(ucfirst(strtolower($data['user_story']['as_a_an'])))) ?>
     <b>I want</b> <?= esc(ucfirst($data['user_story']['i_want'])) ?>
     <b>so that</b> <?= esc(ucfirst($data['user_story']['so_that'])) ?>
 </p>
+<?php endif; ?>
 
 <div class="ox-pagebar">
     <div class="ox-pagebar-actions">
@@ -124,6 +128,48 @@ $canAdd = has_permission('backlog/addTasks');
     </div>
 </div>
 
+<div class="modal fade" id="taskEffortModal" tabindex="-1" aria-labelledby="taskEffortModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="taskEffortForm">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="taskEffortModalTitle">Log efforts</h5>
+                        <div class="form-text" id="taskEffortTaskTitle"></div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="effortTaskId">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="effortSpentOn" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="effortSpentOn" name="spent_on" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="effortHours" class="form-label">Effort (hours)</label>
+                            <input type="number" class="form-control" id="effortHours" name="hours" min="0.25" max="24" step="0.25" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="effortComments" class="form-label">Comments</label>
+                            <textarea class="form-control" id="effortComments" name="comments" rows="2" maxlength="1000"></textarea>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6>Effort history</h6>
+                    <div id="taskEffortHistory" aria-live="polite">
+                        <p class="text-muted mb-0">Loading effort history…</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveTaskEffortBtn">Save effort</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div id="main-page">
     <div class="row card-container" id="taskList" aria-live="polite"></div>
     <div id="taskPager"></div>
@@ -163,7 +209,7 @@ $canAdd = has_permission('backlog/addTasks');
     var assertPath = <?= json_encode(ASSERT_PATH) ?>;
     var pid = <?= (int) $data['product_id'] ?>;
     var pblid = <?= (int) $data['backlog_item_id'] ?>;
-    var userStoryId = <?= (int) $data['user_story_id'] ?>;
+    var userStoryId = <?= (int) ($data['user_story_id'] ?? 0) ?>;
     var userPermissions = {
         addTask: <?= json_encode($canAdd) ?>,
         updateTask: <?= json_encode(has_permission('backlog/updateTaskById')) ?>,

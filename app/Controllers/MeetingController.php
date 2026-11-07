@@ -11,9 +11,9 @@
 namespace App\Controllers;
 
 use App\Helpers\CustomHelpers;
+use App\Models\EffortLogModel;
 use App\Services\EmailService;
 use CodeIgniter\HTTP\Response;
-use Config\SprintModelConfig;
 use DateTime;
 
 class MeetingController extends BaseController
@@ -813,17 +813,17 @@ class MeetingController extends BaseController
      * Logs meeting times for the provided attendees.
      * @return \CodeIgniter\HTTP\Response JSON response indicating the success or failure of the operation.
      */
-    public function logMeetingTimes()
+    public function logMeetingTimes(): Response
     {
-        $timeLog = service('timeEntry');
         $this->MeetingMemberModelObj = model(\App\Models\Meeting\MeetingMemberModel::class);
         $post = $this->request->getPost();
-        if (empty($post) || empty($post['meetingId'])) {
+        $meetingId = filter_var($post['meetingId'] ?? null, FILTER_VALIDATE_INT);
+        if (empty($post) || $meetingId === false || $meetingId < 1) {
             return $this->response->setJSON(['success' => false, 'message' => 'Nothing to log.']);
         }
 
         // Everything that matters comes from the database, not from the browser
-        $meeting = $this->MeetingDetailModelObj->getMeetingDetails((int) $post['meetingId']);
+        $meeting = $this->MeetingDetailModelObj->getMeetingDetails($meetingId);
         if (empty($meeting)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Meeting not found.']);
         }
@@ -847,12 +847,16 @@ class MeetingController extends BaseController
 
         $entries = [];
         foreach ((array) ($post['attendees'] ?? []) as $attendee) {
+            if (! is_array($attendee)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'One of the selected people did not attend this meeting.']);
+            }
             $uid   = (int) ($attendee['id'] ?? 0);
             $hours = $attendee['hours'] ?? null;
             if (! in_array($uid, $memberIds, true)) {
                 return $this->response->setJSON(['success' => false, 'message' => 'One of the selected people did not attend this meeting.']);
             }
-            if (! is_numeric($hours) || (float) $hours < 0 || ($maxHours > 0 && (float) $hours > $maxHours + 0.01)) {
+            if (! is_numeric($hours) || (float) $hours < 0 || ((float) $hours > 0 && round((float) $hours, 2) <= 0)
+                || ($maxHours > 0 && (float) $hours > $maxHours + 0.01)) {
                 return $this->response->setJSON(['success' => false, 'message' => 'Logged hours must be between 0 and the meeting duration (' . round($maxHours, 2) . ' h).']);
             }
             if ((float) $hours > 0) {
@@ -863,82 +867,49 @@ class MeetingController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Enter the hours for at least one attendee.']);
         }
 
-        $dateTime = DateTime::createFromFormat('Y-m-d', $meeting['meeting_start_date']);
-        $issue = $this->getOrCreateMeetingIssue([
-            'meetingId' => $meeting['meeting_details_id'],
-            'productId' => $meeting['r_product_id'],
-            'sprintId'  => $meeting['r_sprint_id'],
-            'meetType'  => $meeting['r_meeting_type_id'],
-        ]);
-
-        $meetTypes = [
-            3 => 'Daily Stand up Meeting',
-            4 => 'Sprint Review',
-            'default' => 'Team Meeting',
-        ];
-        $activityId = $timeLog->activityId(['name' => $meetTypes[$meeting['r_meeting_type_id']] ?? $meetTypes['default']]);
-
-        $logged = 0;
+        $now = date('Y-m-d H:i:s');
+        $comment = trim((string) $meeting['meeting_title']);
+        if (! empty($meeting['meeting_description'])) {
+            $comment .= ' - ' . trim((string) $meeting['meeting_description']);
+        }
+        $efforts = [];
         foreach ($entries as $entry) {
-            try {
-                $timeLog->timeEntryLog([
-                    'project_id' => $meeting['r_product_id'],
-                    'author_id' => session()->get('employee_id'),
-                    'user_id' => $entry['id'],
-                    'issue_id' => $issue,
-                    'hours' => $entry['hours'],
-                    'comments' => (string) ($post['comments'] ?? ''),
-                    'activity_id' => $activityId,
-                    'spent_on' => $dateTime->format('Y-m-d'),
-                    'tyear' => $dateTime->format('Y'),
-                    'tmonth' => $dateTime->format('m'),
-                    'tweek' => $dateTime->format('W'),
-                    'created_on' => date('Y-m-d H:i:s'),
-                    'updated_on' => date('Y-m-d H:i:s'),
-                ]);
-                $logged++;
-            } catch (\Exception $e) {
-                log_message('error', "Exception while logging time for attendee ID: {$entry['id']} - " . $e->getMessage());
-            }
+            $efforts[] = [
+                'r_task_id' => null,
+                'r_meeting_details_id' => (int) $meeting['meeting_details_id'],
+                'r_user_id' => $entry['id'],
+                'r_logged_by' => (int) session()->get('employee_id'),
+                'spent_on' => $meeting['meeting_start_date'],
+                'hours' => round($entry['hours'], 2),
+                'comments' => $comment !== '' ? $comment : null,
+                'created_date' => $now,
+            ];
         }
 
-        // Only flag the meeting as logged when at least one entry really was written
-        if ($logged === 0) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Time could not be logged. Please try again.']);
+        $db = db_connect();
+        $db->transBegin();
+        $this->MeetingDetailModelObj->timeLogisLogged(['meeting_details_id' => $meeting['meeting_details_id']]);
+        if ($db->affectedRows() !== 1) {
+            $db->transRollback();
+            return $this->response->setJSON(['success' => false, 'message' => 'Time has already been logged for this meeting.']);
         }
-        $updateResult = $this->MeetingDetailModelObj->timeLogisLogged(['meeting_details_id' => $meeting['meeting_details_id']]);
-        return $this->response->setJSON(['success' => (bool) $updateResult]);
-    }
-
-    /**
-     * Retrieves or creates a meeting issue.
-     *  @author Rama Selvan
-     * @param array $data gets the data for the checking whether issue should be newly create or not.
-     * @return int|null The ID of the existing or newly created issue, or null if no issue was found or created.
-     */
-    private function getOrCreateMeetingIssue($data)
-    {
-        $meetingDetails = $this->MeetingDetailModelObj->getMeetingDetails($data['meetingId']);
-        $configObject = new SprintModelConfig();
-        $externalIssueId = null;
-
-        if ($data['meetType'] == 2) {
-            $BrainStromMeetingDetailsModelobj = model(\App\Models\Meeting\BrainstormMeetingDetailsModel::class);
-            $externalIssueId = $BrainStromMeetingDetailsModelobj->getBacklogId(['meeting_details_id' => $data['meetingId']]);
-        } elseif ($data['meetType'] == 3 || $data['meetType'] == 4 || $data['meetType'] == 5) {
-            $externalIssueId = $this->MeetingDetailModelObj->getExternalIssueIdForSprint([$data['sprintId']]);
+        if (! model(EffortLogModel::class)->insertEfforts($efforts)) {
+            $db->transRollback();
+            log_message('error', 'Failed to save meeting effort for meeting ID ' . (int) $meeting['meeting_details_id'] . '.');
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Efforts could not be saved. Please try again.']);
         }
 
-        if (!$externalIssueId) {
-            $externalIssueId = null;
+        if (! $db->transStatus()) {
+            $db->transRollback();
+            log_message('error', 'Failed to mark meeting effort as logged for meeting ID ' . (int) $meeting['meeting_details_id'] . '.');
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Efforts could not be saved. Please try again.']);
+        }
+        if (! $db->transCommit()) {
+            log_message('error', 'Failed to commit meeting effort for meeting ID ' . (int) $meeting['meeting_details_id'] . '.');
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Efforts could not be saved. Please try again.']);
         }
 
-        $this->MeetingDetailModelObj->updateMeetingDetailsExternal([
-            'external_issue_id' => $externalIssueId,
-            'meeting_details_id' => $data['meetingId'],
-        ]);
-
-        return $externalIssueId;
+        return $this->response->setJSON(['success' => true, 'message' => 'Meeting efforts logged successfully.']);
     }
 
     private function getMeetingTypeString($meetType)

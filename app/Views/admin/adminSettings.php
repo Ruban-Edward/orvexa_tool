@@ -50,6 +50,13 @@
                 <h6>Customers</h6>
             </div>
         </button>
+        <button class="cls-btn" data-div="effortMasterDiv">
+            <div class="cls-settings">
+                <div class="tick-icon"><i class="fas fa-check"></i></div>
+                <h2><i class="bi bi-stopwatch"></i></h2>
+                <h6>Effort activities</h6>
+            </div>
+        </button>
     </div>
     <div class="cls-sidebarContent">
         <div id="customerDiv">
@@ -82,6 +89,57 @@
                     </div>
                 <?php endforeach; ?>
                 <?php if (empty($data['customers'])): ?><p class="text-muted">No active customers found.</p><?php endif; ?>
+            </div>
+        </div>
+        <!-- Effort master data: Activity, Main activity, Log type (used by Log efforts) -->
+        <div id="effortMasterDiv">
+            <h4>Effort Activities</h4><br>
+            <form class="row g-3" method="post" action="<?= base_url('admin/addEffortMaster') ?>">
+                <?= csrf_field() ?>
+                <div class="col-md-4">
+                    <label for="master_type" class="form-label">List</label>
+                    <select id="master_type" name="master_type" class="form-select" required>
+                        <?php foreach ($data['effortMasterTypes'] as $type => $label): ?>
+                            <option value="<?= esc($type, 'attr') ?>"><?= esc($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="master_name" class="form-label">Name</label>
+                    <input type="text" id="master_name" name="master_name" class="form-control" maxlength="100" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end"><button type="submit" class="btn primary_button"><i class="bi bi-plus-circle"></i> Add</button></div>
+            </form>
+            <p class="form-text">Removed entries are deleted permanently. Existing effort logs will no longer show their labels. Undo is available until this page is refreshed.</p>
+            <?php if (! empty($data['effortMasterUndo'])): ?>
+                <div class="alert alert-info d-flex align-items-center justify-content-between gap-3" role="status">
+                    <span><?= esc($data['effortMasterUndo']['master_name']) ?> was removed.</span>
+                    <form method="post" action="<?= base_url('admin/undoEffortMaster') ?>" class="m-0">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Undo</button>
+                    </form>
+                </div>
+            <?php endif; ?>
+            <hr>
+            <div class="row g-4">
+                <?php foreach ($data['effortMasterTypes'] as $type => $label): ?>
+                    <div class="col-lg-4">
+                        <h5><?= esc($label) ?></h5>
+                        <div class="list-group">
+                            <?php foreach ($data['effortMasters'][$type] as $entry): ?>
+                                <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                                    <span><?= esc($entry['master_name']) ?></span>
+                                    <form method="post" action="<?= base_url('admin/removeEffortMaster') ?>" class="m-0">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="effort_master_id" value="<?= (int) $entry['effort_master_id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Remove <?= esc($entry['master_name'], 'attr') ?>">Remove</button>
+                                    </form>
+                                </div>
+                            <?php endforeach; ?>
+                            <?php if (empty($data['effortMasters'][$type])): ?><p class="text-muted">No entries yet.</p><?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
         <!-- Manage product owner -->

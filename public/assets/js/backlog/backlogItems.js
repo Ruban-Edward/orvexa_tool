@@ -174,6 +174,7 @@ if (typeof m_backlogItems !== 'undefined') {
                 </td>
                 <td data-label="Action" class="action_button custom-action-buttons">
                     ${userPermissions.viewUserStories ? `<a class="ox-icon-action" href="${assert_path}backlog/userstories?pid=${pId}&pblid=${id}" title="View or add user stories" aria-label="User stories of ${name}"><i class="icon-book-open" aria-hidden="true"></i></a>` : ""}
+                    ${userPermissions.addTasks ? `<a class="ox-icon-action" href="${assert_path}backlog/tasks?pid=${pId}&pblid=${id}" title="View or add backlog tasks" aria-label="Tasks of ${name}"><i class="icon-check-square" aria-hidden="true"></i></a>` : ""}
                     ${userPermissions.updateBacklog ? `<button type="button" class="btn btn-link ox-icon-action" onclick="editbacklog(${id})" title="Edit backlog item" aria-label="Edit ${name}"><i class="icon-edit" aria-hidden="true"></i></button>` : ""}
                     ${userPermissions.deleteBacklog ? `<button type="button" class="btn btn-link ox-icon-action is-danger" onclick="confirmDelete(${id})" title="Delete backlog item" aria-label="Delete ${name}"><i class="icon-trash" aria-hidden="true"></i></button>` : ""}
                 </td>

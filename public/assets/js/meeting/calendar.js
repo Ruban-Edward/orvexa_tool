@@ -206,7 +206,7 @@ if (typeof calendar !== "undefined") {
                   sessionId == hostCreated
                 ) {
                   var timeLogButton = document.createElement("button");
-                  timeLogButton.innerText = "Time Log in Redmine";
+                  timeLogButton.innerText = "Log efforts for Meeting";
                   timeLogButton.classList.add(
                     "btn",
                     "btn-primary",
@@ -574,17 +574,11 @@ if (typeof calendar !== "undefined") {
 
         function showTimeLogDetails(meetingData, meetingMembers) {
           // Set the modal title and display appropriate sections
-          document.getElementById("modalTitle").innerText = "Time log details";
+          document.getElementById("modalTitle").innerText = "Log efforts for Meeting";
           $(
             "#scheduleMeetingForm, #eventDetails,  #helpdetails, #groupdetails"
           ).hide();
           $("#timeLogSection").show();
-          const comments =
-            meetingData.product_name +
-            "," +
-            meetingData.meeting_title +
-            "," +
-            meetingData.meeting_description;
           // Format meeting start and end times, duration
           const startTime = formatToAmPm(meetingData.meeting_start_time);
           const endTime = formatToAmPm(meetingData.meeting_end_time);
@@ -611,13 +605,6 @@ if (typeof calendar !== "undefined") {
             meetingData.product_name || "N/A";
           document.getElementById("meetingIdHiddenInput").value =
             meetingData.meeting_details_id || "N/A";
-          document.getElementById("comments").value = comments || "N/A";
-          document.getElementById("sdate").value =
-            meetingData.meeting_start_date;
-          document.getElementById("product").value = meetingData.r_product_id;
-          document.getElementById("mtype").value =
-            meetingData.r_meeting_type_id;
-          document.getElementById("sprintId").value = meetingData.r_sprint_id;
 
           const attendeesList = document.getElementById("attendeesList");
           attendeesList.innerHTML = ""; // Clear existing content
@@ -2406,6 +2393,8 @@ if (typeof calendar !== "undefined") {
       let formData = $(this).serialize();
       formData += "&timelogbutton=1";
       let url = baseUrl + "meeting/logMeetingTimes";
+      const submitButton = document.getElementById("timelogbutton");
+      submitButton.disabled = true;
       $.ajax({
         url: url,
         method: "POST",
@@ -2415,7 +2404,7 @@ if (typeof calendar !== "undefined") {
           if (response.success) {
             Swal.fire({
               title: "Success!",
-              text: "Time Logged Successfully",
+              text: response.message || "Meeting efforts logged successfully.",
               icon: "success",
               confirmButtonText: "OK",
             }).then((result) => {
@@ -2423,7 +2412,23 @@ if (typeof calendar !== "undefined") {
                 window.location.href = window.location.href;
               }
             });
+          } else {
+            Swal.fire({
+              title: "Unable to log efforts",
+              text: response.message || "Meeting efforts could not be saved.",
+              icon: "error",
+            });
           }
+        },
+        error: function (xhr) {
+          Swal.fire({
+            title: "Unable to log efforts",
+            text: xhr.responseJSON?.message || "Meeting efforts could not be saved.",
+            icon: "error",
+          });
+        },
+        complete: function () {
+          submitButton.disabled = false;
         },
       });
     });

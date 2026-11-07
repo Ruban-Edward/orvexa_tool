@@ -132,19 +132,13 @@ if (!empty($sprintId)) {
 
 
                                 <form class="row g-3 needs-validation" id="timeLogForm" method="POST" novalidate>
-                                    <input type="hidden" id="meetingIdHiddenInput" name="meetingId">
-                                    <input type="hidden" id="comments" name="comments">
-                                    <input type="hidden" id="sdate" name="sdate">
-                                    <input type="hidden" id="product" name="product">
-                                    <input type="hidden" id="mtype" name="mtype">
-                                    <input type="hidden" id="sprintId" name="sprintId">
+                                <input type="hidden" id="meetingIdHiddenInput" name="meetingId">
 
 
-                                    <div class="meeting-attendees scrollable" id="attendeesList">
+                                <div class="meeting-attendees scrollable" id="attendeesList">
                                         <!-- Attendees will be populated here dynamically -->
                                     </div>
-                                    <button type="submit" id="timelogbutton" class="btn btn-primary me-1 mb-2">Log
-                                        Time</button>
+                                    <button type="submit" id="timelogbutton" class="btn btn-primary me-1 mb-2">Log efforts</button>
                                 </form>
 
                             </div>

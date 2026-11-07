@@ -23,6 +23,7 @@ class TaskController extends BaseController
     protected $userStoryModel;
     protected $taskModel;
     protected $sprintModel;
+    protected $effortLogModel;
 
     public function __construct()
     {
@@ -31,6 +32,7 @@ class TaskController extends BaseController
         $this->userStoryModel = model(\App\Models\Backlog\UserStoryModel::class);
         $this->taskModel = model(\App\Models\Backlog\TaskModel::class);
         $this->sprintModel = model(\App\Models\SprintModel::class);
+        $this->effortLogModel = model(\App\Models\EffortLogModel::class);
     }
 
     /**
@@ -41,48 +43,44 @@ class TaskController extends BaseController
 
      public function tasks(): string
      {
-         // Check if a 'usid' (user story ID) is provided in the request
-         if ($this->request->getGet('usid')) {
-             // Define breadcrumbs for navigation
+         $productId = $this->request->getGet('pid');
+         $backlogItemId = $this->request->getGet('pblid');
+         $userStoryId = $this->request->getGet('usid');
+         $directBacklogTasks = empty($userStoryId);
+
+         if ($productId && $backlogItemId && authenticateUser($productId, $backlogItemId, $directBacklogTasks ? null : $userStoryId)) {
+             $backlogItem = $this->backlogModel->getBacklogDetails(['id' => $backlogItemId]);
              $breadcrumbs = [
                  'Products' => ASSERT_PATH . 'backlog/productbacklogs',
-                 'Backlog items' => ASSERT_PATH . 'backlog/backlogitems?pid=' . $this->request->getget('pid'),
-                 'User stories' => ASSERT_PATH . 'backlog/userstories?pid=' . $this->request->getget('pid') . '&pblid=' . $this->request->getget('pblid'),
-                 'tasks' => '',
+                 'Backlog items' => ASSERT_PATH . 'backlog/backlogitems?pid=' . $productId,
              ];
-     
-             // Authenticate user with provided IDs
-             if (authenticateUser($this->request->getget('pid'), $this->request->getGet('pblid'), $this->request->getGet('usid'))) {
-                 // Retrieve details for the specified backlog item
-                 $backlogItem = $this->backlogModel->getBacklogDetails(['id'=>$this->request->getget('pblid')]);
-     
-                 // Prepare data for the view
-                 $data = [
-                     'product_id' => $this->request->getget('pid'), // Product ID
-                     'backlog_item_id' => $this->request->getget('pblid'), // Backlog item ID
-                     'product_name' => $backlogItem['product_name'], // Product name
-                     'backlog_item_name' => $backlogItem['backlog_item_name'], // Backlog item name
-                     'user_story_id' => $this->request->getget('usid'), // User story ID
-                     'user_story' => ($this->userStoryModel->getUserStoryById($this->request->getget('usid')))[0], // User story details
-                     // 'tasks_details' => $this->backlogModel->getTasks($this->request->getget('usid')), // Optional task details (commented out)
-                     'task_count' => ($this->taskModel->countTask($this->request->getget('usid'))), // Count of tasks
-                     'trackers' => $this->taskModel->getTrackers(), // List of trackers
-                     'users' => $this->sprintModel->getMembersByProduct($this->request->getget('pid')), // List of users by product
-                     'status' => $this->taskModel->getTaskStatus(), // Task status options
-                 ];
-     
-                 // Render the 'tasks' view with the prepared data and breadcrumbs
-                 return $this->template_view('backlog/tasks', $data, 'Tasks', $breadcrumbs);
+             if (! $directBacklogTasks) {
+                 $breadcrumbs['User stories'] = ASSERT_PATH . 'backlog/userstories?pid=' . $productId . '&pblid=' . $backlogItemId;
              }
+             $breadcrumbs['Tasks'] = '';
+
+             $userStory = $directBacklogTasks ? null : ($this->userStoryModel->getUserStoryById($userStoryId)[0] ?? null);
+             $data = [
+                 'product_id' => $productId,
+                 'backlog_item_id' => $backlogItemId,
+                 'product_name' => $backlogItem['product_name'],
+                 'backlog_item_name' => $backlogItem['backlog_item_name'],
+                 'user_story_id' => $directBacklogTasks ? null : $userStoryId,
+                 'user_story' => $userStory,
+                 'task_count' => $directBacklogTasks
+                     ? $this->taskModel->countBacklogTasks($backlogItemId)
+                     : $this->taskModel->countTask($userStoryId),
+                 'trackers' => $this->taskModel->getTrackers(),
+                 'users' => $this->sprintModel->getMembersByProduct($productId),
+                 'status' => $this->taskModel->getTaskStatus(),
+             ];
+
+             return $this->template_view('backlog/tasks', $data, 'Tasks', $breadcrumbs);
          }
-     
-         // Define breadcrumbs for cases where no user story ID is provided
-         $breadcrumbs = [
+
+         return $this->template_view('dashboard/NodataView', null, 'No data', [
              'Products' => ASSERT_PATH . 'backlog/productbacklogs',
-         ];
-     
-         // Render the 'No data' view indicating no available data
-         return $this->template_view('dashboard/NodataView', null, 'No data', $breadcrumbs);
+         ]);
      }
      
 
@@ -94,10 +92,18 @@ class TaskController extends BaseController
 
      public function addTasks($pId, $pblid, $userStoryId): Response
      {
-         if ($denied = $this->denyUnlessOwns([['story', $userStoryId], ['backlog', $pblid]])) {
+         $userStoryId = (int) $userStoryId;
+         $ownedItems = [['backlog', $pblid]];
+         if ($userStoryId > 0) {
+             $ownedItems[] = ['story', $userStoryId];
+         }
+         if ($denied = $this->denyUnlessOwns($ownedItems)) {
              return $denied;
          }
-         $pId = $this->backlogItemModel->productOf('story', (int) $userStoryId);
+         if ($userStoryId > 0 && ! $this->userStoryModel->checkUserStory((int) $pblid, $userStoryId)) {
+             return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'The user story does not belong to this backlog item.']);
+         }
+         $pId = $this->backlogItemModel->productOf('backlog', (int) $pblid);
          // Get assignee ID, defaulting to the current session's employee ID if not provided
          $assigneeId = (empty($this->request->getPost('assignee_id')) ? session('employee_id') : $this->request->getPost('assignee_id'));
      
@@ -116,13 +122,12 @@ class TaskController extends BaseController
          if ($priority == 'H')
              $priority = 3;
      
-         // Get tracker ID and customer information for the user story
+         // Get the tracker configured for this backlog item
          $tracker = $this->taskModel->getTrackerId($pblid);
-         $customer = $this->backlogModel->getCustomer($userStoryId);
      
          // Prepare the task data array
          $task = [
-             'user_story_id' => $userStoryId, // User story ID
+             'user_story_id' => $userStoryId ?: null, // User story ID
              'project_id' => $pId, // Project ID
              'task_title' => $this->request->getPost('task_title'), // Task title
              'task_description' => $this->request->getPost('task_description'), // Task description
@@ -135,7 +140,7 @@ class TaskController extends BaseController
              'end_date' => $endDate, // Task end date
              'created_on' => date("Y-m-d H:i:s"), // Task creation timestamp
              'updated_on' => date("Y-m-d H:i:s"), // Task update timestamp
-             'r_user_story_id' => $userStoryId, // User story reference ID
+             'r_user_story_id' => $userStoryId ?: null, // User story reference ID
              'priority' => $this->request->getPost('priority'), // Task priority (raw value)
              'assignee_id' => $assigneeId, // Assignee ID
              'task_status' => $this->request->getpost('task_status'), // Task status
@@ -159,7 +164,8 @@ class TaskController extends BaseController
          $task_data['updated_date'] = date("Y-m-d H:i:s");
          $task_data['start_date'] = $startDate;
          $task_data['end_date'] = $endDate;
-         $task_data['r_user_story_id'] = $userStoryId;
+         $task_data['r_user_story_id'] = $userStoryId ?: null;
+         $task_data['r_backlog_item_id'] = $userStoryId > 0 ? null : (int) $pblid;
          $task_data['completed_percentage'] = $completedPercentage;
          $task_data['assignee_id'] = $assigneeId;
      
@@ -356,6 +362,73 @@ class TaskController extends BaseController
         return $this->response->setJSON($taskDetailsById);
     }
 
+    public function taskEfforts($taskId): Response
+    {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
+            return $denied;
+        }
+        if (empty($this->taskModel->getTaskById($taskId))) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Task not found.']);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $this->effortLogModel->getTaskEfforts((int) $taskId),
+        ]);
+    }
+
+    public function logTaskEffort($taskId): Response
+    {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
+            return $denied;
+        }
+        if (empty($this->taskModel->getTaskById($taskId))) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Task not found.']);
+        }
+
+        $spentOnInput = $this->request->getPost('spent_on');
+        if (! is_string($spentOnInput)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Enter a valid effort date that is not in the future.']);
+        }
+        $spentOn = trim($spentOnInput);
+        $spentDate = \DateTime::createFromFormat('!Y-m-d', $spentOn);
+        if (! $spentDate || $spentDate->format('Y-m-d') !== $spentOn || $spentOn > date('Y-m-d')) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Enter a valid effort date that is not in the future.']);
+        }
+
+        $hours = $this->request->getPost('hours');
+        if (! is_numeric($hours) || round((float) $hours, 2) <= 0 || (float) $hours > 24) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Effort must be greater than 0 and no more than 24 hours per day.']);
+        }
+
+        $commentsInput = $this->request->getPost('comments') ?? '';
+        if (! is_string($commentsInput)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Comments must be plain text.']);
+        }
+        $comments = trim($commentsInput);
+        if (mb_strlen($comments) > 1000) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Comments cannot exceed 1000 characters.']);
+        }
+
+        $employeeId = (int) session()->get('employee_id');
+        $saved = $this->effortLogModel->insertEfforts([[
+            'r_task_id' => (int) $taskId,
+            'r_meeting_details_id' => null,
+            'r_user_id' => $employeeId,
+            'r_logged_by' => $employeeId,
+            'spent_on' => $spentOn,
+            'hours' => round((float) $hours, 2),
+            'comments' => $comments !== '' ? $comments : null,
+            'created_date' => date('Y-m-d H:i:s'),
+        ]]);
+        if (! $saved) {
+            log_message('error', 'Failed to save task effort for task ID ' . (int) $taskId . '.');
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Effort could not be saved. Please try again.']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'message' => 'Effort saved successfully.']);
+    }
+
     /**
      * @author samuel
      * @return Response
@@ -417,8 +490,13 @@ class TaskController extends BaseController
          // Check if a filter exists within the JSON input, otherwise set it to null
          $filter = isset($jsonInput['filter']) ? $jsonInput['filter'] : null;
      
-         if ($filter && ($denied = $this->denyUnlessOwns([['story', $filter['UId'] ?? null]]))) {
-             return $denied;
+         if ($filter) {
+             $ownerItem = ! empty($filter['UId'])
+                 ? ['story', $filter['UId']]
+                 : ['backlog', $filter['BId'] ?? null];
+             if ($denied = $this->denyUnlessOwns([$ownerItem])) {
+                 return $denied;
+             }
          }
 
          // If a filter is provided, proceed with filtering tasks

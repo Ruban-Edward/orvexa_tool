@@ -213,20 +213,20 @@ class SprintModel extends BaseModel
                     CONCAT(orvexa_user.first_name,' ',orvexa_user.last_name) AS assignee_name,
                     orvexa_task_status.name 
 				FROM orvexa_task
-				INNER JOIN orvexa_user_story ON 
+				LEFT JOIN orvexa_user_story ON
 				orvexa_task.r_user_story_id = orvexa_user_story.user_story_id 
-				INNER JOIN orvexa_epic ON 
+				LEFT JOIN orvexa_epic ON
 				orvexa_user_story.r_epic_id = orvexa_epic.epic_id 
 				INNER JOIN orvexa_backlog_item ON 
-				orvexa_epic.r_backlog_item_id = orvexa_backlog_item.backlog_item_id 
+				COALESCE(orvexa_task.r_backlog_item_id, orvexa_epic.r_backlog_item_id) = orvexa_backlog_item.backlog_item_id
 				INNER JOIN orvexa_product ON
 				orvexa_backlog_item.r_product_id = orvexa_product.external_project_id
                     INNER JOIN orvexa_task_status ON
                     orvexa_task.task_status = orvexa_task_status.id
-                    INNER JOIN orvexa_user ON
+                    LEFT JOIN orvexa_user ON
                     orvexa_task.assignee_id = orvexa_user.external_employee_id
-				WHERE orvexa_user_story.r_module_status_id IN :user_story:
-                    AND orvexa_backlog_item.r_module_status_id IN :backlog_status:
+				WHERE (orvexa_user_story.r_module_status_id IN :user_story: OR orvexa_task.r_user_story_id IS NULL)
+                    AND (orvexa_backlog_item.r_module_status_id IN :backlog_status: OR orvexa_task.r_user_story_id IS NULL)
                     AND orvexa_task.is_deleted = 'N'
                     AND orvexa_task.task_status IN :task_status_id:
                     AND orvexa_product.external_project_id = :product_id:
@@ -266,15 +266,15 @@ class SprintModel extends BaseModel
      			orvexa_task.task_description,
                     orvexa_task_status.name 
      			FROM orvexa_task
-     			INNER JOIN orvexa_user_story ON 
+               LEFT JOIN orvexa_user_story ON
      			orvexa_task.r_user_story_id = orvexa_user_story.user_story_id 
-     			INNER JOIN orvexa_epic ON 
+               LEFT JOIN orvexa_epic ON
      			orvexa_user_story.r_epic_id = orvexa_epic.epic_id 
      			INNER JOIN orvexa_backlog_item ON 
-     			orvexa_epic.r_backlog_item_id = orvexa_backlog_item.backlog_item_id 
+               COALESCE(orvexa_task.r_backlog_item_id, orvexa_epic.r_backlog_item_id) = orvexa_backlog_item.backlog_item_id
      			INNER JOIN orvexa_product ON
      			orvexa_backlog_item.r_product_id = orvexa_product.external_project_id 
-     			WHERE orvexa_user_story.r_module_status_id IN (:status_id:, :status_id2:)
+               WHERE (orvexa_user_story.r_module_status_id IN (:status_id:, :status_id2:) OR orvexa_task.r_user_story_id IS NULL)
      			AND orvexa_task.task_status IN (:task_status_id:, :task_status_id2:)
      			AND orvexa_product.external_project_id = :product_id:
                     AND orvexa_task.is_deleted = 'N'";
@@ -327,11 +327,16 @@ class SprintModel extends BaseModel
       */
      public function getUserStories($data): array
      {
+          if (empty($data)) {
+               return [];
+          }
+
           $placeholders = implode(',', array_fill(0, count($data), '?'));
           $query = "SELECT DISTINCT
                     r_user_story_id AS id
                     FROM orvexa_task
                     WHERE task_id IN ({$placeholders})
+                    AND r_user_story_id IS NOT NULL
                     AND orvexa_task.is_deleted = 'N'";
           $result = $this->query($query, $data);
           if ($result->getNumRows() > 0) {
@@ -349,6 +354,10 @@ class SprintModel extends BaseModel
 
      public function updateUserStory($data, $status_id)
      {
+          if (empty($data)) {
+               return;
+          }
+
           $placeholders = implode(',', array_fill(0, count($data), '?'));
           $query = "UPDATE orvexa_user_story
                     SET r_module_status_id = ?
@@ -470,13 +479,13 @@ class SprintModel extends BaseModel
      {
           $query = "SELECT t.task_id, t.task_title, t.task_status AS status_id, ts.name AS status_name, t.priority,
                          IFNULL(t.completed_percentage, 0) AS completed_percentage, t.assignee_id, u.first_name AS assignee,
-                         us.user_story_id, e.r_backlog_item_id AS backlog_item_id, bi.r_product_id AS product_id
+                         us.user_story_id, COALESCE(t.r_backlog_item_id, e.r_backlog_item_id) AS backlog_item_id, bi.r_product_id AS product_id
                     FROM orvexa_sprint_task st
                     INNER JOIN orvexa_task t ON t.task_id = st.r_task_id AND t.is_deleted = 'N'
                     INNER JOIN orvexa_task_status ts ON ts.id = t.task_status
-                    INNER JOIN orvexa_user_story us ON us.user_story_id = t.r_user_story_id
-                    INNER JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
-                    INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
+                    LEFT JOIN orvexa_user_story us ON us.user_story_id = t.r_user_story_id
+                    LEFT JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
+                    INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = COALESCE(t.r_backlog_item_id, e.r_backlog_item_id)
                     LEFT JOIN orvexa_user u ON u.external_employee_id = t.assignee_id
                     WHERE st.r_sprint_id = :id: AND st.is_deleted = 'N'
                     GROUP BY t.task_id
@@ -528,12 +537,12 @@ class SprintModel extends BaseModel
 				orvexa_sprint_task.r_task_id = orvexa_task.task_id
                     INNER JOIN orvexa_task_status ON
                     orvexa_task_status.id = orvexa_task.task_status
-				INNER JOIN orvexa_user_story ON 
+				LEFT JOIN orvexa_user_story ON
 				orvexa_task.r_user_story_id = orvexa_user_story.user_story_id 
-				INNER JOIN orvexa_epic ON 
+				LEFT JOIN orvexa_epic ON
 				orvexa_user_story.r_epic_id = orvexa_epic.epic_id 
 				INNER JOIN orvexa_backlog_item ON 
-				orvexa_epic.r_backlog_item_id = orvexa_backlog_item.backlog_item_id 
+				COALESCE(orvexa_task.r_backlog_item_id, orvexa_epic.r_backlog_item_id) = orvexa_backlog_item.backlog_item_id
 				INNER JOIN orvexa_product ON
 				orvexa_backlog_item.r_product_id = orvexa_product.external_project_id 
 				WHERE orvexa_sprint_task.r_sprint_id = :id:
@@ -824,19 +833,19 @@ class SprintModel extends BaseModel
                     CONCAT(orvexa_user.first_name,' ',orvexa_user.last_name) AS assignee_name,
                     orvexa_task_status.name 
 				FROM orvexa_task
-				INNER JOIN orvexa_user_story ON 
+				LEFT JOIN orvexa_user_story ON
 				orvexa_task.r_user_story_id = orvexa_user_story.user_story_id 
-				INNER JOIN orvexa_epic ON 
+				LEFT JOIN orvexa_epic ON
 				orvexa_user_story.r_epic_id = orvexa_epic.epic_id 
 				INNER JOIN orvexa_backlog_item ON 
-				orvexa_epic.r_backlog_item_id = orvexa_backlog_item.backlog_item_id 
+				COALESCE(orvexa_task.r_backlog_item_id, orvexa_epic.r_backlog_item_id) = orvexa_backlog_item.backlog_item_id
 				INNER JOIN orvexa_product ON
 				orvexa_backlog_item.r_product_id = orvexa_product.external_project_id 
                     INNER JOIN orvexa_task_status ON
                     orvexa_task.task_status = orvexa_task_status.id
                     INNER JOIN orvexa_user ON
                     orvexa_task.assignee_id = orvexa_user.external_employee_id
-				WHERE orvexa_user_story.r_module_status_id IN :user_story:
+				WHERE (orvexa_user_story.r_module_status_id IN :user_story: OR orvexa_task.r_user_story_id IS NULL)
                     AND orvexa_task.is_deleted = 'N'
                     AND orvexa_product.external_project_id = :r_project_id:
                     ORDER BY orvexa_backlog_item.backlog_order ASC";

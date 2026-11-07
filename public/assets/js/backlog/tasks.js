@@ -10,6 +10,9 @@ if (typeof m_tasks !== 'undefined') {
     const taskForm = document.getElementById('taskDetailsForm');
     const taskModalEl = document.getElementById('addTaskModal');
     const taskModal = () => bootstrap.Modal.getOrCreateInstance(taskModalEl);
+    const taskEffortModalEl = document.getElementById('taskEffortModal');
+    const taskEffortModal = () => bootstrap.Modal.getOrCreateInstance(taskEffortModalEl);
+    const taskEffortForm = document.getElementById('taskEffortForm');
     // Task filters are remembered per user, across all user stories
     const filterStore = Ox.store('filters:tasks');
 
@@ -98,6 +101,9 @@ if (typeof m_tasks !== 'undefined') {
                         <span class="ox-status-pill">${esc(task.task_status)}</span>
                         <span class="cls-priority priority-box ${esc(String(task.priority).toLowerCase())}">${esc(task.priority)}</span>
                         <div class="cls-action-buttons">
+                            <button type="button" class="btn btn-link ox-icon-action" data-effort="${Number(task.task_id)}" title="Log efforts" aria-label="Log efforts for ${esc(task.task_title)}">
+                                <i class="icon-clock" aria-hidden="true"></i>
+                            </button>
                             ${userPermissions.updateTask ? `
                             <button type="button" class="btn btn-link ox-icon-action" data-edit="${Number(task.task_id)}" title="Edit task" aria-label="Edit task ${esc(task.task_title)}">
                                 <i class="icon-edit-2" aria-hidden="true"></i>
@@ -135,7 +141,9 @@ if (typeof m_tasks !== 'undefined') {
         } : {
             icon: 'check-square',
             title: 'No tasks yet',
-            text: 'Break this user story into tasks so the team can pick them up.',
+            text: userStoryId
+                ? 'Break this user story into tasks so the team can pick them up.'
+                : 'Add tasks directly to this backlog item so the team can pick them up.',
             actions: userPermissions.addTask ? [{ label: 'Create first task', icon: 'plus', primary: true, onClick: () => addform('add') }] : [],
         });
         document.getElementById('taskTools').hidden = !filtered;
@@ -150,7 +158,8 @@ if (typeof m_tasks !== 'undefined') {
             type: 'POST',
             data: JSON.stringify({
                 filter: {
-                    UId: userStoryId,
+                    UId: userStoryId || null,
+                    BId: userStoryId ? null : pblid,
                     priorityFilter: selectedValues(prioritySelect),
                     statusFilter: selectedValues(statusSelect),
                     search: searchInput.value.trim(),
@@ -192,10 +201,89 @@ if (typeof m_tasks !== 'undefined') {
     });
 
     document.getElementById('taskList').addEventListener('click', event => {
+        const effort = event.target.closest('[data-effort]');
         const edit = event.target.closest('[data-edit]');
         const remove = event.target.closest('[data-delete]');
+        if (effort) {
+            const card = effort.closest('[data-task]');
+            openTaskEffort(Number(effort.dataset.effort), card?.querySelector('.card-title')?.textContent || 'Task');
+        }
         if (edit) addform('edit', Number(edit.dataset.edit));
         if (remove) deleteTask(Number(remove.dataset.delete));
+    });
+
+    function openTaskEffort(id, title) {
+        const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        document.getElementById('effortTaskId').value = String(id);
+        document.getElementById('taskEffortTaskTitle').textContent = title;
+        document.getElementById('effortSpentOn').value = today;
+        document.getElementById('effortSpentOn').max = today;
+        document.getElementById('effortHours').value = '';
+        document.getElementById('effortComments').value = '';
+        taskEffortForm.classList.remove('was-validated');
+        document.getElementById('taskEffortHistory').innerHTML = '<p class="text-muted mb-0">Loading effort history…</p>';
+        taskEffortModal().show();
+        loadTaskEfforts(id);
+    }
+
+    function loadTaskEfforts(id) {
+        $.ajax({
+            url: `${assertPath}backlog/taskEfforts/${id}`,
+            method: 'POST',
+            dataType: 'json',
+            success: response => {
+                if (!response.success) {
+                    showEffortError(response.message || 'Effort history could not be loaded.');
+                    return;
+                }
+                const history = document.getElementById('taskEffortHistory');
+                if (!response.data.length) {
+                    history.innerHTML = '<p class="text-muted mb-0">No effort has been logged for this task yet.</p>';
+                    return;
+                }
+                history.innerHTML = `<ul class="list-group">${response.data.map(entry => `
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between gap-3">
+                            <strong>${esc(entry.spent_on)} · ${esc(entry.hours)} h</strong>
+                            <span>${esc(entry.user_name || 'Team member')}</span>
+                        </div>
+                        ${entry.comments ? `<div class="mt-1">${esc(entry.comments)}</div>` : ''}
+                    </li>`).join('')}</ul>`;
+            },
+            error: xhr => showEffortError(xhr.responseJSON?.message || 'Effort history could not be loaded.'),
+        });
+    }
+
+    function showEffortError(message) {
+        Swal.fire({ title: 'Unable to log efforts', text: message, icon: 'error' });
+    }
+
+    taskEffortForm.addEventListener('submit', event => {
+        event.preventDefault();
+        taskEffortForm.classList.add('was-validated');
+        if (!taskEffortForm.reportValidity()) return;
+
+        const taskId = Number(document.getElementById('effortTaskId').value);
+        const saveButton = document.getElementById('saveTaskEffortBtn');
+        saveButton.disabled = true;
+        $.ajax({
+            url: `${assertPath}backlog/logTaskEffort/${taskId}`,
+            method: 'POST',
+            data: $(taskEffortForm).serialize(),
+            dataType: 'json',
+            success: response => {
+                if (!response.success) {
+                    showEffortError(response.message || 'Effort could not be saved.');
+                    return;
+                }
+                document.getElementById('effortHours').value = '';
+                document.getElementById('effortComments').value = '';
+                loadTaskEfforts(taskId);
+                Swal.fire({ title: 'Saved', text: response.message, icon: 'success' });
+            },
+            error: xhr => showEffortError(xhr.responseJSON?.message || 'Effort could not be saved.'),
+            complete: () => { saveButton.disabled = false; },
+        });
     });
 
     // -----------------------------------------------------------------

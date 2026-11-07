@@ -211,12 +211,12 @@ class BacklogItemModel extends BaseModel
                     bi.backlog_description,
                     COUNT(CASE WHEN us.r_module_status_id = 34 THEN 1 END) AS completed_user_stories,
                     COUNT(DISTINCT us.user_story_id) AS total_user_stories,
-                    COUNT(t.task_id) AS total_tasks,
-                    COUNT(CASE WHEN t.task_status = 7 THEN 1 END) AS completed_tasks
+                    COUNT(DISTINCT t.task_id) AS total_tasks,
+                    COUNT(DISTINCT CASE WHEN t.task_status = 7 THEN t.task_id END) AS completed_tasks
                 FROM orvexa_backlog_item AS bi
                 LEFT JOIN orvexa_epic e ON e.r_backlog_item_id = bi.backlog_item_id AND e.is_deleted = 'N'
                 LEFT JOIN orvexa_user_story us ON us.r_epic_id = e.epic_id AND us.is_deleted = 'N'
-                LEFT JOIN orvexa_task t ON t.r_user_story_id = us.user_story_id AND t.is_deleted = 'N'
+                LEFT JOIN orvexa_task t ON (t.r_user_story_id = us.user_story_id OR t.r_backlog_item_id = bi.backlog_item_id) AND t.is_deleted = 'N'
                 LEFT JOIN orvexa_product p ON p.external_project_id = bi.r_product_id AND p.is_deleted = 'N'
                 INNER JOIN orvexa_t_shirt_size tss ON tss.t_shirt_size_id = bi.backlog_t_shirt_size
                 INNER JOIN orvexa_customer sc ON sc.customer_id = bi.r_customer_id 
@@ -418,9 +418,9 @@ class BacklogItemModel extends BaseModel
                           INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
                           WHERE us.user_story_id = :id:",
             'task'    => "SELECT bi.r_product_id AS product_id FROM orvexa_task t
-                          INNER JOIN orvexa_user_story us ON us.user_story_id = t.r_user_story_id
-                          INNER JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
-                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
+                          LEFT JOIN orvexa_user_story us ON us.user_story_id = t.r_user_story_id
+                          LEFT JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
+                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = COALESCE(t.r_backlog_item_id, e.r_backlog_item_id)
                           WHERE t.task_id = :id:",
         };
         $row = $this->query($sql, ['id' => $id])->getRow();

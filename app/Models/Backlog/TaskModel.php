@@ -19,6 +19,7 @@ class TaskModel extends BaseModel
 
     protected $allowedFields = [
         "r_user_story_id",
+        "r_backlog_item_id",
         "task_title",
         "task_description",
         "assignee_id",
@@ -38,6 +39,7 @@ class TaskModel extends BaseModel
 
     protected $validationRules = [
         'r_user_story_id' => 'permit_empty|integer',
+        'r_backlog_item_id' => 'permit_empty|integer',
         'task_title' => 'required|min_length[3]|max_length[1000]',
         'task_description' => 'required|min_length[3]|max_length[1000]',
         'assignee_id' => 'permit_empty|integer',
@@ -139,11 +141,12 @@ class TaskModel extends BaseModel
 
     public function insertTasks($args)
     {
-        $sql = "INSERT INTO orvexa_task (r_user_story_id,task_title,task_description,assignee_id,priority,tracker_id,start_date,end_date,estimated_hours,completed_percentage,task_status,r_user_id_created,r_user_id_updated,created_date,updated_date)
-                VALUES (:user_story_id:,:title:,:description:,:assignee:,:priority:,:tracker_id:,:start_date:,:end_date:,:estimated_hours:,:completed_percentage:,:status:,:author_id:,:author_id:,:created_on:,:updated_on:)  
+        $sql = "INSERT INTO orvexa_task (r_user_story_id,r_backlog_item_id,task_title,task_description,assignee_id,priority,tracker_id,start_date,end_date,estimated_hours,completed_percentage,task_status,r_user_id_created,r_user_id_updated,created_date,updated_date)
+                VALUES (:user_story_id:,:backlog_item_id:,:title:,:description:,:assignee:,:priority:,:tracker_id:,:start_date:,:end_date:,:estimated_hours:,:completed_percentage:,:status:,:author_id:,:author_id:,:created_on:,:updated_on:)
                 ";
         $this->db->query($sql, [
-            'user_story_id' => $args['r_user_story_id'],
+            'user_story_id' => $args['r_user_story_id'] ?? null,
+            'backlog_item_id' => $args['r_backlog_item_id'] ?? null,
             'title' => $args['task_title'],
             'description' => $args['task_description'],
             'assignee' => $args['assignee_id'],
@@ -217,6 +220,14 @@ class TaskModel extends BaseModel
              return $result[0]['count'];
          }
          return 0;
+     }
+
+     public function countBacklogTasks($backlogItemId): int
+     {
+          return (int) $this->db->table('orvexa_task')
+              ->where('r_backlog_item_id', $backlogItemId)
+              ->where('is_deleted', 'N')
+              ->countAllResults();
      }
 
      /**
@@ -299,18 +310,25 @@ class TaskModel extends BaseModel
                     i.estimated_hours
                 FROM 
                     orvexa_task i
-                LEFT JOIN 
+                LEFT JOIN
                     orvexa_user u ON i.assignee_id = u.external_employee_id 
                 INNER JOIN 
                     orvexa_task_status ts ON i.task_status = ts.id
                 INNER JOIN 
                     orvexa_trackers tr ON i.tracker_id = tr.tracker_id
-                INNER JOIN 
-                    orvexa_user_story us ON i.r_user_story_id = us.user_story_id
                 WHERE 
-                    i.r_user_story_id = :id: AND i.is_deleted = 'N'";
+                    i.is_deleted = 'N'";
 
         $params = [];
+        if (!empty($filter['UId'])) {
+            $sql .= " AND i.r_user_story_id = :id:";
+            $params['id'] = $filter['UId'];
+        } elseif (!empty($filter['BId'])) {
+            $sql .= " AND i.r_backlog_item_id = :id:";
+            $params['id'] = $filter['BId'];
+        } else {
+            return [];
+        }
 
         if (!empty($filter['priorityFilter'])) {
             $data = is_array($filter['priorityFilter']) ? $filter['priorityFilter'] : explode(',', $filter['priorityFilter']);
@@ -329,8 +347,6 @@ class TaskModel extends BaseModel
             $sql .= " AND (i.task_title LIKE :search:)";
             $params['search'] = '%' . $filter['search'] . '%';
         }
-
-        $params['id'] = $filter['UId'];
 
         $this->lastTotal = (int) $this->query("SELECT COUNT(*) AS total FROM ($sql) AS filtered", $params)->getRow()->total;
 

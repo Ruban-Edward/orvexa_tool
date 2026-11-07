@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var editReason;
 
+        function taskForSelection(key) {
+            const parts = key.split('-');
+            const backlogIndex = Number(parts[0]);
+            if (parts[1] === 'direct') {
+                return currentProductData.backlogItems[backlogIndex].tasks[Number(parts[2])];
+            }
+            const backlog = currentProductData.backlogItems[backlogIndex];
+            const epic = backlog.epics[Object.keys(backlog.epics)[Number(parts[1])]];
+            const userStory = epic.userStories[Object.keys(epic.userStories)[Number(parts[2])]];
+            return userStory.tasks[Number(parts[3])];
+        }
+
         // Backlog functionality
         const $backlogList = $('#backlogList');
         const $epicList = $('#epicList');
@@ -300,9 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     default: tinymce.get('default').getContent(),
                     editedFor: editReason,
                     selectedTasks: Object.keys(selectedTasks).filter(key => selectedTasks[key]).map(key => {
-                        const [bIndex, eIndex, uIndex, tIndex] = key.split('-').map(Number);
-                        const task = currentProductData.backlogItems[bIndex].epics[Object.keys(currentProductData.backlogItems[bIndex].epics)[eIndex]].userStories[Object.keys(currentProductData.backlogItems[bIndex].epics[Object.keys(currentProductData.backlogItems[bIndex].epics)[eIndex]].userStories)[uIndex]].tasks[tIndex];
-                        return task[0];
+                        return taskForSelection(key)[0];
                     }),
                     selectedMembers: JSON.stringify(Array.from(checkedMembers)),
                     sprintSettings: $('.sprint-setting').map(function () {
@@ -388,9 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 endDate: $('#endDate').val(),
                 sprintGoal: tinymce.get('default').getContent(),
                 selectedTasks: Object.keys(selectedTasks).filter(key => selectedTasks[key]).map(key => {
-                    const [bIndex, eIndex, uIndex, tIndex] = key.split('-').map(Number);
-                    const task = currentProductData.backlogItems[bIndex].epics[Object.keys(currentProductData.backlogItems[bIndex].epics)[eIndex]].userStories[Object.keys(currentProductData.backlogItems[bIndex].epics[Object.keys(currentProductData.backlogItems[bIndex].epics)[eIndex]].userStories)[uIndex]].tasks[tIndex];
-                    return task[0];
+                    return taskForSelection(key)[0];
                 }),
                 // selectedMembers: $('input[name="selectedMembers[]"]:checked').map(function () {
                 //     return this.value;
@@ -802,6 +810,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     $taskList.empty();
 
                     renderEpics(backlogItem.epics, bIndex);
+                    appendBacklogTasks(backlogItem.tasks, bIndex);
                     updateBackgroundColors();
                     $backlogItem.on('click', function () {
                         selectedBacklogIndex = bIndex;
@@ -815,6 +824,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         $taskList.empty();
 
                         renderEpics(backlogItem.epics, bIndex);
+                        appendBacklogTasks(backlogItem.tasks, bIndex);
                         updateBackgroundColors();
                     });
 
@@ -832,6 +842,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         $taskList.empty();
 
                         renderEpics(backlogItem.epics, bIndex);
+                        appendBacklogTasks(backlogItem.tasks, bIndex);
                         updateBackgroundColors();
                     });
                 }
@@ -860,6 +871,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     $taskList.empty();
 
                     renderUserStories(epic.userStories, bIndex, eIndex);
+                    appendBacklogTasks(currentProductData.backlogItems[bIndex].tasks, bIndex);
                     updateBackgroundColors();
                     $epic.on('click', function () {
                         selectedEpicIndex = eIndex;
@@ -870,6 +882,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         $taskList.empty();
 
                         renderUserStories(epic.userStories, bIndex, eIndex);
+                        appendBacklogTasks(currentProductData.backlogItems[bIndex].tasks, bIndex);
                         updateBackgroundColors();
                     });
 
@@ -884,6 +897,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         $taskList.empty();
 
                         renderUserStories(epic.userStories, bIndex, eIndex);
+                        appendBacklogTasks(currentProductData.backlogItems[bIndex].tasks, bIndex);
                         updateBackgroundColors();
                     });
                 }
@@ -935,6 +949,45 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function renderTasks(tasks, bIndex, eIndex, uIndex) {
+            renderTaskOptions(tasks, (tIndex) => `${bIndex}-${eIndex}-${uIndex}-${tIndex}`);
+            appendBacklogTasks(currentProductData.backlogItems[bIndex].tasks, bIndex);
+        }
+
+        function appendBacklogTasks(tasks, bIndex) {
+            $taskList.find('.direct-backlog-task, .direct-backlog-heading').remove();
+            if (!$('#overallTasksCheckbox').length) {
+                $taskList.prepend($('<li class="list-group-item"></li>')
+                    .append('<input type="checkbox" class="user-story-checkbox" id="overallTasksCheckbox"> <label for="overallTasksCheckbox">Select All Tasks</label>'));
+                $('#overallTasksCheckbox').on('change', function () {
+                    const isChecked = this.checked;
+                    $taskList.find('input[type="checkbox"]').not(this).prop('checked', isChecked).each(function () {
+                        selectedTasks[this.id] = isChecked;
+                    });
+                    updateBackgroundColors();
+                    updateSelectedItems();
+                });
+            }
+            if (!Array.isArray(tasks) || tasks.length === 0) return;
+
+            $taskList.append('<li class="list-group-item direct-backlog-heading"><strong>Backlog tasks</strong></li>');
+            tasks.forEach((task, tIndex) => {
+                const taskId = `${bIndex}-direct-${tIndex}`;
+                const isChecked = editMode
+                    ? task_in_sprint.includes(String(task[0]))
+                    : Boolean(selectedTasks[taskId]);
+                const $task = $('<li class="list-group-item direct-backlog-task"></li>')
+                    .append(`<input type="checkbox" class="user-story-checkbox" id="${taskId}" value="${Number(task[0])}" ${isChecked ? 'checked' : ''}> <label for="${taskId}">${oxEscape(task[1])} - <span style="color: #102018; font-weight: bold">${oxEscape(task[2])}</span> - <span style="color: #167a40; font-weight: bold">${oxEscape(task[3] || 'Unassigned')}</span></label>`);
+                $taskList.append($task);
+                if (editMode) selectedTasks[taskId] = isChecked;
+                $task.find('input').on('change', function () {
+                    selectedTasks[taskId] = this.checked;
+                    updateBackgroundColors();
+                    updateSelectedItems();
+                });
+            });
+        }
+
+        function renderTaskOptions(tasks, makeTaskId) {
             $taskList.empty();
 
             const $overallCheckbox = $('<li class="list-group-item"></li>')
@@ -946,7 +999,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             tasks.forEach((task, tIndex) => {
-                const taskId = `${bIndex}-${eIndex}-${uIndex}-${tIndex}`;
+                const taskId = makeTaskId(tIndex);
                 let isChecked = selectedTasks[taskId] ? 'checked' : '';
                 if (editMode) {
                     isChecked = task_in_sprint.includes(`${task[0]}`) ? 'checked' : '';
@@ -1105,20 +1158,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
             Object.keys(selectedTasks).forEach(key => {
                 if (selectedTasks[key]) {
-                    const [bIndex, eIndex, uIndex, tIndex] = key.split('-').map(Number);
+                    const parts = key.split('-');
+                    const bIndex = Number(parts[0]);
                     const backlogItem = currentProductData.backlogItems[bIndex];
+                    if (!groupedBacklogs[bIndex]) {
+                        groupedBacklogs[bIndex] = {
+                            backlog: backlogItem.name,
+                            epics: {},
+                            tasks: []
+                        };
+                    }
+
+                    if (parts[1] === 'direct') {
+                        const task = backlogItem.tasks[Number(parts[2])];
+                        groupedBacklogs[bIndex].tasks.push({ name: task[1], key });
+                        selectedBacklogs.add(bIndex);
+                        taskCount++;
+                        return;
+                    }
+
+                    const eIndex = Number(parts[1]);
+                    const uIndex = Number(parts[2]);
+                    const tIndex = Number(parts[3]);
                     const epicKey = Object.keys(backlogItem.epics)[eIndex];
                     const epic = backlogItem.epics[epicKey];
                     const userStoryKey = Object.keys(epic.userStories)[uIndex];
                     const userStory = epic.userStories[userStoryKey];
                     const task = userStory.tasks[tIndex];
 
-                    if (!groupedBacklogs[bIndex]) {
-                        groupedBacklogs[bIndex] = {
-                            backlog: backlogItem.name,
-                            epics: {}
-                        };
-                    }
                     if (!groupedBacklogs[bIndex].epics[eIndex]) {
                         groupedBacklogs[bIndex].epics[eIndex] = {
                             epic: epic.name,
@@ -1149,11 +1216,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 backlogCard.className = 'card mb-3 backlog-card';
                 backlogCard.innerHTML = `
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 headerName">Backlog Item : ${backlog.backlog}</h5>
+                        <h5 class="mb-0 headerName">Backlog Item : ${oxEscape(backlog.backlog)}</h5>
                         <button class="btn btn-sm btn-light clear-backlog" data-backlog-index="${bIndex}" style="padding:3px; font-size:0.7rem;">Clear Backlog</button>
                     </div>
                     <div class="card-body">
                         <div class="epic-list"></div>
+                        <div class="backlog-task-group"></div>
                     </div>
                 `;
 
@@ -1201,7 +1269,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                if (backlogCard.querySelector('.epic-list').children.length > 0) {
+                if (backlog.tasks.length > 0) {
+                    const directTasks = document.createElement('div');
+                    directTasks.className = 'backlog-tasks mb-2';
+                    directTasks.innerHTML = '<h6>Backlog tasks</h6><ul class="list-group"></ul>';
+                    const taskList = directTasks.querySelector('.list-group');
+                    backlog.tasks.forEach(task => {
+                        const taskItem = document.createElement('li');
+                        taskItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        taskItem.innerHTML = `<span>${oxEscape(task.name)}</span><button class="btn btn-sm btn-danger remove-task" data-task-id="${task.key}" style="color:white;">Clear</button>`;
+                        taskList.appendChild(taskItem);
+                    });
+                    backlogCard.querySelector('.backlog-task-group').appendChild(directTasks);
+                }
+
+                if (backlogCard.querySelector('.epic-list').children.length > 0 || backlog.tasks.length > 0) {
                     selectedItemsList.appendChild(backlogCard);
                 }
             });
@@ -1244,7 +1326,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const totalUserStories = currentProductData.backlogItems.reduce((sum, backlog) =>
                 sum + Object.values(backlog.epics).reduce((epicSum, epic) => epicSum + Object.keys(epic.userStories).length, 0), 0);
             const totalTasks = currentProductData.backlogItems.reduce((sum, backlog) =>
-                sum + Object.values(backlog.epics).reduce((epicSum, epic) =>
+                sum + (backlog.tasks?.length || 0) + Object.values(backlog.epics).reduce((epicSum, epic) =>
                     epicSum + Object.values(epic.userStories).reduce((storySum, story) => storySum + story.tasks.length, 0), 0), 0);
 
             function calculatePercentage(count, total) {

@@ -34,6 +34,13 @@ class SettingsController extends BaseController
      */
     public function adminSettingsPage(): string
     {
+        $undoAvailable = session()->getFlashdata('effort_master_undo_available') === '1';
+        $effortMasterUndo = session()->get('effort_master_undo');
+        if (! $undoAvailable) {
+            session()->remove('effort_master_undo');
+            $effortMasterUndo = null;
+        }
+
         // Set up breadcrumbs for navigation
         $breadcrumbs = [
             'Home' => ASSERT_PATH . 'dashboard/dashboardView',
@@ -44,6 +51,9 @@ class SettingsController extends BaseController
             'products' => $this->settingsModelObj->getAllProduct(),
             'parentProduct' => $this->settingsModelObj->getAllParentProduct(),
             'customers' => $this->settingsModelObj->getAllCustomer(),
+            'effortMasters' => model(\App\Models\EffortMasterModel::class)->getAllGrouped(),
+            'effortMasterTypes' => \App\Models\EffortMasterModel::TYPES,
+            'effortMasterUndo' => is_array($effortMasterUndo) ? $effortMasterUndo : null,
         ];
 
         // Return the view for managing users with the users data
@@ -68,6 +78,56 @@ class SettingsController extends BaseController
         $customerId = (int) $this->request->getPost('customer_id');
         $updated = $customerId > 0 && $this->settingsModelObj->toggleCustomer($customerId);
         return redirect()->to(base_url('admin/adminSettings'))->with($updated ? 'success' : 'error', $updated ? 'Customer status updated.' : 'Customer status could not be updated.');
+    }
+
+    /**
+     * Adds an Activity / Main activity / Log type entry used by Log efforts
+     */
+    public function addEffortMaster()
+    {
+        $types = \App\Models\EffortMasterModel::TYPES;
+        $type = (string) $this->request->getPost('master_type');
+        $name = trim((string) $this->request->getPost('master_name'));
+        if (! isset($types[$type]) || $name === '' || mb_strlen($name) > 100) {
+            return redirect()->to(base_url('admin/adminSettings'))->with('error', 'Choose a list and enter a name of 100 characters or fewer.');
+        }
+        $result = model(\App\Models\EffortMasterModel::class)->addEntry($type, $name);
+        $messages = [
+            'added' => [$types[$type] . ' added.', 'success'],
+            'exists' => ['This ' . strtolower($types[$type]) . ' already exists.', 'error'],
+            'error' => [$types[$type] . ' could not be added.', 'error'],
+        ];
+        return redirect()->to(base_url('admin/adminSettings'))->with($messages[$result][1], $messages[$result][0]);
+    }
+
+    /**
+     * Permanently removes an effort master entry and offers a one-page undo.
+     */
+    public function removeEffortMaster()
+    {
+        $id = (int) $this->request->getPost('effort_master_id');
+        $entry = $id > 0 ? model(\App\Models\EffortMasterModel::class)->removeEntry($id) : null;
+        if ($entry === null) {
+            return redirect()->to(base_url('admin/adminSettings'))->with('error', 'Effort list entry could not be removed.');
+        }
+
+        session()->set('effort_master_undo', $entry);
+        return redirect()->to(base_url('admin/adminSettings'))->with('effort_master_undo_available', '1');
+    }
+
+    public function undoEffortMaster()
+    {
+        $entry = session()->get('effort_master_undo');
+        if (! is_array($entry)) {
+            return redirect()->to(base_url('admin/adminSettings'))->with('error', 'This removal can no longer be undone.');
+        }
+
+        if (! model(\App\Models\EffortMasterModel::class)->restoreEntry($entry)) {
+            return redirect()->to(base_url('admin/adminSettings'))->with('error', 'Effort list entry could not be restored.');
+        }
+
+        session()->remove('effort_master_undo');
+        return redirect()->to(base_url('admin/adminSettings'))->with('success', 'Effort list entry restored.');
     }
 
     /**

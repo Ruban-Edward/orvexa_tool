@@ -93,6 +93,8 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('deletetask/(:num)/(:num)/(:num)', 'TaskController::deleteTasks/$1/$2/$3');
     $routes->post('restoretask/(:num)/(:num)/(:num)', 'TaskController::restoreTasks/$1/$2/$3');
     $routes->post('getTaskById/(:num)', 'TaskController::getTaskById/$1');
+    $routes->post('taskEfforts/(:num)', 'TaskController::taskEfforts/$1');
+    $routes->post('logTaskEffort/(:num)', 'TaskController::logTaskEffort/$1');
 
     $routes->post('insertPokerPlanning', 'PockerController::insertPokerPlanning');
     $routes->post('updatereveal', 'PockerController::updatePokerReveal');
@@ -202,6 +204,9 @@ $routes->group('admin', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('adminSettings', 'SettingsController::adminSettingsPage');
     $routes->post('addCustomer', 'SettingsController::addCustomer');
     $routes->post('toggleCustomer', 'SettingsController::toggleCustomer');
+    $routes->post('addEffortMaster', 'SettingsController::addEffortMaster');
+    $routes->post('removeEffortMaster', 'SettingsController::removeEffortMaster');
+    $routes->post('undoEffortMaster', 'SettingsController::undoEffortMaster');
     $routes->post('getRoles', 'SettingsController::getRoles');
     $routes->post('addRole', 'SettingsController::addRole');
     $routes->post('deleteRole', 'SettingsController::deleteRole');
@@ -232,6 +237,9 @@ $routes->group('notification', ['filter' => 'auth'], function ($routes) {
  */
 $routes->group('', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('mywork', 'MyWorkController::index');
+    $routes->get('efforts', 'EffortController::index');
+    $routes->post('efforts/save', 'EffortController::save');
+    $routes->post('efforts/delete', 'EffortController::delete');
     $routes->get('search', 'SearchController::index');
     $routes->get('profile', 'ProfileController::index');
     $routes->post('profile/password', 'ProfileController::changePassword');
@@ -246,4 +254,3 @@ $routes->group('', ['filter' => ['auth', 'acl']], function ($routes) {
  */
 // for accesssing all the urls
 $routes->get('/(:any)', 'AuthController::index', ['filter' => ['auth', 'loginpage']]);
-
