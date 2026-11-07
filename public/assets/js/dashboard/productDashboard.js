@@ -718,8 +718,8 @@ function displayTableRows(page) {
 
     paginatedItems.forEach(sprint => {
         const row = `<tr>
-                        <td>${sprint.sprint_version || 'N/A'}</td>
-                        <td>${sprint.sprint_name || 'N/A'}</td>
+                        <td>${oxEscape(sprint.sprint_version || 'N/A')}</td>
+                        <td>${oxEscape(sprint.sprint_name || 'N/A')}</td>
                         <td>${sprint.start_date ? formatDate(sprint.start_date) : 'N/A'}</td>
                         <td>${sprint.end_date ? formatDate(sprint.end_date) : 'N/A'}</td>
                         <td>${sprint.sprint_completed || 'N/A'}%</td>

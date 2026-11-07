@@ -267,6 +267,12 @@ class DashboardController extends BaseController
 
     // }
 
+    private function sprintModelProduct($sprintId): ?int
+    {
+        return filter_var($sprintId, FILTER_VALIDATE_INT) === false ? null
+            : model(\App\Models\Backlog\BacklogItemModel::class)->productOf('sprint', (int) $sprintId);
+    }
+
     public function fetchMeetings() {
         $userId = $this->request->getPost('user_id');
         $meetings =  $this->dashboardModel->userMeetings($userId);
@@ -276,6 +282,9 @@ class DashboardController extends BaseController
     public function fetchPendingTaskBySprintId()  {
         $sprintId = $this->request->getPost('sprint_id');
         $productId = $this->request->getPost('product_id');
+        if ($this->sprintModelProduct($sprintId) !== (int) $productId || !$this->ownsItem('product', $productId)) {
+            return $this->response->setStatusCode(403)->setJSON([]);
+        }
         $pendingTaskStatus = $this->config->pendingTaskStatuses;
         $productData = [
             'sprintId' => $sprintId,

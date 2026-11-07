@@ -75,7 +75,12 @@
                     <li><a class="dropdown-item" href="<?= ASSERT_PATH ?>mywork"><i class="icon-check-square" aria-hidden="true"></i> My work</a></li>
                     <li><button type="button" class="dropdown-item" onclick="Ox.showShortcuts()"><i class="icon-command" aria-hidden="true"></i> Keyboard shortcuts <kbd class="ox-kbd ms-auto">?</kbd></button></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="<?= ASSERT_PATH ?>logout"><i class="icon-log-out" aria-hidden="true"></i> Sign out</a></li>
+                    <li>
+                        <form method="post" action="<?= ASSERT_PATH ?>logout" class="m-0">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="dropdown-item"><i class="icon-log-out" aria-hidden="true"></i> Sign out</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -84,7 +89,7 @@
     <main id="main" class="main-content" tabindex="-1">
         <?php if (isset($title) && $title !== ''): ?>
             <div class="ox-page-header">
-                <h1 class="cls-h2"><?= $title ?></h1>
+                <h1 class="cls-h2"><?= esc($title) ?></h1>
             </div>
         <?php endif; ?>
 

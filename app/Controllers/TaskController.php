@@ -94,6 +94,10 @@ class TaskController extends BaseController
 
      public function addTasks($pId, $pblid, $userStoryId): Response
      {
+         if ($denied = $this->denyUnlessOwns([['story', $userStoryId], ['backlog', $pblid]])) {
+             return $denied;
+         }
+         $pId = $this->backlogItemModel->productOf('story', (int) $userStoryId);
          // Get assignee ID, defaulting to the current session's employee ID if not provided
          $assigneeId = (empty($this->request->getPost('assignee_id')) ? session('employee_id') : $this->request->getPost('assignee_id'));
      
@@ -199,6 +203,10 @@ class TaskController extends BaseController
      */
     public function updateTasks($pId, $pblid, $taskId): Response
     {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId], ['backlog', $pblid]])) {
+            return $denied;
+        }
+        $pId = $this->backlogItemModel->productOf('task', (int) $taskId);
         // Convert task priority from letter to number
         $priority = $this->request->getPost('task_priority');
         if ($priority == 'L') {
@@ -338,6 +346,9 @@ class TaskController extends BaseController
      */
     public function getTaskById($taskId): Response
     {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
+            return $denied;
+        }
         // Fetch task details from the database by task ID
         $taskDetailsById = $this->taskModel->getTaskById($taskId);
 
@@ -406,6 +417,10 @@ class TaskController extends BaseController
          // Check if a filter exists within the JSON input, otherwise set it to null
          $filter = isset($jsonInput['filter']) ? $jsonInput['filter'] : null;
      
+         if ($filter && ($denied = $this->denyUnlessOwns([['story', $filter['UId'] ?? null]]))) {
+             return $denied;
+         }
+
          // If a filter is provided, proceed with filtering tasks
          if ($filter) {
              // Fetch the filtered tasks data based on the provided filter

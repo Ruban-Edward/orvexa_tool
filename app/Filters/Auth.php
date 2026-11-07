@@ -28,6 +28,20 @@ class Auth implements FilterInterface
             return redirect()->to(ASSERT_PATH . 'login')->with('error', 'Your account has been deactivated.');
         }
 
+        // The account itself is the source of truth: a deactivated (or removed) user is signed
+        // out even if the cache was cleared, and a role change applies from the next request.
+        $account = db_connect()->table('orvexa_user')
+            ->select('r_role_id, is_deleted')
+            ->where('external_employee_id', $employeeId)
+            ->get()->getRowArray();
+        if (! $account || $account['is_deleted'] === 'Y') {
+            session()->destroy();
+            return redirect()->to(ASSERT_PATH . 'login')->with('error', 'Your account has been deactivated.');
+        }
+        if ((string) $account['r_role_id'] !== (string) session('role_id')) {
+            session()->set('role_id', $account['r_role_id']);
+        }
+
         // Temporary password: only the profile page (to change it) is reachable
         if (session('must_change_password')) {
             $path = trim($request->getUri()->getRoutePath(), '/');

@@ -89,6 +89,9 @@ class BacklogController extends BaseController
         if ($productId < 1 || $productName === '' || mb_strlen($productName) > 50) {
             return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'Product name is required and must be 50 characters or fewer.');
         }
+        if (!$this->ownsItem('product', $productId)) {
+            return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'You do not have access to this product.');
+        }
         if ($this->backlogModel->productNameExists($productName, $productId)) {
             return redirect()->to(base_url('backlog/productbacklogs'))->with('error', 'A product with this name already exists.');
         }
@@ -214,6 +217,9 @@ class BacklogController extends BaseController
 
         // Get the product ID from the request
         $pId = $this->request->getPost('pId');
+        if ($denied = $this->denyUnlessOwns([['product', $pId]])) {
+            return $denied;
+        }
 
         // Get the last backlog priority order for the given product ID
         $result = $this->backlogItemModel->getLastPriorityOrder($pId);
@@ -314,6 +320,9 @@ class BacklogController extends BaseController
         // Get the backlog item ID and product ID from the request
         $pblId = $this->request->getGet('pblid');
         $pId = $this->request->getGet('pid');
+        if ($denied = $this->denyUnlessOwns([['backlog', $pblId]])) {
+            return $denied;
+        }
 
         // Retrieve backlog details using the ID
         $data = $this->backlogModel->getBacklogDetails(['id' => $pblId]);
@@ -345,6 +354,9 @@ class BacklogController extends BaseController
     {
         // Get the backlog item ID from the request
         $pId = $this->request->getGet('pid');
+        if ($denied = $this->denyUnlessOwns([['backlog', $pId]])) {
+            return $denied;
+        }
 
         // Retrieve backlog details using the provided ID
         $data = $this->backlogModel->getBacklogDetails(['id' => $pId]);
@@ -368,6 +380,11 @@ class BacklogController extends BaseController
         if ($this->request->getGet('pblid')) {
             $pblId = $this->request->getGet('pblid');  // Get the backlog item ID
             $pId = $this->request->getGet('pid');  // Get the product ID
+            if ($denied = $this->denyUnlessOwns([['backlog', $pblId]])) {
+                return $denied;
+            }
+            // The item stays in its own product
+            $pId = $this->backlogItemModel->productOf('backlog', (int) $pblId);
             $before = $this->backlogModel->getBacklogDetails(['id' => $pblId]);  // Fetch backlog details before update
 
             $updatebacklog = $this->request->getPost();  // Get updated backlog data from the POST request
@@ -505,6 +522,9 @@ class BacklogController extends BaseController
             // Handle status update requests when 'pblid' is not provided
             $pblId = $this->request->getPost('item_id');
             $statusId = $this->request->getPost('status_id');
+            if ($denied = $this->denyUnlessOwns([['backlog', $pblId]])) {
+                return $denied;
+            }
 
             // Fetch the backlog status before update
             $beforestatus = $this->backlogModel->getBacklogDetails(['id' => $pblId])['status_name'];
@@ -574,6 +594,11 @@ class BacklogController extends BaseController
 
         // Check if 'filter' key exists in the JSON input and assign its value to $filter
         $filter = isset($jsonInput['filter']) ? $jsonInput['filter'] : null;
+
+        // Only items of a product the user belongs to
+        if ($filter && ($denied = $this->denyUnlessOwns([isset($filter['id']) ? ['backlog', $filter['id']] : ['product', $filter['pid'] ?? null]]))) {
+            return $denied;
+        }
 
         // If filter criteria are provided
         if ($filter) {
@@ -662,6 +687,11 @@ class BacklogController extends BaseController
             return $this->response->setStatusCode(404)->setBody('File not found or access denied');
         }
 
+        // Only files attached to a backlog item of the user's products
+        if (!$this->ownsItem('file', basename($realPath))) {
+            return $this->response->setStatusCode(404)->setBody('File not found or access denied');
+        }
+
         // Get the file's MIME type
         $mimeType = mime_content_type($realPath) ?: 'application/octet-stream';
 
@@ -707,6 +737,11 @@ class BacklogController extends BaseController
             return $this->response->setStatusCode(404)->setBody('File not found or access denied');
         }
 
+        // Only files attached to a backlog item of the user's products
+        if (!$this->ownsItem('file', basename($realPath))) {
+            return $this->response->setStatusCode(404)->setBody('File not found or access denied');
+        }
+
         // File is valid, proceed with download
         return $this->response->download($realPath, null)
             ->setContentType(mime_content_type($realPath));
@@ -723,6 +758,9 @@ class BacklogController extends BaseController
         $docId = $this->request->getPost('docId');
         $pId = $this->request->getPost('pId');
         $pblId = $this->request->getPost('pblId');
+        if ($denied = $this->denyUnlessOwns([['document', $docId]])) {
+            return $denied;
+        }
 
         // Fetch the document details based on the document ID
         $document = ($this->documentModel->getDocumentDetails(0, 0, $docId))[0] ?? null;
@@ -763,6 +801,9 @@ class BacklogController extends BaseController
         // Retrieve parameters from the request
         $pId = $this->request->getget('pid');  // Project ID
         $pblId = $this->request->getget('pblid');  // Backlog ID
+        if ($denied = $this->denyUnlessOwns([['backlog', $pblId]])) {
+            return $denied;
+        }
 
         // Prepare data for validation and insertion
         $data = [
@@ -815,6 +856,9 @@ class BacklogController extends BaseController
 
         // Check if 'pId' exists within the JSON input, otherwise set it to null
         $pblId = $jsonInput['pblId'] ?? null;
+        if ($denied = $this->denyUnlessOwns([['product', $pId]])) {
+            return $denied;
+        }
 
         // Retrieve the action history for the provided project ID
         $history = $this->backlogModel->getActionHistory($pId, $pblId);

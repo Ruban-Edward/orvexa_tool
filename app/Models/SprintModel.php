@@ -92,30 +92,25 @@ class SprintModel extends BaseModel
           if ($filter) {
                $query .= " AND orvexa_product.product_name LIKE ?";
           }
-          if (!empty($columns['product_name'])) {
-               $productname = $columns['product_name'];
-               $query .= " AND orvexa_product.product_name IN ($productname) ";
+          // Filter values are always bound, never concatenated into the SQL
+          $inFilters = [
+               'product_name'          => 'orvexa_product.product_name',
+               'sprint_name'           => 'orvexa_sprint.sprint_name',
+               'customer'              => 'orvexa_customer.customer_name',
+               'status_name'           => 'orvexa_status.status_name',
+               'sprint_duration_value' => 'orvexa_sprint_duration.sprint_duration_value',
+          ];
+          foreach ($inFilters as $key => $column) {
+               $values = array_values(array_filter((array) ($columns[$key] ?? []), static fn ($v) => is_scalar($v) && $v !== ''));
+               if ($values) {
+                    $query .= " AND {$column} IN (" . implode(',', array_fill(0, count($values), '?')) . ')';
+                    array_push($products, ...$values);
+               }
           }
-          if (!empty($columns['sprint_name'])) {
-               $sprintname = $columns['sprint_name'];
-               $query .= " AND orvexa_sprint.sprint_name IN ($sprintname)";
-          }
-          if (!empty($columns['customer'])) {
-               $sprintcustomer = $columns['customer'];
-               $query .= " AND orvexa_customer.customer_name IN ($sprintcustomer)";
-          }
-          if (!empty($columns['status_name'])) {
-               $sprintstatus = $columns['status_name'];
-               $query .= " AND  orvexa_status.status_name IN ($sprintstatus)";
-          }
-          if (!empty($columns['sprint_duration_value'])) {
-               $sprintstatus = $columns['sprint_duration_value'];
-               $query .= " AND   orvexa_sprint_duration.sprint_duration_value IN ($sprintstatus)";
-          }
-          if (!empty($columns['start_date']) && !empty($columns['end_date'])) {
-               $sprintdate = $columns['start_date'];
-               $sprintEnddate = $columns['end_date'];
-               $query .= " AND (orvexa_sprint.start_date >= $sprintdate AND orvexa_sprint.start_date <= $sprintEnddate) OR (orvexa_sprint.end_date <= $sprintEnddate AND orvexa_sprint.end_date >= $sprintEnddate)";
+          if (!empty($columns['start_date']) && !empty($columns['end_date']) && is_scalar($columns['start_date']) && is_scalar($columns['end_date'])) {
+               // Bracketed so the OR can never widen the result beyond the user's products
+               $query .= " AND ((orvexa_sprint.start_date >= ? AND orvexa_sprint.start_date <= ?) OR (orvexa_sprint.end_date <= ? AND orvexa_sprint.end_date >= ?))";
+               array_push($products, $columns['start_date'], $columns['end_date'], $columns['end_date'], $columns['end_date']);
           }
           // if (!empty($columns['end_date'])) {
           //      $sprintEnddate = $columns['end_date'];

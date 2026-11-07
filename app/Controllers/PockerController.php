@@ -21,6 +21,9 @@ class PockerController extends BaseController
      public function insertPokerPlanning():Response
      {
          $inputData = $this->request->getPost();
+         if ($denied = $this->denyUnlessOwns([['story', $inputData['fibonacciUserStoryId'] ?? null]])) {
+             return $denied;
+         }
          $data = [
              'r_user_story_id' => $inputData['fibonacciUserStoryId'],
              'r_user_id' => session('employee_id'),
@@ -53,6 +56,9 @@ class PockerController extends BaseController
          $conditionCheck = has_permission('backlog/revealPoker') != null ? true : false;
  
          foreach ($userStories as $key1 => $userStoryId) {
+             if (!$this->ownsItem('story', $userStoryId)) {
+                 continue;
+             }
              $pokerReveal = $this->pokerModel->getPokerReveal($userStoryId);
              if ($conditionCheck) {
                  $sendResult[$key1] = $this->pokerModel->getPokerPlan($userStoryId);
@@ -81,6 +87,9 @@ class PockerController extends BaseController
      public function updatePokerReveal():Response
      {
          $userStoryId = $this->request->getPost('userStory');
+         if ($denied = $this->denyUnlessOwns([['story', $userStoryId]])) {
+             return $denied;
+         }
          $result = $this->pokerModel->updatePokerRevealStatus($userStoryId);
          if ($result) {
              return $this->response->setJSON(['success' => true, 'message' => $result]);

@@ -88,6 +88,13 @@ class AuthController extends BaseController
             'password' => $password
         ];
 
+        // Password-spraying protection: at most 20 sign-in attempts per IP address every 5 minutes,
+        // whatever the username.
+        if (! service('throttler')->check('login_ip_' . md5($this->request->getIPAddress()), 20, 5 * MINUTE)) {
+            session()->setFlashdata('error', 'Too many sign-in attempts from your network. Please wait a few minutes and try again.');
+            return redirect()->to(ASSERT_PATH . 'login');
+        }
+
         // Brute-force protection: 5 failed attempts per username+IP lock the form for 15 minutes.
         $throttleKey = 'login_' . md5(strtolower($username) . '|' . $this->request->getIPAddress());
         $cache       = cache();

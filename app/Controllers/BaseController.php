@@ -95,6 +95,44 @@ abstract class BaseController extends Controller
         helper('permission'); //To check the user role with the helper function to use it in the view
     }
 
+    /**
+     * Whether the signed-in user belongs to the product that owns the item.
+     *
+     * @param string     $type product | backlog | story | task | epic | sprint | document | file
+     * @param int|string $id
+     */
+    protected function ownsItem(string $type, $id): bool
+    {
+        if ($id === null || $id === '' || ($type !== 'file' && filter_var($id, FILTER_VALIDATE_INT) === false)) {
+            return false;
+        }
+        $productId = $type === 'product'
+            ? (int) $id
+            : model(\App\Models\Backlog\BacklogItemModel::class)->productOf($type, $type === 'file' ? (string) $id : (int) $id);
+
+        return $productId !== null && authenticateUser($productId);
+    }
+
+    /**
+     * Null when the user may act on every listed item, otherwise the response to return:
+     * JSON 403 for AJAX/POST calls, a redirect to the no-access page for page loads.
+     *
+     * @param array<int, array{0: string, 1: mixed}> $items list of [type, id] pairs
+     */
+    protected function denyUnlessOwns(array $items): ?ResponseInterface
+    {
+        foreach ($items as [$type, $id]) {
+            if (!$this->ownsItem($type, $id)) {
+                if ($this->request->isAJAX() || $this->request->getMethod() !== 'GET') {
+                    return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You do not have access to this item.']);
+                }
+                return redirect()->to(ASSERT_PATH . 'no_access');
+            }
+        }
+
+        return null;
+    }
+
     //Extending default view
     public function template_view($view, $view_data = null, $title = '', $breadcrumbs = [])
     {

@@ -164,10 +164,12 @@ class SettingsController extends BaseController
         if ($this->request->getFile('file')) {
             $file = $this->request->getFile('file');
 
+            // Only a CSV of up to 1 MB, read from the temporary upload and never stored
+            if ($file->isValid() && (strtolower($file->getClientExtension()) !== 'csv' || $file->getSize() > 1048576)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Upload a .csv file of up to 1 MB.']);
+            }
             if ($file->isValid() && !$file->hasMoved()) {
-                $fileName = $file->getRandomName(); // Use a random name for the uploaded file
-                $filePath = WRITEPATH . 'uploads/' . $fileName;
-                $file->move(WRITEPATH . 'uploads/', $fileName);
+                $filePath = $file->getTempName();
 
                 // Confirm file exists
                 if (file_exists($filePath)) {

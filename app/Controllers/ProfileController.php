@@ -45,8 +45,8 @@ class ProfileController extends BaseController
         $post = $this->request->getPost();
 
         $rules = [
-            'first_name'    => ['label' => 'First name', 'rules' => 'required|max_length[50]'],
-            'last_name'     => ['label' => 'Last name', 'rules' => 'permit_empty|max_length[50]'],
+            'first_name'    => ['label' => 'First name', 'rules' => 'required|max_length[50]|regex_match[/^[^<>]*$/]', 'errors' => ['regex_match' => 'Names cannot contain < or >.']],
+            'last_name'     => ['label' => 'Last name', 'rules' => 'permit_empty|max_length[50]|regex_match[/^[^<>]*$/]', 'errors' => ['regex_match' => 'Names cannot contain < or >.']],
             'username'      => ['label' => 'Username', 'rules' => 'required|min_length[3]|max_length[50]|regex_match[/^[A-Za-z0-9._-]+$/]',
                                 'errors' => ['regex_match' => 'Use only letters, numbers, dots, dashes and underscores.']],
             'date_of_birth' => ['label' => 'Date of birth', 'rules' => 'permit_empty|valid_date[Y-m-d]'],

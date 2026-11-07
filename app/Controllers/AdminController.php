@@ -559,8 +559,8 @@ class AdminController extends BaseController
                 'external_employee_id' => (int) $get('employee_id'),
             ];
             $validation = service('validation', null, false)->setRules([
-                'first_name'           => ['label' => 'First name', 'rules' => 'required|max_length[50]'],
-                'last_name'            => ['label' => 'Last name', 'rules' => 'permit_empty|max_length[50]'],
+                'first_name'           => ['label' => 'First name', 'rules' => 'required|max_length[50]|regex_match[/^[^<>]*$/]', 'errors' => ['regex_match' => 'Names cannot contain < or >.']],
+                'last_name'            => ['label' => 'Last name', 'rules' => 'permit_empty|max_length[50]|regex_match[/^[^<>]*$/]', 'errors' => ['regex_match' => 'Names cannot contain < or >.']],
                 'external_username'    => ['label' => 'Username', 'rules' => 'required|min_length[3]|max_length[50]|regex_match[/^[A-Za-z0-9._-]+$/]',
                                            'errors' => ['regex_match' => 'Username may only use letters, numbers, dots, dashes and underscores.']],
                 'email_id'             => ['label' => 'Email', 'rules' => 'required|valid_email|max_length[50]'],
@@ -632,8 +632,8 @@ class AdminController extends BaseController
     {
         $userId = $existing ? (int) $existing['user_id'] : null;
         $validation = service('validation')->setRules([
-            'first_name'  => ['label' => 'First name', 'rules' => 'required|max_length[50]'],
-            'last_name'   => ['label' => 'Last name', 'rules' => 'permit_empty|max_length[50]'],
+            'first_name'  => ['label' => 'First name', 'rules' => 'required|max_length[50]|regex_match[/^[^<>]*$/]', 'errors' => ['regex_match' => 'Names cannot contain < or >.']],
+            'last_name'   => ['label' => 'Last name', 'rules' => 'permit_empty|max_length[50]|regex_match[/^[^<>]*$/]', 'errors' => ['regex_match' => 'Names cannot contain < or >.']],
             'username'    => ['label' => 'Username', 'rules' => 'required|min_length[3]|max_length[50]|regex_match[/^[A-Za-z0-9._-]+$/]',
                               'errors' => ['regex_match' => 'Use only letters, numbers, dots, dashes and underscores in the username.']],
             'email_id'    => ['label' => 'Email', 'rules' => 'required|valid_email|max_length[50]'],

@@ -92,7 +92,7 @@ class BacklogModel extends BaseModel
                 INNER JOIN 
                     orvexa_user u ON u.external_employee_id = pu.r_user_id
                 WHERE 
-                    u.external_employee_id = :u_id: AND p.is_deleted = 'N'";
+                    u.external_employee_id = :u_id: AND p.is_deleted = 'N' AND pu.is_deleted = 'N'";
         $query = $this->query($sql, [
             'u_id' => $user_id
         ]);
@@ -222,14 +222,16 @@ class BacklogModel extends BaseModel
      * @purpose for returning backlogorder of backlog items in the backlogrefinement page
      */
 
-    public function backlogRefinement()
+    public function backlogRefinement(int $productId)
     {
         $sql = "SELECT 
                     backlog_item_id,
                     backlog_order 
                 FROM 
-                    orvexa_backlog_item";
-        $query = $this->db->query($sql);
+                    orvexa_backlog_item
+                WHERE
+                    r_product_id = :pid:";
+        $query = $this->db->query($sql, ['pid' => $productId]);
         if ($query->getNumRows() > 0) {
             return $query->getResultArray();
         }
@@ -398,20 +400,32 @@ class BacklogModel extends BaseModel
      * Purpose: This function is used to get the comment from the database
      */
 
-    public function getComments(): array
+    /**
+     * Comments on the user stories of one backlog item.
+     */
+    public function getComments(?int $backlogItemId): array
     {
-        $sql = "SELECT 
+        if (!$backlogItemId) {
+            return [];
+        }
+        $sql = "SELECT
                     comments_id,
                     parent_id,
                     b.first_name AS r_user_id,
                     text_data,
                     r_user_story_id ,
-                    a.created_date 
-                FROM 
-                    orvexa_comments a 
-                JOIN 
-                    orvexa_user b ON a.r_user_id=b.external_employee_id";
-        $query = $this->query($sql);
+                    a.created_date
+                FROM
+                    orvexa_comments a
+                JOIN
+                    orvexa_user b ON a.r_user_id=b.external_employee_id
+                JOIN
+                    orvexa_user_story us ON us.user_story_id = a.r_user_story_id
+                JOIN
+                    orvexa_epic e ON e.epic_id = us.r_epic_id
+                WHERE
+                    e.r_backlog_item_id = :pblId:";
+        $query = $this->query($sql, ['pblId' => $backlogItemId]);
         if ($query->getNumRows() > 0) {
             return $query->getResultArray();
         }
@@ -423,6 +437,13 @@ class BacklogModel extends BaseModel
      * @param $id
      * @return mixed
      */
+
+    public function commentBelongsToStory(int $commentId, int $userStoryId): bool
+    {
+        return $this->db->table('orvexa_comments')
+            ->where(['comments_id' => $commentId, 'r_user_story_id' => $userStoryId])
+            ->countAllResults() > 0;
+    }
 
     public function getCurrentUser($id)
     {

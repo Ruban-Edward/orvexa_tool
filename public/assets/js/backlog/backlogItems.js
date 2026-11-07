@@ -685,9 +685,9 @@ if (typeof m_backlogItems !== 'undefined') {
             li.innerHTML = `
                 <div class="activity-item">
                     <div class="activity-header">
-                        <span class="time capitalize">${activity.time}</span>
-                        <span class="icon capitalize">${activity.icon}</span>
-                        <span class="title mt-3 capitalize">${activity.title}${activity.data} <p><span class="source">${activity.source}</span></p></span>
+                        <span class="time capitalize">${oxEscape(activity.time)}</span>
+                        <span class="icon capitalize">${oxEscape(activity.icon)}</span>
+                        <span class="title mt-3 capitalize">${oxEscape(activity.title)}${oxSafeHtml(activity.data)} <p><span class="source">${oxEscape(activity.source)}</span></p></span>
                     </div>
                 </div>
             `;

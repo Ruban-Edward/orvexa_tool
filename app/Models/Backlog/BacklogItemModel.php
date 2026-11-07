@@ -395,12 +395,24 @@ class BacklogItemModel extends BaseModel
     /**
      * Product an item belongs to, whether or not it is deleted.
      *
-     * @param string $type backlog | story | task
+     * @param string     $type backlog | story | task | epic | sprint | document | file (stored upload name)
+     * @param int|string $id
      */
-    public function productOf(string $type, int $id): ?int
+    public function productOf(string $type, int|string $id): ?int
     {
         $sql = match ($type) {
             'backlog' => "SELECT bi.r_product_id AS product_id FROM orvexa_backlog_item bi WHERE bi.backlog_item_id = :id:",
+            'epic'    => "SELECT bi.r_product_id AS product_id FROM orvexa_epic e
+                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id
+                          WHERE e.epic_id = :id:",
+            'sprint'  => "SELECT s.r_product_id AS product_id FROM orvexa_sprint s WHERE s.sprint_id = :id:",
+            'document' => "SELECT bi.r_product_id AS product_id FROM orvexa_document d
+                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = d.reference_id
+                          WHERE d.document_id = :id: AND d.r_module_id = " . BACKLOG_MODULE,
+            'file'    => "SELECT bi.r_product_id AS product_id FROM orvexa_document d
+                          INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = d.reference_id
+                          WHERE SUBSTRING_INDEX(d.document_path, '/', -1) = :id: AND d.r_module_id = " . BACKLOG_MODULE . "
+                          LIMIT 1",
             'story'   => "SELECT bi.r_product_id AS product_id FROM orvexa_user_story us
                           INNER JOIN orvexa_epic e ON e.epic_id = us.r_epic_id
                           INNER JOIN orvexa_backlog_item bi ON bi.backlog_item_id = e.r_backlog_item_id

@@ -80,7 +80,7 @@
         <form class="row g-3 needs-validation" id="addbacklogform" method="POST" enctype="multipart/form-data" novalidate>
           <?= csrf_field() ?>
           <input type="hidden" id="addBackLog" name="addBackLog" value="insert">
-          <input type="hidden" id="pId" name="pId" value="<?=$data['p_id']?>">
+          <input type="hidden" id="pId" name="pId" value="<?= (int) $data['p_id'] ?>">
           <div class="col-md-6">
             <label for="productname" class="form-label form-need">Product name</label>
             <input type="text" class="form-control" name="productname" id="productname" value="<?= trim(ucfirst(strtolower($data['product_name']))); ?>" autocomplete="off" readonly>

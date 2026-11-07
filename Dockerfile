@@ -2,8 +2,6 @@ FROM php:8.5.12-fpm
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        git \
-        unzip \
         libicu-dev \
         libonig-dev \
         libzip-dev \
@@ -13,6 +11,9 @@ RUN apt-get update \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) intl mbstring mysqli pdo_mysql zip gd \
     && rm -rf /var/lib/apt/lists/*
+
+# Don't advertise the PHP version (X-Powered-By)
+RUN echo "expose_php = Off" > /usr/local/etc/php/conf.d/zz-security.ini
 
 WORKDIR /var/www/html
 

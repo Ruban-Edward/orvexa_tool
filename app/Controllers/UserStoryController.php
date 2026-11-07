@@ -92,7 +92,7 @@ class UserStoryController extends BaseController
              'epicByBrainstrom' => $this->epicModel->epicByBrainstrom($pblId),
              'story_count' => $this->userStoryModel->countUserStories($pblId),
              'userName' => $users,
-             'totalcomments' => $this->backlogModel->getComments(),
+             'totalcomments' => $this->backlogModel->getComments((int) $pblId),
              'fibonacciLimit' => $this->generateFibonacci(FIBONACCI_LIMIT),
              'totaluserstories' => $this->userStoryModel->getTotalUserStory($pblId),
              'current_user' => $this->backlogModel->getCurrentUser(session()->get('employee_id')),
@@ -122,6 +122,9 @@ class UserStoryController extends BaseController
          // Retrieve product ID from GET request and backlog item ID from POST request
          $pId = $this->request->getget('pid');
          $pblId = $this->request->getPost('pblid');
+         if ($denied = $this->denyUnlessOwns([['backlog', $pblId], ['epic', $this->request->getPost('r_epic_id')]])) {
+             return $denied;
+         }
      
          // Get all POST data and add the created user ID to the user story data
          $userStory = $this->request->getpost();
@@ -168,6 +171,9 @@ class UserStoryController extends BaseController
      */
     public function getUserStoryDetails($id): Response
     {
+        if ($denied = $this->denyUnlessOwns([['story', $id]])) {
+            return $denied;
+        }
         // Fetch the user story details from the userStoryModel using the provided ID
         $userStory = $this->userStoryModel->getUserStoryById($id);
 
@@ -193,6 +199,9 @@ class UserStoryController extends BaseController
             $pId = $this->request->getGet('pid');
             $pblId = $this->request->getPost('pblid');
             $usId = $this->request->getPost('userId');
+            if ($denied = $this->denyUnlessOwns([['story', $usId], ['backlog', $pblId], ['epic', $this->request->getPost('r_epic_id')]])) {
+                return $denied;
+            }
 
             // Fetch current details of the user story before update
             $before = $this->userStoryModel->getUserStoryById($usId)[0];
@@ -278,6 +287,9 @@ class UserStoryController extends BaseController
             $pblId = $this->request->getPost('pbl_id');
             $storyId = $this->request->getPost('story_id');
             $statusId = $this->request->getPost('status_id');
+            if ($denied = $this->denyUnlessOwns([['story', $storyId], ['backlog', $pblId]])) {
+                return $denied;
+            }
 
             // Update backlog status based on user story status
             if ($statusId == 16) {
@@ -342,6 +354,9 @@ class UserStoryController extends BaseController
         $file = $this->request->getFile('file');
         $pId = $this->request->getPost('pId');
         $pblId = $this->request->getPost('pblId');
+        if ($denied = $this->denyUnlessOwns([['backlog', $pblId]])) {
+            return $denied;
+        }
         $flag = 0;
         if ($file->isValid() && !$file->hasMoved()) {
             $filePath = WRITEPATH . 'uploads';
@@ -528,6 +543,10 @@ class UserStoryController extends BaseController
         // Extract the 'filter' parameter from the JSON input, if it exists
         $filter = isset($jsonInput['filter']) ? $jsonInput['filter'] : null;
 
+        if ($filter && ($denied = $this->denyUnlessOwns([['backlog', $filter['id'] ?? null]]))) {
+            return $denied;
+        }
+
         // Check if a filter was provided
         if ($filter) {
             // Call the model method to get user stories based on the filter
@@ -555,6 +574,9 @@ class UserStoryController extends BaseController
      */
     public function userstoryByEpic($id): Response
     {
+        if ($denied = $this->denyUnlessOwns([['epic', $id]])) {
+            return $denied;
+        }
         // Retrieve the user stories associated with the given epic ID from the model
         $userStoryName = $this->userStoryModel->getuserstoryByepic($id);
 
@@ -570,6 +592,9 @@ class UserStoryController extends BaseController
     public function addUserStoryPoint()
     {
         $inputData = $this->request->getPost();
+        if ($denied = $this->denyUnlessOwns([['story', $inputData['userStoryId'] ?? null]])) {
+            return $denied;
+        }
         $data = [
             'userStoryId' => $inputData['userStoryId'],
             'storyPoint' => $inputData['storyPoint']
@@ -625,6 +650,9 @@ class UserStoryController extends BaseController
      {
          // Retrieve the 'pblid' (backlog item ID) from the GET request parameters
          $backlogItemId = $this->request->getGet('pblid');
+         if ($denied = $this->denyUnlessOwns([['backlog', $backlogItemId]])) {
+             return $denied;
+         }
      
          // Fetch user stories associated with the specified backlog item ID
          $userStoryDetails = $this->userStoryModel->getUserStoriesByBacklogItem($backlogItemId);
@@ -670,14 +698,22 @@ class UserStoryController extends BaseController
         // Check if the 'data' key exists within the JSON input; otherwise, set it to null
         $array = isset($jsonInput['data']) ? $jsonInput['data'] : null;
 
+        if (!is_array($array) || ($denied = $this->denyUnlessOwns([['story', $array['r_user_story_id'] ?? null]]))) {
+            return $denied ?? $this->response->setStatusCode(400)->setJSON(['success' => false]);
+        }
+        // A reply must answer a comment on the same story
+        if (!empty($array['parent_id']) && !$this->backlogModel->commentBelongsToStory((int) $array['parent_id'], (int) $array['r_user_story_id'])) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false]);
+        }
+
         // Add the current user ID from the session to the 'r_user_id' field of the array
         $array['r_user_id'] = session()->get("employee_id");
 
         // Attempt to insert the comment into the database
         $res = $this->backlogModel->insertComment($array);
 
-        // Retrieve the updated list of comments from the database
-        $data = $this->backlogModel->getComments();
+        // Retrieve the updated list of comments of this story's backlog item
+        $data = $this->backlogModel->getComments($this->userStoryModel->backlogItemOf((int) $array['r_user_story_id']));
 
         // Check if the insertion was successful
         if ($res) {

@@ -15,10 +15,35 @@ use Config\SprintModelConfig as Constants;
 class CustomReportModel extends BaseModel
 {
     public $constants;
+    /** @var list<int>|null Products the reports are limited to; null means all (Super Admin). */
+    private ?array $productIds = null;
+
     public function __construct()
     {
         parent::__construct();
         $this->constants = new Constants();
+    }
+
+    /**
+     * Limit every report to these products (null = no limit).
+     *
+     * @param list<int|string>|null $productIds
+     */
+    public function scopeToProducts(?array $productIds): static
+    {
+        $this->productIds = $productIds === null ? null : array_map('intval', $productIds);
+
+        return $this;
+    }
+
+    /** SQL condition on pt.external_project_id for the current scope (integers only). */
+    private function productScope(): string
+    {
+        if ($this->productIds === null) {
+            return '';
+        }
+
+        return ' AND pt.external_project_id IN (' . ($this->productIds ? implode(',', $this->productIds) : '0') . ')';
     }
     /**
      * Retrieve meeting report details.
@@ -45,7 +70,7 @@ class CustomReportModel extends BaseModel
         INNER JOIN orvexa_product AS pt 
             ON pt.external_project_id = md.r_product_id AND pt.is_deleted = "N"
         WHERE 
-            md.is_deleted = "N"
+            md.is_deleted = "N"' . $this->productScope() . '
         GROUP BY 
             md.meeting_details_id, md.meeting_title, mt.meeting_type_name, ut.first_name, pt.product_name, md.meeting_start_date, md.meeting_start_time, md.meeting_end_time, md.meeting_description
         ORDER BY 
@@ -108,7 +133,7 @@ class CustomReportModel extends BaseModel
         // Append the WHERE clause
         $query .= "
             WHERE 
-                md.is_deleted = 'N'";
+                md.is_deleted = 'N'" . $this->productScope();
 
         // Add filters
         $data = [];
@@ -181,7 +206,7 @@ class CustomReportModel extends BaseModel
         INNER JOIN orvexa_module_status AS tms ON tms.module_status_id = ts.r_module_status_id AND tms.is_deleted = "N"
         INNER JOIN orvexa_product AS pt ON pt.external_project_id = ts.r_product_id AND pt.is_deleted = "N"
         INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = tms.r_status_id AND orvexa_status.is_deleted = "N"
-        WHERE ts.is_deleted = "N"
+        WHERE ts.is_deleted = "N"' . $this->productScope() . '
         ORDER BY ts.created_date DESC
     ';
 
@@ -232,7 +257,7 @@ class CustomReportModel extends BaseModel
             INNER JOIN orvexa_status AS orvexa_status ON orvexa_status.status_id = tms.r_status_id AND orvexa_status.is_deleted = "N"
             LEFT JOIN orvexa_sprint_task AS sst ON ts.sprint_id = sst.r_sprint_id AND sst.is_deleted = "N"
             LEFT JOIN orvexa_task AS st ON st.task_id = sst.r_task_id AND st.is_deleted = "N"
-            WHERE ts.is_deleted = "N"';
+            WHERE ts.is_deleted = "N"' . $this->productScope();
 
         $data = [];
 
@@ -296,7 +321,7 @@ class CustomReportModel extends BaseModel
         INNER JOIN orvexa_user AS su ON su.external_employee_id = bi.r_user_id_created AND su.is_deleted = "N"
         LEFT JOIN orvexa_user AS su_updated ON su_updated.external_employee_id = bi.r_user_id_updated AND su_updated.is_deleted = "N"
         LEFT JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
-        WHERE bi.is_deleted = "N"
+        WHERE bi.is_deleted = "N"' . $this->productScope() . '
         ';
 
         $result = $this->db->query($query);
@@ -345,7 +370,7 @@ class CustomReportModel extends BaseModel
             LEFT JOIN orvexa_epic e ON bi.backlog_item_id = e.r_backlog_item_id AND e.is_deleted = "N"
             LEFT JOIN orvexa_user_story us ON bi.backlog_item_id = us.r_epic_id AND us.is_deleted = "N"
             LEFT JOIN orvexa_t_shirt_size as sts ON sts.t_shirt_size_id=bi.backlog_t_shirt_size
-            WHERE bi.is_deleted = "N"';
+            WHERE bi.is_deleted = "N"' . $this->productScope();
 
         if (!empty($params['product'])) {
             $products = implode(',', array_map(fn($item) => $this->db->escape($item), $params['product']));

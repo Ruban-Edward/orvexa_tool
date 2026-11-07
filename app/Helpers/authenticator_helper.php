@@ -9,9 +9,9 @@
      if(!function_exists('authenticateUser')){
         function authenticateUser($pid, $pblId = null, $usId = null, $taskId = null): bool
         {
-            $backlogModel = model(\App\Models\Backlog\backlogModel::class);
-            $backlogItemModel = model(\App\Models\Backlog\backlogItemModel::class);
-            $userStoryModel = model(\App\Models\Backlog\userStoryModel::class);
+            $backlogModel = model(\App\Models\Backlog\BacklogModel::class);
+            $backlogItemModel = model(\App\Models\Backlog\BacklogItemModel::class);
+            $userStoryModel = model(\App\Models\Backlog\UserStoryModel::class);
             // Validate and sanitize input parameters
             $pid = filter_var($pid, FILTER_VALIDATE_INT);
             $pblId = $pblId !== null ? filter_var($pblId, FILTER_VALIDATE_INT) : null;

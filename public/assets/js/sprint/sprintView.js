@@ -319,11 +319,11 @@ if (typeof m_sprintView !== 'undefined') {
                 const li = document.createElement('li');
                 li.className = 'data-item';
                 li.innerHTML = `
-                <span class="data-time">${printData.time}</span>
-                <span class="data-icon">${printData.icon}</span>
+                <span class="data-time">${oxEscape(printData.time)}</span>
+                <span class="data-icon">${oxEscape(printData.icon)}</span>
                 <div class="data-details">
-                    <div class="data-title">${printData.title}</div>
-                    <div class="data-source">${printData.source}</div>
+                    <div class="data-title">${oxSafeHtml(printData.title)}</div>
+                    <div class="data-source">${oxEscape(printData.source)}</div>
                 </div>
             `;
                 dataList.appendChild(li);
@@ -464,9 +464,9 @@ if (typeof m_sprintView !== 'undefined') {
                 li.innerHTML = `
                 <div class="activity-item">
                     <div class="activity-header">
-                        <span class="time">${activity.time}</span>
-                        <span class="icon">${activity.icon}</span>
-                        <span class="title mt-3">${activity.title} <p><span class="source">${activity.source}</span></p></span>
+                        <span class="time">${oxEscape(activity.time)}</span>
+                        <span class="icon">${oxEscape(activity.icon)}</span>
+                        <span class="title mt-3">${oxSafeHtml(activity.title)} <p><span class="source">${oxEscape(activity.source)}</span></p></span>
                     </div>
                 </div>
             `;
@@ -749,20 +749,20 @@ if (typeof m_sprintView !== 'undefined') {
                         if (taskIndex === 0) {
                             tableContent += '<tr>';
                             if (epicIndex === 0 && userStoryIndex === 0) {
-                                document.getElementById('backlogName').innerHTML = '<h6>Backlog Name:</h6><span>' + backlogName + '</span> </h5>';
+                                document.getElementById('backlogName').innerHTML = '<h6>Backlog Name:</h6><span>' + oxEscape(backlogName) + '</span> </h5>';
                             }
                             if (userStoryIndex === 0) {
-                                tableContent += '<td rowspan="' + epicRowSpan + '" class="epic-cell">' + epicName + '</td>';
+                                tableContent += '<td rowspan="' + epicRowSpan + '" class="epic-cell">' + oxEscape(epicName) + '</td>';
                             }
-                            tableContent += '<td rowspan="' + userStoryRowSpan + '" class="user-story">US_' + userStoryId + '</td>';
-                            tableContent += '<td rowspan="' + userStoryRowSpan + '" class="user-story-cell">' + userStoryName + '</td>';
-                            tableContent += '<td class="task-cell">' + taskName + ' - <b>' + percentage + ' %</b></td>';
-                            tableContent += `<td class='status-cell'><span class="status">${status}</span></td>`;
+                            tableContent += '<td rowspan="' + userStoryRowSpan + '" class="user-story">US_' + oxEscape(userStoryId) + '</td>';
+                            tableContent += '<td rowspan="' + userStoryRowSpan + '" class="user-story-cell">' + oxEscape(userStoryName) + '</td>';
+                            tableContent += '<td class="task-cell">' + oxEscape(taskName) + ' - <b>' + oxEscape(percentage) + ' %</b></td>';
+                            tableContent += `<td class='status-cell'><span class="status">${oxEscape(status)}</span></td>`;
                             tableContent += '</tr>';
                         } else {
                             tableContent += '<tr>';
-                            tableContent += '<td class="task-cell">' + taskName + ' - <b>' + percentage + ' %</b></td>';
-                            tableContent += `<td class='status-cell'><span class="status">${status}</span></td>`;
+                            tableContent += '<td class="task-cell">' + oxEscape(taskName) + ' - <b>' + oxEscape(percentage) + ' %</b></td>';
+                            tableContent += `<td class='status-cell'><span class="status">${oxEscape(status)}</span></td>`;
                             tableContent += '</tr>';
                         }
                     });
@@ -998,9 +998,9 @@ if (typeof m_sprintView !== 'undefined') {
                 }).join('');
 
                 sprintItem.innerHTML = `<td class="hidden">${item.r_sprint_activity_id}</td>
-                                    <td>${item.activity}</td>
-                                    <td>${item.startDate}</td>
-                                    <td>${item.endDate}</td>`;
+                                    <td>${oxEscape(item.activity)}</td>
+                                    <td>${oxEscape(item.startDate)}</td>
+                                    <td>${oxEscape(item.endDate)}</td>`;
                 if (permit) {
                     sprintItem.innerHTML += `<td class="activity">
                 <select class="form-select" name="status" id="sprintPlanStatus">
@@ -1016,8 +1016,8 @@ if (typeof m_sprintView !== 'undefined') {
                 }
 
                 sprintItem.innerHTML += `<td>
-                                        <div class="maintext" data-toggle="tooltip" data-placement="top" title="${item.notes}" data-toggle="tooltip" data-placement="top">
-                                            ${item.notes.substring(0, 10)}...
+                                        <div class="maintext" data-toggle="tooltip" data-placement="top" title="${oxEscape(item.notes)}" data-toggle="tooltip" data-placement="top">
+                                            ${oxEscape(item.notes.substring(0, 10))}...
                                         </div>
                                     </td>`;
 
@@ -1218,7 +1218,7 @@ if (typeof m_sprintView !== 'undefined') {
             var pros1 = document.createElement('div');
             pros1.setAttribute('id', 'prosSection');
             pros1.setAttribute('class', 'pros');
-            var prosList = data['pros']['notes'].map(item => `<li>${item}</li>`).join('');
+            var prosList = data['pros']['notes'].map(item => `<li>${oxEscape(item)}</li>`).join('');
             pros1.innerHTML = `<h5>Pros</h5><ul>${prosList}</ul>`;
             //console.log(pros1);
             prosparent.appendChild(pros1);
@@ -1231,7 +1231,7 @@ if (typeof m_sprintView !== 'undefined') {
             var cons1 = document.createElement('div');
             cons1.setAttribute('id', 'consSection');
             cons1.setAttribute('class', 'cons');
-            var consList = data['cons']['notes'].map(item => `<li>${item}</li>`).join('');
+            var consList = data['cons']['notes'].map(item => `<li>${oxEscape(item)}</li>`).join('');
             cons1.innerHTML = `
         <h5>Cons/Challenges</h5>
         <ul>${consList}</ul>`;
@@ -1245,7 +1245,7 @@ if (typeof m_sprintView !== 'undefined') {
             var sugg = document.createElement('div');
             sugg.setAttribute('id', 'suggestionsSection');
             sugg.setAttribute('class', 'suggestions');
-            var suggestionsList = data['lns']['notes'].map(item => `<li>${item}</li>`).join('');
+            var suggestionsList = data['lns']['notes'].map(item => `<li>${oxEscape(item)}</li>`).join('');
             sugg.innerHTML = `<h5>Suggestions</h5><ul>${suggestionsList}</ul>`;
             suggparent.appendChild(sugg);
             //console.log(sugg);
@@ -1374,16 +1374,16 @@ if (typeof m_sprintView !== 'undefined') {
         var scrumDairy = "";
 
         if (!(item.Y == "")) {
-            scrumDairy += `<div class="scrum-item" style='border:1px solid red;'><div class="scrum-item-title" id="daily-scrum"><span>Daily scrum ${Object.keys(dailyScrum)[index]}</span></div><div class="scrum-item-details"><div class="scrum-details">`;
+            scrumDairy += `<div class="scrum-item" style='border:1px solid red;'><div class="scrum-item-title" id="daily-scrum"><span>Daily scrum ${oxEscape(Object.keys(dailyScrum)[index])}</span></div><div class="scrum-item-details"><div class="scrum-details">`;
 
         }
         else {
-            scrumDairy += `<div class="scrum-item"'><div class="scrum-item-title" id="daily-scrum"><span>Daily scrum ${Object.keys(dailyScrum)[index]}</span></div><div class="scrum-item-details"><div class="scrum-details">`;
+            scrumDairy += `<div class="scrum-item"'><div class="scrum-item-title" id="daily-scrum"><span>Daily scrum ${oxEscape(Object.keys(dailyScrum)[index])}</span></div><div class="scrum-item-details"><div class="scrum-details">`;
         }
         if (!(item.N == "")) {
             scrumDairy += `<p class ="ds_title">Review</p><div class='scrum-para'>`;
             item.N.forEach(data => {
-                scrumDairy += `<p class='ds_Review'>${data[0]} - ${data[1]}</p>`;
+                scrumDairy += `<p class='ds_Review'>${oxEscape(data[0])} - ${oxEscape(data[1])}</p>`;
 
             })
             scrumDairy += '</div>';
@@ -1391,7 +1391,7 @@ if (typeof m_sprintView !== 'undefined') {
         if (!(item.Y == "")) {
             scrumDairy += `<p class ="ds_title">Challenge</p><div class='scrum-para'>`;
             item.Y.forEach(data => {
-                scrumDairy += `<p class='ds_Challenge'>${data[0]} - ${data[1]}</p>`;
+                scrumDairy += `<p class='ds_Challenge'>${oxEscape(data[0])} - ${oxEscape(data[1])}</p>`;
 
             })
             scrumDairy += '</div>';
@@ -1425,7 +1425,7 @@ if (typeof m_sprintView !== 'undefined') {
         Members.forEach(member => {
             MembersValues += `<tr>`;
             Object.values(member).filter((rows, index) => {
-                MembersValues += `<td>${rows}</td>`
+                MembersValues += `<td>${oxEscape(rows)}</td>`
 
             })
             MembersValues += `</tr>`;
@@ -1505,7 +1505,7 @@ if (typeof m_sprintView !== 'undefined') {
                 taskCheckboxesContainer.innerHTML += `
                 <label for="${data[task].id}">
                     <input type="checkbox" id="${data[task].id}" name="TaskId[]" value="${data[task].id}">
-                    ${data[task].name}
+                    ${oxEscape(data[task].name)}
                 </label>
             `;
             });

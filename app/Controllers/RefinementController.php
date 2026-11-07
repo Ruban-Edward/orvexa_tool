@@ -36,6 +36,9 @@ class RefinementController extends BaseController
     {
         // Retrieve the product ID from the request's query parameters
         $pId = $this->request->getGet('pid');
+        if (!$this->ownsItem('product', $pId)) {
+            return $this->template_view('dashboard/NodataView', null, 'No data', ['Products' => ASSERT_PATH . 'backlog/productbacklogs']);
+        }
 
         // Define breadcrumb navigation for the page
         $breadcrumbs = [
@@ -78,7 +81,10 @@ class RefinementController extends BaseController
         }
 
         // Fetch the current backlog refinement data from the model
-        $currentData = $this->backlogModel->backlogRefinement();
+        if ($denied = $this->denyUnlessOwns([['product', $pId]])) {
+            return $denied;
+        }
+        $currentData = $this->backlogModel->backlogRefinement((int) $pId);
 
         // Initialize an array to store the current backlog item order
         $currentArray = [];
@@ -88,6 +94,8 @@ class RefinementController extends BaseController
         }
 
         // Compute the difference between the dragged (new) order and the current order
+        // Only items of this product can be reordered
+        $draggedArray = array_intersect_key($draggedArray, $currentArray);
         $arrayDiff = array_diff_assoc($draggedArray, $currentArray);
 
         // Store the changes into history (for tracking purposes)

@@ -101,11 +101,11 @@ $user_story_id = 0;
                     action="<?php echo ASSERT_PATH . 'backlog/addepic?pid=' . $pId . '&pblid=' . $pblId ?>"
                     method="POST" enctype="multipart/form-data" novalidate
                     onsubmit="event.preventDefault(); handleFormSubmission({formId: 'addEpicform',modalId: 'addTaskModal',successTitle: 'Epic Added'});">
-                    <input type="number" value="<?=$pblId?>" id="pblid" name="pblid" hidden>
+                    <input type="number" value="<?= (int) $pblId ?>" id="pblid" name="pblid" hidden>
                     <div class="col-md-6">
                         <label for="productname" class="form-label form-need">Product name</label>
                         <input type="text" id="productname" class="form-control readonly" name="product name"
-                            value="<?php echo $productName ?>" readonly>
+                            value="<?= esc($productName) ?>" readonly>
                         <div class="valid-feedback">Looks good!</div>
                         <div class="invalid-feedback">Enter product</div>
                     </div>
@@ -147,11 +147,11 @@ $user_story_id = 0;
                     action="<?php echo ASSERT_PATH . 'backlog/addUserStory?pid=' . $pId . '&pblid=' . $pblId; ?>"
                     method="POST" enctype="multipart/form-data" novalidate
                     onsubmit="event.preventDefault(); handleFormSubmission({formId: 'addUserStoryform',modalId: 'addUserStoryModal'});">
-                    <input type="number" value="<?=$pblId?>" id="pblid" name="pblid" hidden>
+                    <input type="number" value="<?= (int) $pblId ?>" id="pblid" name="pblid" hidden>
                     <div class="col-md-6">
                         <label for="productname" class="form-label form-need">Product name</label>
                         <input type="text" id="product name" class="form-control readonly" name="product name"
-                            value="<?php echo $productName ?>" readonly>
+                            value="<?= esc($productName) ?>" readonly>
                         <div class="valid-feedback">Looks good!</div>
                         <div class="invalid-feedback">Enter product</div>
                     </div>
@@ -172,7 +172,7 @@ $user_story_id = 0;
                             <?php
 foreach ($epic as $value): ?>
 
-                            <option class="dropdown-epic" value="<?=$value['epic_id']?>"><?=$value['epic_description']?>
+                            <option class="dropdown-epic" value="<?= esc($value['epic_id']) ?>"><?= esc($value['epic_description']) ?>
                             </option>
 
                             <?php endforeach?>
@@ -284,8 +284,8 @@ foreach ($epic as $value): ?>
             <div class="modal-body">
                 <form id="fileUploadForm" action="<?php echo base_url('backlog/uploaduserstories'); ?>" method="POST"
                     enctype="multipart/form-data">
-                    <input name='pblId' value="<?=$pblId?>" hidden>
-                    <input name='pId' value="<?=$pId?>" hidden>
+                    <input name='pblId' value="<?= (int) $pblId ?>" hidden>
+                    <input name='pId' value="<?= (int) $pId ?>" hidden>
                     <div class="mb-3">
                         <label for="file" class="form-label">Choose file</label>
                         <a class="download" href="<?=base_url('backlog/downloadReference/samplefile.csv')?>">
@@ -321,7 +321,7 @@ foreach ($epic as $value): ?>
                         <label for="product_name" class="form-label">Product name</label>
                         <input type="text" class="form-control" id="product_name" name="product_name"
                             value="<?=trim(ucfirst(strtolower($productName)));?>" readonly>
-                        <input type="hidden" name="r_product_id" value="<?=$pId;?>">
+                        <input type="hidden" name="r_product_id" value="<?= (int) $pId ?>">
                         <div class="invalid-feedback">Please provide a product name</div>
                     </div>
 
@@ -361,8 +361,8 @@ foreach ($epic as $value): ?>
                             <label class="dropdown-item-epic px-3">
                                 <input type="checkbox" class="epic-checkbox"
                                     value="<?=trim(ucfirst(strtolower($value['epic_id'])))?>"
-                                    data-description="<?=trim(ucfirst(strtolower($value['epic_description'])))?>">
-                                <?=trim(ucfirst(strtolower($value['epic_description'])))?>
+                                    data-description="<?= esc(trim(ucfirst(strtolower($value['epic_description'])))) ?>">
+                                <?= esc(trim(ucfirst(strtolower($value['epic_description'])))) ?>
                             </label>
                             <?php endforeach?>
                             <?php endif?>
@@ -487,7 +487,7 @@ foreach ($epic as $value): ?>
                                 <div id="emailDropdown" class="dropdown-menu">
                                     <?php foreach ($userName as $value): ?>
                                     <label class='email-option' for=""
-                                        onclick="updateSelectedEmails('<?=$value?>')"><?=$value?></label>
+                                        onclick="updateSelectedEmails('<?= esc($value, 'js') ?>')"><?= esc($value) ?></label>
                                     <?php endforeach;?>
                                 </div>
                             </div>
@@ -572,8 +572,8 @@ var allUserStories = <?php echo json_encode($data); ?>;
 var totalCount = <?php echo json_encode($data['story_count']); ?>;
 var current_user = <?=json_encode($current_user)?>;
 console.log("current_user", current_user);
-var pId = <?=$pId?>;
-var pblId = "<?=$pblId?>"
+var pId = <?= (int) $pId ?>;
+var pblId = "<?= (int) $pblId ?>"
 var baseUrl = '<?=base_url()?>';
 var comments = <?=json_encode($comments)?>;
 var assert_path = '<?=ASSERT_PATH?>';

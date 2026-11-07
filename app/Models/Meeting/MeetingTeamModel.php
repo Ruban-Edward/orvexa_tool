@@ -158,6 +158,14 @@ class MeetingTeamModel extends Model
      * @return array
      * Retrieves team members against user and displaying brainstrom model
      */
+    public function getTeam(int $teamId): ?array
+    {
+        return $this->db->table('orvexa_meeting_team')
+            ->select('meeting_team_id, r_product_id, r_external_employee_id')
+            ->where('meeting_team_id', $teamId)
+            ->get()->getRowArray();
+    }
+
     public function getTeamMembers($id)
     {
         $sql = "SELECT 

@@ -1,3 +1,50 @@
+// Output encoding for user text inserted with innerHTML / template strings.
+window.oxEscape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+})[ch]);
+
+// Allow-list HTML sanitizer for stored markup we render on purpose.
+// 'basic': the <b>/<strong>/<i>/<em>/<br> used by activity history entries.
+// 'rich':  the formatting TinyMCE produces (no scripts, handlers, frames or javascript: URLs).
+window.oxSafeHtml = (function () {
+    const ALLOWED = {
+        basic: ['B', 'STRONG', 'I', 'EM', 'BR'],
+        rich: ['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'BR', 'P', 'DIV', 'SPAN', 'UL', 'OL', 'LI', 'A',
+            'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE', 'CODE', 'SUB', 'SUP', 'HR',
+            'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD'],
+    };
+    const DROP = ['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'META', 'SVG', 'MATH', 'TEMPLATE', 'FORM', 'INPUT', 'TEXTAREA', 'BUTTON', 'SELECT'];
+    const ATTRS = { A: ['href', 'title'], TD: ['colspan', 'rowspan'], TH: ['colspan', 'rowspan'] };
+
+    function clean(node, allowed) {
+        [...node.childNodes].forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) return;
+            if (child.nodeType !== Node.ELEMENT_NODE || DROP.includes(child.nodeName)) {
+                child.remove();
+                return;
+            }
+            clean(child, allowed);
+            if (!allowed.includes(child.nodeName)) {
+                child.replaceWith(...child.childNodes); // keep the text, lose the tag
+                return;
+            }
+            [...child.attributes].forEach(attr => {
+                const keep = (ATTRS[child.nodeName] || []).includes(attr.name)
+                    && !(attr.name === 'href' && !/^(https?:|mailto:|#|\/)/i.test(attr.value.trim()));
+                if (!keep) child.removeAttribute(attr.name);
+            });
+            if (child.nodeName === 'A') child.setAttribute('rel', 'noopener noreferrer');
+        });
+    }
+
+    return function (html, mode = 'basic') {
+        const tpl = document.createElement('template'); // inert: nothing runs or loads while parsing
+        tpl.innerHTML = String(html ?? '');
+        clean(tpl.content, ALLOWED[mode] || ALLOWED.basic);
+        return tpl.innerHTML;
+    };
+})();
+
 // Shared UI helpers used by the list pages: toasts (with Undo), pager, remembered
 // filters with chips, empty states, undoable deletes, unsaved-change guard and
 // global keyboard shortcuts. Exposed as window.Ox.

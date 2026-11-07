@@ -4,3 +4,13 @@ writable/logs/*
 writable/session/*
 writable/debugbar/*
 docker/mysql/data
+# Secrets, data dumps and dev-only files never go into the image
+.env
+.env.*
+!.env.example
+docker/mysql
+database_sample
+tests
+build
+writable/uploads/*
+!writable/uploads/index.html

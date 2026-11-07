@@ -74,6 +74,13 @@ body.ox-app #main .dropdown-menu {
     box-shadow: var(--glass-highlight), var(--glass-shadow) !important;
 }
 
+/* swal2 masks its success-icon animation with opaque white shapes; on a
+   translucent popup they show as white blobs, so drop them */
+body.ox-app .swal2-icon.swal2-success [class^="swal2-success-circular-line"],
+body.ox-app .swal2-icon.swal2-success .swal2-success-fix {
+    display: none !important;
+}
+
 /* Flash toasts keep their status stripe */
 body.ox-app .global-flash-message.alert-success {
     border-left: 4px solid var(--ox-brand-500) !important;

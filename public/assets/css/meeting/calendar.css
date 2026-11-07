@@ -47,7 +47,7 @@
 
 /* flatpickr mini month, tuned to the brand */
 .ox-mini-wrap input { display: none; }
-.ox-mini-wrap .flatpickr-calendar { box-shadow: none; width: 100%; background: transparent; border: 0; }
+body.ox-app .ox-mini-wrap .flatpickr-calendar { box-shadow: none; width: 100%; background: transparent; border: 0; }
 .ox-mini-wrap .flatpickr-innerContainer, .ox-mini-wrap .flatpickr-rContainer, .ox-mini-wrap .flatpickr-days, .ox-mini-wrap .dayContainer { width: 100%; min-width: 0; max-width: none; }
 .ox-mini-wrap .flatpickr-day { max-width: none; height: 34px; line-height: 34px; border-radius: 9px; font-size: .8rem; }
 .ox-mini-wrap .flatpickr-day:hover, .ox-mini-wrap .flatpickr-day:focus { background: var(--app-tint, #e8f2eb); border-color: transparent; color: var(--primary-color, #175738); }
@@ -60,7 +60,7 @@
 .ox-mini-wrap .flatpickr-current-month .numInputWrapper { width: 4.4ch; }
 .ox-mini-wrap .numInputWrapper:hover { background: transparent; }
 .ox-mini-wrap .numInputWrapper span { display: none; }
-.ox-mini-wrap .flatpickr-current-month input.cur-year { font-weight: 700; padding: 0; }
+body.ox-app #main .ox-mini-wrap .flatpickr-current-month input.cur-year { font-weight: 700; padding: 0; min-height: 0; border: 0 !important; background: transparent !important; box-shadow: none !important; }
 .ox-mini-wrap .flatpickr-weekday { color: var(--pro-muted, #68776d); font-weight: 600; }
 
 /* ---------- Segmented control & toolbar ---------------------------------- */
@@ -116,7 +116,7 @@
     background: var(--primary-color, #175738); color: #fff; border-radius: 50%; width: 28px; height: 28px; margin: 4px;
     display: inline-flex; align-items: center; justify-content: center; padding: 0; float: right;
 }
-.calendar .fc-daygrid-day-frame { min-height: 112px; }
+.calendar .fc-dayGridMonth-view .fc-daygrid-day-frame { min-height: 112px; }
 .calendar .fc-timegrid-slot { height: 2.6rem; }
 .calendar .fc-timegrid-slot-label-cushion, .calendar .fc-timegrid-axis-cushion { font-size: .72rem; color: var(--pro-muted, #68776d); font-weight: 500; }
 .calendar .fc-timegrid-col.fc-day-today { background: var(--fc-today-bg-color); }

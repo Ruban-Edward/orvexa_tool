@@ -87,6 +87,12 @@ class MeetingController extends BaseController
             // Fetch the members associated with the meeting
             $meeting_members = $this->MeetingMemberModelObj->getMeetingMembersEdit(['meetId' => $meetId]);
             $memberId = array_column($meeting_members, 'r_user_id');
+            // Visible to the host, the invitees and members of the meeting's product
+            $me = (int) session()->get('employee_id');
+            if ((int) $meeting[0]['r_user_id'] !== $me && !in_array($me, array_map('intval', $memberId), true)
+                && !$this->ownsItem('product', $meeting[0]['r_product_id'] ?? null)) {
+                return $this->response->setStatusCode(403)->setJSON(['message' => 'You do not have access to this meeting.']);
+            }
             $meeting_members_id = implode(",", $memberId);
             $names = array_column($meeting_members, 'first_name');
             $meeting_members_names = implode(",", $names);
@@ -114,6 +120,9 @@ class MeetingController extends BaseController
      */
     public function getSprintDetails($id): Response
     {
+        if ($denied = $this->denyUnlessOwns([['sprint', $id]])) {
+            return $denied;
+        }
         $sprint = $this->meetingModelObj->getSprintById($id);
         if ($sprint) {
             return $this->response->setJSON($sprint);
@@ -130,6 +139,9 @@ class MeetingController extends BaseController
      */
     public function sprintByProduct($productId): Response
     {
+        if ($denied = $this->denyUnlessOwns([['product', $productId]])) {
+            return $denied;
+        }
         $sprints = $this->meetingModelObj->getSprintByproduct($productId);
         if ($sprints) {
             return $this->response->setJSON($sprints);
@@ -175,6 +187,9 @@ class MeetingController extends BaseController
             $data['r_user_id_updated'] = session()->get('employee_id');
             $data['updated_date'] = date("Y-m-d H:i:s");
             $data['r_sprint_id'] = $this->request->getPost('r_sprint_id');
+            if ($denied = $this->denyUnlessOwnsOptional(['product' => $data['r_product_id'] ?? null, 'sprint' => $data['r_sprint_id']])) {
+                return $denied;
+            }
 
             //Recurrance Details
             $updateAsSeries = $this->request->getPost('updateAsSeries');
@@ -259,6 +274,9 @@ class MeetingController extends BaseController
             $data['r_user_id'] = $data['r_user_id_created'] = session()->get('employee_id');
             $data['created_date'] = date("Y-m-d H:i:s");
             $data['r_sprint_id'] = $this->request->getPost('r_sprint_id');
+            if ($denied = $this->denyUnlessOwnsOptional(['product' => $data['r_product_id'] ?? null, 'sprint' => $data['r_sprint_id']])) {
+                return $denied;
+            }
 
             if ($data['r_meeting_type_id'] == 3) {
                 $data['meeting_start_date'] = $this->request->getPost('sprint_start_date');
@@ -330,6 +348,37 @@ class MeetingController extends BaseController
     /**
      * Can the logged-in user change/cancel/log this meeting? (host or a manager role)
      */
+    /** Like denyUnlessOwns(), for optional references: empty values are skipped. */
+    private function denyUnlessOwnsOptional(array $refs)
+    {
+        $items = [];
+        foreach ($refs as $type => $id) {
+            if ($id !== null && $id !== '' && $id !== '0' && $id !== 0) {
+                $items[] = [$type, $id];
+            }
+        }
+
+        return $items ? $this->denyUnlessOwns($items) : null;
+    }
+
+    /** Group owner or a manager may change a meeting group. */
+    private function canManageTeam(int $teamId): bool
+    {
+        $team = model(\App\Models\Meeting\MeetingTeamModel::class)->getTeam($teamId);
+
+        return $team !== null && ((int) $team['r_external_employee_id'] === (int) session()->get('employee_id')
+            || in_array((int) session()->get('role_id'), self::MANAGER_ROLES, true));
+    }
+
+    /** Group owner or members of the group's product may read a meeting group. */
+    private function canSeeTeam(int $teamId): bool
+    {
+        $team = model(\App\Models\Meeting\MeetingTeamModel::class)->getTeam($teamId);
+
+        return $team !== null && ((int) $team['r_external_employee_id'] === (int) session()->get('employee_id')
+            || $this->ownsItem('product', $team['r_product_id']));
+    }
+
     private function canManageMeeting(array $meeting): bool
     {
         return (int) $meeting['r_user_id'] === (int) session()->get('employee_id')
@@ -919,6 +968,9 @@ class MeetingController extends BaseController
             } else {
                 $selectedTeamMembers = explode(",", $selectedTeam);
             }
+            if ($denied = $this->denyUnlessOwnsOptional(['product' => $data['r_product_id'] ?? null])) {
+                return $denied;
+            }
             $data['r_external_employee_id'] = session()->get('employee_id');
             $checkValidations = $this->hasInvalidInput($this->MeetingTeamModelObj, $data);
             if ($checkValidations !== true) {
@@ -965,6 +1017,9 @@ class MeetingController extends BaseController
      */
     public function getTeamDetailsById($id)
     {
+        if (!$this->canSeeTeam((int) $id)) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false]);
+        }
         $data = ['r_meeting_team_id' => $id];
         $members = $this->meetingModelObj->getTeamDetailsById($data);
         if ($members) {
@@ -1007,6 +1062,12 @@ class MeetingController extends BaseController
                 return $this->response->setJSON(['empty' => true, 'message' => 'No members selected']);
             } else {
                 $selectedTeamMembers = explode(",", $selectedTeam);
+            }
+            if (!$this->canManageTeam((int) ($data['meeting_team_id'] ?? 0))) {
+                return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'Only the group owner or a manager can edit this group.']);
+            }
+            if (!empty($data['r_product_id']) && !$this->ownsItem('product', $data['r_product_id'])) {
+                return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You do not have access to this product.']);
             }
             $data['r_external_employee_id'] = session()->get('employee_id');
             $checkValidations = $this->hasInvalidInput($this->MeetingTeamModelObj, $data);
@@ -1077,9 +1138,11 @@ class MeetingController extends BaseController
             if ($id == null) {
                 return $this->response->setJSON(['deleted' => false, 'message' => 'Failed']);
             }
+            if (!$this->canManageTeam((int) $id)) {
+                return $this->response->setStatusCode(403)->setJSON(['deleted' => false, 'message' => 'Only the group owner or a manager can delete this group.']);
+            }
             $data = ['meeting_team_id' => $id];
             $result = $this->MeetingTeamModelObj->deleteGroupDetails($data);
-            log_message('debug', 'result ' . print_r($result, true));
             if ($result == true) {
                 $this->MeetingTeamMemberModelObj->deleteGroupMembersDetails($data);
                 return $this->response->setJSON(['deleted' => true, 'message' => 'Success']);
@@ -1096,6 +1159,9 @@ class MeetingController extends BaseController
      */
     public function getSprintMembersDetails($sprintId)
     {
+        if ($denied = $this->denyUnlessOwns([['sprint', $sprintId]])) {
+            return $denied;
+        }
         // Fetch team members
         $teamMembers = $this->meetingModelObj->getSprintMembers($sprintId);
         $meetingTypearray = $this->meetingModelObj->getMeetingType();
@@ -1169,6 +1235,9 @@ class MeetingController extends BaseController
      */
     public function getMembersByProduct($id): Response
     {
+        if ($denied = $this->denyUnlessOwns([['product', $id]])) {
+            return $denied;
+        }
         $data = ['external_project_id' => $id];
         $members = $this->meetingModelObj->getMembersByProduct($data);
         if ($members) {
@@ -1186,6 +1255,9 @@ class MeetingController extends BaseController
      */
     public function backlogByProduct($productId): Response
     {
+        if ($denied = $this->denyUnlessOwns([['product', $productId]])) {
+            return $denied;
+        }
         $backlogs = $this->meetingModelObj->getbacklogByProduct($productId);
         if ($backlogs) {
             return $this->response->setJSON($backlogs);
@@ -1200,6 +1272,9 @@ class MeetingController extends BaseController
      */
     public function getEpic($backlogId): Response
     {
+        if ($denied = $this->denyUnlessOwns([['backlog', $backlogId]])) {
+            return $denied;
+        }
         $this->epicModel = model(\App\Models\Backlog\EpicModel::class);
         $epics = $this->epicModel->epicByBrainstrom($backlogId);
         if ($epics) {
@@ -1264,6 +1339,9 @@ class MeetingController extends BaseController
      */
     public function getSprintMembersById($sprintId)
     {
+        if ($denied = $this->denyUnlessOwns([['sprint', $sprintId]])) {
+            return $denied;
+        }
         $sprintMembers = $this->meetingModelObj->getSprintMembersById($sprintId);
         if ($sprintMembers) {
             return $this->response->setJSON(['members' => $sprintMembers]);

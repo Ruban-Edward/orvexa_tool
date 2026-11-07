@@ -9,3 +9,6 @@ docs/ORVEXA_COMMANDS.md
 # Sensitive database dumps and archives
 database_sample/*.zip
 *.bak
+
+# Test/build output
+build/

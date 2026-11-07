@@ -315,7 +315,7 @@ if (typeof manageUser !== 'undefined') {
             openActivity(user);
         } else if (button.dataset.reset) {
             Swal.fire({
-                title: `Reset the password of ${user.first_name}?`,
+                title: `Reset the password of ${oxEscape(user.first_name)}?`,
                 text: 'Their current password stops working once the new one is issued.',
                 icon: 'warning',
                 showCancelButton: true,

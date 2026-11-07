@@ -603,6 +603,17 @@ tbody tr:last-child td:last-child {
     color: var(--ox-brand-700);
 }
 
+.action_button .dropdown-item,
+.action_button .dropdown-item:hover,
+.action_button .dropdown-item:focus {
+    width: auto;
+    background: transparent;
+}
+
+.action_button .dropdown-item i {
+    color: var(--ox-brand-700);
+}
+
 .custom-table .action_button a {
     margin-right: 0px;
 }
@@ -614,7 +625,7 @@ tbody tr:last-child td:last-child {
 }
 
 .removeBtnstyle {
-    background-color: white;
+    background-color: transparent;
     border: navajowhite;
     color: blue;
     padding: 0;

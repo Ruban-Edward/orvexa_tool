@@ -185,8 +185,10 @@ class SprintController extends BaseController
           //     Fetch user products from BacklogModel
           $userProductsMultiDim = $this->backlogModel->getUserProduct($uId);
           $userProducts = array_column($userProductsMultiDim, 'product_id');
-          $params = $_POST['formData'];
-          $params = $this->fetchMultipleItems($params);
+          if (empty($userProducts)) {
+               return json_encode(['status' => 'success', 'data' => [], 'limit' => $limit, 'totalrows' => 0, 'current_page' => $page, 'per_page' => $limit]);
+          }
+          $params = (array) ($this->request->getPost('formData') ?? []);
 
           $tasks = $this->sprintModel->getSprintList($userProducts, $uId, $limit, $offset, null, $params);
           $totalRows = $tasks[1];
@@ -205,34 +207,6 @@ class SprintController extends BaseController
      }
 
      /**
-      * Formats a list of columns for SQL queries by adding single quotes around each item.
-      *
-      * @param array $columnsList An array of columns or arrays of columns to be formatted.
-      * @return array The formatted array with single quotes around each column name.
-      */
-     public function fetchMultipleItems($columnsList)
-     {
-          // Iterate through each item in the columns list
-          foreach ($columnsList as $key => $columns) {
-               // Check if the current item is an array
-               if (is_array($columns)) {
-                    // Add single quotes around each value in the array
-                    $columnsList[$key] = array_map(function ($value) {
-                         return "'" . $value . "'";
-                    }, $columns);
-               } else if ($columns != "") {
-                    // Add single quotes around a single column if it's not an array and not empty
-                    $columnsList[$key] = "'" . $columns . "'";
-               }
-               // If the current item is now an array, implode it into a comma-separated string
-               if (is_array($columnsList[$key])) {
-                    $columnsList[$key] = implode(',', $columnsList[$key]);
-               }
-          }
-          return $columnsList;
-     }
-
-     /**
       * Retrieves tasks for a given product ID and formats them for response.
       *
       * @param int $productId The ID of the product to retrieve tasks for.
@@ -243,6 +217,9 @@ class SprintController extends BaseController
           // Check if product ID is provided
           if (!$productId) {
                return json_encode(['success' => false, 'message' => 'Product ID is required']);
+          }
+          if ($denied = $this->denyUnlessOwns([['product', $productId]])) {
+               return $denied;
           }
           $param = [
                "userStory" => $this->sprintModelConfig->userStoryReadyForSprint,
@@ -411,6 +388,9 @@ class SprintController extends BaseController
           if (!$productId) {
                return json_encode(['success' => false, 'message' => 'Product ID is required']);
           }
+          if ($denied = $this->denyUnlessOwns([['product', $productId]])) {
+               return $denied;
+          }
           // Fetch members by product ID
           $users = $this->sprintModel->getMembersByProduct($productId);
           // Return the response as a JSON encoded string
@@ -470,6 +450,9 @@ class SprintController extends BaseController
                'created_date' => date('Y-m-d H:i:s'),
                'r_user_id_created' => $this->userId,
           ];
+          if ($denied = $this->denyUnlessOwns(array_merge([['product', $data['r_product_id']]], $this->taskItems($this->request->getPost('selectedTasks'))))) {
+               return $denied;
+          }
           $checkValidations = $this->hasInvalidInput($this->scrumSprintModelobj, $data);
           if ($checkValidations !== true) {
                return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
@@ -704,6 +687,9 @@ class SprintController extends BaseController
                return $this->redirectToSprintView($viewData['id']);
           }
           // Fetch sprint planning details from the model
+          if ($denied = $this->denyUnlessOwns([['sprint', $viewData['id']]])) {
+               return $denied;
+          }
           $viewData['sprintPlanning'] = $this->sprintModel->getSprintPlanning($viewData['id']);
           $i = 0;
           foreach ($viewData['sprintPlanning'] as $key1 => $value1) {
@@ -739,6 +725,9 @@ class SprintController extends BaseController
           // Get the sprint ID from the GET request
           $viewData['id'] = $this->request->getGet('sprint_id');
 
+          if ($denied = $this->denyUnlessOwns([['sprint', $viewData['id']]])) {
+               return $denied;
+          }
           $codeReviewers = array_column($this->sprintModel->fetchCodeReviewers($viewData['id']), "code_reviewers");
           // Fetch sprint review details from the model
           $notesInput = ['notes_type' => $this->sprintModelConfig->reviewNotes, 'reference' => $viewData['id']];
@@ -764,6 +753,9 @@ class SprintController extends BaseController
      public function ReviewSprintPlanDetails()
      {
           $sprintSettings = $this->request->getPost();
+          if ($denied = $this->denyUnlessOwns([['sprint', $sprintSettings['sprint_id'] ?? null]])) {
+               return $denied;
+          }
 
           $i = 0;
           foreach ($sprintSettings['sprintData'] as $value1) {
@@ -817,6 +809,9 @@ class SprintController extends BaseController
           }
 
           // Fetch sprint retrospective details from the model
+          if ($denied = $this->denyUnlessOwns([['sprint', $viewData['id']]])) {
+               return $denied;
+          }
           $notesInput = ['notes_type' => $this->sprintModelConfig->retrospectiveNotes, 'reference' => $viewData['id']];
           $sprintRetrospective = $this->notesService->getNotes($notesInput);
 
@@ -864,6 +859,9 @@ class SprintController extends BaseController
 
                $data = $this->request->getPost();
                // return $this->response->setJSON(["success" => true, "data" => $data]);
+               if ($denied = $this->denyUnlessOwns(array_merge([['sprint', $this->request->getGet('sprint_id')]], $this->taskItems($data['TaskId'] ?? null)))) {
+                    return $denied;
+               }
                foreach ($data["TaskId"] as $value) {
                     $data = [
                          "notes" => $this->request->getPost("general"),
@@ -904,6 +902,11 @@ class SprintController extends BaseController
           // Retrieve the sprint ID from the GET request
           $viewData['id'] = $this->request->getPost('sprint_id');
           // Retrieve sprint tasks from the model
+          if (!$this->ownsItem('sprint', $viewData['id'])) {
+               return $this->request->isAJAX()
+                    ? $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You do not have access to this item.'])
+                    : redirect()->to(ASSERT_PATH . 'no_access');
+          }
           $tasks = $this->sprintModel->getSprintTask($viewData['id']);
           // Initialize the sprint task and backlog items arrays
 
@@ -930,7 +933,8 @@ class SprintController extends BaseController
           ];
 
           $sprintDetails = $this->sprintModel->getSprint($viewData['id']);
-          $title = "Sprint Review: <span style='font-size: 1.6rem; font-weight:100'>" . $sprintDetails[0]["sprint_name"] . " </span><span style='font-size: 1.5rem; font-weight:100'>v" . $sprintDetails[0]["sprint_version"] . "</span>";
+          // Plain text: the layout escapes the page title
+          $title = "Sprint Review: " . $sprintDetails[0]["sprint_name"] . " v" . $sprintDetails[0]["sprint_version"];
 
           // Return the Sprint Review view
           return $this->template_view('sprint/sprintReview', $viewData, $title, $breadcrumbs);
@@ -945,6 +949,9 @@ class SprintController extends BaseController
      {
           // Retrieve submitted data from the POST request
           $selectedStories = $this->request->getPost();
+          if ($denied = $this->denyUnlessOwns($this->taskItems($selectedStories['id'] ?? null))) {
+               return $denied;
+          }
           $tasks = $selectedStories['id'];
           $status = $selectedStories['taskStatus'];
           $result = $this->sprintModel->updateTaskReview($tasks, $status);
@@ -968,6 +975,9 @@ class SprintController extends BaseController
           // $data = $this->request->getPost();
           // return $this->response->setJSON(["success" => true, "data" => $data]);
           $selectedMembers = $this->request->getPost("selectedMembers");
+          if ($denied = $this->denyUnlessOwns([['sprint', $this->request->getGet('sprint_id')]])) {
+               return $denied;
+          }
 
           if ($this->request->getPost("codeReviewStatus") == "Y") {
                if (!isset($selectedMembers)) {
@@ -1060,6 +1070,9 @@ class SprintController extends BaseController
           // Check if the request method is POST
           if ($this->request->getMethod() == "POST") {
                $input = $this->request->getPost();
+               if ($denied = $this->denyUnlessOwns([['sprint', $input['sprint_id'] ?? null]])) {
+                    return $denied;
+               }
                $i = 0;
                // return $this->response->setJSON(["success" => true, "data" => $data["feedbacks"]]);
                foreach ($input["feedbacks"] as $key1 => $value1) {
@@ -1123,8 +1136,11 @@ class SprintController extends BaseController
       *
       * @return string Rendered view for editing the sprint.
       */
-     public function edit(): string
+     public function edit(): string|Response
      {
+          if (!$this->ownsItem('sprint', $this->request->getPost('sprint_id'))) {
+               return redirect()->to(ASSERT_PATH . 'no_access');
+          }
           // Set up breadcrumbs for navigation
           $breadcrumbs = [
                'Sprints' => ASSERT_PATH . 'sprint/sprintlist',
@@ -1187,6 +1203,9 @@ class SprintController extends BaseController
           ];
 
           // Validate the data
+          if ($denied = $this->denyUnlessOwns(array_merge([['sprint', $data['sprint_id']], ['product', $data['r_product_id']]], $this->taskItems($this->request->getPost('selectedTasks'))))) {
+               return $denied;
+          }
           $checkValidations = $this->hasInvalidInput($this->scrumSprintModelobj, $data);
           if ($checkValidations !== true) {
                return $this->response->setJSON(['success' => false, 'data' => $checkValidations]);
@@ -1322,6 +1341,9 @@ class SprintController extends BaseController
      public function updateSprintPlan()
      {
           $data = $this->request->getPost();
+          if ($denied = $this->denyUnlessOwns([['sprint', $data['sprint_id'] ?? null]])) {
+               return $denied;
+          }
           $a = $this->sprintModel->updateSprintPlan($data);
           if ($a) {
                $action = array(
@@ -1341,6 +1363,9 @@ class SprintController extends BaseController
      public function updateSprintStatus()
      {
           $data = $this->request->getPost();
+          if ($denied = $this->denyUnlessOwns([['sprint', $data['sprint_id'] ?? null]])) {
+               return $denied;
+          }
           $a = $this->sprintModel->updateSprintStatus($data);
           if ($a) {
                $action = array(
@@ -1367,6 +1392,9 @@ class SprintController extends BaseController
                "module" => $this->sprintModelConfig->moduleHistory,
                "sprint_id" => $id
           ];
+          if ($denied = $this->denyUnlessOwns([['sprint', $id]])) {
+               return $denied;
+          }
           $details = $this->sprintModel->getSprintHistory($param);
 
           foreach ($details as $key1 => $value1) {
@@ -1387,6 +1415,9 @@ class SprintController extends BaseController
      public function fetchMembers()
      {
           $sprintId = $this->request->getGet('sprint_id');
+          if ($denied = $this->denyUnlessOwns([['sprint', $sprintId]])) {
+               return $denied;
+          }
           $members = $this->sprintModel->getSprintMember($sprintId);
 
           $result = array_map(function ($item) {
@@ -1412,6 +1443,9 @@ class SprintController extends BaseController
      public function fetchScrumTasks()
      {
           $id = $this->request->getPost('sprintId');
+          if ($denied = $this->denyUnlessOwns([['sprint', $id]])) {
+               return $denied;
+          }
 
           $tasks = $this->sprintModel->getSprintTask($id);
           $finalTasks = [];
@@ -1497,6 +1531,9 @@ class SprintController extends BaseController
 
      public function changeSprintStatusById($sprintId)
      {
+          if ($denied = $this->denyUnlessOwns([['sprint', $sprintId]])) {
+               return $denied;
+          }
           $data = [
                'sprintId' => $sprintId,
                'status' => $this->request->getPost('newStatus'),
@@ -1505,6 +1542,14 @@ class SprintController extends BaseController
           $this->sprintModel->alterSprintStatusById($data);
           (new NotificationService())->sprintStatusChanged((int) $sprintId, (int) $this->userId);
           return $this->response->setJSON(['success' => true, "data" => $data]);
+     }
+
+     /**
+      * [['task', id], …] for a posted list of task ids (empty values skipped).
+      */
+     private function taskItems($ids): array
+     {
+          return array_map(static fn ($id) => ['task', $id], array_values(array_filter((array) $ids)));
      }
 
      public function replaceEmptyValues(&$array, $replacement = '-')

@@ -48,45 +48,45 @@
 
 <h2 style="text-align:center;"><u>Sprint Report</u></h2>
 
-<h2>Sprint name: <?= $viewData['sprintOverview'][0]['sprint_name'] ?></h2>
+<h2>Sprint name: <?= esc($viewData['sprintOverview'][0]['sprint_name']) ?></h2>
 
 <h3>Sprint Overview</h3>
 <table class="overview">
   <tr>
     <th>Sprint name</th>
-    <td><?= $viewData['sprintOverview'][0]['sprint_name'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['sprint_name']) ?></td>
   </tr>
   <tr>
     <th>Sprint version</th>
-    <td><?= $viewData['sprintOverview'][0]['sprint_version'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['sprint_version']) ?></td>
   </tr>
   <tr>
     <th>Product</th>
-    <td><?= $viewData['sprintOverview'][0]['product_name'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['product_name']) ?></td>
   </tr>
   <tr>
     <th>Customer</th>
-    <td><?= $viewData['sprintOverview'][0]['customer_name'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['customer_name']) ?></td>
   </tr>
   <tr>
     <th>Start date</th>
-    <td><?= $viewData['sprintOverview'][0]['start_date'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['start_date']) ?></td>
   </tr>
   <tr>
     <th>End date</th>
-    <td><?= $viewData['sprintOverview'][0]['end_date'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['end_date']) ?></td>
   </tr>
   <tr>
     <th>Sprint goal</th>
-    <td><?= strip_tags($viewData['sprintOverview'][0]['sprint_goal']) ?></td>
+    <td><?= esc(strip_tags($viewData['sprintOverview'][0]['sprint_goal'])) ?></td>
   </tr>
   <tr>
     <th>Duration</th>
-    <td><?= $viewData['sprintOverview'][0]['sprint_duration'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['sprint_duration']) ?></td>
   </tr>
   <tr>
     <th>Sprint status</th>
-    <td><?= $viewData['sprintOverview'][0]['sprint_status_name'] ?></td>
+    <td><?= esc($viewData['sprintOverview'][0]['sprint_status_name']) ?></td>
   </tr>
 </table>
 
@@ -99,9 +99,9 @@
   </tr>
   <?php foreach ($viewData['sprintMembers'] as $member): ?>
     <tr>
-      <td><?= $member['name'] ?></td>
-      <td><?= $member['email_id'] ?></td>
-      <td><?= $member['role_name'] ?></td>
+      <td><?= esc($member['name']) ?></td>
+      <td><?= esc($member['email_id']) ?></td>
+      <td><?= esc($member['role_name']) ?></td>
     </tr>
   <?php endforeach; ?>
 </table>
@@ -117,11 +117,11 @@
   <?php if (count($viewData['sprintPlanning']) > 0) {
     foreach ($viewData['sprintPlanning'] as $plan): ?>
       <tr>
-        <td><?= $plan['activity'] ?></td>
-        <td><?= $plan['startDate'] ?></td>
-        <td><?= $plan['endDate'] ?></td>
-        <td><?= $plan['status_name'] ?></td>
-        <td><?= $plan['notes'] ?></td>
+        <td><?= esc($plan['activity']) ?></td>
+        <td><?= esc($plan['startDate']) ?></td>
+        <td><?= esc($plan['endDate']) ?></td>
+        <td><?= esc($plan['status_name']) ?></td>
+        <td><?= esc($plan['notes']) ?></td>
       </tr>
     <?php endforeach;
   } else { ?>
@@ -142,11 +142,11 @@
   </tr>
   <?php foreach ($viewData['sprintTask'] as $task): ?>
     <tr>
-      <td><?= $task['backlog_item_name'] ?></td>
-      <td><?= $task['epic_name'] ?></td>
-      <td><?= $task['user_story'] ?></td>
-      <td><?= $task['task_title'] ?></td>
-      <td><?= $task['task_status'] ?></td>
+      <td><?= esc($task['backlog_item_name']) ?></td>
+      <td><?= esc($task['epic_name']) ?></td>
+      <td><?= esc($task['user_story']) ?></td>
+      <td><?= esc($task['task_title']) ?></td>
+      <td><?= esc($task['task_status']) ?></td>
     </tr>
   <?php endforeach; ?>
 </table>
@@ -165,10 +165,10 @@
     <?php if (count($viewData['dailyScrum']) > 0) {
       foreach ($viewData['dailyScrum'] as $dailyscrum): ?>
         <tr>
-          <td><?= $dailyscrum['added_date'] ?></td>
-          <td><?= $dailyscrum['task_title'] ?></td>
-          <td><?= $dailyscrum['challenges'] ?></td>
-          <td><?= $dailyscrum['notes'] ?></td>
+          <td><?= esc($dailyscrum['added_date']) ?></td>
+          <td><?= esc($dailyscrum['task_title']) ?></td>
+          <td><?= esc($dailyscrum['challenges']) ?></td>
+          <td><?= esc($dailyscrum['notes']) ?></td>
         </tr>
       <?php endforeach;
     } else { ?>
@@ -180,7 +180,7 @@
 </table>
 
 <h3>Sprint Review</h3>
-<p><strong>Review date:</strong> <?= $viewData['sprintReviewDate'][0]['review_date'] ?></p>
+<p><strong>Review date:</strong> <?= esc($viewData['sprintReviewDate'][0]['review_date']) ?></p>
 <table style="border: 1px solid black">
   <thead>
     <tr>
@@ -197,14 +197,14 @@
   <tbody>
     <?php if (count($viewData['sprintReview']) > 0) { ?>
       <tr>
-        <td><?= $viewData['sprintReview']['general'] ?></td>
-        <td><?= $viewData['sprintReview']['challengesStatus'] ?></td>
-        <td><?= $viewData['sprintReview']['challengeFaced'] ?></td>
-        <td><?= $viewData['sprintReview']['codeReviewStatus'] ?></td>
-        <td><?= $viewData['sprintReview']['codeReview'] ?></td>
-        <td><?= $viewData['sprintReview']['codeReviewers'] ?></td>
-        <td><?= $viewData['sprintReview']['sprintGoalStatus'] ?></td>
-        <td><?= $viewData['sprintReview']['sprintGoal'] ?></td>
+        <td><?= esc($viewData['sprintReview']['general']) ?></td>
+        <td><?= esc($viewData['sprintReview']['challengesStatus']) ?></td>
+        <td><?= esc($viewData['sprintReview']['challengeFaced']) ?></td>
+        <td><?= esc($viewData['sprintReview']['codeReviewStatus']) ?></td>
+        <td><?= esc($viewData['sprintReview']['codeReview']) ?></td>
+        <td><?= esc($viewData['sprintReview']['codeReviewers']) ?></td>
+        <td><?= esc($viewData['sprintReview']['sprintGoalStatus']) ?></td>
+        <td><?= esc($viewData['sprintReview']['sprintGoal']) ?></td>
       </tr>
     <?php } else { ?>
       <tr>
@@ -216,7 +216,7 @@
 
 <h3>Sprint Retrospective</h3>
 <p><strong>Retrospective date:</strong>
-  <?= $viewData['sprintRetrospectiveDate'][0]['retrospective_date'] ?></p>
+  <?= esc($viewData['sprintRetrospectiveDate'][0]['retrospective_date']) ?></p>
 <table style="border: 1px solid black">
   <thead>
     <tr>
@@ -229,8 +229,8 @@
       foreach ($viewData['sprintRetrospective'] as $retrospective):
         if (isset($retrospective['notes'])) { ?>
           <tr>
-            <td><?= $retrospective['challenge'] ?></td>
-            <td><?= $retrospective['notes'] ?></td>
+            <td><?= esc($retrospective['challenge']) ?></td>
+            <td><?= esc($retrospective['notes']) ?></td>
           </tr>
         <?php }endforeach;
     } else { ?>

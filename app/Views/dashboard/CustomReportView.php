@@ -88,7 +88,7 @@
                 <select name="product[]" class="form-select select" multiple multiselect-search="true"
                     placeholder="Select Product" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['product_result'] as $product): ?>
-                        <option><?= $product['product_name'] ?></option>
+                        <option><?= esc($product['product_name']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -99,14 +99,14 @@
                 <select name="meettype[]" class="form-select select" multiple multiselect-search="true"
                     placeholder="Select Meet Type" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['meeting_type_result'] as $meetType): ?>
-                        <option><?= $meetType['meeting_type_name'] ?></option>
+                        <option><?= esc($meetType['meeting_type_name']) ?></option>
                     <?php endforeach; ?>
                 </select>
                 <label for="creator" class="form-label filter-text">Creator:</label>
                 <select name="creator[]" class="form-select select" placeholder="Select Creator" multiple
                     multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['user_result'] as $user): ?>
-                        <option><?= $user['first_name'] ?></option>
+                        <option><?= esc($user['first_name']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -117,14 +117,14 @@
                 <select name="customer[]" id="customer" class="form-select select" placeholder="Select Customer"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['customer_name_result'] as $customer): ?>
-                        <option><?= $customer['customer_name'] ?></option>
+                        <option><?= esc($customer['customer_name']) ?></option>
                     <?php endforeach; ?>
                 </select>
                 <label for="status" class="form-label filter-text">Status:</label>
                 <select name="status[]" id="sprintstatus" class="form-select select" placeholder="Select Status"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['status_result'] as $status): ?>
-                        <option><?= $status['status_name'] ?></option>
+                        <option><?= esc($status['status_name']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -135,21 +135,21 @@
                 <select name="sprintname[]" id="sprintname" class="form-select select"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['sprint_name_result'] as $sprintName): ?>
-                        <option><?= $sprintName['sprint_name'] ?></option>
+                        <option><?= esc($sprintName['sprint_name']) ?></option>
                     <?php endforeach; ?>
                 </select>
                 <label for="sprintversion" class="form-label filter-text">Version:</label>
                 <select name="version[]" placeholder="Select Version" id="sprintversion" class="form-select select"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['sprint_version_result'] as $version): ?>
-                        <option><?= $version['sprint_version'] ?></option>
+                        <option><?= esc($version['sprint_version']) ?></option>
                     <?php endforeach; ?>
                 </select>
                 <label for="duration" class="form-label filter-text">Duration:</label>
                 <select name="duration[]" id="duration" placeholder="Select Duration" class="form-select select"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['sprint_duration_result'] as $duration): ?>
-                        <option><?= $duration['sprint_duration_value'] ?></option>
+                        <option><?= esc($duration['sprint_duration_value']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -160,7 +160,7 @@
                 <select placeholder="Select Tracker" name="trackername[]" id="trackername" class="form-select select"
                     multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="1">
                     <?php foreach ($data['drops']['backlog_item_result'] as $backlogName): ?>
-                        <option><?= $backlogName['tracker'] ?></option>
+                        <option><?= esc($backlogName['tracker']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

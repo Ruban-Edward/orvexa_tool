@@ -177,7 +177,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                                 <b class="text-left">Sprint version  </b> 
                             </p>
                             <div class="col-sm-4 badge text-end px-0">
-                                <?= $currentSprintDetails['sprint_version'] ?? 'N/A'; ?>
+                                <?= esc($currentSprintDetails['sprint_version'] ?? 'N/A') ?>
                             </div>
                         </div>
                         <div class="row mx-0 py-2 align-items-center">
@@ -193,7 +193,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                                 <b>Start date </b> 
                             </p>
                             <div class="col-sm-6 text-end px-0 badge">
-                                <?= $currentSprintDetails['start_date'] ?? 'N/A'; ?>
+                                <?= esc($currentSprintDetails['start_date'] ?? 'N/A') ?>
                             </div>
                         </div>
                         <div class="row mx-0 py-2 justify-items-center align-items-center">
@@ -201,7 +201,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                                 <b>End date</b>
                             </p>
                             <div class="col-sm-6 text-end px-0 badge">
-                                <?= $currentSprintDetails['end_date'] ?? 'N/A'; ?>
+                                <?= esc($currentSprintDetails['end_date'] ?? 'N/A') ?>
                             </div>
                         </div>
                     <?php else: ?>
@@ -277,7 +277,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between">
                                 <h5 class="card-title text-center">
-                                    Sprint version - <?= $currentSprintDetails['sprint_version']  ?? 'N/A'; ?> sprint hours
+                                    Sprint version - <?= esc($currentSprintDetails['sprint_version']  ?? 'N/A') ?> sprint hours
                                 </h5>
                            
                                 
@@ -295,7 +295,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                             <div class="d-flex justify-content-between">
                                 <h5 class="card-title text-center">
                                     <i class="fas fa-chart-line"></i> 
-                                    Sprint Version - <?= $currentSprintDetails['sprint_version']  ?? 'N/A'; ?> Burndown Chart
+                                    Sprint Version - <?= esc($currentSprintDetails['sprint_version']  ?? 'N/A') ?> Burndown Chart
                                 </h5>
                            
                                 <p class="text-dark"><strong>Required:</strong> <span id="requiredRate"></span> hrs/day</p>
@@ -347,7 +347,7 @@ $runningSprints=$data['runningSprints'] ?? [];
                     <div class="row">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between">
-                                <h5 class="card-title text-center">Sprint version - <?= $currentSprintDetails['sprint_version'] ?? 'N/A'; ?> stories spent hours</h5>
+                                <h5 class="card-title text-center">Sprint version - <?= esc($currentSprintDetails['sprint_version'] ?? 'N/A') ?> stories spent hours</h5>
                             </div>
                         </div>
                     </div>
@@ -400,12 +400,12 @@ $runningSprints=$data['runningSprints'] ?? [];
                 </script>
                 <?php foreach ($sprintDetailsSorted as $sprint) : ?>
                     <tr>
-                        <td><?php echo $sprint['sprint_version'] ?? 'N/A'; ?></td>
-                        <td><?php echo $sprint['sprint_name'] ?? 'N/A'; ?></td>
+                        <td><?= esc($sprint['sprint_version'] ?? 'N/A') ?></td>
+                        <td><?= esc($sprint['sprint_name'] ?? 'N/A') ?></td>
                         <td><?php echo isset($sprint['start_date']) ? date("d, M Y", strtotime($sprint['start_date'])) : 'N/A'; ?></td>
                         <td><?php echo isset($sprint['end_date']) ? date("d, M Y", strtotime($sprint['end_date'])) : 'N/A'; ?></td>
                         <td><?php echo $sprint['sprint_completed'] .' % ' ?? 'N/A'; ?></td>
-                        <td><?php echo $sprint['sprint_duration'] ?? 'N/A'; ?></td>
+                        <td><?= esc($sprint['sprint_duration'] ?? 'N/A') ?></td>
                         <td>
                             <?php
                             $badgeClass = 'secondary';

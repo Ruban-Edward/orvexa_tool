@@ -37,9 +37,17 @@ class Acl implements FilterInterface
                 return redirect()->to('/no_access');
             }
 
-            // Get the required permission for the current URL
-            $permission = $permissionModel->where('LOWER(routes_url)', $currentURL, false)
-                ->where('is_deleted', 'N')->first();
+            // Get the required permission for the current URL. Parameterised routes are guarded by
+            // their static prefix ("backlog/addtasks/1/2/3" by "backlog/addtasks"): the longest
+            // permission URL that equals the path or is a whole-segment prefix of it wins.
+            $permission = null;
+            foreach ($permissionModel->where('is_deleted', 'N')->findAll() as $row) {
+                $url = strtolower(trim((string) $row['routes_url'], '/'));
+                if ($url !== '' && ($currentURL === $url || str_starts_with($currentURL, $url . '/'))
+                    && ($permission === null || strlen($url) > strlen($permission['_url']))) {
+                    $permission = $row + ['_url' => $url];
+                }
+            }
 
             if ($permission) {
                 $permissionId = $permission['permission_id'];

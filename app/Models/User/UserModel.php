@@ -82,13 +82,12 @@ class UserModel extends BaseModel
     }
 
     /**
-     * Supports modern (bcrypt/argon) hashes and legacy unsalted MD5, compared in constant time.
+     * Only modern (bcrypt/argon) hashes are accepted. Legacy unsalted MD5 hashes no longer
+     * sign in; such accounts need a new password (php spark orvexa:set-password <username>).
      */
     private function passwordMatches(string $plain, string $stored): bool
     {
-        return $this->isModernHash($stored)
-            ? password_verify($plain, $stored)
-            : hash_equals(strtolower($stored), md5($plain));
+        return $this->isModernHash($stored) && password_verify($plain, $stored);
     }
 
     /**

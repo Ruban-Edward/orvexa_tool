@@ -12,6 +12,9 @@ class CustomReportController extends BaseController
     public function __construct()
     {
         $this->model = model("CustomReportModel");
+        // Super Admins see every product; everyone else only the products they belong to
+        $this->model->scopeToProducts(session('role_id') == 1 ? null
+            : array_column(model(\App\Models\Backlog\BacklogModel::class)->getUserProduct(session('employee_id')), 'product_id'));
         $this->download = service("generateReport");
     }
 
@@ -40,9 +43,25 @@ class CustomReportController extends BaseController
         return $type;
     }
 
+    /** The filter and export endpoints need the same permission as the report page itself. */
+    private const REPORT_PERMISSIONS = [
+        'Meet'    => 'report/meetingreport/meet',
+        'Sprint'  => 'report/sprintreport/sprint',
+        'Backlog' => 'report/backlogreport/backlog',
+    ];
+
+    private function canViewReport(string $type): bool
+    {
+        return has_permission(self::REPORT_PERMISSIONS[$type]);
+    }
+
     public function downloadFilterAllData($reportType)
     {
-        $reportType = $this->resolveReportType($reportType) . 'Report';
+        $reportType = $this->resolveReportType($reportType);
+        if (! $this->canViewReport($reportType)) {
+            return $this->response->setStatusCode(403)->setBody('You do not have permission to export this report.');
+        }
+        $reportType .= 'Report';
         // Get POST data
         $params = $this->request->getPost();
         $method = "getFilter{$reportType}View";
@@ -116,7 +135,11 @@ class CustomReportController extends BaseController
      */
     public function getFilterReport($filterType)
     {
-        $filterType = $this->resolveReportType($filterType) . 'Report';
+        $filterType = $this->resolveReportType($filterType);
+        if (! $this->canViewReport($filterType)) {
+            return $this->response->setStatusCode(403)->setJSON(['data' => [], 'message' => 'You do not have permission to view this report.']);
+        }
+        $filterType .= 'Report';
         $method = "getFilter{$filterType}View";
         $params = $this->request->getPost();
         $result = call_user_func_array([$this->model, $method], [$params]);

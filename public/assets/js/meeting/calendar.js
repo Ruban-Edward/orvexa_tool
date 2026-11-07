@@ -525,10 +525,10 @@ if (typeof calendar !== "undefined") {
                 function restoreSprintDetails() {
                   let modalContent = `
                       <div id="sprintDetails" class="sprintDetails mb-4">
-                          <p><b>Sprint name</b> <span>:</span> <span id="sprintNames">${response[0].sprint_name}</span></p>
-                          <p><b>Sprint creator</b> <span>:</span> <span id="sprintCreator">${response[0].first_name}</span></p>
-                          <p><b>Product name</b> <span>:</span> <span id="sprintProduct">${response[0].product_name}</span></p>
-                          <p><b>Customer</b> <span>:</span> <span id="sprintCustomer">${response[0].customer_name}</span></p>
+                          <p><b>Sprint name</b> <span>:</span> <span id="sprintNames">${oxEscape(response[0].sprint_name)}</span></p>
+                          <p><b>Sprint creator</b> <span>:</span> <span id="sprintCreator">${oxEscape(response[0].first_name)}</span></p>
+                          <p><b>Product name</b> <span>:</span> <span id="sprintProduct">${oxEscape(response[0].product_name)}</span></p>
+                          <p><b>Customer</b> <span>:</span> <span id="sprintCustomer">${oxEscape(response[0].customer_name)}</span></p>
                           <p><b>Duration</b> <span>:</span> <span id="sprintDuration">${response[0].sprint_duration_value}</span></p>
                           <p><b>Start date</b> <span>: </span><span id="startDate">${response[0].start_date}</span></p>
                           <p><b>End date</b> <span>: </span><span id="endDate">${response[0].end_date}</span></p>
@@ -2019,7 +2019,7 @@ if (typeof calendar !== "undefined") {
     let options = productData
       .map(
         (product) =>
-          `<option value="${product.external_project_id}">${product.product_name}</option>`
+          `<option value="${product.external_project_id}">${oxEscape(product.product_name)}</option>`
       )
       .join("");
     document.getElementById("productDetails").innerHTML = `
@@ -2068,7 +2068,7 @@ if (typeof calendar !== "undefined") {
         $("#memberTableBody").append(`
                 <tr>
                     <td><input type="checkbox" class="memberCheckbox" value="${member.external_employee_id}"></td>
-                    <td>${member.first_name}</td>
+                    <td>${oxEscape(member.first_name)}</td>
                 </tr>
             `);
       });
@@ -2092,7 +2092,7 @@ if (typeof calendar !== "undefined") {
     let options = groupData
       .map(
         (group) =>
-          `<option value="${group.meeting_team_id}">${group.meeting_team_name}</option>`
+          `<option value="${group.meeting_team_id}">${oxEscape(group.meeting_team_name)}</option>`
       )
       .join("");
     document.getElementById("productDetails").style.display = "none";
@@ -2173,7 +2173,7 @@ if (typeof calendar !== "undefined") {
         const $row = $(`
                 <tr>
                     <td><input type="checkbox" class="memberCheckbox" value="${productMember.external_employee_id}"></td>
-                    <td>${productMember.first_name}</td>
+                    <td>${oxEscape(productMember.first_name)}</td>
                 </tr>
             `);
         $row.find(".memberCheckbox").prop("checked", isChecked);
@@ -2383,7 +2383,7 @@ if (typeof calendar !== "undefined") {
     let options = groupData
       .map(
         (group) =>
-          `<option value="${group.meeting_team_id}">${group.meeting_team_name}</option>`
+          `<option value="${group.meeting_team_id}">${oxEscape(group.meeting_team_name)}</option>`
       )
       .join("");
     document.getElementById("productDetails").style.display = "none";
@@ -2460,7 +2460,7 @@ if (typeof calendar !== "undefined") {
               );
               $.each(data, function (index, sprint) {
                 sprintSelect.append(
-                  `<option value="${sprint.sprint_id}">${sprint.sprint_name}</option>`
+                  `<option value="${sprint.sprint_id}">${oxEscape(sprint.sprint_name)}</option>`
                 );
               });
             } else {
@@ -2507,7 +2507,7 @@ if (typeof calendar !== "undefined") {
           );
           $.each(data, function (index, backlog) {
             backlogSelect.append(
-              `<option value="${backlog.backlog_item_id}">${backlog.backlog_item_name}</option>`
+              `<option value="${backlog.backlog_item_id}">${oxEscape(backlog.backlog_item_name)}</option>`
             );
           });
         }
@@ -2537,7 +2537,7 @@ if (typeof calendar !== "undefined") {
               epicContainer.append(
                 `<label class="dropdown-item px-3">
                                   <input type="checkbox" class="epic-checkbox"
-                                  value="${backlog.epic_id}" data-description="${backlog.epic_description}"> ${backlog.epic_description}
+                                  value="${backlog.epic_id}" data-description="${oxEscape(backlog.epic_description)}"> ${oxEscape(backlog.epic_description)}
                                 </label>`
               );
             });
@@ -2571,7 +2571,7 @@ if (typeof calendar !== "undefined") {
         $.each(data, function (index, backlog) {
           epicSelect.append(`
                     <input type="checkbox" class="epic-checkbox"
-                    value="${backlog.epic_id}" data-description="${backlog.epic_description}">${backlog.epic_description}<br>`);
+                    value="${backlog.epic_id}" data-description="${oxEscape(backlog.epic_description)}">${oxEscape(backlog.epic_description)}<br>`);
         });
       },
       error: function (xhr, status, error) {

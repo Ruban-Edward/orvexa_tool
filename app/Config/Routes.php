@@ -13,7 +13,7 @@ $routes->get('/', 'AuthController::index', ['filter' => 'loginpage']);
 $routes->get('/login', 'AuthController::index', ['filter' => 'loginpage']);
 $routes->post('/login', 'AuthController::loginValidate');
 
-$routes->get('/logout', 'AuthController::logout', ['filter' => 'auth']);
+$routes->post('/logout', 'AuthController::logout', ['filter' => 'auth']);
 $routes->get('/no_access', 'AuthController::noAccess');
 
 /**
@@ -26,18 +26,15 @@ $routes->group('meeting', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('eventdetails/(:num)/(:num)', 'MeetingController::getMeetingDetails/$1/$2');
     $routes->post('sprintdetails/(:num)', 'MeetingController::getSprintDetails/$1');
     $routes->post('sprintByProduct/(:num)', 'MeetingController::sprintByProduct/$1');
-    $routes->post('teamBySprint/(:num)', 'MeetingController::teamBySprint/$1');
     $routes->post('scheduleMeeting', 'MeetingController::meetingConfirmation');
     $routes->post('updateMeeting', 'MeetingController::meetingUpdation');
     $routes->post('cancelMeeting/(:num)', 'MeetingController::cancelMeetings/$1');
     $routes->post('logMeetingTimes', 'MeetingController::logMeetingTimes');
-    $routes->post('mailFunction', 'MeetingController::sendMail');
     $routes->post('createGroupDetails', 'MeetingController::createGroup');
     $routes->post('editGroupDetails', 'MeetingController::editGroup');
     $routes->post('deleteGroupDetails', 'MeetingController::deleteGroup');
     $routes->post('getTeamDetailsById/(:num)', 'MeetingController::getTeamDetailsById/$1');
     $routes->post('getSprintDetails/(:num)', 'MeetingController::getSprintMembersDetails/$1');
-    $routes->post('sprintInsert', 'MeetingController::sprintInsert');
     $routes->post('getMembersByProduct/(:num)', 'MeetingController::getMembersByProduct/$1');
     $routes->post('backlogByProduct/(:num)', 'MeetingController::backlogByProduct/$1');
     $routes->post('epicByBacklog/(:num)', 'MeetingController::getEpic/$1');
@@ -73,7 +70,6 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('updatebacklog', 'BacklogController::updateBacklog');
     $routes->post('deletebacklogitem', 'BacklogController::deleteBacklog');
     $routes->post('restorebacklogitem', 'BacklogController::restoreBacklog');
-    $routes->post('changebacklogstatus', 'BacklogController::changeBacklogStatus');
     $routes->post('historydata', 'BacklogController::historyDataDetails');
 
     $routes->get('userstories', 'UserStoryController::userStories');
@@ -87,7 +83,6 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('userstoryByEpic/(:num)', 'UserStoryController::userstoryByEpic/$1');
     $routes->get('userstory/details/(:num)', 'UserStoryController::getUserStoryDetails/$1');
     $routes->get('downloadUserStories', 'UserStoryController::downloadUserStories');
-    $routes->post('changeuserstorystatus', 'BacklogController::changeUserStoryStatus');
     $routes->get('downloadReference/(:any)', 'UserStoryController::downloadReference/$1');
     $routes->post('comments', 'UserStoryController::comments');
 
@@ -143,8 +138,6 @@ $routes->group('sprint', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('moveTask', 'SprintController::moveTask');
     $routes->post('applySelection', 'SprintController::getSprintSelectionList');
 });
-// Same URL as before (the sprint-list JS posts here) but now behind the auth + ACL filters.
-$routes->post('applyFilters', 'SprintController::getSprintfilterList', ['filter' => ['auth', 'acl']]);
 
 // $routes->post('createsprint', 'SprintController::createSprint');
 

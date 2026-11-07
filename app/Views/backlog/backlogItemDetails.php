@@ -1,10 +1,10 @@
 <div class="header d-flex justify-content-between align-item-center">
     <div class="heading">
-        <h4>Backlog item: <?= ucfirst($data['backlog_item_name']) ?></h4>
+        <h4>Backlog item: <?= esc(ucfirst($data['backlog_item_name'])) ?></h4>
     </div>
     <div class="mt-2">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="header-links" ><a href="<?= ASSERT_PATH ?>/backlog/userstories?pid=<?= $data['pId'] ?>&pblid=<?= $data['pblId'] ?>" data-toggle="tooltip" placement="top" title="Click to view the user story">View user stories </a></li>
+            <li class="header-links" ><a href="<?= ASSERT_PATH ?>/backlog/userstories?pid=<?= esc($data['pId']) ?>&pblid=<?= esc($data['pblId']) ?>" data-toggle="tooltip" placement="top" title="Click to view the user story">View user stories </a></li>
             <li class="nav-item" role="presentation">
                 <button class="button-secondary active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Details</button>
             </li>
@@ -22,13 +22,13 @@
                 <p>Product name:</p>
             </div>
             <div class="col-sm-3 d-flex align-items-center fs-6">
-                <p><?= ucfirst($data['product_name']) ?></p>
+                <p><?= esc(ucfirst($data['product_name'])) ?></p>
             </div>
             <div class="col-sm-4 d-flex align-items-center h5">
                 <p>Customer:</p>
             </div>
             <div class="col-sm-2 d-flex align-items-center fs-6">
-                <p><?= $data['customer_name'] ?></p>
+                <p><?= esc($data['customer_name']) ?></p>
             </div>
         </div>
         <hr class="my-1">
@@ -37,13 +37,13 @@
                 <p>Status:</p>
             </div>
             <div class="col-sm-3 d-flex align-items-center fs-6">
-                <p><?= $data['status_name'] ?></p>
+                <p><?= esc($data['status_name']) ?></p>
             </div>
             <div class="col-sm-4 d-flex align-items-center h5">
                 <p>Type:</p>
             </div>
             <div class="col-sm-2 d-flex align-items-center fs-6">
-                <p><?= $data['tracker'] ?></p>
+                <p><?= esc($data['tracker']) ?></p>
             </div>
         </div>
         <hr class="my-1">
@@ -67,7 +67,7 @@
                 } else {
                     $priority = 'High';
                 } ?>
-                <p><?= $priority ?></p>
+                <p><?= esc($priority) ?></p>
             </div>
         </div>
         <hr class="my-1">
@@ -106,7 +106,7 @@
                 <p>Description:</p>
             </div>
             <div class="col-sm-9 d-flex align-items-center fs-6">
-                <p><?= $data['backlog_description'] ?></p>
+                <p><?= esc($data['backlog_description']) ?></p>
             </div>
         </div>
         <hr class="my-1">

@@ -357,8 +357,13 @@ if (typeof m_userStories !== "undefined") {
     var label = document.createElement("div");
     label.classList.add("selected-email");
     label.innerHTML = `
-        <span>${email}</span>
-        <button type="button" class="remove-email" aria-label="Remove ${email}" onclick="removeSelectedEmail(this, '${email}')"><i class="icon-x" aria-hidden="true"></i></button>`;
+        <span></span>
+        <button type="button" class="remove-email"><i class="icon-x" aria-hidden="true"></i></button>`;
+    // Names are set as text, never parsed as markup
+    label.querySelector("span").textContent = email;
+    const removeBtn = label.querySelector("button");
+    removeBtn.setAttribute("aria-label", "Remove " + email);
+    removeBtn.addEventListener("click", () => removeSelectedEmail(removeBtn, email));
     selectedEmailsContainer.appendChild(label);
   }
 
@@ -528,6 +533,14 @@ if (typeof m_userStories !== "undefined") {
 
     //Creation of the user story card dynamically based on the input
     function createCard(story, index, pokerDetails) {
+      // Stored text is escaped; the TinyMCE fields keep their formatting but are sanitized
+      story = Object.assign({}, story);
+      ["as_a_an", "i_want", "so_that", "epic_description", "given", "us_when", "status_name", "user_story_points"].forEach((k) => {
+        if (story[k] != null) story[k] = oxEscape(story[k]);
+      });
+      ["us_then", "condition_text"].forEach((k) => {
+        if (story[k] != null) story[k] = oxSafeHtml(story[k], "rich");
+      });
       // var selectClass = (story.status_name.replace(/ /g, '-')).toLowerCase();
       console.log(pokerDetails);
       console.log(userPermissions);

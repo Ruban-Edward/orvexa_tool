@@ -778,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // const $backlogItem = $('<li class="list-group-item"></li>')
                 //     .html(`${backlogItem.name} - <span style="color: #167a40; font-weight: bold">${backlogItem.priority}</span>`);
                 const $backlogItem = $('<li class="list-group-item"></li>')
-                    .html(`${backlogItem.name}`);
+                    .html(`${oxEscape(backlogItem.name)}`);
                 $backlogList.append($backlogItem);
                 selectedBacklogIndex = bIndex;
                 selectedEpicIndex = -1;
@@ -953,7 +953,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log(isChecked);
                 }
                 const $task = $('<li class="list-group-item"></li>')
-                    .append(`<input type="checkbox" class="user-story-checkbox" id="${taskId}" value="${task[0]}" ${isChecked}> <label for="${taskId}">${task[1]} - <span style="color: #102018; font-weight: bold">${task[2]}</span> - <span style="color: #167a40; font-weight: bold">${task[3]}</span></label>`);
+                    .append(`<input type="checkbox" class="user-story-checkbox" id="${taskId}" value="${task[0]}" ${isChecked}> <label for="${taskId}">${oxEscape(task[1])} - <span style="color: #102018; font-weight: bold">${task[2]}</span> - <span style="color: #167a40; font-weight: bold">${task[3]}</span></label>`);
                 $taskList.append($task);
 
 
@@ -1163,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const epicElement = document.createElement('div');
                     epicElement.className = 'epic mb-3';
                     epicElement.innerHTML = `
-                        <h6 class="epic-name">Epic : ${epic.epic}</h6>
+                        <h6 class="epic-name">Epic : ${oxEscape(epic.epic)}</h6>
                         <div class="user-story-list"></div>
                     `;
 
@@ -1184,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const taskItem = document.createElement('li');
                             taskItem.className = 'list-group-item d-flex justify-content-between align-items-center';
                             taskItem.innerHTML = `
-                                <span>Task ${ind++} : ${task.name}</span>
+                                <span>Task ${ind++} : ${oxEscape(task.name)}</span>
                                 <button class="btn btn-sm btn-danger remove-task" data-task-id="${task.key}" style="color:white;">Clear</button>
                             `;
                             taskList.appendChild(taskItem);

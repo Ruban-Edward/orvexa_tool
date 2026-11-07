@@ -310,6 +310,20 @@ class UserStoryModel extends BaseModel
     }
 
     /**
+     * Backlog item a user story belongs to (through its epic).
+     */
+    public function backlogItemOf(int $userStoryId): ?int
+    {
+        $row = $this->db->table('orvexa_user_story us')
+            ->select('e.r_backlog_item_id')
+            ->join('orvexa_epic e', 'e.epic_id = us.r_epic_id')
+            ->where('us.user_story_id', $userStoryId)
+            ->get()->getRow();
+
+        return $row ? (int) $row->r_backlog_item_id : null;
+    }
+
+    /**
      * @author vigneshwari
      * @return array
      * Purpose: This function is used to return the max ID comparing all the userstories

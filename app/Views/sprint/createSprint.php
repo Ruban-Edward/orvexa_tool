@@ -171,7 +171,7 @@
                             <option value="" disabled selected>Select Duration</option>
                             <?php foreach ($data['sprintDuration'] as $duration): ?>
                                 <option value="<?= $duration['sprint_duration_id'] ?>">
-                                    <?= $duration['sprint_duration_value'] ?>
+                                    <?= esc($duration['sprint_duration_value']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
