@@ -3452,6 +3452,14 @@ body.ox-app .ox-search-field input {
     font-size: 16px;
 }
 
+/* The dialog itself shows focus; no ring or box around its input */
+body.ox-app .ox-search-field input:focus,
+body.ox-app .ox-search-field input:focus-visible {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+}
+
 .ox-search-field input::-webkit-search-cancel-button {
     display: none;
 }
