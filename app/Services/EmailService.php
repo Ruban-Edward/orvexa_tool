@@ -66,8 +66,19 @@ class EmailService
             $emailAddresses = $emailData['email_id'];
         }
 
-        // Set email parameters
-        $this->email->setTo("rubanedward.r@infinitisoftware.net");
+        if (empty($emailAddresses)) {
+            log_message('error', 'Email "' . ($emailData['fileName'] ?? '') . '" not sent: no recipients.');
+
+            return false;
+        }
+
+        // On dev/test, set email.redirectTo in .env to send every email to one test inbox instead
+        // of the real recipients. Leave it unset in production.
+        $redirectTo = trim((string) env('email.redirectTo', ''));
+        if ($redirectTo !== '') {
+            log_message('info', 'Email redirected to test inbox (intended for: ' . $emailAddresses . ').');
+        }
+        $this->email->setTo($redirectTo !== '' ? $redirectTo : $emailAddresses);
         $this->email->setSubject($emailData['contents']['subject']);
         $this->email->setMailType('html');
 
@@ -86,6 +97,12 @@ class EmailService
             $this->email->setMessage($htmlContent);
         } else {
             throw new \Exception("Email template not found: " . $templatePath);
+        }
+
+        // Optional in-memory attachments, e.g. a meeting invite from IcsBuilder:
+        // ['attachments' => [['content' => ..., 'name' => 'invite.ics', 'mime' => 'text/calendar']]]
+        foreach ($emailData['attachments'] ?? [] as $file) {
+            $this->email->attach($file['content'], 'attachment', $file['name'], $file['mime'] ?? 'application/octet-stream');
         }
 
         // Send the email

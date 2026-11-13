@@ -176,3 +176,68 @@
         });
     });
 })();
+
+/**
+ * "Export to Excel": the efforts in the current range (or week) as an .xlsx sheet with a total row.
+ */
+(function () {
+    const button = document.getElementById('exportEfforts');
+    const source = document.getElementById('effortExportData');
+    if (!button || !source) return;
+
+    button.addEventListener('click', async () => {
+        if (typeof ExcelJS === 'undefined') {
+            Swal.fire({ title: 'Export unavailable', text: 'The Excel library did not load. Refresh the page and try again.', icon: 'error' });
+            return;
+        }
+        let rows = [];
+        try { rows = JSON.parse(source.textContent || '[]'); } catch (_) { rows = []; }
+        if (!rows.length) return;
+
+        button.disabled = true;
+        try {
+            const book = new ExcelJS.Workbook();
+            book.creator = 'Orvexa';
+            const sheet = book.addWorksheet('Efforts', { views: [{ state: 'frozen', ySplit: 1 }] });
+            sheet.columns = [
+                { header: 'Date', key: 'date', width: 12 },
+                { header: 'Product', key: 'product', width: 22 },
+                { header: 'Task', key: 'task', width: 40 },
+                { header: 'Meeting', key: 'meeting', width: 28 },
+                { header: 'Activity', key: 'activity', width: 18 },
+                { header: 'Main activity', key: 'mainActivity', width: 18 },
+                { header: 'Log type', key: 'logType', width: 14 },
+                { header: 'Comments', key: 'comments', width: 48 },
+                { header: 'Hours', key: 'hours', width: 10 },
+            ];
+            rows.forEach(row => {
+                const [y, m, d] = String(row.date).split('-').map(Number);
+                sheet.addRow({ ...row, date: new Date(Date.UTC(y, m - 1, d)) });
+            });
+            sheet.getColumn('date').numFmt = 'dd-mmm-yyyy';
+            sheet.getColumn('hours').numFmt = '0.00';
+            sheet.getColumn('comments').alignment = { wrapText: true, vertical: 'top' };
+            const header = sheet.getRow(1);
+            header.font = { bold: true };
+            header.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEFBF2' } };
+            const last = rows.length + 1;
+            const total = sheet.addRow({ comments: 'Total', hours: { formula: `SUM(I2:I${last})` } });
+            total.font = { bold: true };
+            sheet.autoFilter = { from: 'A1', to: `I${last}` };
+
+            const blob = new Blob([await book.xlsx.writeBuffer()], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = button.dataset.file || 'efforts.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ title: 'Export failed', text: 'The Excel file could not be created.', icon: 'error' });
+        } finally {
+            button.disabled = false;
+        }
+    });
+})();

@@ -12,7 +12,7 @@
 }
 
 h1 {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     margin: 0;
 }
 
@@ -88,7 +88,7 @@ textarea::-webkit-scrollbar {
 }
 
 textarea::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--ox-surface-3);
 }
 
 textarea::-webkit-scrollbar-thumb {
@@ -104,7 +104,7 @@ textarea::-webkit-scrollbar-thumb:hover {
     display: flex;
     gap: 10px;
     margin-top: 10px;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .error-container {

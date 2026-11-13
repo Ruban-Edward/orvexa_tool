@@ -1,5 +1,5 @@
 /* .content-header {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 2rem;
 } */
 
@@ -27,8 +27,8 @@
 }
 
 .cls-body {
-    background-color: white;
-    color: black;
+    background-color: var(--ox-surface);
+    color: var(--ox-ink);
     padding: 20px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -45,7 +45,7 @@
 }
 
 .cls-checkbox .cls-body h5 {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 1rem;
 }
 
@@ -136,12 +136,12 @@ h4 {
 }
 
 .modal-body label {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: 700;
 }
 
 .modal-body input {
-    color: black;
+    color: var(--ox-ink);
     margin-bottom: 10px;
 }
 
@@ -160,7 +160,7 @@ h4 {
     font-size: var(--MOBILEHEADERFONTSIZE);
 }
 .cls-checkbox .cls-body h5 {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: var(--MOBILESMALLHEADER);
 }
 

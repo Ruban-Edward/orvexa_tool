@@ -73,6 +73,7 @@ class TaskController extends BaseController
                  'trackers' => $this->taskModel->getTrackers(),
                  'users' => $this->sprintModel->getMembersByProduct($productId),
                  'status' => $this->taskModel->getTaskStatus(),
+                 'effortMasters' => model(\App\Models\EffortMasterModel::class)->getActiveGrouped(),
              ];
 
              return $this->template_view('backlog/tasks', $data, 'Tasks', $breadcrumbs);
@@ -377,6 +378,60 @@ class TaskController extends BaseController
         ]);
     }
 
+    /** "Blocked by" list of a task, plus the tasks of the same product it could depend on. */
+    public function taskDependencies($taskId): Response
+    {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
+            return $denied;
+        }
+        $taskId = (int) $taskId;
+        $model = model(\App\Models\TaskDependencyModel::class);
+        $productId = (int) $this->backlogItemModel->productOf('task', $taskId);
+
+        return $this->response->setJSON([
+            'success'    => true,
+            'canEdit'    => has_permission('backlog/updateTaskById'),
+            'blockedBy'  => $model->blockersOf($taskId, (new \Config\SprintModelConfig())->pendingTaskStatuses),
+            'candidates' => has_permission('backlog/updateTaskById') ? $model->candidatesFor($taskId, $productId) : [],
+        ]);
+    }
+
+    public function addTaskDependency($taskId): Response
+    {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
+            return $denied;
+        }
+        if (! has_permission('backlog/updateTaskById')) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot edit this task.']);
+        }
+        $dependsOn = filter_var($this->request->getPost('depends_on'), FILTER_VALIDATE_INT);
+        if ($dependsOn === false) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Choose a task.']);
+        }
+        $productId = (int) $this->backlogItemModel->productOf('task', (int) $taskId);
+        $error = model(\App\Models\TaskDependencyModel::class)->addDependency((int) $taskId, $dependsOn, $productId, (int) session('employee_id'));
+        if ($error !== null) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => $error]);
+        }
+        return $this->response->setJSON(['success' => true, 'message' => 'Dependency added.']);
+    }
+
+    public function removeTaskDependency($taskId): Response
+    {
+        if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
+            return $denied;
+        }
+        if (! has_permission('backlog/updateTaskById')) {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false, 'message' => 'You cannot edit this task.']);
+        }
+        $dependencyId = filter_var($this->request->getPost('dependency_id'), FILTER_VALIDATE_INT);
+        if ($dependencyId === false || ! model(\App\Models\TaskDependencyModel::class)->removeDependency($dependencyId, (int) $taskId)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'This dependency could not be removed.']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'message' => 'Dependency removed.']);
+    }
+
     public function logTaskEffort($taskId): Response
     {
         if ($denied = $this->denyUnlessOwns([['task', $taskId]])) {
@@ -410,12 +465,20 @@ class TaskController extends BaseController
             return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Comments cannot exceed 1000 characters.']);
         }
 
+        $ids = model(\App\Models\EffortMasterModel::class)->validateSelection($this->request->getPost());
+        if (is_string($ids)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => $ids]);
+        }
+
         $employeeId = (int) session()->get('employee_id');
         $saved = $this->effortLogModel->insertEfforts([[
             'r_task_id' => (int) $taskId,
             'r_meeting_details_id' => null,
             'r_user_id' => $employeeId,
             'r_logged_by' => $employeeId,
+            'r_activity_id' => $ids['activity'],
+            'r_main_activity_id' => $ids['main_activity'],
+            'r_log_type_id' => $ids['log_type'],
             'spent_on' => $spentOn,
             'hours' => round((float) $hours, 2),
             'comments' => $comments !== '' ? $comments : null,
@@ -536,6 +599,17 @@ class TaskController extends BaseController
                      if (!isset($value['estimated_hours'])) {
                          $filteredData[$key]['estimated_hours'] = '0';
                      }
+                 }
+             }
+
+             // Open "blocked by" dependencies per task, for the Blocked pill on the cards
+             if (is_array($filteredData) && $filteredData !== []) {
+                 $blocked = model(\App\Models\TaskDependencyModel::class)->openBlockerCounts(
+                     array_column($filteredData, 'task_id'),
+                     (new \Config\SprintModelConfig())->pendingTaskStatuses
+                 );
+                 foreach ($filteredData as $key => $value) {
+                     $filteredData[$key]['open_blockers'] = $blocked[(int) $value['task_id']] ?? 0;
                  }
              }
      

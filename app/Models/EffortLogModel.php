@@ -33,8 +33,10 @@ class EffortLogModel extends BaseModel
                     effort.comments,
                     effort.created_date,
                     logged_user.first_name AS user_name,
-                    logger.first_name AS logged_by_name
+                    logger.first_name AS logged_by_name,
+                    act.master_name AS activity_name
                 FROM orvexa_effort_log effort
+                LEFT JOIN orvexa_effort_master act ON act.effort_master_id = effort.r_activity_id
                 LEFT JOIN orvexa_user logged_user
                     ON logged_user.external_employee_id = effort.r_user_id
                 LEFT JOIN orvexa_user logger

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     aria-label="${esc(task.task_title)}, ${esc(task.status_name)}">
             <div class="ox-card-top">
                 <span class="priority-${esc(task.priority)}" title="Priority">${esc(task.priority)}</span>
-                <span class="ox-card-id">US_${Number(task.user_story_id)} · #${Number(task.task_id)}</span>
+                <span class="ox-card-id">${Number(task.user_story_id) ? `US_${Number(task.user_story_id)} · ` : 'Direct · '}#${Number(task.task_id)}</span>
             </div>
             <a class="ox-card-title" href="${url}" draggable="false">${esc(task.task_title)}</a>
             <div class="ox-card-foot">

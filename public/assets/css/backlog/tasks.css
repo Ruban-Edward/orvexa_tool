@@ -10,7 +10,7 @@
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--ox-surface);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -20,8 +20,8 @@
 }
 
 .card-header {
-  background: #f5f5f5;
-  color: #000;
+  background: var(--ox-surface-2);
+  color: var(--ox-ink);
   padding: 10px 25px;
   border-radius: 8px 8px 0 0;
 }
@@ -121,7 +121,7 @@ h5, .h5 {
 
 .filter-container {
   /* background-color: #dedfe9; */
-  color: black;
+  color: var(--ox-ink);
   padding: 10px 20px;
   margin-bottom: 20px;
 }
@@ -133,7 +133,7 @@ h5, .h5 {
 .no-tasks {
   text-align: center;
   font-size: 1rem;
-  color: #6c757d;
+  color: var(--ox-muted);
   margin-top: 20px;
 }
 
@@ -174,7 +174,7 @@ h5, .h5 {
 }
 .btn-link i {
   font-size: large;
-  color: #000;
+  color: var(--ox-ink);
   margin-left: 5px;
 }
 
@@ -202,7 +202,7 @@ h5, .h5 {
 }
 
 .pagination .page-item.disabled .page-link {
-  color: #6c757d;
+  color: var(--ox-muted);
   pointer-events: none;
   cursor: default;
 }
@@ -212,7 +212,7 @@ h5, .h5 {
 /* filter */
 .filter-container {
   /* background-color: #dedfe9; */
-  color: black;
+  color: var(--ox-ink);
   padding: 10px 20px;
   margin-bottom: 20px;
 }
@@ -224,7 +224,7 @@ h5, .h5 {
 .no-tasks {
   text-align: center;
   font-size: 1rem;
-  color: #6c757d;
+  color: var(--ox-muted);
   margin-top: 20px;
 }
 
@@ -238,8 +238,8 @@ h5, .h5 {
   position: fixed;
   top: 0;
   right: -300px; 
-  background-color: #f8f9fa;
-  color: #343a40;
+  background-color: var(--ox-surface-2);
+  color: var(--ox-text);
   padding: 20px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -448,4 +448,39 @@ display: block;
   
 
 
+}
+/* Task dependencies */
+body.ox-app #main .ox-blocked-pill {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    gap: 4px;
+    height: 24px;
+    padding: 0 10px;
+    border: 1px solid var(--ox-red-border);
+    border-radius: 999px;
+    background: var(--ox-red-bg);
+    color: var(--ox-red-ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ox-dep-state {
+    flex: none;
+    min-width: 48px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.ox-dep-state.is-open {
+    background: var(--ox-amber-bg);
+    color: var(--ox-amber);
+}
+
+.ox-dep-state.is-done {
+    background: var(--ox-green-bg);
+    color: var(--ox-green);
 }

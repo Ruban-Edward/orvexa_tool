@@ -195,7 +195,8 @@ function downloadFilterReport(formType) {
             let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             let link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.download = `${formType}_${new Date().toISOString().split('T')[0]}.xlsx`; 
+            const now = new Date(); // local date, not UTC
+            link.download = `${formType}_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.xlsx`;
             link.click();
         },
         error: function (xhr, status, error) {

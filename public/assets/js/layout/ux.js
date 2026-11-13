@@ -430,3 +430,64 @@ window.Ox = (function () {
 
     return { esc, toast, store, setSelectValues, chips, chipsFor, pager, empty, undoableDelete, guardModal, showShortcuts, labelFields };
 })();
+
+// Light / dark theme switch in the topbar. The initial theme is set in layout/headerLinks.php
+// before first paint; this keeps the button, the browser theme colour and charts in step.
+(function () {
+    const root = document.documentElement;
+    const button = document.getElementById('oxThemeToggle');
+    const media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    const saved = () => { try { return localStorage.getItem('ox-theme'); } catch (_) { return null; } };
+
+    function apply(theme) {
+        const dark = theme === 'dark';
+        root.setAttribute('data-theme', dark ? 'dark' : 'light');
+        root.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--ox-canvas').trim() || (dark ? '#0c1711' : '#ffffff'));
+        if (button) {
+            const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+            button.setAttribute('aria-label', label);
+            button.setAttribute('title', label);
+            button.setAttribute('aria-pressed', dark ? 'true' : 'false');
+        }
+        document.dispatchEvent(new CustomEvent('ox:themechange', { detail: { theme: dark ? 'dark' : 'light' } }));
+    }
+
+    apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+    button?.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem('ox-theme', next); } catch (_) { /* private mode: still switch */ }
+        apply(next);
+    });
+
+    // Follow the system setting until the user picks a theme here
+    media?.addEventListener?.('change', event => {
+        if (!saved()) apply(event.matches ? 'dark' : 'light');
+    });
+
+    // Another tab changed the theme
+    window.addEventListener('storage', event => {
+        if (event.key === 'ox-theme' && (event.newValue === 'dark' || event.newValue === 'light')) apply(event.newValue);
+    });
+
+    // Chart.js: axis text and grid lines follow the theme tokens
+    function chartColors() {
+        if (typeof Chart === 'undefined') return;
+        const css = getComputedStyle(root);
+        Chart.defaults.color = css.getPropertyValue('--ox-muted').trim() || '#5e6e64';
+        Chart.defaults.borderColor = css.getPropertyValue('--ox-border').trim() || '#e3eadc';
+        Object.values(Chart.instances || {}).forEach(chart => {
+            Object.values(chart.options.scales || {}).forEach(scale => {
+                if (scale.ticks) scale.ticks.color = Chart.defaults.color;
+                if (scale.grid) scale.grid.color = Chart.defaults.borderColor;
+                if (scale.title) scale.title.color = Chart.defaults.color;
+            });
+            if (chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.color = Chart.defaults.color;
+            chart.update('none');
+        });
+    }
+    document.addEventListener('ox:themechange', chartColors);
+    window.addEventListener('load', chartColors);
+})();

@@ -210,6 +210,7 @@ class SprintModel extends BaseModel
 				orvexa_user_story.so_that) AS user_story,                     
 				orvexa_task.task_id,
 				orvexa_task.task_title,
+				orvexa_task.estimated_hours,
                     CONCAT(orvexa_user.first_name,' ',orvexa_user.last_name) AS assignee_name,
                     orvexa_task_status.name 
 				FROM orvexa_task

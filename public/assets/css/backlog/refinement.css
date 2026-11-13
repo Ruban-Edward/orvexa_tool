@@ -5,8 +5,8 @@
 
 /**Header buttons */
 .btn_select {
-    background-color: white;
-    color: black;
+    background-color: var(--ox-surface);
+    color: var(--ox-ink);
     border: none;
 }
 
@@ -57,7 +57,7 @@ th {
 thead tr th input {
     align-items: center;
     width: 40px;
-    color: #000;
+    color: var(--ox-ink);
 }
 
 thead tr th {
@@ -69,7 +69,7 @@ tr {
 }
 
 table {
-    color: #000;
+    color: var(--ox-ink);
     table-layout: fixed; /* Ensure consistent column widths */
     width: 100%;
     margin: 20px auto;
@@ -85,7 +85,7 @@ table {
 
 .header_color th {
     background-color: var(--ox-brand-50);
-    color: black;
+    color: var(--ox-ink);
 }
 
 .option-button li{
@@ -94,7 +94,7 @@ table {
 
 .btn_group {
     padding: 1px;
-    background-color: #3939AB;
+    background-color: var(--ox-violet);
     border: none;
     color: white;
     width: 60px;
@@ -113,32 +113,31 @@ table {
 
 /** Priority Button color */
 .priority-l {
-    background-color: #26d54f; /* Light green */
-    color: #155724; /* Dark green */
+    background-color: var(--ox-green-bg);
+    color: var(--ox-green);
     display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
     font-weight: bold;
 }
 
 /* Medium priority */
 .priority-m {
-    background-color: #eccb5e; /* Light yellow */
+    background-color: var(--ox-amber-bg);
+    color: var(--ox-amber);
     display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
     font-weight: bold;
 }
 
 /* High priority */
 .priority-h {
-    background-color: #de0517; /* Light red */
+    background-color: var(--ox-red-bg);
+    color: var(--ox-red);
     display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
     font-weight: bold;
 }
 
@@ -196,7 +195,7 @@ th.sorting_desc:before {
 .sortable-helper {
     display: table;
     width: 100%;
-    background-color: #f0f0f0;
+    background-color: var(--ox-surface-3);
     border: 2px solid var(--ox-brand-600);
     box-sizing: border-box;
     font-size: 0.9em;
@@ -208,8 +207,8 @@ th.sorting_desc:before {
 /* Ensure dragged row follows the column widths */
 .ui-sortable-helper {
 box-sizing: border-box;
-border: 1px solid #ddd; /* Optional: Add border for better visibility */
-background-color: #f9f9f9; /* Optional: Change background color for the helper row */
+border: 1px solid var(--ox-border); /* Optional: Add border for better visibility */
+background-color: var(--ox-surface-2); /* Optional: Change background color for the helper row */
 }
 
 /* Optional: Define a minimum height for the dragged row */
@@ -221,64 +220,61 @@ min-height: 50px;
 
 /* Low priority */
 .priority-L {
-    background-color: #26d54f; /* Light green */
-    color: #155724; /* Dark green */
+    background-color: var(--ox-green-bg);
+    color: var(--ox-green);
     display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
     font-weight: bold;
 }
 
 /* Medium priority */
 .priority-M {
-    background-color: #eccb5e; /* Light yellow */
-    color: #856404; /* Dark yellow */
+    background-color: var(--ox-amber-bg);
+    color: var(--ox-amber);
     display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
     font-weight: bold;
 }
 
 /* High priority */
 .priority-H {
-    background-color: #de0517; /* Light red */
-    color: #721c24; /* Dark red */
+    background-color: var(--ox-red-bg);
+    color: var(--ox-red);
     display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
     font-weight: bold;
 }
 
 .sortable-helper {
-    background-color: #d8e5f0;  /* Light background for the helper */
+    background-color: var(--ox-brand-50);  /* Light background for the helper */
     border: 1px dashed var(--ox-brand-600);  /* Dashed border for the helper */
     z-index: 1000;  /* Ensure the helper is above other elements */
 }
 
 .placeholder {
-    background-color: #dcdcdc;  /* Different background for the placeholder */
+    background-color: var(--ox-surface-3);  /* Different background for the placeholder */
     border: 1px solid var(--ox-brand-600);  /* Border for the placeholder */
     height: 50px;  /* Same height as rows */
     line-height: 50px;  /* Center the placeholder text */
     text-align: center;  /* Center the placeholder text */
-    color: #888;  /* Light gray text */
+    color: var(--ox-muted);  /* Light gray text */
 }
 
 .selected {
-    background-color: #e0e0e0;  /* Highlight dragged row */
+    background-color: var(--ox-surface-3);  /* Highlight dragged row */
 }
 
 tr {
-    transition: background-color 0.3s ease;
+    transition: background-color var(--dur-slow) var(--ease-standard);
 }
 
 .dragging {
-    background-color: #e0e0e0;  /* Highlight dragged row */
+    background-color: var(--ox-surface-3);  /* Highlight dragged row */
     border: 1px solid var(--ox-brand-600);  /* Border for the dragged row */
-    color: #000;  /* Ensure text color is readable */
+    color: var(--ox-ink);  /* Ensure text color is readable */
 }
 
 .filter-sidebar {
@@ -287,12 +283,12 @@ tr {
     position: fixed;
     top: 0;
     right: -250px; /* Start off-screen to the right */
-    background-color: #f8f9fa;
-    color: #343a40;
+    background-color: var(--ox-surface-2);
+    color: var(--ox-text);
     padding: 20px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: transform 0.3s ease; /* Smooth transition for sliding effect */
+    transition: transform var(--dur-slow) var(--ease-standard); /* Smooth transition for sliding effect */
     z-index: 1; /* Make sure it is above other content */
 }
 
@@ -312,7 +308,7 @@ tr {
 }
 
 .btn-close:hover {
-    color: #dc3545;
+    color: var(--ox-red);
 }
 
 .filer-btn-close {
@@ -323,7 +319,7 @@ tr {
 }
 
 .filer-btn-close:hover {
-    color: #dc3545;
+    color: var(--ox-red);
 }
 
 tbody{
@@ -348,7 +344,7 @@ tbody{
     border: 1px solid var(--ox-brand-600);
     border-radius: 5px;
     padding: 7px 15px;
-    transition: all 0.3s ease;
+    transition: all var(--dur-slow) var(--ease-standard);
     overflow: hidden;
 }
 
@@ -366,7 +362,7 @@ tbody{
     color: white;
     width: 0;
     padding: 0;
-    transition: all 0.3s ease;
+    transition: all var(--dur-slow) var(--ease-standard);
 }
 
 .search-box.expanded .search-input {
@@ -463,5 +459,5 @@ tbody tr:last-child td:last-child  {
 } 
 
 tbody{
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
 }

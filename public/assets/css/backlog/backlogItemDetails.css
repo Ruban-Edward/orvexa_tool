@@ -11,7 +11,7 @@
 }
 
 .d{
-  background-color: #ffffff;
+  background-color: var(--ox-surface);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -96,25 +96,25 @@
 .button-secondary.active{
   background-color: var(--PRIMARYCOLOR);
   color: #ffffff;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--ox-surface);
 }
 
 /* .button-secondary:hover{
   background-color: rgb(48, 76, 178,0.2);
   color: #ffffff;
-  border: 1px solid #ffffff;
+  border: 1px solid var(--ox-surface);
 } */
 
 .tab-content {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--ox-border);
   border-top: none;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: var(--ox-surface);
   border-radius: 0 0 10px 10px;
 }
 .form-label {
   font-weight: 500;
-  color: #495057;
+  color: var(--ox-text);
 }
 .form-control,
 .form-select {
@@ -211,13 +211,13 @@ ul li {
 
 .date-filter {
   padding: 15px 20px;
-  background-color: #f1f1f2;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--ox-surface-2);
+  border-bottom: 1px solid var(--ox-border);
 }
 
 .date-filter input[type="date"] {
   padding: 5px 10px;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--ox-border-strong);
   border-radius: 4px;
   margin-right: 10px;
 }
@@ -238,9 +238,9 @@ ul li {
   /* position: sticky; */
   top: 80px;
   font-weight: bold;
-  color: #495057;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  color: var(--ox-text);
+  background-color: var(--ox-surface-2);
+  border-bottom: 1px solid var(--ox-border);
 }
 
 /* Activity list styles */
@@ -251,19 +251,19 @@ ul li {
 }
 .date-filter {
   padding: 15px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--ox-surface-2);
+  border-bottom: 1px solid var(--ox-border);
 }
 .activity-item {
   display: flex;
   align-items: center;
   padding: 0px 20px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--ox-border);
 }
 
 .activity-item .time {
   width: 70px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-weight: bold;
 }
 
@@ -286,7 +286,7 @@ ul li {
 }
 
 .activity-item .source {
-  color: #6c757d;
+  color: var(--ox-muted);
   font-size: 0.9em;
 }
 
@@ -337,7 +337,7 @@ body.ox-app #main .header .nav-tabs {
 
 body.ox-app #main .header-links a {
   margin-right: 4px;
-  color: var(--ox-brand-700) !important;
+  color: var(--ox-accent-ink) !important;
   font-weight: 600;
   text-decoration: none;
 }
@@ -349,7 +349,7 @@ body.ox-app #main .header-links a:hover {
 body.ox-app #main .header .button-secondary.active {
   border-color: var(--ox-brand-200) !important;
   background: var(--ox-brand-50) !important;
-  color: var(--ox-brand-800) !important;
+  color: var(--ox-accent-ink-strong) !important;
 }
 
 body.ox-app #main #myTabContent {

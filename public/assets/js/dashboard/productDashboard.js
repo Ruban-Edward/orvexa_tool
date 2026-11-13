@@ -12,8 +12,9 @@ const OX_CHART = {
 };
 if (typeof Chart !== 'undefined') {
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-    Chart.defaults.color = '#5e6e64';
-    Chart.defaults.borderColor = '#e3eadc';
+    // Theme-aware: read the tokens (layout/ux.js updates them when the theme switches)
+    Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--ox-muted').trim() || '#5e6e64';
+    Chart.defaults.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--ox-border').trim() || '#e3eadc';
 }
 
 
@@ -782,3 +783,76 @@ if (sprintRows.length && document.getElementById('pageInfo')) {
 
 
 }
+// Sprint burnup: cumulative hours logged (green) against the ideal pace (blue, dashed) and the
+// estimated scope (neutral reference line). One axis, hours.
+(function () {
+    const source = document.getElementById('sprintBurnupData');
+    const canvas = document.getElementById('sprintBurnupChart');
+    if (!source || !canvas || typeof Chart === 'undefined') return;
+    let data;
+    try { data = JSON.parse(source.textContent); } catch (_) { return; }
+    if (!data || !Array.isArray(data.labels) || !data.labels.length) return;
+
+    const fmt = v => `${Math.round(v * 10) / 10} h`;
+    new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: 'Logged',
+                    data: data.logged,
+                    borderColor: OX_CHART.green,
+                    backgroundColor: OX_CHART.greenFill,
+                    fill: 'origin',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2,
+                    spanGaps: false,
+                    tension: 0,
+                },
+                {
+                    label: 'Ideal',
+                    data: data.ideal,
+                    borderColor: OX_CHART.blue,
+                    borderDash: [6, 4],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    fill: false,
+                },
+                {
+                    label: 'Scope',
+                    data: data.labels.map(() => data.scope),
+                    borderColor: OX_CHART.neutral,
+                    borderDash: [2, 3],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    fill: false,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { duration: 200 },
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+                y: { beginAtZero: true, grid: { color: Chart.defaults.borderColor }, title: { display: true, text: 'Hours' } },
+            },
+            plugins: {
+                legend: { position: 'top', align: 'end', labels: { usePointStyle: true, pointStyle: 'line', boxWidth: 24 } },
+                datalabels: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ctx.parsed.y === null ? null : `${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`,
+                    },
+                },
+            },
+        },
+    });
+})();

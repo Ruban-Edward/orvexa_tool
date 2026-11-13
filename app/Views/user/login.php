@@ -15,7 +15,7 @@ Updated Date: 16 July 2024
     <link rel="shortcut icon" href="<?= ASSERT_PATH ?>support/compiled/png/fav_icon.png" type="image/x-icon">
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/bootstrap/css/bootstrap.min.css">
     <link rel="preload" href="<?= ASSERT_PATH ?>assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link href="<?= ASSERT_PATH ?>assets/css/login/login.css?v=9" rel="stylesheet">
+    <link href="<?= ASSERT_PATH ?>assets/css/login/login.css?v=10" rel="stylesheet">
     <?php foreach (['tokens', 'glass', 'motion', 'background', 'login/login-glass'] as $oxSheet): ?>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/<?= $oxSheet ?>.css?v=<?= filemtime(FCPATH . 'assets/css/' . $oxSheet . '.css') ?>">
     <?php endforeach; ?>
@@ -39,6 +39,12 @@ Updated Date: 16 July 2024
                     <div class="ox-auth-alert cls-wrong-username-password" role="alert">
                         <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 4a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1Zm0 8.5a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/></svg>
                         <span><?= esc(session()->getFlashdata('error')) ?></span>
+                    </div>
+                <?php endif ?>
+                <?php if (session()->has('success')): ?>
+                    <div class="ox-auth-alert is-success" role="status">
+                        <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm3.7 6.2-4.2 4.6a1 1 0 0 1-1.5 0l-2-2.1a1 1 0 1 1 1.5-1.4l1.2 1.3 3.5-3.8a1 1 0 1 1 1.5 1.4Z"/></svg>
+                        <span><?= esc(session()->getFlashdata('success')) ?></span>
                     </div>
                 <?php endif ?>
 
@@ -80,7 +86,11 @@ Updated Date: 16 July 2024
                     </button>
                 </form>
 
-                <p class="ox-auth-help">Trouble signing in? Contact your Scrum admin.</p>
+                <?php if (\App\Services\InviteMailer::isConfigured()): ?>
+                    <p class="ox-auth-help"><a href="<?= ASSERT_PATH ?>forgot-password">Forgot your password?</a></p>
+                <?php else: ?>
+                    <p class="ox-auth-help">Trouble signing in? Contact your Scrum admin.</p>
+                <?php endif ?>
             </div>
 
             <footer class="ox-auth-footer">
@@ -88,68 +98,7 @@ Updated Date: 16 July 2024
             </footer>
         </section>
 
-        <aside class="ox-auth-stage" aria-hidden="true">
-            <div class="ox-stage-copy">
-                <p class="ox-stage-eyebrow">Orvexa for Scrum teams</p>
-                <h2>Orchestrate work.<br><span>Accelerate execution.</span></h2>
-                <p>Backlog, sprints, ceremonies and reports — one calm place for the whole team.</p>
-            </div>
-
-            <div class="ox-stage-preview">
-                <div class="ox-mock ox-mock-sprint">
-                    <div class="ox-mock-head">
-                        <span class="ox-mock-tag">Sprint 12</span>
-                        <span class="ox-mock-live">In progress</span>
-                    </div>
-                    <div class="ox-mock-sprint-body">
-                        <div class="ox-ring" style="--p: 68">
-                            <strong>68%</strong>
-                            <small>done</small>
-                        </div>
-                        <dl>
-                            <div><dt>Tasks</dt><dd>24 / 35</dd></div>
-                            <div><dt>Days left</dt><dd>6</dd></div>
-                            <div><dt>Velocity</dt><dd>42 pts</dd></div>
-                        </dl>
-                    </div>
-                    <div class="ox-mock-roles">
-                        <span>PO</span><span>SM</span><span>DEV</span><span>DEV</span>
-                    </div>
-                </div>
-
-                <div class="ox-mock ox-mock-burn">
-                    <div class="ox-mock-head">
-                        <span class="ox-mock-title">Burndown</span>
-                        <span class="ox-mock-delta">On track</span>
-                    </div>
-                    <svg viewBox="0 0 220 90" preserveAspectRatio="none">
-                        <path class="ox-burn-grid" d="M0 22.5h220M0 45h220M0 67.5h220"/>
-                        <path class="ox-burn-ideal" d="M0 8 L220 86"/>
-                        <path class="ox-burn-area" d="M0 8 L30 14 L60 26 L90 30 L120 44 L150 52 L150 90 L0 90Z"/>
-                        <path class="ox-burn-line" d="M0 8 L30 14 L60 26 L90 30 L120 44 L150 52"/>
-                        <circle class="ox-burn-dot" cx="150" cy="52" r="4"/>
-                    </svg>
-                </div>
-
-                <div class="ox-mock ox-mock-toast">
-                    <span class="ox-toast-icon">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                    </span>
-                    <div>
-                        <strong>Daily scrum</strong>
-                        <small>Starts in 10 min · 15 min sync</small>
-                    </div>
-                </div>
-            </div>
-
-            <ul class="ox-stage-flow">
-                <li>Backlog</li>
-                <li>Planning</li>
-                <li>Sprint</li>
-                <li>Review</li>
-                <li>Retro</li>
-            </ul>
-        </aside>
+        <?= view('user/authStage') ?>
     </main>
 
     <script src="<?= ASSERT_PATH ?>assets/js/login/login.js?v=2"></script>

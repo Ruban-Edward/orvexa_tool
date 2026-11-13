@@ -89,7 +89,7 @@
 }
 .sync-icon {
     font-size: 3rem;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     margin-bottom: 15px;
 }
 .sync-label h5 {

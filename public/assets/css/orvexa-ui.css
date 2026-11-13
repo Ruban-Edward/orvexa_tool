@@ -123,9 +123,9 @@
     --bs-primary-text-emphasis: var(--ox-brand-800);
     --bs-primary-bg-subtle: var(--ox-brand-50);
     --bs-primary-border-subtle: var(--ox-brand-200);
-    --bs-link-color: var(--ox-brand-700);
+    --bs-link-color: var(--ox-accent-ink);
     --bs-link-color-rgb: 22, 122, 64;
-    --bs-link-hover-color: var(--ox-brand-800);
+    --bs-link-hover-color: var(--ox-accent-ink-strong);
     --bs-link-hover-color-rgb: 15, 92, 48;
     --bs-success: var(--ox-brand-600);
     --bs-success-rgb: 31, 148, 80;
@@ -190,12 +190,12 @@ body.ox-app h4, body.ox-app h5, body.ox-app h6 {
 }
 
 body.ox-app a {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     text-underline-offset: 2px;
 }
 
 body.ox-app a:hover {
-    color: var(--ox-brand-800);
+    color: var(--ox-accent-ink-strong);
 }
 
 body.ox-app ::selection {
@@ -214,14 +214,14 @@ body.ox-app ::-webkit-scrollbar {
 }
 
 body.ox-app ::-webkit-scrollbar-thumb {
-    background: #cfd8d2;
+    background: var(--ox-scrollbar);
     border: 3px solid transparent;
     border-radius: 999px;
     background-clip: padding-box;
 }
 
 body.ox-app ::-webkit-scrollbar-thumb:hover {
-    background-color: #b4c0b8;
+    background-color: var(--ox-scrollbar-hover);
 }
 
 body.ox-app ::-webkit-scrollbar-track {
@@ -239,7 +239,7 @@ body.ox-app ::-webkit-scrollbar-track {
     place-items: center;
     background:
         radial-gradient(28% 26% at 50% 48%, rgba(66, 214, 116, 0.16), transparent 70%),
-        rgba(247, 250, 243, 0.86);
+        color-mix(in srgb, var(--ox-canvas) 86%, transparent); /* Soft White in light, Deep Green in dark */
     -webkit-backdrop-filter: blur(8px) saturate(1.1);
     backdrop-filter: blur(8px) saturate(1.1);
     opacity: 1;
@@ -342,7 +342,7 @@ body.ox-app ::-webkit-scrollbar-track {
     height: 3px;
     overflow: hidden;
     border-radius: 3px;
-    background: rgba(16, 32, 24, 0.08);
+    background: color-mix(in srgb, var(--ox-ink) 8%, transparent);
 }
 
 #loader .ox-loader-track::before {
@@ -498,7 +498,7 @@ body.ox-app #sidebar-toggle.ox-collapse-btn:hover {
 
 .ox-sidenav-label {
     padding: 0 10px 6px;
-    color: var(--ox-subtle);
+    color: var(--ox-muted);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -556,7 +556,7 @@ body.ox-app #sidebar .ox-sidenav-link:hover i {
 
 body.ox-app #sidebar .ox-sidenav-link.is-active {
     background: var(--ox-pistachio-tint);
-    color: var(--ox-deep);
+    color: var(--ox-ink);
     font-weight: 600;
 }
 
@@ -696,7 +696,7 @@ body.sidebar-collapsed .ox-main-col {
     gap: 12px;
     height: var(--ox-topbar-h);
     padding: 0 28px;
-    background: rgba(255, 255, 255, 0.85);
+    background: color-mix(in srgb, var(--ox-surface) 85%, transparent);
     backdrop-filter: saturate(180%) blur(10px);
     border-bottom: 1px solid var(--ox-border);
 }
@@ -789,9 +789,9 @@ body.ox-app #meeting-count {
     min-width: 17px;
     height: 17px;
     padding: 0 4px;
-    border: 2px solid #fff;
+    border: 2px solid var(--ox-surface);
     border-radius: 999px;
-    background: var(--ox-red) !important;
+    background: var(--ox-red-fill) !important;
     color: #fff !important;
     font-size: 10px;
     font-weight: 700;
@@ -987,7 +987,7 @@ li.ox-notice:has(> .ox-notice-link) {
     height: 32px;
     border-radius: var(--ox-radius);
     background: var(--ox-brand-50);
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 15px;
 }
 
@@ -1413,7 +1413,7 @@ body.ox-app .btn-outline-primary,
 body.ox-app #main .btn-outline-primary {
     border: 1px solid var(--ox-brand-200) !important;
     background: var(--ox-brand-50) !important;
-    color: var(--ox-brand-800) !important;
+    color: var(--ox-accent-ink-strong) !important;
 }
 
 body.ox-app .btn-outline-primary:hover,
@@ -1425,8 +1425,8 @@ body.ox-app #main .btn-outline-primary:hover {
 
 body.ox-app .btn-danger,
 body.ox-app .swal2-deny {
-    border: 1px solid var(--ox-red) !important;
-    background: var(--ox-red) !important;
+    border: 1px solid var(--ox-red-fill) !important;
+    background: var(--ox-red-fill) !important;
     color: #fff !important;
 }
 
@@ -1436,9 +1436,9 @@ body.ox-app .btn-danger:hover {
 }
 
 body.ox-app .btn-outline-danger {
-    border-color: #fecdca !important;
+    border-color: var(--ox-red-border) !important;
     background: var(--ox-red-bg) !important;
-    color: #b42318 !important;
+    color: var(--ox-red-ink) !important;
 }
 
 body.ox-app .btn:disabled,
@@ -1449,7 +1449,7 @@ body.ox-app .btn.disabled {
 body.ox-app .btn-link {
     min-height: 0;
     padding: 0;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: 600;
 }
 
@@ -1552,7 +1552,7 @@ body.ox-app #main .dataTable-table {
     margin-bottom: 0;
     border-collapse: separate;
     border-spacing: 0;
-    background: var(--ox-surface) !important;
+    background: transparent !important; /* the glass card behind shows through */
     color: var(--ox-text);
     font-size: 14px;
 }
@@ -1560,7 +1560,7 @@ body.ox-app #main .dataTable-table {
 body.ox-app #main table:not(.fc *) thead,
 body.ox-app #main .table thead,
 body.ox-app #main .dataTable-table thead {
-    background: var(--ox-surface-2) !important;
+    background: var(--glass-table-head) !important;
 }
 
 body.ox-app #main table:not(.fc *) thead th,
@@ -1569,7 +1569,7 @@ body.ox-app #main .dataTable-table thead th {
     padding: 10px 16px !important;
     border-top: 0 !important;
     border-bottom: 1px solid var(--ox-border) !important;
-    background: var(--ox-surface-2) !important;
+    background: var(--glass-table-head) !important;
     color: var(--ox-muted) !important;
     font-size: 12px !important;
     font-weight: 600 !important;
@@ -1604,7 +1604,7 @@ body.ox-app #main .dataTable-table tbody tr {
 body.ox-app #main table:not(.fc *) tbody tr:hover,
 body.ox-app #main .table tbody tr:hover,
 body.ox-app #main .dataTable-table tbody tr:hover {
-    background: var(--ox-surface-2) !important;
+    background: var(--glass-table-hover) !important;
 }
 
 body.ox-app #main .table-responsive,
@@ -1715,7 +1715,7 @@ body.ox-app #main .badge.text-primary {
 body.ox-app #main .badge.bg-danger,
 body.ox-app #main .badge.text-danger {
     background: var(--ox-red-bg) !important;
-    color: #b42318 !important;
+    color: var(--ox-red-ink) !important;
 }
 
 body.ox-app #main .badge.bg-warning,
@@ -1844,15 +1844,15 @@ body.ox-app #main .alert-primary {
 }
 
 body.ox-app #main .alert-danger {
-    border-color: #fecdca;
+    border-color: var(--ox-red-border);
     background: var(--ox-red-bg);
-    color: #912018;
+    color: var(--ox-red-ink);
 }
 
 body.ox-app #main .alert-warning {
-    border-color: #fedf89;
+    border-color: var(--ox-amber-border);
     background: var(--ox-amber-bg);
-    color: #93370d;
+    color: var(--ox-amber-ink);
 }
 
 /* Tabs */
@@ -2089,7 +2089,7 @@ body.ox-app .ox-stat-head h2 {
     font-size: 16px;
 }
 
-.ox-tone-green { background: var(--ox-brand-50); color: var(--ox-brand-700); }
+.ox-tone-green { background: var(--ox-brand-50); color: var(--ox-accent-ink); }
 .ox-tone-blue { background: var(--ox-blue-bg); color: var(--ox-blue); }
 .ox-tone-amber { background: var(--ox-amber-bg); color: var(--ox-amber); }
 .ox-tone-violet { background: var(--ox-violet-bg); color: var(--ox-violet); }
@@ -2244,7 +2244,7 @@ body.ox-app button.ox-metric:hover {
     line-height: 18px;
 }
 
-.ox-tag-red { background: var(--ox-red-bg); color: #b42318; }
+.ox-tag-red { background: var(--ox-red-bg); color: var(--ox-red-ink); }
 .ox-tag-green { background: var(--ox-green-bg); color: var(--ox-green); }
 .ox-tag-amber { background: var(--ox-amber-bg); color: var(--ox-amber); }
 .ox-tag-blue { background: var(--ox-blue-bg); color: var(--ox-blue); }
@@ -2266,7 +2266,7 @@ body.ox-app #main .ox-product-action .btn {
     height: 32px;
     border-radius: var(--ox-radius);
     background: var(--ox-pistachio-tint);
-    color: var(--ox-deep);
+    color: var(--ox-ink);
     font-size: 13px;
     font-weight: 700;
 }
@@ -2290,7 +2290,7 @@ body.ox-app #main .ox-sprint-chip {
     border: 1px solid var(--ox-sage);
     border-radius: var(--ox-radius);
     background: var(--ox-brand-50) !important;
-    color: var(--ox-brand-800) !important;
+    color: var(--ox-accent-ink-strong) !important;
     font-size: 12px;
     font-weight: 600;
     line-height: 1.35;
@@ -2313,9 +2313,9 @@ body.ox-app #main .ox-sprint-chip:hover {
 }
 
 body.ox-app #main .ox-sprint-chip.is-delayed {
-    border-color: #fecdca;
+    border-color: var(--ox-red-border);
     background: var(--ox-red-bg) !important;
-    color: #b42318 !important;
+    color: var(--ox-red-ink) !important;
 }
 
 body.ox-app #main .ox-sprint-chip.is-idle {
@@ -2479,7 +2479,7 @@ body.ox-app #main .custom-card-header * {
 body.ox-app .selected-email {
     border: 1px solid var(--ox-sage) !important;
     background: var(--ox-pistachio-tint) !important;
-    color: var(--ox-deep) !important;
+    color: var(--ox-ink) !important;
 }
 
 body.ox-app #main .activity-item .icon,
@@ -2491,7 +2491,7 @@ body.ox-app #main #voiceRecorderBtn {
 
 body.ox-app #main .ox-link-arrow,
 body.ox-app #main .header-links a {
-    color: var(--ox-brand-700) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 /* ==========================================================================
@@ -2501,13 +2501,13 @@ body.ox-app #main .header-links a {
    ========================================================================== */
 :root {
     /* Priority scale – tinted chip + dark text, never colour alone */
-    --ox-prio-high: #b42318;
-    --ox-prio-high-bg: #fef1f0;
-    --ox-prio-high-border: #fecdca;
-    --ox-prio-med: #93530b;
-    --ox-prio-med-bg: #fff6e6;
-    --ox-prio-med-border: #fedf89;
-    --ox-prio-low: var(--ox-brand-800);
+    --ox-prio-high: var(--ox-red-ink);
+    --ox-prio-high-bg: var(--ox-red-bg);
+    --ox-prio-high-border: var(--ox-red-border);
+    --ox-prio-med: var(--ox-amber-ink-2);
+    --ox-prio-med-bg: var(--ox-amber-bg);
+    --ox-prio-med-border: var(--ox-amber-border);
+    --ox-prio-low: var(--ox-accent-ink-strong);
     --ox-prio-low-bg: var(--ox-brand-50);
     --ox-prio-low-border: var(--ox-brand-200);
 }
@@ -2549,7 +2549,7 @@ body.ox-app #main .btn.button-secondary i {
 body.ox-app #main .button-secondary.active {
     border-color: var(--ox-brand-200) !important;
     background: var(--ox-brand-50) !important;
-    color: var(--ox-brand-800) !important;
+    color: var(--ox-accent-ink-strong) !important;
 }
 
 /* Toolbars built from legacy wrappers line up with a consistent gap */
@@ -2641,7 +2641,7 @@ body.ox-app #main .ox-empty-page > i {
     width: 52px;
     height: 52px;
     background: var(--ox-brand-50);
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 22px;
 }
 
@@ -3088,7 +3088,7 @@ body.ox-app #main #card-row .cls-cardHeaderIcon {
     margin: 0 !important;
     border-radius: var(--ox-radius);
     background: var(--ox-brand-50);
-    color: var(--ox-brand-700) !important;
+    color: var(--ox-accent-ink) !important;
     font-size: 14px;
     animation: none !important;
 }
@@ -3232,7 +3232,7 @@ body.ox-app #main .cls-submit {
     margin: 16px -16px -16px;
     padding: 12px 16px;
     border-top: 1px solid var(--ox-border);
-    background: rgba(255, 255, 255, 0.94);
+    background: color-mix(in srgb, var(--ox-surface) 94%, transparent);
     backdrop-filter: blur(6px);
     border-radius: 0 0 var(--ox-radius-lg) var(--ox-radius-lg);
 }
@@ -3375,6 +3375,7 @@ body.ox-app .ox-search-trigger:focus-visible {
 .ox-search-trigger-text {
     flex: 1;
     text-align: left;
+    color: var(--ox-muted);
 }
 
 .ox-kbd {
@@ -3504,7 +3505,7 @@ body.ox-app .ox-search-item[aria-selected="true"] {
     height: 30px;
     border-radius: var(--ox-radius);
     background: var(--ox-brand-50);
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 15px;
 }
 
@@ -3613,14 +3614,14 @@ body.ox-app .ox-link-btn {
     border: 0;
     border-radius: var(--ox-radius-sm);
     background: none;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
 }
 
 body.ox-app .ox-link-btn:hover {
-    color: var(--ox-brand-800);
+    color: var(--ox-accent-ink-strong);
     text-decoration: underline;
 }
 
@@ -3766,7 +3767,7 @@ body.ox-app .ox-task-main {
 }
 
 .ox-task-main:hover .ox-task-title {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .ox-task-path {
@@ -4193,7 +4194,7 @@ body.ox-app .ox-chips {
     border: 1px solid var(--ox-sage);
     border-radius: 999px;
     background: var(--ox-brand-50);
-    color: var(--ox-deep);
+    color: var(--ox-ink);
     font-size: 12px;
 }
 
@@ -4204,7 +4205,7 @@ body.ox-app .ox-chips {
 }
 
 .ox-chip b {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: 600;
 }
 
@@ -4217,14 +4218,14 @@ body.ox-app .ox-chip button {
     border: 0;
     border-radius: 999px;
     background: transparent;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 12px;
     cursor: pointer;
 }
 
 body.ox-app .ox-chip button:hover {
     background: var(--ox-brand-100);
-    color: var(--ox-deep);
+    color: var(--ox-ink);
 }
 
 body.ox-app .ox-pager {
@@ -4285,7 +4286,7 @@ body.ox-app .ox-pager-btn:disabled {
 
 .ox-pager-gap {
     padding: 0 4px;
-    color: var(--ox-subtle);
+    color: var(--ox-muted);
 }
 
 body.ox-app .ox-pager-size {
@@ -4545,7 +4546,7 @@ body.ox-app .ox-card-title {
 }
 
 body.ox-app .ox-card-title:hover {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .ox-card-who {
@@ -4901,7 +4902,7 @@ body.ox-app .ox-product-pick:has(input:checked) {
     padding: 2px 8px;
     border-radius: var(--ox-radius-sm);
     background: var(--ox-surface);
-    color: var(--ox-deep);
+    color: var(--ox-ink);
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.03em;
@@ -4962,7 +4963,7 @@ body.ox-app .ox-import-drop {
 }
 
 .ox-import-drop > i {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-size: 26px;
 }
 
@@ -4986,7 +4987,7 @@ body.ox-app .ox-import-help h6 {
 }
 
 .ox-import-help code {
-    color: var(--ox-brand-800);
+    color: var(--ox-accent-ink-strong);
 }
 
 .ox-import-summary {
@@ -5017,7 +5018,7 @@ body.ox-app .ox-users-table tr.is-invalid-row td {
 .ox-import-errors {
     margin: 0;
     padding-left: 16px;
-    color: #b42318;
+    color: var(--ox-red-ink);
     font-size: 12px;
 }
 
@@ -5101,7 +5102,7 @@ body.ox-app .ox-details-form {
 }
 
 .ox-username-status.is-free {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .ox-username-status.is-taken,
@@ -5141,8 +5142,8 @@ body.ox-app .ox-perm-alert {
 }
 
 body.ox-app .ox-perm-alert.is-warning {
-    border-color: #fedf89;
-    background: #fffcf5;
+    border-color: var(--ox-amber-border);
+    background: var(--ox-amber-bg-soft);
 }
 
 body.ox-app .ox-perm-alert.is-warning .ox-panel-title i {
@@ -5185,7 +5186,7 @@ body.ox-app .ox-perm-alert.is-warning .ox-panel-title i {
 }
 
 .ox-perm-list code {
-    color: var(--ox-brand-800);
+    color: var(--ox-accent-ink-strong);
     font-size: 13px;
 }
 

@@ -34,14 +34,48 @@
 
     --glass-radius: var(--ox-radius-lg, 12px);
 
+    /* Semantic inks and edges for tinted alerts and chips (palette red/amber, darker for text).
+       Same values as before in light; lifted in the dark theme below. */
+    --ox-red-ink: #b42318;
+    /* Green text accents (links, active labels). Fills keep --ox-brand-700/800 in both themes. */
+    --ox-accent-ink: var(--ox-brand-700, #167a40);
+    --ox-accent-ink-strong: var(--ox-brand-800, #0f5c30);
+    --ox-green-fill: #167a40;      /* Green behind white text (5.3:1), both themes */
+    --ox-red-fill: #d92d20;        /* Red behind white text (4.6:1), both themes */
+    --ox-red-border: #fecdca;
+    --ox-amber-ink: #93370d;
+    --ox-amber-ink-2: #93530b;
+    --ox-amber-border: #fedf89;
+    --ox-amber-bg-soft: #fffcf5;
+    --ox-text-soft: #43554a;
+    --ox-scrollbar: #cfd8d2;
+    --ox-scrollbar-hover: #b4c0b8;
+
     /* Content cards: translucent, no blur (the soft background has nothing to blur,
        and blur would trap fixed/overflowing children). The "glass" reads from the
        translucency, a bright top edge and a soft top sheen. */
-    --glass-card-bg: color-mix(in srgb, var(--ox-surface, #ffffff) 70%, transparent);
-    --glass-card-sheen: linear-gradient(180deg, color-mix(in srgb, #ffffff 60%, transparent) 0%, transparent 48%);
-    --glass-card-border: color-mix(in srgb, #ffffff 75%, var(--ox-border, #e3eadc));
-    --glass-card-shadow: 0 1px 0 color-mix(in srgb, #ffffff 80%, transparent) inset, 0 8px 24px -14px rgba(16, 32, 24, 0.18), 0 1px 2px rgba(16, 32, 24, 0.05);
-    --glass-card-shadow-hover: 0 1px 0 color-mix(in srgb, #ffffff 80%, transparent) inset, 0 16px 32px -16px rgba(16, 32, 24, 0.26), 0 2px 4px rgba(16, 32, 24, 0.06);
+    --glass-card-bg: color-mix(in srgb, var(--ox-surface, #ffffff) 50%, transparent);
+    /* Top sheen plus a diagonal light streak from the top-left corner */
+    --glass-card-sheen:
+        linear-gradient(180deg, color-mix(in srgb, #ffffff 45%, transparent) 0%, transparent 38%),
+        linear-gradient(135deg, color-mix(in srgb, #ffffff 24%, transparent) 0%, transparent 34%);
+    --glass-card-border: color-mix(in srgb, #ffffff 62%, var(--ox-border, #e3eadc));
+    --glass-card-shadow:
+        inset 0 1px 0 color-mix(in srgb, #ffffff 95%, transparent),
+        inset 0 0 0 1px color-mix(in srgb, #ffffff 30%, transparent),
+        0 10px 30px -14px rgba(16, 32, 24, 0.22), 0 1px 2px rgba(16, 32, 24, 0.06);
+    --glass-card-shadow-hover:
+        inset 0 1px 0 color-mix(in srgb, #ffffff 95%, transparent),
+        inset 0 0 0 1px color-mix(in srgb, #ffffff 35%, transparent),
+        0 18px 36px -16px rgba(16, 32, 24, 0.3), 0 2px 4px rgba(16, 32, 24, 0.07);
+
+    /* Desktop sidebar: nothing scrolls under it, so it can be clearer than the topbar.
+       --ox-muted keeps ≥ 4.9:1 over the strongest background glow. */
+    --glass-fill-sidebar: color-mix(in srgb, var(--ox-surface, #ffffff) 62%, transparent);
+
+    /* Tables sit inside glass cards: no fill of their own, a translucent header band and hover */
+    --glass-table-head: color-mix(in srgb, var(--ox-surface-3, #f0f5ea) 50%, transparent);
+    --glass-table-hover: color-mix(in srgb, var(--ox-brand-50, #eefbf2) 70%, transparent);
 
     /* Dark glass (Deep Green) for the undo toasts */
     --glass-dark-bg: color-mix(in srgb, var(--ox-deep, #102018) 88%, transparent);
@@ -55,6 +89,7 @@
     --glass-backdrop: none;
     --glass-backdrop-strong: none;
     --glass-backdrop-scrim: none;
+    --glass-bg-sidebar: var(--glass-fill-solid);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -66,6 +101,7 @@
         --glass-backdrop: blur(var(--glass-blur)) saturate(var(--glass-saturate));
         --glass-backdrop-strong: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
         --glass-backdrop-scrim: blur(var(--glass-blur-scrim));
+        --glass-bg-sidebar: var(--glass-fill-sidebar);
     }
 }
 
@@ -79,8 +115,121 @@
         --glass-backdrop: none;
         --glass-backdrop-strong: none;
         --glass-backdrop-scrim: none;
+        --glass-bg-sidebar: var(--glass-fill-solid);
+        --glass-table-head: var(--ox-surface-2, #fafcf7);
+        --glass-table-hover: var(--ox-brand-50, #eefbf2);
         --glass-card-bg: var(--ox-surface, #ffffff);
         --glass-card-sheen: none;
         --glass-dark-bg: var(--ox-deep, #102018);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Dark theme (html[data-theme="dark"], set by the topbar switch in layout/headerLinks.php).
+   Built only from the palette: surfaces are Deep Green (#102018) mixed with white, text is
+   Soft White (#f7faf3) mixed with Deep Green, accents are the palette greens or the semantic
+   hues lifted with white. Contrast (checked): ink/text/muted ≥ 4.5:1 on every surface,
+   semantic text ≥ 4.6:1 on its own tinted background. --ox-deep stays Deep Green: it is the
+   text color on Primary Green buttons, avatars and chips in both themes; plain text uses --ox-ink.
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --ox-canvas: #0c1711;          /* Deep Green 72% + black */
+    --ox-surface: #1e2d26;         /* Deep Green + 6% white */
+    --ox-surface-2: #26342d;       /* + 9% white */
+    --ox-surface-3: #2f3d36;       /* + 13% white */
+    --ox-border: #404d46;          /* + 20% white */
+    --ox-border-strong: #58635d;   /* + 30% white */
+
+    --ox-ink: var(--ox-soft-white);
+    --ox-text: #dbe0d9;            /* Soft White 88% + Deep Green */
+    --ox-muted: #adb4ad;           /* 68% */
+    --ox-subtle: #88918a;          /* 52%, large text and icons only */
+
+    --ox-brand-50: #22412f;        /* Primary Green 12% over surface */
+    --ox-brand-100: #254f36;       /* 20% */
+    --ox-accent-ink: var(--ox-primary);
+    --ox-accent-ink-strong: var(--ox-fresh);
+    --ox-pistachio-tint: #364435;  /* Pistachio 12% over surface */
+
+    --ox-green: var(--ox-fresh);
+    --ox-green-bg: #244832;
+    --ox-red: #e9857e;             /* Red + 42% white */
+    --ox-red-bg: #432d25;
+    --ox-amber: #d18d66;           /* Amber + 38% white */
+    --ox-amber-bg: #3c3220;
+    --ox-blue: #78a0e5;            /* Blue + 42% white */
+    --ox-blue-bg: #1d3649;
+    --ox-violet: #a891de;          /* Violet + 42% white */
+    --ox-violet-bg: #2d3146;
+    --ox-red-ink: var(--ox-red);
+    --ox-red-border: #562d24;      /* Red 30% over surface */
+    --ox-amber-ink: var(--ox-amber);
+    --ox-amber-ink-2: var(--ox-amber);
+    --ox-amber-border: #4b351d;    /* Amber 30% over surface */
+    --ox-amber-bg-soft: var(--ox-amber-bg);
+    --ox-text-soft: var(--ox-muted);
+    --ox-scrollbar: var(--ox-border-strong);
+    --ox-scrollbar-hover: var(--ox-subtle);
+
+    --ox-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --ox-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.36), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --ox-shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+    --ox-shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+
+    /* Bootstrap links read these RGB triplets directly */
+    --bs-link-color-rgb: 66, 214, 116;        /* Primary Green */
+    --bs-link-hover-color-rgb: 128, 239, 128; /* Fresh Green */
+    --bs-primary-text-emphasis: var(--ox-fresh);
+
+    /* Legacy theme variables (app-theme.css, orvexa-pro.css) */
+    --app-border: var(--ox-border);
+    --app-muted: var(--ox-surface-2);
+    --app-canvas: var(--ox-canvas);
+    --app-tint: var(--ox-brand-50);
+    --app-hover-surface: var(--ox-surface-3);
+    --pro-border: var(--ox-border);
+    --pro-ink: var(--ox-text);
+    --pro-muted: var(--ox-muted);
+    --pro-surface: var(--ox-surface);
+    --pro-canvas: var(--ox-canvas);
+    --pro-accent-soft: var(--ox-violet-bg);
+    --text-color: var(--ox-text);
+    --pistachio-muted: var(--ox-muted);
+
+    /* Glass on dark: translucent Deep Green with white light-catching edges.
+       --ox-muted keeps ≥ 5.4:1 on cards and ≥ 6:1 on the sidebar over the strongest glow. */
+    --glass-border: color-mix(in srgb, #ffffff 10%, transparent);
+    --glass-border-strong: color-mix(in srgb, #ffffff 16%, transparent);
+    --glass-highlight: inset 0 1px 0 color-mix(in srgb, #ffffff 12%, transparent);
+    --glass-card-bg: color-mix(in srgb, var(--ox-surface) 55%, transparent);
+    --glass-card-sheen:
+        linear-gradient(180deg, color-mix(in srgb, #ffffff 9%, transparent) 0%, transparent 45%),
+        linear-gradient(135deg, color-mix(in srgb, #ffffff 6%, transparent) 0%, transparent 40%);
+    --glass-card-border: color-mix(in srgb, #ffffff 12%, transparent);
+    --glass-card-shadow:
+        inset 0 1px 0 color-mix(in srgb, #ffffff 12%, transparent),
+        inset 0 0 0 1px color-mix(in srgb, #ffffff 4%, transparent),
+        0 12px 32px -14px rgba(0, 0, 0, 0.65), 0 1px 2px rgba(0, 0, 0, 0.35);
+    --glass-card-shadow-hover:
+        inset 0 1px 0 color-mix(in srgb, #ffffff 16%, transparent),
+        inset 0 0 0 1px color-mix(in srgb, #ffffff 6%, transparent),
+        0 20px 40px -16px rgba(0, 0, 0, 0.75), 0 2px 4px rgba(0, 0, 0, 0.4);
+    --glass-fill-sidebar: color-mix(in srgb, var(--ox-surface) 50%, transparent);
+    --glass-dark-bg: color-mix(in srgb, var(--ox-surface-3) 92%, transparent);
+
+    /* Background glows: green auroras on the Deep Green canvas, so the glass has colour to show */
+    --bg-glow-pistachio: color-mix(in srgb, var(--ox-pistachio) 12%, transparent);
+    --bg-glow-fresh: color-mix(in srgb, var(--ox-fresh) 16%, transparent);
+    --bg-glow-sage: color-mix(in srgb, var(--ox-sage) 18%, transparent);
+    --bg-glow-primary: color-mix(in srgb, var(--ox-primary) 22%, transparent);
+    --bg-glow-center: color-mix(in srgb, var(--ox-primary) 10%, transparent);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root[data-theme="dark"] {
+        --glass-card-bg: var(--ox-surface);
+        --glass-dark-bg: var(--ox-surface-3);
     }
 }

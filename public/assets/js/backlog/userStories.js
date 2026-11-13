@@ -1078,7 +1078,7 @@ if (typeof m_userStories !== "undefined") {
     $("#addStoryTitle").text("Add user story");
     $("#submitBtn1").text("Add");
     document.getElementById("addUserStoryform").action =
-      baseUrl + "backlog/addUserStory?pid=" + pId + "&pblid" + pblId;
+      baseUrl + "backlog/addUserStory?pid=" + pId + "&pblid=" + pblId;
     document.getElementById("submitBtn1").name = "addUserStory";
     $("#userstories_status").val("13");
     updateSelectOption();
@@ -1101,7 +1101,7 @@ if (typeof m_userStories !== "undefined") {
     $("#addStoryTitle").text("Update user story");
 
     document.getElementById("addUserStoryform").action =
-      baseUrl + "backlog/updateUserStory?pid=" + pId + "&pblid" + pblId;
+      baseUrl + "backlog/updateUserStory?pid=" + pId + "&pblid=" + pblId;
     document.getElementById("submitBtn1").name = "updateUserStory";
     $("#submitBtn1").text("Update");
 
@@ -1339,14 +1339,13 @@ if (typeof m_userStories !== "undefined") {
     });
   }
   document.getElementById("submitBtn1").addEventListener("click", function () {
+    // The "Then" and "Conditions" fields are TinyMCE editors over required textareas:
+    // copy their content back before the browser validates, or Add does nothing.
+    if (window.tinymce) tinymce.triggerSave();
     const form = document.getElementById('addUserStoryform');
     if (form.checkValidity() === false) {
-    console.log('double clicked');
       form.classList.add("was-validated");
-      // return;
-      this.click();
     }
-    
   });
 
   //For scheduling the Brainstorming meeting
@@ -1566,7 +1565,7 @@ if (typeof m_userStories !== "undefined") {
       const formattedDate = new Date(comment.timestamp).toLocaleString();
       commentDiv.innerHTML = `
               <div class="comment-content">
-                  <p class="comment-content"><strong>${escapeHtml(comment.recipient)}:</strong> ${escapeHtml(comment.text)}</p>
+                  <p class="comment-content"><strong>${escapeHtml(comment.recipient)}:</strong> ${oxMentionHtml(comment.text)}</p>
                   <span class="comment-timestamp">${escapeHtml(comment.date)}</span>
               </div>
               <i class="icon-twitch me-1"></i> <button class="btn-link reply-btn reply-button" id="reply-button-${encodeURIComponent(comment.id)}">Reply</button>
@@ -1584,7 +1583,7 @@ if (typeof m_userStories !== "undefined") {
       replyDiv.style.display = "block";
       replyDiv.dataset.id = reply.id;
       replyDiv.innerHTML = `
-              <p><strong>${escapeHtml(reply.recipient)}:</strong> ${escapeHtml(reply.text)}</p>`;
+              <p><strong>${escapeHtml(reply.recipient)}:</strong> ${oxMentionHtml(reply.text)}</p>`;
       return replyDiv;
     }
 
@@ -1774,11 +1773,12 @@ if (typeof m_userStories !== "undefined") {
     // comment coallapse
 
     document.addEventListener("click", function (event) {
-      if (event.target.matches(".toggle-suggestion-button")) {
+      const suggestionToggle = event.target.closest(".toggle-suggestion-button");
+      if (suggestionToggle) {
         // Retrieve the user story ID
-        const card = event.target.closest(".card");
+        const card = suggestionToggle.closest(".card");
         const storyId = card
-          .querySelector(".us-id strong")
+          .querySelector(".us-id .ox-id-chip, .us-id strong")
           .textContent.replace("US_", "")
           .trim();
 
@@ -1793,13 +1793,13 @@ if (typeof m_userStories !== "undefined") {
               : "none";
           const isVisible = container.style.display === "block";
           if (isVisible) {
-            event.target.classList.add("open");
+            suggestionToggle.classList.add("open");
 
             commentSection = suggestion(storyId);
 
             printFirstComment(comments, storyId);
           } else {
-            event.target.classList.remove("open");
+            suggestionToggle.classList.remove("open");
           }
         } else {
           console.error("No container found for storyId:", storyId);
@@ -1818,10 +1818,11 @@ if (typeof m_userStories !== "undefined") {
   //Drop toggle for poker planning
   document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", function (event) {
-      if (event.target.matches(".toggle-poker-button")) {
-        const card = event.target.closest(".card");
+      const pokerToggle = event.target.closest(".toggle-poker-button");
+      if (pokerToggle) {
+        const card = pokerToggle.closest(".card");
         const storyId = card
-          .querySelector(".us-id strong")
+          .querySelector(".us-id .ox-id-chip, .us-id strong")
           .textContent.replace("US_", "")
           .trim();
         const pokerContainer = document.getElementById(
@@ -1836,9 +1837,9 @@ if (typeof m_userStories !== "undefined") {
               : "none";
           const isVisible = pokerContainer.style.display === "block";
           if (isVisible) {
-            event.target.classList.add("open");
+            pokerToggle.classList.add("open");
           } else {
-            event.target.classList.remove("open");
+            pokerToggle.classList.remove("open");
           }
         } else {
           console.error("No pokerContainer found for storyId:", storyId);
@@ -1997,3 +1998,138 @@ if (typeof m_userStories !== "undefined") {
     });
   });
 }
+
+// -----------------------------------------------------------------
+// @mentions in story comments: highlight known usernames and suggest
+// product members while typing "@" in a comment or reply box.
+// -----------------------------------------------------------------
+function oxMentionHtml(text) {
+  const users = Array.isArray(window.mentionableUsers) ? window.mentionableUsers : [];
+  const known = new Set(users.map((u) => String(u.username).toLowerCase()));
+  const safe = String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  return safe.replace(/(^|[^\w@.])@([A-Za-z0-9][\w.-]{1,49})/g, (match, pre, name) =>
+    known.has(name.toLowerCase()) ? `${pre}<span class="ox-mention">@${name}</span>` : match
+  );
+}
+
+(function () {
+  const users = Array.isArray(window.mentionableUsers) ? window.mentionableUsers : [];
+  if (!users.length) return;
+
+  const FIELD = 'textarea[id^="comment-text-"], textarea.reply-box';
+  const menu = document.createElement("ul");
+  menu.className = "ox-mention-menu glass-strong";
+  menu.id = "oxMentionMenu";
+  menu.setAttribute("role", "listbox");
+  menu.setAttribute("aria-label", "Mention a teammate");
+  menu.hidden = true;
+  document.body.appendChild(menu);
+
+  let field = null;
+  let matches = [];
+  let active = 0;
+  let tokenStart = -1;
+
+  function close() {
+    menu.hidden = true;
+    matches = [];
+    if (field) {
+      field.removeAttribute("aria-activedescendant");
+      field.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function render() {
+    menu.innerHTML = "";
+    matches.forEach((u, i) => {
+      const li = document.createElement("li");
+      li.id = `oxMention-${i}`;
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", i === active ? "true" : "false");
+      const name = document.createElement("strong");
+      name.textContent = u.name || u.username;
+      const handle = document.createElement("span");
+      handle.textContent = `@${u.username}`;
+      li.append(name, handle);
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        pick(i);
+      });
+      menu.appendChild(li);
+    });
+    field.setAttribute("aria-activedescendant", `oxMention-${active}`);
+  }
+
+  function place() {
+    const r = field.getBoundingClientRect();
+    const width = Math.min(280, window.innerWidth - 32);
+    menu.style.width = `${width}px`;
+    menu.style.left = `${Math.max(16, Math.min(r.left, window.innerWidth - width - 16))}px`;
+    const below = r.bottom + 4;
+    const fitsBelow = below + menu.offsetHeight < window.innerHeight - 8;
+    menu.style.top = `${fitsBelow ? below : Math.max(8, r.top - menu.offsetHeight - 4)}px`;
+  }
+
+  function update(el) {
+    const before = el.value.slice(0, el.selectionStart);
+    const m = before.match(/(^|[^\w@.])@([\w.-]{0,50})$/);
+    if (!m) return close();
+    const q = m[2].toLowerCase();
+    matches = users
+      .filter((u) => String(u.username).toLowerCase().startsWith(q) || String(u.name || "").toLowerCase().split(/\s+/).some((w) => w.startsWith(q)))
+      .slice(0, 8);
+    if (!matches.length) return close();
+    field = el;
+    tokenStart = before.length - m[2].length - 1;
+    active = Math.min(active, matches.length - 1);
+    field.setAttribute("aria-controls", menu.id);
+    field.setAttribute("aria-expanded", "true");
+    render();
+    menu.hidden = false;
+    place();
+  }
+
+  function pick(i) {
+    const u = matches[i];
+    if (!u || !field) return;
+    const caret = field.selectionStart;
+    const insert = `@${u.username} `;
+    field.value = field.value.slice(0, tokenStart) + insert + field.value.slice(caret);
+    const pos = tokenStart + insert.length;
+    field.setSelectionRange(pos, pos);
+    field.focus();
+    close();
+  }
+
+  document.addEventListener("input", (e) => {
+    if (e.target.matches && e.target.matches(FIELD)) {
+      active = 0;
+      update(e.target);
+    }
+  });
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (menu.hidden || e.target !== field) return;
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        active = (active + (e.key === "ArrowDown" ? 1 : matches.length - 1)) % matches.length;
+        render();
+      } else if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        e.stopPropagation();
+        pick(active);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+      }
+    },
+    true
+  );
+  document.addEventListener("focusout", (e) => {
+    if (e.target === field) setTimeout(close, 0);
+  });
+  window.addEventListener("resize", () => !menu.hidden && place());
+  document.addEventListener("scroll", () => !menu.hidden && place(), true);
+})();

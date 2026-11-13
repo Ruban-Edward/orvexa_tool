@@ -96,6 +96,7 @@ class UserStoryController extends BaseController
              'fibonacciLimit' => $this->generateFibonacci(FIBONACCI_LIMIT),
              'totaluserstories' => $this->userStoryModel->getTotalUserStory($pblId),
              'current_user' => $this->backlogModel->getCurrentUser(session()->get('employee_id')),
+             'mentionable' => model(\App\Models\NotificationModel::class)->getMentionableUsers((int) $pId),
          ];
      
          // Set breadcrumbs for navigation
@@ -717,7 +718,7 @@ class UserStoryController extends BaseController
 
         // Check if the insertion was successful
         if ($res) {
-            (new NotificationService())->storyCommented((int) $array['r_user_story_id'], (int) $array['r_user_id']);
+            (new NotificationService())->storyCommented((int) $array['r_user_story_id'], (int) $array['r_user_id'], is_string($array['text'] ?? null) ? $array['text'] : '');
             // If successful, return the updated list of comments as a JSON response with a success status
             return $this->response->setJSON([
                 'status' => 'success',

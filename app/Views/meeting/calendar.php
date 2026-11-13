@@ -138,6 +138,7 @@ if (!empty($sprintId)) {
                                 <div class="meeting-attendees scrollable" id="attendeesList">
                                         <!-- Attendees will be populated here dynamically -->
                                     </div>
+                                    <?= view('effort/masterFields', ['masters' => $data['effortMasters'], 'prefix' => 'meetingEffort', 'col' => 'col-12']) ?>
                                     <button type="submit" id="timelogbutton" class="btn btn-primary me-1 mb-2">Log efforts</button>
                                 </form>
 
@@ -443,6 +444,8 @@ if (!empty($sprintId)) {
                                 id="eventDescription"></span></a></p>
                     <p id="peventMembers"><b>Meeting members</b><span>:</span> <span id="eventMembers"></span></p>
                     <p id="pcancel"><b>Cancelled reason</b><span>:</span> <span id="cancel"></span></p>
+                    <a class="btn btn-outline-primary me-1 mb-2" id="addToCalendarLink" href="#" download hidden>
+                        <i class="icon-calendar me-1" aria-hidden="true"></i>Add to calendar (.ics)</a>
                     <button class="btn btn-primary me-1 mb-2" name="editMeeetingButton" id="editMeetingButton"
                         style="display: none;">Edit meeting</button>
                     <button class="btn btn-danger me-1 mb-2" id="cancelMeetingButton" style="display: none;">Cancel

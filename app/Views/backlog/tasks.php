@@ -154,6 +154,7 @@ $canAdd = has_permission('backlog/addTasks');
                             <label for="effortComments" class="form-label">Comments</label>
                             <textarea class="form-control" id="effortComments" name="comments" rows="2" maxlength="1000"></textarea>
                         </div>
+                        <?= view('effort/masterFields', ['masters' => $data['effortMasters'], 'prefix' => 'taskEffort']) ?>
                     </div>
                     <hr>
                     <h6>Effort history</h6>
@@ -166,6 +167,35 @@ $canAdd = has_permission('backlog/addTasks');
                     <button type="submit" class="btn btn-primary" id="saveTaskEffortBtn">Save effort</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="taskDependencyModal" tabindex="-1" aria-labelledby="taskDependencyModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="taskDependencyModalTitle">Dependencies</h5>
+                    <div class="form-text" id="taskDependencyTaskTitle"></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Blocked by</h6>
+                <p class="form-text mt-0">This task should wait until these tasks are done.</p>
+                <div id="taskDependencyList" aria-live="polite"><p class="text-muted mb-0">Loading…</p></div>
+                <form id="taskDependencyForm" class="ox-dependency-form mt-3" hidden>
+                    <label for="taskDependencySelect" class="form-label">Add a blocking task</label>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="taskDependencySelect" name="depends_on" required></select>
+                        <button type="submit" class="btn btn-primary" id="taskDependencyAdd">Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

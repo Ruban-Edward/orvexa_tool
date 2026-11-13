@@ -37,7 +37,7 @@
 .no-sprints{
     border: 1px solid var(--ox-brand-800);
     padding: 8px;
-    color: var(--ox-brand-800);
+    color: var(--ox-accent-ink-strong);
     font-size: 14px;
     font-family: roboto-semibold;
     border-radius: 8px;
@@ -68,13 +68,13 @@
     }
 .main-content .card-title{
         font-weight: bolder;
-        color: var(--ox-brand-800) ;
+        color: var(--ox-accent-ink-strong) ;
         font-size: 1.1rem;
     }
 
 .product-header{
     font-weight: 800;
-    color: var(--ox-brand-800);
+    color: var(--ox-accent-ink-strong);
 }
 b, strong {
     font-weight: bolder;
@@ -117,8 +117,8 @@ b, strong {
     transition: background-color 0.3s, box-shadow 0.3s; 
 }
 .custom-select {
-    background-color: white;
-    border: 1px solid #ced4da;
+    background-color: var(--ox-surface);
+    border: 1px solid var(--ox-border-strong);
     border-radius: 0.25rem;
     padding: 0.375rem 1.75rem 0.375rem 0.75rem;
     appearance: none;
@@ -172,13 +172,13 @@ b, strong {
 #searchInput {
     width: 100%;
     padding: 5px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--ox-border-strong);
     border-radius: 4px;
     font-size: 0.9rem;
 }
 
 .main-content .task-container {
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -201,16 +201,16 @@ b, strong {
     white-space: normal;
     overflow: visible;
     text-overflow: initial;
-    background: white;
+    background: var(--ox-surface);
     position: absolute;
     z-index: 10;
-    border: 1px solid #ccc;
+    border: 1px solid var(--ox-border-strong);
     padding: 5px;
 }
 
 .task-details {
     padding-top: 0.75rem;
-    border-top: 1px solid #ecf0f1;
+    border-top: 1px solid var(--ox-border);
 }
 .main-content .task-details p {
     margin-bottom: 0.4rem;
@@ -300,7 +300,7 @@ b, strong {
 } 
 
 .main-content tbody{
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
     border-radius: 20px;
 }
 .cls-dashboardRow{
@@ -341,3 +341,9 @@ th {
 
 
 
+
+/* Sprint burnup chart */
+.ox-burnup-wrap {
+    position: relative;
+    height: 280px;
+}

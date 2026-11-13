@@ -39,6 +39,11 @@ body.ox-app #sidebar.ox-sidebar::before {
     backdrop-filter: var(--glass-backdrop);
 }
 
+/* Desktop sidebar sits only over the background glows: a clearer tier (see tokens.css) */
+body.ox-app #sidebar.ox-sidebar::before {
+    background: var(--glass-bg-sidebar);
+}
+
 /* Off-canvas sidebar on small screens floats over dimmed content: use the strong tier */
 @media (max-width: 1199.98px) {
     body.ox-app #sidebar.ox-sidebar::before {

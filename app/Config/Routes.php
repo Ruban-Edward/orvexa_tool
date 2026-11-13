@@ -14,6 +14,13 @@ $routes->get('/login', 'AuthController::index', ['filter' => 'loginpage']);
 $routes->post('/login', 'AuthController::loginValidate');
 
 $routes->post('/logout', 'AuthController::logout', ['filter' => 'auth']);
+
+/* Forgot password */
+$routes->get('/forgot-password', 'PasswordResetController::forgot', ['filter' => 'loginpage']);
+$routes->post('/forgot-password', 'PasswordResetController::sendLink', ['filter' => 'loginpage']);
+$routes->get('/reset-password/(:segment)', 'PasswordResetController::resetForm/$1', ['filter' => 'loginpage']);
+$routes->get('/reset-password', 'PasswordResetController::resetForm', ['filter' => 'loginpage']);
+$routes->post('/reset-password', 'PasswordResetController::reset', ['filter' => 'loginpage']);
 $routes->get('/no_access', 'AuthController::noAccess');
 
 /**
@@ -23,6 +30,7 @@ $routes->get('/no_access', 'AuthController::noAccess');
  */
 $routes->group('meeting', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->get('calendar', 'MeetingController::calendar');
+    $routes->get('ics/(:num)', 'MeetingController::downloadIcs/$1');
     $routes->post('eventdetails/(:num)/(:num)', 'MeetingController::getMeetingDetails/$1/$2');
     $routes->post('sprintdetails/(:num)', 'MeetingController::getSprintDetails/$1');
     $routes->post('sprintByProduct/(:num)', 'MeetingController::sprintByProduct/$1');
@@ -95,6 +103,9 @@ $routes->group('backlog', ['filter' => ['auth', 'acl']], function ($routes) {
     $routes->post('getTaskById/(:num)', 'TaskController::getTaskById/$1');
     $routes->post('taskEfforts/(:num)', 'TaskController::taskEfforts/$1');
     $routes->post('logTaskEffort/(:num)', 'TaskController::logTaskEffort/$1');
+    $routes->post('taskDependencies/(:num)', 'TaskController::taskDependencies/$1');
+    $routes->post('addTaskDependency/(:num)', 'TaskController::addTaskDependency/$1');
+    $routes->post('removeTaskDependency/(:num)', 'TaskController::removeTaskDependency/$1');
 
     $routes->post('insertPokerPlanning', 'PockerController::insertPokerPlanning');
     $routes->post('updatereveal', 'PockerController::updatePokerReveal');

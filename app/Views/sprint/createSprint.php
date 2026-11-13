@@ -323,6 +323,20 @@
                                                     <p class="card-text">Total user stories : <span
                                                             id="totalUserStoriesItems">0</span></p>
                                                     <p class="card-text">Total tasks: <span id="totalItems">0</span></p>
+                                                    <div class="ox-capacity" id="sprintCapacity" aria-live="polite">
+                                                        <h6 class="ox-capacity-title">Capacity</h6>
+                                                        <p class="card-text">Working days: <span id="capWorkingDays">0</span></p>
+                                                        <p class="card-text">Members: <span id="capMembers">0</span></p>
+                                                        <label class="ox-capacity-focus" for="capFocusHours">Focus hours / day per member
+                                                            <input type="number" class="form-control form-control-sm" id="capFocusHours" min="1" max="12" step="0.5" value="6">
+                                                        </label>
+                                                        <p class="card-text">Capacity: <strong id="capCapacity">0 h</strong></p>
+                                                        <p class="card-text">Committed (estimates): <strong id="capCommitted">0 h</strong></p>
+                                                        <div class="progress ox-capacity-bar" role="progressbar" aria-label="Committed hours against capacity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                                            <div class="progress-bar" id="capBar" style="width: 0%"></div>
+                                                        </div>
+                                                        <p class="ox-capacity-status" id="capStatus">Pick dates, members and tasks to see the load.</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -616,3 +630,5 @@
         </div>
     </div>
     </div>
+
+<script type="application/json" id="sprintHolidays"><?= json_encode($data['holidays'] ?? [], JSON_HEX_TAG | JSON_HEX_AMP) ?></script>

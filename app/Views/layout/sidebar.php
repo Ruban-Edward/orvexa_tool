@@ -53,6 +53,7 @@ $isActive = static function (array $prefixes) use ($currentPath): bool {
     <div class="ox-sidebar-brand">
         <a href="<?= ASSERT_PATH ?>dashboard/dashboardView" class="ox-brand-link" aria-label="Orvexa home">
             <img class="ox-brand-full" src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_05_horizontal_logo.png" alt="Orvexa">
+            <img class="ox-brand-full ox-brand-dark" src="<?= ASSERT_PATH ?>assets/images/logo/header_logo_dark.png" alt="" aria-hidden="true">
             <img class="ox-brand-mark" src="<?= ASSERT_PATH ?>assets/images/logo/orvexa_06_app_icon.png" alt="Orvexa">
         </a>
     </div>

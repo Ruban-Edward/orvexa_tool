@@ -55,6 +55,11 @@
                 </div>
             </div>
 
+            <button type="button" class="ox-iconbtn ox-theme-toggle" id="oxThemeToggle" aria-label="Switch to dark theme" title="Switch to dark theme" aria-pressed="false">
+                <i class="icon-moon" aria-hidden="true"></i>
+                <i class="icon-sun" aria-hidden="true"></i>
+            </button>
+
             <?php $firstName = (string) session()->get('first_name'); ?>
             <div class="dropdown">
                 <button class="ox-user-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">

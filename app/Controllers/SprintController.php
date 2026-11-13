@@ -264,7 +264,7 @@ class SprintController extends BaseController
                     ];
                }
 
-               $task = [$taskId, $item["task_title"], $item["name"], $item["assignee_name"]];
+               $task = [$taskId, $item["task_title"], $item["name"], $item["assignee_name"], (float) ($item["estimated_hours"] ?? 0)];
                if (empty($userStoryId)) {
                     $backlogItems[$backlogKey]["tasks"][] = $task;
                     continue;
@@ -436,6 +436,7 @@ class SprintController extends BaseController
           $viewData['edit'] = 0;
 
           // Return the rendered view for creating a sprint
+          $viewData['holidays'] = array_map(static fn ($h) => [$h['holiday_start_date'], $h['holiday_end_date']], model(\App\Models\Meeting\HolidaysModel::class)->getHolidayDetails());
           return $this->template_view('sprint/createSprint', $viewData, 'Create sprint', $breadcrumbs);
      }
 
@@ -1186,6 +1187,7 @@ class SprintController extends BaseController
 
           $viewData['member_in_sprint'] = array_column($this->sprintModel->getSprintMember($this->request->getPost('sprint_id')), 'id');
           // Render the edit sprint view with the prepared data
+          $viewData['holidays'] = array_map(static fn ($h) => [$h['holiday_start_date'], $h['holiday_end_date']], model(\App\Models\Meeting\HolidaysModel::class)->getHolidayDetails());
           return $this->template_view('sprint/createSprint', $viewData, 'Edit sprint', $breadcrumbs);
      }
 

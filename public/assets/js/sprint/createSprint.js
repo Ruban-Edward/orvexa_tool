@@ -157,6 +157,25 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         let sprintSettingAdded = false;
+
+        // The start / end pickers are readonly, and browsers skip "required" on readonly inputs
+        function sprintDatesChosen(showDialog) {
+            const missing = ['startDate', 'endDate'].filter(id => !(document.getElementById(id)?.value || '').trim());
+            missing.forEach(id => document.getElementById(id)?.classList.add('is-invalid'));
+            ['startDate', 'endDate'].filter(id => !missing.includes(id)).forEach(id => document.getElementById(id)?.classList.remove('is-invalid'));
+            if (missing.length && showDialog) {
+                Swal.fire({ icon: 'warning', title: 'Choose the sprint dates', text: 'Select both a start date and an end date.' });
+            }
+            return missing.length === 0;
+        }
+
+        // Server answers with either a message or field errors in data
+        function sprintErrorText(response) {
+            if (response && response.message) return response.message;
+            const data = response && response.data;
+            if (data && typeof data === 'object') return Object.values(data).flat().join(' ');
+            return 'The sprint could not be saved. Please check the form and try again.';
+        }
         let selectedActivities = [];
 
         function createNewSetting() {
@@ -256,7 +275,9 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#createSprintForm').on('submit', function (e) {
             e.preventDefault();
             tinymce.triggerSave();
-            if (!this.checkValidity()) {
+            const nativeValid = this.checkValidity();
+            const datesChosen = sprintDatesChosen(nativeValid);
+            if (!nativeValid || !datesChosen) {
                 e.stopPropagation();
                 this.classList.add('was-validated');
                 return;
@@ -291,7 +312,9 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
 
             tinymce.triggerSave();
-            if (!this.checkValidity()) {
+            const nativeValid = this.checkValidity();
+            const datesChosen = sprintDatesChosen(nativeValid);
+            if (!nativeValid || !datesChosen) {
                 e.stopPropagation();
                 this.classList.add('was-validated');
                 return;
@@ -341,14 +364,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    window.location.href = BASE_URL + "/sprint/sprintlist";
+                                    window.location.href = BASE_URL + "sprint/sprintlist";
                                 }
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
-                                text: 'Something went wrong. Please try again.',
+                                text: sprintErrorText(response),
                             });
                         }
                     },
@@ -428,14 +451,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             text: 'Your sprint has been created successfully.',
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = BASE_URL + "/sprint/sprintlist";
+                                window.location.href = BASE_URL + "sprint/sprintlist";
                             }
                         });
                     } else {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Oops!',
-                            text: response.message,
+                            text: sprintErrorText(response),
                         });
                     }
                 },
@@ -529,6 +552,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const itemsPerPage = 7;
         let filteredMembers = [];
         let checkedMembers = new Set();
+        // Read-only view of the plan for the capacity summary (see the end of this file)
+        window.oxSprintPlan = {
+            memberCount: () => checkedMembers.size,
+            committedHours: () => Object.keys(selectedTasks)
+                .filter(key => selectedTasks[key])
+                .reduce((sum, key) => sum + (Number((taskForSelection(key) || [])[4]) || 0), 0),
+        };
 
         if (editMode) {
             let value = sprint_data[0]['r_product_id'];
@@ -1635,3 +1665,74 @@ document.addEventListener('DOMContentLoaded', function () {
     updateProcessFlow();
 });
 }
+
+/**
+ * Sprint capacity: working days (Mon-Fri, minus holidays) x selected members x focus hours,
+ * compared with the estimated hours of the selected tasks. Display only; nothing is saved.
+ */
+(function () {
+    const box = document.getElementById('sprintCapacity');
+    if (!box) return;
+    let holidays = [];
+    try { holidays = JSON.parse(document.getElementById('sprintHolidays')?.textContent || '[]'); } catch (_) { holidays = []; }
+
+    const $ = id => document.getElementById(id);
+    const parse = value => {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || '').trim());
+        return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
+    };
+    const iso = d => d.toISOString().slice(0, 10);
+    const isHoliday = day => holidays.some(([from, to]) => day >= from && day <= (to || from));
+    const fmt = h => `${Math.round(h * 10) / 10} h`;
+
+    function workingDays() {
+        const start = parse($('startDate')?.value);
+        const end = parse($('endDate')?.value);
+        if (!start || !end || end < start) return 0;
+        let days = 0;
+        for (let d = new Date(start); d <= end && days < 400; d.setUTCDate(d.getUTCDate() + 1)) {
+            const dow = d.getUTCDay();
+            if (dow !== 0 && dow !== 6 && !isHoliday(iso(d))) days++;
+        }
+        return days;
+    }
+
+    function update() {
+        const plan = window.oxSprintPlan;
+        if (!plan) return;
+        const days = workingDays();
+        const members = plan.memberCount();
+        const focus = Math.min(12, Math.max(0, Number($('capFocusHours').value) || 0));
+        const capacity = days * members * focus;
+        const committed = plan.committedHours();
+        const pct = capacity > 0 ? Math.round((committed / capacity) * 100) : 0;
+
+        $('capWorkingDays').textContent = days;
+        $('capMembers').textContent = members;
+        $('capCapacity').textContent = fmt(capacity);
+        $('capCommitted').textContent = fmt(committed);
+        const bar = $('capBar');
+        bar.style.width = `${Math.min(100, pct)}%`;
+        bar.parentElement.setAttribute('aria-valuenow', String(Math.min(100, pct)));
+        box.classList.toggle('is-over', pct > 100);
+        box.classList.toggle('is-near', pct > 85 && pct <= 100);
+
+        let status = 'Pick dates, members and tasks to see the load.';
+        if (capacity > 0 && committed === 0) status = `${fmt(capacity)} available. Selected tasks have no estimates yet.`;
+        else if (capacity > 0 && pct > 100) status = `Over capacity by ${fmt(committed - capacity)} (${pct}%).`;
+        else if (capacity > 0) status = `${pct}% of capacity committed, ${fmt(capacity - committed)} free.`;
+        $('capStatus').textContent = status;
+    }
+
+    // Selections change in many places (task modal, member table, chips, date pickers): recompute
+    // after any interaction instead of hooking each one. The work is tiny.
+    let queued = false;
+    const schedule = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; update(); });
+    };
+    ['change', 'click', 'input'].forEach(type => document.addEventListener(type, schedule, true));
+    window.addEventListener('load', schedule);
+    schedule();
+})();

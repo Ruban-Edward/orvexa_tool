@@ -571,6 +571,7 @@ foreach ($epic as $value): ?>
 var allUserStories = <?php echo json_encode($data); ?>;
 var totalCount = <?php echo json_encode($data['story_count']); ?>;
 var current_user = <?=json_encode($current_user)?>;
+var mentionableUsers = <?= json_encode(array_map(static fn ($u) => ['username' => $u['username'], 'name' => $u['name']], $data['mentionable'] ?? []), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 console.log("current_user", current_user);
 var pId = <?= (int) $pId ?>;
 var pblId = "<?= (int) $pblId ?>"

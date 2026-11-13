@@ -22,14 +22,14 @@
 }
 
 .card .card-header {
-    color: #000;
+    color: var(--ox-ink);
     /* background-color: var(--ox-brand-700); */
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 40px;
     border-radius: 0px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--ox-border-strong);
 
 }
 
@@ -122,7 +122,7 @@ h5,
 }
 
 /* .button-secondary{
-    background-color: #fff;
+    background-color: var(--ox-surface);
     color: var(--ox-brand-600);
     font-size: 1rem;
     padding: 5px 20px;
@@ -219,7 +219,7 @@ h5,
 
 .btn-link i {
     font-size: large;
-    color: #000;
+    color: var(--ox-ink);
 }
 
 .btn-link i:hover {
@@ -244,8 +244,8 @@ h5,
     position: fixed;
     top: 0;
     right: -300px;
-    background-color: #f8f9fa;
-    color: #343a40;
+    background-color: var(--ox-surface-2);
+    color: var(--ox-text);
     padding: 20px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -323,7 +323,7 @@ span.optext {
 }
 
 .readonly {
-    color: black;
+    color: var(--ox-ink);
     font-size: 0.9rem;
 }
 
@@ -355,7 +355,7 @@ span.optext {
 option:disabled {
     color: #a3a0a0;
     /* Light grey text color */
-    background-color: #E9EAEC;
+    background-color: var(--ox-surface-3);
     /* Light grey background */
     cursor: not-allowed;
     /* Change cursor to indicate disabled state */
@@ -379,7 +379,7 @@ option:disabled {
 .cls-add-members {
     background-color: transparent;
     border: none;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: bold;
 }
 
@@ -410,9 +410,9 @@ option:disabled {
     margin-left: 5px;
     color: white;
     cursor: pointer;
-    background-color: white;
+    background-color: var(--ox-surface);
     padding: 0px 7px;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .remove-email:hover {
@@ -425,7 +425,7 @@ option:disabled {
 
 .email-option {
     padding-left: 10px;
-    color: black;
+    color: var(--ox-ink);
     font-weight: 100;
 }
 
@@ -439,7 +439,7 @@ option:disabled {
 }
 
 .suggestion-button-name {
-    color: #000;
+    color: var(--ox-ink);
 }
 
 .add-suggestion {
@@ -455,7 +455,7 @@ option:disabled {
     border: 1px solid var(--PRIMARYCOLOR);
     margin-top: 11px;
     padding: 3px 20px;
-    background: #fff;
+    background: var(--ox-surface);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -465,7 +465,7 @@ option:disabled {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--ox-border-strong);
     border-radius: 4px;
     resize: vertical;
 }
@@ -506,9 +506,9 @@ option:disabled {
 .reply-item {
     margin-bottom: 10px;
     padding: 0px 26px;
-    /* border: 1px solid #ddd; */
+    /* border: 1px solid var(--ox-border); */
     border-radius: 4px;
-    /* background: #f9f9f9; */
+    /* background: var(--ox-surface-2); */
 }
 
 .reply-list {
@@ -616,15 +616,15 @@ option:disabled {
 }
 
 .comment {
-    /* border: 1px solid #ddd; */
+    /* border: 1px solid var(--ox-border); */
     /* padding: 10px; */
     /* margin-bottom: 10px; */
     border-radius: 4px;
-    /* background-color: #f9f9f9; */
+    /* background-color: var(--ox-surface-2); */
 }
 
 .reply-form {
-    /* border: 1px solid #ddd;  */
+    /* border: 1px solid var(--ox-border);  */
     padding: 10px;
     margin-bottom: 10px;
     margin-top: 15px;
@@ -632,12 +632,12 @@ option:disabled {
 
 /* 
 .reply {
-    border: 1px solid #ddd;
+    border: 1px solid var(--ox-border);
     padding: 10px;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 4px;
-    background-color: #f1f1f1;
+    background-color: var(--ox-surface-3);
 } */
 
 .reply {
@@ -678,7 +678,7 @@ option:disabled {
 }
 
 .suggestion-button-name {
-    color: #000;
+    color: var(--ox-ink);
 }
 
 .add-suggestion {
@@ -694,7 +694,7 @@ option:disabled {
     border: 1px solid var(--PRIMARYCOLOR);
     margin-top: 11px;
     padding: 3px 10px;
-    background: #fff;
+    background: var(--ox-surface);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -704,7 +704,7 @@ option:disabled {
     width: 100%;
     padding: 10px;
     margin-bottom: 2px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--ox-border-strong);
     border-radius: 4px;
     resize: vertical;
 }
@@ -745,9 +745,9 @@ option:disabled {
 .reply-item {
     margin-bottom: 10px;
     padding: 0px 26px;
-    /* border: 1px solid #ddd; */
+    /* border: 1px solid var(--ox-border); */
     border-radius: 4px;
-    /* background: #f9f9f9; */
+    /* background: var(--ox-surface-2); */
 }
 
 .reply-list {
@@ -844,7 +844,7 @@ option:disabled {
 
 
 .status-select {
-    background-color: white !important;
+    background-color: var(--ox-surface) !important;
     border: unset;
 }
 
@@ -868,7 +868,7 @@ option:disabled {
     left: 0;
     top: 0;
     height: 100%;
-    border-left: 2px solid #ccc;
+    border-left: 2px solid var(--ox-border-strong);
     /* Adjust color and thickness */
 }
 
@@ -879,12 +879,12 @@ option:disabled {
     background: none;
     border: none;
     font-size: 24px;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     cursor: pointer;
 }
 
 .mic-button:hover {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .mic-button.recording {
@@ -903,7 +903,7 @@ option:disabled {
 }
 
 .form-label {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: bold;
 }
 
@@ -1030,4 +1030,48 @@ body.ox-app #main .toggle-suggestion-button span,
 body.ox-app #main .toggle-poker-button span {
     color: var(--ox-muted);
     font-size: 11px;
+}
+
+/* @mentions in story comments */
+.ox-mention {
+    padding: 0 3px;
+    border-radius: var(--ox-radius-sm);
+    background: var(--ox-brand-50);
+    color: var(--ox-accent-ink);
+    font-weight: 600;
+}
+
+.ox-mention-menu {
+    position: fixed;
+    z-index: 2000;
+    max-height: 264px;
+    margin: 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+    animation: ox-drop-in var(--dur-fast) var(--ease-enter) backwards;
+}
+
+.ox-mention-menu li {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 6px 10px;
+    border-radius: var(--ox-radius-sm);
+    cursor: pointer;
+}
+
+.ox-mention-menu li strong {
+    color: var(--ox-ink);
+    font-size: 0.875rem;
+}
+
+.ox-mention-menu li span {
+    color: var(--ox-muted);
+    font-size: 0.78rem;
+}
+
+.ox-mention-menu li[aria-selected="true"],
+.ox-mention-menu li:hover {
+    background: var(--ox-brand-50);
 }

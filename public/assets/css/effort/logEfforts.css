@@ -44,7 +44,7 @@ body.ox-app #main .ox-efforts .ox-efforts-table tbody tr.ox-efforts-day > td,
 body.ox-app #main .ox-efforts .ox-efforts-table tbody tr.ox-efforts-day:hover > td {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
-    background-color: var(--ox-surface-2) !important;
+    background-color: var(--glass-table-head) !important;
     border-bottom: 1px solid var(--ox-border) !important;
     color: var(--ox-ink);
     font-weight: 600;
@@ -231,4 +231,47 @@ body.ox-app #main .ox-efforts .ox-efforts-table td {
     .ox-efforts-range .form-control {
         flex: 1 1 120px;
     }
+}
+
+/* List / Week switch and weekly timesheet */
+.ox-efforts-views {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.ox-efforts-week-label {
+    color: var(--ox-ink);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+body.ox-app #main .ox-efforts .ox-timesheet th,
+body.ox-app #main .ox-efforts .ox-timesheet td {
+    white-space: nowrap;
+}
+
+body.ox-app #main .ox-efforts .ox-timesheet thead th .ox-efforts-sub {
+    display: block;
+    font-weight: 400;
+}
+
+body.ox-app #main .ox-efforts .ox-timesheet tbody th {
+    font-weight: 400;
+    white-space: normal;
+    min-width: 220px;
+}
+
+body.ox-app #main .ox-efforts .ox-timesheet .is-weekend {
+    background: var(--ox-surface-2);
+}
+
+body.ox-app #main .ox-efforts .ox-timesheet thead th.is-today {
+    color: var(--ox-accent-ink);
+}
+
+body.ox-app #main .ox-efforts .ox-timesheet tfoot th,
+body.ox-app #main .ox-efforts .ox-timesheet tfoot td {
+    border-top: 1px solid var(--ox-border-strong);
+    color: var(--ox-ink);
+    font-weight: 600;
 }

@@ -20,6 +20,7 @@ class NotificationService
     public const TYPE_TASK_ASSIGNED  = 'task_assigned';
     public const TYPE_STORY_COMMENT  = 'story_comment';
     public const TYPE_SPRINT_STATUS  = 'sprint_status';
+    public const TYPE_STORY_MENTION  = 'story_mention';
 
     private NotificationModel $model;
 
@@ -58,23 +59,50 @@ class NotificationService
         return empty($task['assignee_id']) ? null : (int) $task['assignee_id'];
     }
 
-    public function storyCommented(int $storyId, int $actorId): void
+    /**
+     * Notifies the story's participants of a new comment. People @mentioned in the comment (by
+     * username, members of the story's product only) get a "mentioned you" notice instead.
+     */
+    public function storyCommented(int $storyId, int $actorId, string $text = ''): void
     {
-        $this->safely(function () use ($storyId, $actorId) {
+        $this->safely(function () use ($storyId, $actorId, $text) {
             $story = $this->model->getStoryContext($storyId);
             if (! $story) {
                 return;
             }
-            $this->send($story['participants'], $actorId, [
+            $actor = $this->model->getActorName($actorId);
+            $message = $this->clip($story['i_want']) . ' · ' . $story['product_name'];
+            $link = 'backlog/userstories?' . http_build_query([
+                'pid'   => $story['product_id'],
+                'pblid' => $story['backlog_item_id'],
+            ]);
+
+            $mentioned = array_map('intval', array_column(
+                $this->model->getMentionableUsers((int) $story['product_id'], self::mentionedUsernames($text)),
+                'id'
+            ));
+            $this->send($mentioned, $actorId, [
+                'type'    => self::TYPE_STORY_MENTION,
+                'title'   => $actor . ' mentioned you in a comment',
+                'message' => $this->clip($text) . ' · ' . $message,
+                'link'    => $link,
+            ]);
+            $this->send(array_diff(array_map('intval', $story['participants']), $mentioned), $actorId, [
                 'type'    => self::TYPE_STORY_COMMENT,
-                'title'   => $this->model->getActorName($actorId) . ' commented on a user story',
-                'message' => $this->clip($story['i_want']) . ' · ' . $story['product_name'],
-                'link'    => 'backlog/userstories?' . http_build_query([
-                    'pid'   => $story['product_id'],
-                    'pblid' => $story['backlog_item_id'],
-                ]),
+                'title'   => $actor . ' commented on a user story',
+                'message' => $message,
+                'link'    => $link,
             ]);
         });
+    }
+
+    /** @return string[] distinct usernames written as @name in the text (at most 20) */
+    public static function mentionedUsernames(string $text): array
+    {
+        preg_match_all('/(?<![\w@.])@([A-Za-z0-9][A-Za-z0-9._-]{1,49})/', $text, $m);
+        $names = array_map(static fn ($n) => rtrim($n, '.-'), $m[1]);
+
+        return array_slice(array_values(array_unique(array_map('strtolower', $names))), 0, 20);
     }
 
     public function sprintStatusChanged(int $sprintId, int $actorId): void

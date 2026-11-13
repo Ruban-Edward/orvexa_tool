@@ -93,7 +93,7 @@
         }
     }
 
-    const NOTICE_ICONS = { task_assigned: 'user-plus', story_comment: 'message-square', sprint_status: 'zap' };
+    const NOTICE_ICONS = { task_assigned: 'user-plus', story_comment: 'message-square', story_mention: 'at-sign', sprint_status: 'zap' };
     let unreadCount = 0;
 
     $(document).ready(function() {

@@ -42,6 +42,7 @@ class PageAssets extends BaseConfig
         'backlog/userStories'        => ['editor'],
         'dashboard/CustomReportView' => ['excel'],
         'dashboard/productDashboard' => ['charts'],
+        'effort/logEfforts'          => ['excel'],
         'meeting/calendar'           => ['tooltips'],
         'sprint/createSprint'        => ['editor'],
     ];

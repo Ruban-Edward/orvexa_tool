@@ -61,7 +61,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 14px;
-    background: rgba(244, 248, 245, .97);
+    background: color-mix(in srgb, var(--ox-canvas) 97%, transparent);
     opacity: 1;
     transition: opacity .24s ease, visibility .24s ease;
 }
@@ -273,7 +273,7 @@ body {
 }
 
 .main-content .card {
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
     border: 1px solid var(--app-border);
     box-shadow: 0 2px 8px rgba(29, 51, 37, 0.06);
 }
@@ -281,17 +281,17 @@ body {
 .main-content .card-header {
     background-color: var(--app-tint);
     border-bottom: 1px solid var(--app-border);
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
 }
 
 .main-content .card-header h4 {
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
 }
 
 .main-content .card-title,
 .main-content .content-header,
 .product-header {
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
 }
 
 .main-content .content-header {
@@ -301,18 +301,18 @@ body {
 .main-content .cls-h2,
 .main-content .page-heading h3,
 .main-content .page-title-headings h3 {
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
 }
 
 .main-content .table thead,
 .main-content .dataTable-table thead {
     background-color: var(--app-tint) !important;
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 .main-content .table thead th,
 .main-content .dataTable-table thead th {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
     border-bottom-color: var(--app-border) !important;
 }
 
@@ -323,7 +323,7 @@ body {
 
 .main-content .btn-outline-primary {
     border-color: var(--primary-color);
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
 }
 
 .main-content .btn-outline-primary:hover {
@@ -354,7 +354,7 @@ textarea:focus {
 }
 
 #main .btn-outline-primary {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
     border-color: var(--primary-color) !important;
 }
 
@@ -366,7 +366,7 @@ textarea:focus {
 #main .text-primary,
 #main .link-primary,
 #main .back-button {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .border-primary {
@@ -384,7 +384,7 @@ textarea:focus {
 }
 
 #main .nav-tabs .nav-link.active {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
     border-color: var(--app-border) var(--app-border) #ffffff !important;
 }
 
@@ -420,7 +420,7 @@ textarea:focus {
 
 #main .calendar.fc .fc-prev-button.fc-button-primary,
 #main .calendar.fc .fc-next-button.fc-button-primary {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
     background: transparent !important;
     border-color: #bad7c2 !important;
     box-shadow: none !important;
@@ -435,7 +435,7 @@ textarea:focus {
 
 #main .fc .fc-daygrid-day-number,
 #main .fc .fc-col-header-cell-cushion {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .bg-light-primary,
@@ -458,7 +458,7 @@ textarea:focus {
     color: var(--text-color);
     border: 1px solid var(--app-border);
     border-radius: 8px;
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
     box-shadow: 0 2px 8px rgba(18, 63, 44, 0.08);
 }
 
@@ -488,7 +488,7 @@ textarea:focus {
 #main .empty-content .card-title,
 #main .cls-norecFound h2,
 #main .cls-norecFound .cls-noProductIcon {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main table thead,
@@ -498,7 +498,7 @@ textarea:focus {
 #main .dataTable-table thead tr,
 #main .dataTable-table thead th {
     background-color: var(--app-tint) !important;
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
     border-color: var(--app-border) !important;
 }
 
@@ -509,11 +509,11 @@ textarea:focus {
 #main .fc .fc-col-header-cell-cushion,
 #main .fc .fc-daygrid-day-number,
 #main .fc .fc-daygrid-day-number:hover {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .fc .fc-day-past .fc-daygrid-day-number {
-    color: #789684 !important;
+    color: var(--ox-subtle) !important;
 }
 
 #main .calendar .fc-prev-button.fc-button-primary:hover,
@@ -545,7 +545,7 @@ textarea:focus {
 #main .modal-body label,
 #main .admin-settings .form-label,
 #main .cls-sidebarContent .form-label {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .cls-main .primary_button,
@@ -562,9 +562,9 @@ textarea:focus {
 }
 
 #main .cls-settings {
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
     border-color: var(--primary-color) !important;
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
 }
 
 #main .cls-settings:hover,
@@ -575,7 +575,7 @@ textarea:focus {
 #main .cls-settings h2,
 #main .import,
 #main .sec-icon {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .show-tick {
@@ -678,7 +678,7 @@ body {
 }
 
 #main .bread a {
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
     font-weight: 600;
     text-decoration: none;
 }
@@ -734,7 +734,7 @@ body {
 #main .bg-card-4 {
     border: 1px solid var(--app-border);
     border-left-width: 4px;
-    background: #ffffff !important;
+    background: var(--ox-surface) !important;
     color: var(--text-color);
 }
 
@@ -798,7 +798,7 @@ body {
 #main .dataTable-table tbody td {
     padding: 12px 14px;
     vertical-align: middle;
-    border-color: #edf1ee;
+    border-color: var(--ox-surface-3);
 }
 
 #main .table tbody tr,
@@ -808,7 +808,7 @@ body {
 
 #main .table tbody tr:nth-child(even),
 #main .dataTable-table tbody tr:nth-child(even) {
-    background-color: #fbfdfb;
+    background-color: var(--ox-surface-2);
 }
 
 #main .table tbody tr:hover,
@@ -836,8 +836,8 @@ body {
     min-height: 36px;
     padding: 7px 12px;
     border: 1px solid var(--app-border);
-    background: #ffffff;
-    color: var(--primary-color);
+    background: var(--ox-surface);
+    color: var(--ox-accent-ink);
 }
 
 #main .button-secondary:hover {
@@ -857,7 +857,7 @@ body {
 #main .form-label,
 #main label {
     margin-bottom: 6px;
-    color: #43554a;
+    color: var(--ox-text-soft);
     font-size: 0.84rem;
     font-weight: 600;
 }
@@ -868,9 +868,9 @@ body {
 #main select,
 #main textarea {
     min-height: 40px;
-    border: 1px solid #d6e0d9;
+    border: 1px solid var(--ox-border);
     border-radius: 6px;
-    background-color: #ffffff;
+    background-color: var(--ox-surface);
     color: var(--text-color);
     transition: border-color 150ms ease, box-shadow 150ms ease;
 }
@@ -883,7 +883,7 @@ body {
 #main .form-control::placeholder,
 #main input::placeholder,
 #main textarea::placeholder {
-    color: #8a988f;
+    color: var(--ox-subtle);
 }
 
 #main .form-control:focus,
@@ -1014,7 +1014,7 @@ body {
 
 #main .search-button {
     background: transparent !important;
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
     box-shadow: none !important;
 }
 
@@ -1037,8 +1037,8 @@ body {
 #main .button-secondary,
 #main #filter_btn {
     border-color: #bad7c2 !important;
-    background: #ffffff !important;
-    color: var(--primary-color) !important;
+    background: var(--ox-surface) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .button-secondary:hover,
@@ -1051,12 +1051,12 @@ body {
 #main .import {
     border: 1px solid #bad7c2 !important;
     border-radius: 6px;
-    background: #ffffff !important;
-    color: var(--primary-color) !important;
+    background: var(--ox-surface) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #main .sec-icon {
-    color: var(--primary-color) !important;
+    color: var(--ox-accent-ink) !important;
 }
 
 #sidebar {

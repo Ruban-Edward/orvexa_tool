@@ -3,13 +3,13 @@
     --secondary-color: var(--ox-brand-600);
     --accent-color: #F1C40F;
     --bg-color: #f5f7fa;
-    --text-color: #333;
+    --text-color: var(--ox-text);
 }
 
 
 .main-content .content-header {
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--ox-accent-ink);
     border-bottom: 2px solid var(--secondary-color);
     margin-bottom: 16px;
 }
@@ -132,7 +132,7 @@ b, strong {
 
 .main-content .list-group-item:hover {
     /* border-left-color: var(--accent-color); */
-    background-color: #f8f9fa;
+    background-color: var(--ox-surface-2);
 }
 
 .main-content .list-group.product-items {
@@ -141,7 +141,7 @@ b, strong {
 }
 
 .main-content .card-title {
-    color: var(--primary-color) ;
+    color: var(--ox-accent-ink) ;
     font-weight: bolder;
     margin-bottom: 15px;
 }
@@ -187,7 +187,7 @@ b, strong {
     font-size: .7rem;
 }
 form .view{
-    color: var(--ox-brand-700) !important;
+    color: var(--ox-accent-ink) !important;
     padding: 0px !important;
 }
 

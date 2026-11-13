@@ -105,6 +105,30 @@ class NotificationModel extends BaseModel
     }
 
     /**
+     * Active members of a product that can be @mentioned: employee id, username and full name.
+     *
+     * @param string[]|null $usernames limit to these usernames (case-insensitive)
+     */
+    public function getMentionableUsers(int $productId, ?array $usernames = null): array
+    {
+        $builder = $this->db->table('orvexa_product_user pu')
+            ->select("u.external_employee_id AS id, u.external_username AS username, TRIM(CONCAT(u.first_name, ' ', COALESCE(u.last_name, ''))) AS name")
+            ->join('orvexa_user u', 'u.external_employee_id = pu.r_user_id')
+            ->where(['pu.r_product_id' => $productId, 'pu.is_deleted' => 'N', 'u.is_deleted' => 'N'])
+            ->where("u.external_username IS NOT NULL AND u.external_username <> ''")
+            ->orderBy('u.first_name');
+        if ($usernames !== null) {
+            if ($usernames === []) {
+                return [];
+            }
+            // the column's collation is case-insensitive
+            $builder->whereIn('u.external_username', $usernames);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
+    /**
      * Task with its story/backlog/product ids for building the tasks page link.
      */
     public function getTaskContext(int $taskId): ?array

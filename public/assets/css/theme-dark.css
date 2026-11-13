@@ -1,0 +1,136 @@
+/*
+ * Theme switch and dark-theme fixes for things the --ox-* tokens cannot reach
+ * (third-party widgets with fixed colours, the logo). Tokens themselves live in tokens.css.
+ * Loaded last in layout/headerLinks.php.
+ */
+
+/* Topbar switch: shows the moon in light, the sun in dark */
+.ox-theme-toggle .icon-sun,
+:root[data-theme="dark"] .ox-theme-toggle .icon-moon {
+    display: none;
+}
+
+:root[data-theme="dark"] .ox-theme-toggle .icon-sun {
+    display: inline-block;
+}
+
+/* Sidebar logo: white wordmark on dark */
+.ox-brand-dark,
+:root[data-theme="dark"] .ox-brand-full:not(.ox-brand-dark) {
+    display: none !important;
+}
+
+:root[data-theme="dark"] body:not(.sidebar-collapsed) .ox-brand-dark {
+    display: block !important;
+}
+
+/* Mazer's compiled Bootstrap hard-codes these component backgrounds to white instead of
+   following the theme. Point them at the tokens (identical in light: --ox-surface is white). */
+body.ox-app .list-group {
+    --bs-list-group-bg: var(--ox-surface);
+    --bs-list-group-disabled-bg: var(--ox-surface-2);
+    --bs-list-group-border-color: var(--ox-border);
+    --bs-list-group-action-hover-bg: var(--ox-surface-2);
+}
+body.ox-app .accordion { --bs-accordion-bg: var(--ox-surface); }
+body.ox-app .card { --bs-card-bg: var(--ox-surface); --bs-card-cap-bg: var(--ox-surface); }
+body.ox-app .dropdown-menu { --bs-dropdown-bg: var(--ox-surface); }
+body.ox-app .modal { --bs-modal-bg: var(--ox-surface); }
+body.ox-app .offcanvas { --bs-offcanvas-bg: var(--ox-surface); }
+body.ox-app .popover { --bs-popover-bg: var(--ox-surface); }
+body.ox-app .pagination { --bs-pagination-bg: var(--ox-surface); --bs-pagination-disabled-bg: var(--ox-surface-2); }
+body.ox-app .form-check-input { --bs-form-check-bg: var(--ox-surface); }
+
+/* Mazer's helper text is an off-palette blue-grey (3.3:1 on white); use the muted token */
+body.ox-app .form-text { color: var(--ox-muted); }
+
+/* ---------- Dark only ---------- */
+
+/* flatpickr ships a white calendar */
+:root[data-theme="dark"] .flatpickr-calendar {
+    background: var(--ox-surface);
+    border-color: var(--ox-border);
+    box-shadow: var(--ox-shadow-lg);
+}
+
+:root[data-theme="dark"] .flatpickr-calendar.arrowTop::after,
+:root[data-theme="dark"] .flatpickr-calendar.arrowTop::before {
+    border-bottom-color: var(--ox-surface);
+}
+
+:root[data-theme="dark"] .flatpickr-calendar.arrowBottom::after,
+:root[data-theme="dark"] .flatpickr-calendar.arrowBottom::before {
+    border-top-color: var(--ox-surface);
+}
+
+:root[data-theme="dark"] .flatpickr-months .flatpickr-month,
+:root[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
+:root[data-theme="dark"] .flatpickr-current-month input.cur-year,
+:root[data-theme="dark"] span.flatpickr-weekday,
+:root[data-theme="dark"] .flatpickr-day {
+    background: transparent;
+    color: var(--ox-text);
+    fill: var(--ox-text);
+}
+
+:root[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
+:root[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
+    fill: var(--ox-text);
+}
+
+:root[data-theme="dark"] .flatpickr-day:hover,
+:root[data-theme="dark"] .flatpickr-day:focus {
+    background: var(--ox-surface-3);
+    border-color: var(--ox-surface-3);
+}
+
+:root[data-theme="dark"] .flatpickr-day.today {
+    border-color: var(--ox-primary);
+}
+
+:root[data-theme="dark"] .flatpickr-day.flatpickr-disabled,
+:root[data-theme="dark"] .flatpickr-day.prevMonthDay,
+:root[data-theme="dark"] .flatpickr-day.nextMonthDay {
+    color: var(--ox-subtle);
+}
+
+/* SweetAlert2 text colours are fixed greys */
+:root[data-theme="dark"] .swal2-title,
+:root[data-theme="dark"] .swal2-html-container {
+    color: var(--ox-text);
+}
+
+:root[data-theme="dark"] .swal2-input,
+:root[data-theme="dark"] .swal2-textarea,
+:root[data-theme="dark"] .swal2-select {
+    background: var(--ox-surface-2);
+    border-color: var(--ox-border);
+    color: var(--ox-text);
+}
+
+/* Multiselect dropdown (assets/js/dashboard/multiselect-dropdown.js) */
+:root[data-theme="dark"] .multiselect-dropdown,
+:root[data-theme="dark"] .multiselect-dropdown-list-wrapper {
+    background: var(--ox-surface);
+    border-color: var(--ox-border);
+    color: var(--ox-text);
+}
+
+:root[data-theme="dark"] .multiselect-dropdown-list div:hover {
+    background: var(--ox-surface-3);
+}
+
+/* Native form controls and placeholders */
+:root[data-theme="dark"] body.ox-app .form-control::placeholder {
+    color: var(--ox-subtle);
+}
+
+:root[data-theme="dark"] body.ox-app .form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb4ad' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+/* Images and logos on light plates keep a light plate */
+:root[data-theme="dark"] .ox-keep-light {
+    background: var(--ox-soft-white);
+    color: var(--ox-deep);
+}

@@ -52,6 +52,26 @@ class EffortMasterModel extends BaseModel
             ->countAllResults() === 1;
     }
 
+    /**
+     * Reads activity_id, main_activity_id and log_type_id from posted data and checks each is an
+     * active entry of its type.
+     *
+     * @return array{activity:int,main_activity:int,log_type:int}|string the ids, or an error message
+     */
+    public function validateSelection(array $post)
+    {
+        $ids = [];
+        foreach (['activity' => 'activity_id', 'main_activity' => 'main_activity_id', 'log_type' => 'log_type_id'] as $type => $field) {
+            $id = filter_var($post[$field] ?? null, FILTER_VALIDATE_INT);
+            if ($id === false || ! $this->isActive($id, $type)) {
+                return 'Choose a valid ' . strtolower(self::TYPES[$type]) . '.';
+            }
+            $ids[$type] = $id;
+        }
+
+        return $ids;
+    }
+
     /** @return string 'added', 'exists' or 'error' */
     public function addEntry(string $type, string $name): string
     {

@@ -242,8 +242,15 @@ class DashboardController extends BaseController
         //     'estimatedHours' => $estimatedSprintHours
         // ];
 
+        // Burnup of the selected sprint: cumulative hours logged on its tasks against its scope
+        $burnup = null;
+        if (! empty($sprintId) && ! empty($currentSprintDetails['start_date']) && ! empty($currentSprintDetails['end_date'])) {
+            $burnup = $this->sprintBurnup((int) $sprintId, (int) $productId, $currentSprintDetails['start_date'], $currentSprintDetails['end_date']);
+        }
+
         // Combine all retrieved data into a single array
         $productDetails = [
+            'burnup' => $burnup,
             'productId' => $productId,
             'runningSprints' => $productData['sprintId'] ,
             'currentSprintDetails' => $currentSprintDetails, 
@@ -266,6 +273,36 @@ class DashboardController extends BaseController
     //     return json_encode($notes);
 
     // }
+
+    /**
+     * Burnup series for a sprint, one point per weekday from start to end: cumulative hours logged
+     * on the sprint's tasks (null for days still ahead), the scope (estimated hours of its tasks)
+     * and an ideal straight line from 0 to the scope.
+     */
+    private function sprintBurnup(int $sprintId, int $productId, string $start, string $end): array
+    {
+        $scope  = (float) ($this->dashboardModel->getEstimatedSprintHours(['sprintId' => $sprintId, 'productId' => $productId])['estimated_hours'] ?? 0);
+        $logged = $this->dashboardModel->getSprintLoggedHoursByDay($sprintId, $productId, $start, $end);
+        $today  = date('Y-m-d');
+
+        $labels = $series = [];
+        $running = 0.0;
+        for ($day = $start, $guard = 0; $day <= $end && $guard < 400; $day = date('Y-m-d', strtotime($day . ' +1 day')), $guard++) {
+            $running += $logged[$day] ?? 0.0; // weekend hours roll into the next weekday
+            if ((int) date('N', strtotime($day)) >= 6) {
+                continue;
+            }
+            $labels[] = date('D d M', strtotime($day));
+            $series[] = $day <= $today ? round($running, 2) : null;
+        }
+        $points = count($labels);
+        $ideal = [];
+        foreach (array_keys($labels) as $i) {
+            $ideal[] = $points > 1 ? round($scope * $i / ($points - 1), 2) : $scope;
+        }
+
+        return ['labels' => $labels, 'logged' => $series, 'scope' => round($scope, 2), 'ideal' => $ideal, 'total' => round($running, 2)];
+    }
 
     private function sprintModelProduct($sprintId): ?int
     {

@@ -1,6 +1,6 @@
 label {
     font-weight: 500;
-    color: #555;
+    color: var(--ox-text);
     font-size: 0.9rem;
 }
 
@@ -30,7 +30,7 @@ label {
 .form-control,
 .form-select {
     border-radius: 10px;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--ox-border-strong);
     font-size: 0.7rem;
 }
 
@@ -82,7 +82,7 @@ label {
 }
 
 .card-header {
-    background-color: #f8f9fa;
+    background-color: var(--ox-surface-2);
     border-bottom: none;
     padding: 10px 10px 2px 10px !important;
 }
@@ -92,7 +92,7 @@ label {
 }
 
 .user-story-item {
-    background-color: #f8f9fa;
+    background-color: var(--ox-surface-2);
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
@@ -139,13 +139,13 @@ h3 {
 
 .table-striped tr {
     padding-top: 30px;
-    background-color: white;
+    background-color: var(--ox-surface);
     /* Background color to make the text stand out */
     z-index: 10;
     /* Ensure the text is above other content */
     padding: 10px;
     /* Add some padding for better appearance */
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--ox-border-strong);
     /* Optional: Add a bottom border for better visibility */
 }
 
@@ -161,7 +161,7 @@ table {
 
 th,
 td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--ox-border);
     padding: 12px;
     /* Increased padding for better readability */
     white-space: normal;
@@ -170,8 +170,8 @@ td {
 }
 
 th {
-    background-color: #f2f2f2;
-    color: var(--ox-brand-700);
+    background-color: var(--ox-surface-2);
+    color: var(--ox-accent-ink);
     /* Dark blue */
     text-align: left;
     font-size: 0.9rem;
@@ -230,13 +230,13 @@ font-weight: 700;
     border-radius: 4px;
     font-size: 14px;
     background-color: #ffc107;
-    color: black;
+    color: var(--ox-ink);
 }
 
 .status-in-progress {
     background-color: #ffc107;
     /* Yellow */
-    color: black;
+    color: var(--ox-ink);
     width: fit-content;
 }
 
@@ -257,8 +257,8 @@ font-weight: 700;
 .completion {
     font-size: 15px;
     font-weight: bold;
-    color: black;
-    color: #666;
+    color: var(--ox-ink);
+    color: var(--ox-muted);
     margin-left: 10px;
 }
 
@@ -306,7 +306,7 @@ font-weight: 700;
 
 .progress-bar {
     height: 20px;
-    background-color: #f0f0f0;
+    background-color: var(--ox-surface-3);
     border-radius: 4px;
     margin-top: 4px;
     width: 75px;
@@ -368,12 +368,12 @@ textarea.form-control {
     background: none;
     border: none;
     font-size: 24px;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     cursor: pointer;
 }
 
 .mic-button:hover {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .mic-button.recording {
@@ -422,7 +422,7 @@ textarea.form-control {
     font-size: var(--MOBILETEXTSIZE);
 }
 .table:not(.table-borderless) thead th, .dataTable-table:not(.table-borderless) thead th {
-    border-bottom: 1px solid #dedede !important;
+    border-bottom: 1px solid var(--ox-border) !important;
     font-size: var(--MOBILETEXTSIZE);
 }
 .table {
@@ -457,7 +457,7 @@ textarea.form-control {
     background: none;
     border: none;
     font-size: var(--MOBILEHEADERFONTSIZE);
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     cursor: pointer;
 }
 .form-label {

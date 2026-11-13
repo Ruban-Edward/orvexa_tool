@@ -11,6 +11,10 @@
 <body class="ox-app">
     <a class="ox-skip" href="#main">Skip to main content</a>
     <script>
+        // TinyMCE (support/static/js/pages/tinymce.js) picks its dark skin from this class at load
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            document.body.classList.add('theme-dark');
+        }
         // Restore the collapsed sidebar before first paint to avoid a layout jump
         try {
             if (localStorage.getItem('ox-sidebar-collapsed') === '1' && window.innerWidth >= 1200) {

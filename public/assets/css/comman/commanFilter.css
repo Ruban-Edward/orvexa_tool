@@ -6,8 +6,8 @@
     top: 0;
     right: -250px;
     /* Start off-screen to the right */
-    background-color: #f8f9fa;
-    color: #343a40;
+    background-color: var(--ox-surface-2);
+    color: var(--ox-text);
     padding: 20px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -63,9 +63,9 @@
 }
 
 .btn-danger {
-    background-color: #fff;
-    color: black;
-    border: #fff;
+    background-color: var(--ox-surface);
+    color: var(--ox-ink);
+    border: var(--ox-surface);
 }
 
 .btn-danger:hover {

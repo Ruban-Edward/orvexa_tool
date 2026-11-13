@@ -99,8 +99,12 @@ if (typeof m_tasks !== 'undefined') {
                         <span class="ox-id-chip" title="Task ID">#${Number(task.task_id)}</span>
                         <div class="card-title cls-task-header-details">${esc(task.task_title)}</div>
                         <span class="ox-status-pill">${esc(task.task_status)}</span>
+                        ${Number(task.open_blockers) > 0 ? `<span class="ox-blocked-pill" title="Blocked by ${Number(task.open_blockers)} open task${Number(task.open_blockers) === 1 ? '' : 's'}"><i class="icon-alert-octagon" aria-hidden="true"></i> Blocked</span>` : ''}
                         <span class="cls-priority priority-box ${esc(String(task.priority).toLowerCase())}">${esc(task.priority)}</span>
                         <div class="cls-action-buttons">
+                            <button type="button" class="btn btn-link ox-icon-action" data-deps="${Number(task.task_id)}" title="Dependencies" aria-label="Dependencies of ${esc(task.task_title)}">
+                                <i class="icon-git-merge" aria-hidden="true"></i>
+                            </button>
                             <button type="button" class="btn btn-link ox-icon-action" data-effort="${Number(task.task_id)}" title="Log efforts" aria-label="Log efforts for ${esc(task.task_title)}">
                                 <i class="icon-clock" aria-hidden="true"></i>
                             </button>
@@ -202,6 +206,11 @@ if (typeof m_tasks !== 'undefined') {
 
     document.getElementById('taskList').addEventListener('click', event => {
         const effort = event.target.closest('[data-effort]');
+        const deps = event.target.closest('[data-deps]');
+        if (deps) {
+            const card = deps.closest('[data-task]');
+            openTaskDependencies(Number(deps.dataset.deps), card?.querySelector('.card-title')?.textContent || 'Task');
+        }
         const edit = event.target.closest('[data-edit]');
         const remove = event.target.closest('[data-delete]');
         if (effort) {
@@ -211,6 +220,87 @@ if (typeof m_tasks !== 'undefined') {
         if (edit) addform('edit', Number(edit.dataset.edit));
         if (remove) deleteTask(Number(remove.dataset.delete));
     });
+
+    // -----------------------------------------------------------------
+    // Dependencies ("blocked by")
+    // -----------------------------------------------------------------
+    const depModalEl = document.getElementById('taskDependencyModal');
+    const depForm = document.getElementById('taskDependencyForm');
+    const depSelect = document.getElementById('taskDependencySelect');
+    let depTaskId = 0;
+    let depChanged = false;
+
+    function openTaskDependencies(id, title) {
+        depTaskId = id;
+        depChanged = false;
+        document.getElementById('taskDependencyTaskTitle').textContent = title;
+        document.getElementById('taskDependencyList').innerHTML = '<p class="text-muted mb-0">Loading…</p>';
+        depForm.hidden = true;
+        bootstrap.Modal.getOrCreateInstance(depModalEl).show();
+        loadTaskDependencies();
+    }
+
+    function loadTaskDependencies() {
+        $.ajax({
+            url: `${assertPath}backlog/taskDependencies/${depTaskId}`,
+            method: 'POST',
+            dataType: 'json',
+            success: response => {
+                const list = document.getElementById('taskDependencyList');
+                const rows = response.blockedBy || [];
+                list.innerHTML = rows.length ? `<ul class="list-group">${rows.map(row => `
+                    <li class="list-group-item d-flex align-items-center gap-2">
+                        <span class="ox-dep-state ${Number(row.is_open) ? 'is-open' : 'is-done'}">${Number(row.is_open) ? 'Open' : 'Done'}</span>
+                        <span class="flex-grow-1">#${Number(row.task_id)} ${esc(row.task_title)}
+                            <span class="ox-muted small">· ${esc(row.status_name || '')}${row.assignee_name ? ` · ${esc(row.assignee_name)}` : ''}</span></span>
+                        ${response.canEdit ? `<button type="button" class="btn btn-link ox-icon-action is-danger" data-remove-dep="${Number(row.dependency_id)}" aria-label="Remove dependency on task ${Number(row.task_id)}" title="Remove"><i class="icon-x" aria-hidden="true"></i></button>` : ''}
+                    </li>`).join('')}</ul>` : '<p class="text-muted mb-0">Not blocked by any task.</p>';
+
+                const candidates = response.candidates || [];
+                depForm.hidden = !response.canEdit;
+                depSelect.innerHTML = '<option value="">--- Choose a task ---</option>' + candidates.map(c =>
+                    `<option value="${Number(c.task_id)}">#${Number(c.task_id)} ${esc(c.task_title)} (${esc(c.backlog_item_name || '')})</option>`).join('');
+                document.getElementById('taskDependencyAdd').disabled = candidates.length === 0;
+            },
+            error: xhr => Swal.fire({ title: 'Unable to load dependencies', text: xhr.responseJSON?.message || 'Please try again.', icon: 'error' }),
+        });
+    }
+
+    depForm.addEventListener('submit', event => {
+        event.preventDefault();
+        if (!depSelect.value) { depSelect.reportValidity(); return; }
+        const button = document.getElementById('taskDependencyAdd');
+        button.disabled = true;
+        $.ajax({
+            url: `${assertPath}backlog/addTaskDependency/${depTaskId}`,
+            method: 'POST',
+            data: { depends_on: depSelect.value },
+            dataType: 'json',
+            success: () => { depChanged = true; loadTaskDependencies(); },
+            error: xhr => Swal.fire({ title: 'Unable to add dependency', text: xhr.responseJSON?.message || 'Please try again.', icon: 'error' }),
+            complete: () => { button.disabled = false; },
+        });
+    });
+
+    document.getElementById('taskDependencyList').addEventListener('click', event => {
+        const remove = event.target.closest('[data-remove-dep]');
+        if (!remove) return;
+        remove.disabled = true;
+        $.ajax({
+            url: `${assertPath}backlog/removeTaskDependency/${depTaskId}`,
+            method: 'POST',
+            data: { dependency_id: remove.dataset.removeDep },
+            dataType: 'json',
+            success: () => { depChanged = true; loadTaskDependencies(); },
+            error: xhr => {
+                remove.disabled = false;
+                Swal.fire({ title: 'Unable to remove dependency', text: xhr.responseJSON?.message || 'Please try again.', icon: 'error' });
+            },
+        });
+    });
+
+    // Refresh the cards so the Blocked pill matches
+    depModalEl.addEventListener('hidden.bs.modal', () => { if (depChanged) loadTasks(); });
 
     function openTaskEffort(id, title) {
         const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -244,7 +334,7 @@ if (typeof m_tasks !== 'undefined') {
                 history.innerHTML = `<ul class="list-group">${response.data.map(entry => `
                     <li class="list-group-item">
                         <div class="d-flex justify-content-between gap-3">
-                            <strong>${esc(entry.spent_on)} · ${esc(entry.hours)} h</strong>
+                            <strong>${esc(entry.spent_on)} · ${esc(entry.hours)} h${entry.activity_name ? ` · ${esc(entry.activity_name)}` : ''}</strong>
                             <span>${esc(entry.user_name || 'Team member')}</span>
                         </div>
                         ${entry.comments ? `<div class="mt-1">${esc(entry.comments)}</div>` : ''}

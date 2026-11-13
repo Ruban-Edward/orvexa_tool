@@ -15,14 +15,26 @@
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-pro.css?v=1">
     <link rel="preload" href="<?= ASSERT_PATH ?>assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/orvexa-ui.css?v=<?= filemtime(FCPATH . 'assets/css/orvexa-ui.css') ?>">
-    <?php foreach (['tokens', 'glass', 'motion', 'shell-glass', 'cards-glass', 'shell-motion', 'background', 'ux-polish'] as $oxSheet): ?>
+    <?php foreach (['tokens', 'glass', 'motion', 'shell-glass', 'cards-glass', 'shell-motion', 'background', 'ux-polish', 'theme-dark'] as $oxSheet): ?>
     <link rel="stylesheet" href="<?= ASSERT_PATH ?>assets/css/<?= $oxSheet ?>.css?v=<?= filemtime(FCPATH . 'assets/css/' . $oxSheet . '.css') ?>">
     <?php endforeach; ?>
 
     <!-- Libraries every page uses -->
     <script src="<?= ASSERT_PATH ?>support/extensions/jquery/jquery.min.js"></script>
     <script src="<?= ASSERT_PATH ?>support/static/js/initTheme.js"></script>
-    <script>document.documentElement.setAttribute('data-bs-theme', 'light');</script>
+    <script>
+        // Light / dark theme, applied before first paint. An explicit choice from the topbar
+        // switch is remembered in this browser; otherwise the system setting is followed.
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem('ox-theme'); } catch (e) {}
+            var dark = saved ? saved === 'dark'
+                : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            var root = document.documentElement;
+            root.setAttribute('data-theme', dark ? 'dark' : 'light');
+            root.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+        })();
+    </script>
     <script src="<?= ASSERT_PATH ?>support/compiled/js/popper.js"></script>
     <script src="<?= ASSERT_PATH ?>support/compiled/js/commonJSHelper.js"></script>
     <script src="<?= ASSERT_PATH ?>support/extensions/parsleyjs/parsley.min.js"></script>

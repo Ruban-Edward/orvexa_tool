@@ -23,13 +23,21 @@ class EffortController extends BaseController
     {
         $userId = (int) session()->get('employee_id');
         $today  = date('Y-m-d');
-        $to     = $this->validDate($this->request->getGet('to')) ?? $today;
-        $from   = $this->validDate($this->request->getGet('from')) ?? date('Y-m-d', strtotime($to . ' -29 days'));
-        if ($from > $to) {
-            [$from, $to] = [$to, $from];
-        }
-        if ((strtotime($to) - strtotime($from)) / 86400 >= self::MAX_RANGE_DAYS) {
-            $from = date('Y-m-d', strtotime($to . ' -' . (self::MAX_RANGE_DAYS - 1) . ' days'));
+        $isWeek = $this->request->getGet('view') === 'week';
+        if ($isWeek) {
+            // Monday to Sunday of the week that holds the "week" date (default: this week)
+            $anchor = $this->validDate($this->request->getGet('week')) ?? $today;
+            $from   = date('Y-m-d', strtotime('monday this week', strtotime($anchor)));
+            $to     = date('Y-m-d', strtotime($from . ' +6 days'));
+        } else {
+            $to   = $this->validDate($this->request->getGet('to')) ?? $today;
+            $from = $this->validDate($this->request->getGet('from')) ?? date('Y-m-d', strtotime($to . ' -29 days'));
+            if ($from > $to) {
+                [$from, $to] = [$to, $from];
+            }
+            if ((strtotime($to) - strtotime($from)) / 86400 >= self::MAX_RANGE_DAYS) {
+                $from = date('Y-m-d', strtotime($to . ' -' . (self::MAX_RANGE_DAYS - 1) . ' days'));
+            }
         }
 
         $effortModel = model(EffortLogModel::class);
@@ -45,6 +53,9 @@ class EffortController extends BaseController
         }
 
         return $this->template_view('effort/logEfforts', [
+            'view'     => $isWeek ? 'week' : 'list',
+            'week'     => $isWeek ? $this->weekGrid($efforts, $from) : null,
+            'export'   => $this->exportRows($efforts),
             'days'     => $days,
             'total'    => $total,
             'from'     => $from,
@@ -104,14 +115,9 @@ class EffortController extends BaseController
             $taskId = (int) $taskId;
         }
 
-        $masters = model(EffortMasterModel::class);
-        $ids = [];
-        foreach (['activity' => 'activity_id', 'main_activity' => 'main_activity_id', 'log_type' => 'log_type_id'] as $type => $field) {
-            $id = filter_var($this->request->getPost($field), FILTER_VALIDATE_INT);
-            if ($id === false || ! $masters->isActive($id, $type)) {
-                return $this->fail('Choose a valid ' . strtolower(EffortMasterModel::TYPES[$type]) . '.');
-            }
-            $ids[$type] = $id;
+        $ids = model(EffortMasterModel::class)->validateSelection($this->request->getPost());
+        if (is_string($ids)) {
+            return $this->fail($ids);
         }
 
         if ($existing) {
@@ -164,6 +170,64 @@ class EffortController extends BaseController
         }
 
         return $this->response->setJSON(['success' => true, 'message' => 'Effort deleted.']);
+    }
+
+    /**
+     * Timesheet grid for one week: a row per task / meeting / other activity with hours per day.
+     *
+     * @return array{days: list<string>, rows: list<array>, dayTotals: array<string,float>, total: float}
+     */
+    private function weekGrid(array $efforts, string $monday): array
+    {
+        $days = [];
+        for ($i = 0; $i < 7; $i++) {
+            $days[] = date('Y-m-d', strtotime($monday . " +{$i} days"));
+        }
+        $rows = [];
+        $dayTotals = array_fill_keys($days, 0.0);
+        foreach ($efforts as $effort) {
+            if ($effort['r_task_id']) {
+                $key   = 'task-' . $effort['r_task_id'];
+                $label = '#' . (int) $effort['r_task_id'] . ' ' . trim((string) $effort['task_title']);
+            } elseif ($effort['r_meeting_details_id']) {
+                $key   = 'meeting-' . $effort['r_meeting_details_id'];
+                $label = trim((string) ($effort['meeting_title'] ?? 'Meeting'));
+            } else {
+                $key   = 'other-' . ($effort['r_activity_id'] ?? 0);
+                $label = $effort['activity_name'] ?? 'Other';
+            }
+            $rows[$key] ??= [
+                'label'   => $label,
+                'product' => $effort['product_name'] ?? '',
+                'kind'    => $effort['r_task_id'] ? 'task' : ($effort['r_meeting_details_id'] ? 'meeting' : 'other'),
+                'hours'   => array_fill_keys($days, 0.0),
+                'total'   => 0.0,
+            ];
+            $rows[$key]['hours'][$effort['spent_on']] += (float) $effort['hours'];
+            $rows[$key]['total'] += (float) $effort['hours'];
+            $dayTotals[$effort['spent_on']] += (float) $effort['hours'];
+        }
+        uasort($rows, static fn ($a, $b) => [$a['product'], $a['label']] <=> [$b['product'], $b['label']]);
+
+        return ['days' => $days, 'rows' => array_values($rows), 'dayTotals' => $dayTotals, 'total' => array_sum($dayTotals)];
+    }
+
+    /** Flat rows for the "Export to Excel" button, oldest first. */
+    private function exportRows(array $efforts): array
+    {
+        $rows = array_map(static fn ($e) => [
+            'date'         => $e['spent_on'],
+            'product'      => (string) ($e['product_name'] ?? ''),
+            'task'         => $e['r_task_id'] ? '#' . (int) $e['r_task_id'] . ' ' . trim((string) $e['task_title']) : '',
+            'meeting'      => (string) ($e['meeting_title'] ?? ''),
+            'activity'     => (string) ($e['activity_name'] ?? ''),
+            'mainActivity' => (string) ($e['main_activity_name'] ?? ''),
+            'logType'      => (string) ($e['log_type_name'] ?? ''),
+            'comments'     => (string) ($e['comments'] ?? ''),
+            'hours'        => round((float) $e['hours'], 2),
+        ], $efforts);
+
+        return array_reverse($rows);
     }
 
     private function fail(string $message): ResponseInterface

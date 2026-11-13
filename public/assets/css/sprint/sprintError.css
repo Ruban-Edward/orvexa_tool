@@ -11,8 +11,8 @@
 
 /**Header buttons */
 .btn_select {
-    background-color: white;
-    color: black;
+    background-color: var(--ox-surface);
+    color: var(--ox-ink);
     border: none;
 }
 
@@ -120,8 +120,8 @@ tr {
     border-radius: 1rem;
 }
 td {
-    background-color: white !important;
-    color: black;
+    background-color: var(--ox-surface) !important;
+    color: var(--ox-ink);
     font-size: .8rem;
 } */
 
@@ -174,10 +174,10 @@ table {
 
 .btn_group {
     padding: 1px;
-    background-color: white;
+    background-color: var(--ox-surface);
     /* Match the button color */
     border: 1px solid var(--ox-brand-700);
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     width: 60px;
     list-style-type: none;
 }
@@ -207,7 +207,7 @@ table {
 
 .priority-m {
     background-color: #FFD700;
-    color: #000;
+    color: var(--ox-ink);
     padding: 5px;
     border-radius: 5px;
     display: inline-block;
@@ -219,7 +219,7 @@ table {
 
 .priority-l {
     background-color: #90EE90;
-    color: #000;
+    color: var(--ox-ink);
     padding: 5px;
     border-radius: 5px;
     display: inline-block;
@@ -260,10 +260,10 @@ th.sorting_desc:before {
 }
 
 .button {
-    background-color: white;
+    background-color: var(--ox-surface);
     /* Match the button color */
-    border: 1px solid #cccccc;
-    color: var(--ox-brand-700);
+    border: 1px solid var(--ox-border-strong);
+    color: var(--ox-accent-ink);
     font-size: 1rem;
     padding: 5px 20px;
     /* Adjusted padding for better alignment */
@@ -299,7 +299,7 @@ th.sorting_desc:before {
 .sortable-helper {
     display: table;
     width: 100%;
-    background-color: #f0f0f0;
+    background-color: var(--ox-surface-3);
     border: 2px solid var(--ox-brand-600);
     box-sizing: border-box;
     font-size: 0.9em;
@@ -312,9 +312,9 @@ th.sorting_desc:before {
 /* Ensure dragged row follows the column widths */
 .ui-sortable-helper {
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 1px solid var(--ox-border);
     /* Optional: Add border for better visibility */
-    background-color: #f9f9f9;
+    background-color: var(--ox-surface-2);
     /* Optional: Change background color for the helper row */
 }
 
@@ -328,7 +328,7 @@ th.sorting_desc:before {
 
 /* Low priority */
 .priority-l {
-    background-color: #d4edda;
+    background-color: var(--ox-surface-3);
     /* Light green */
     color: #155724;
     /* Dark green */
@@ -384,7 +384,7 @@ th.sorting_desc:before {
     top: 0;
     margin-top: 80px;
     right: -300px;
-    background-color: #f8f9fa;
+    background-color: var(--ox-surface-2);
     overflow-x: hidden;
     transition: transform 0.5s ease-out;
     padding: 36px 0px 0px 3px;
@@ -408,12 +408,12 @@ th.sorting_desc:before {
 .sidebar-filter h3 {
     font-size: 1.5rem;
 
-    color: #343a40;
+    color: var(--ox-text);
 }
 
 .sidebar-filter .form-label {
     font-weight: bold;
-    color: #495057;
+    color: var(--ox-text);
     font-size: .9rem;
 
 }
@@ -421,7 +421,7 @@ th.sorting_desc:before {
 .sidebar-filter .form-control,
 .sidebar-filter .form-select {
     border-radius: 0.25rem;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--ox-border-strong);
     padding: 0.375rem 0.75rem;
     font-size: .8rem;
 }
@@ -433,7 +433,7 @@ th.sorting_desc:before {
 .sidebar-filter .btn-close {
     border: none;
     font-size: .7rem;
-    color: #343a40;
+    color: var(--ox-text);
 }
 
 .btn-primary {
@@ -460,7 +460,7 @@ th.sorting_desc:before {
 }
 
 .multiselect-dropdown span.placeholder {
-    color: black !important;
+    color: var(--ox-ink) !important;
     background-color: transparent;
     height: 100%;
     display: flex !important;
@@ -481,10 +481,10 @@ th.sorting_desc:before {
     align-items: center;
     width: 120px;
     height: 34px;
-    background-color: white;
+    background-color: var(--ox-surface);
     
-    border: 1px solid #cccccc;
-    color: var(--ox-brand-700);
+    border: 1px solid var(--ox-border-strong);
+    color: var(--ox-accent-ink);
     border-radius: 2rem;
     padding: 5px 20px;
     transition: all 0.3s ease;
@@ -501,7 +501,7 @@ th.sorting_desc:before {
     outline: none;
     font-size: 16px;
     background-color: transparent;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     width: 0;
     padding: 0;
     transition: all 0.3s ease;
@@ -519,7 +519,7 @@ th.sorting_desc:before {
     cursor: pointer;
     display: flex;
     align-items: center;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .search-button i {
@@ -541,7 +541,7 @@ th.sorting_desc:before {
 }
 
 /* .search-input::placeholder {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     opacity: 1;
 }
 
@@ -600,7 +600,7 @@ tbody tr:last-child td:last-child {
 
 .action_button i {
     padding: 10px;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
 }
 
 .custom-table .action_button a {
@@ -616,7 +616,7 @@ tbody tr:last-child td:last-child {
 }
 
 .removeBtnstyle {
-    background-color: white;
+    background-color: var(--ox-surface);
     border: navajowhite;
     color: blue;
     padding: 0;
@@ -655,7 +655,7 @@ tbody tr:last-child td:last-child {
 }
 
 .form-label {
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: bold;
 }
 

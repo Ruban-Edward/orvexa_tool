@@ -143,6 +143,17 @@ body.ox-auth {
     font-weight: 500;
 }
 
+.ox-auth-alert.is-success {
+    border-color: var(--ox-sage);
+    background: var(--ox-brand-50);
+    color: var(--ox-brand-700);
+}
+
+.ox-auth-help a {
+    color: var(--ox-brand-700);
+    font-weight: 600;
+}
+
 .ox-auth-alert svg {
     flex: none;
     width: 18px;

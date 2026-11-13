@@ -65,6 +65,7 @@ class MeetingController extends BaseController
             'sprintDuration' => $this->meetingModelObj->getSprintDuration(),
             'sprintStatus' => $this->meetingModelObj->getSprintStatus(),
             'groupName' => $this->MeetingTeamModelObj->getTeamMembers($id),
+            'effortMasters' => model(\App\Models\EffortMasterModel::class)->getActiveGrouped(),
         ];
         return $this->template_view('meeting/calendar', $calendarData, 'Calendar', $breadcrumbs);
     }
@@ -242,7 +243,8 @@ class MeetingController extends BaseController
                 }
             }
             session()->remove('warning_ack');
-            return $this->response->setJSON(['success' => (bool) $result, 'mail' => true]);
+            // Invite emails are not sent yet (see MIGRATION.md), so never claim they were
+            return $this->response->setJSON(['success' => (bool) $result, 'mail' => false]);
         }
         return $this->response->setJSON(['success' => false]);
 
@@ -339,7 +341,7 @@ class MeetingController extends BaseController
                     $this->meetingMembersInsert($recurrenceResult, $membersId);
                 }
                 session()->remove('warning_ack');
-                return $this->response->setJSON(['success' => true, 'mail' => true]);
+                return $this->response->setJSON(['success' => true, 'mail' => false]);
             }
         }
         return $this->response->setJSON(['success' => false]);
@@ -377,6 +379,36 @@ class MeetingController extends BaseController
 
         return $team !== null && ((int) $team['r_external_employee_id'] === (int) session()->get('employee_id')
             || $this->ownsItem('product', $team['r_product_id']));
+    }
+
+    /**
+     * Downloads the meeting as an .ics file for Outlook / Google / Apple Calendar.
+     * Same visibility as the meeting details: host, invitees and members of its product.
+     */
+    public function downloadIcs($id)
+    {
+        $meeting = $this->MeetingDetailModelObj->getMeetingDetails((int) $id);
+        if (empty($meeting)) {
+            return $this->response->setStatusCode(404)->setBody('Meeting not found.');
+        }
+        $me = (int) session()->get('employee_id');
+        $memberIds = array_map('intval', array_column(
+            model(\App\Models\Meeting\MeetingMemberModel::class)->getMeetingMembersEdit(['meetId' => $meeting['meeting_details_id']]) ?: [],
+            'r_user_id'
+        ));
+        if ((int) $meeting['r_user_id'] !== $me && ! in_array($me, $memberIds, true)
+            && ! $this->ownsItem('product', $meeting['r_product_id'] ?? null)) {
+            return $this->response->setStatusCode(403)->setBody('You do not have access to this meeting.');
+        }
+
+        $db = db_connect();
+        $host = $db->table('orvexa_user')->select("TRIM(CONCAT(first_name, ' ', COALESCE(last_name, ''))) AS name, email_id AS email")
+            ->where('external_employee_id', (int) $meeting['r_user_id'])->get()->getRowArray() ?: [];
+        $location = (string) ($db->table('orvexa_meeting_location')->select('meeting_location_name')
+            ->where('meeting_location_id', (int) $meeting['r_meeting_location_id'])->get()->getRow()->meeting_location_name ?? '');
+
+        return $this->response->download(\App\Services\IcsBuilder::fileName($meeting), \App\Services\IcsBuilder::meeting($meeting, $location, $host))
+            ->setContentType('text/calendar; charset=utf-8');
     }
 
     private function canManageMeeting(array $meeting): bool
@@ -866,6 +898,10 @@ class MeetingController extends BaseController
         if (empty($entries)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Enter the hours for at least one attendee.']);
         }
+        $ids = model(\App\Models\EffortMasterModel::class)->validateSelection($post);
+        if (is_string($ids)) {
+            return $this->response->setJSON(['success' => false, 'message' => $ids]);
+        }
 
         $now = date('Y-m-d H:i:s');
         $comment = trim((string) $meeting['meeting_title']);
@@ -879,6 +915,9 @@ class MeetingController extends BaseController
                 'r_meeting_details_id' => (int) $meeting['meeting_details_id'],
                 'r_user_id' => $entry['id'],
                 'r_logged_by' => (int) session()->get('employee_id'),
+                'r_activity_id' => $ids['activity'],
+                'r_main_activity_id' => $ids['main_activity'],
+                'r_log_type_id' => $ids['log_type'],
                 'spent_on' => $meeting['meeting_start_date'],
                 'hours' => round($entry['hours'], 2),
                 'comments' => $comment !== '' ? $comment : null,

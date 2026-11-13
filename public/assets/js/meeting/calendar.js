@@ -137,6 +137,11 @@ if (typeof calendar !== "undefined") {
                 $(
                   "#eventDetails,#peventdesc,#pmeetingLink,#peventMembers"
                 ).show();
+                const icsLink = document.getElementById("addToCalendarLink");
+                if (icsLink) {
+                  icsLink.href = baseUrl + "meeting/ics/" + encodeURIComponent(response[0].meeting_details_id);
+                  icsLink.hidden = false;
+                }
                 document.getElementById("sprint_div").style.visibility =
                   "visible";
                 document.getElementById("eventTitle").innerText =
@@ -360,6 +365,7 @@ if (typeof calendar !== "undefined") {
                   "#scheduleMeetingForm, #timeLogSection, #groupdetails, #helpdetails, #pmeetingLink, #peventMembers, #peventdesc, #groupdetails"
                 ).hide();
                 $("#eventDetails,#pcancel").show();
+                $("#addToCalendarLink").prop("hidden", true);
                 document.getElementById("sprint_div").style.visibility =
                   "visible";
                 document.getElementById("eventTitle").innerText = meetingName;
@@ -1045,6 +1051,7 @@ if (typeof calendar !== "undefined") {
     document.querySelector("#eventDescription").href = "#";
     document.getElementById("eventDetails").style.display = "none";
     document.getElementById("scheduleMeetingForm").style.display = "none";
+    $("#addToCalendarLink").prop("hidden", true);
     document.getElementById("groupdetails").style.display = "none";
 
     // Remove all buttons within event details section
@@ -1757,13 +1764,14 @@ if (typeof calendar !== "undefined") {
           : baseUrl + "meeting/updateMeeting";
       var meetStartDate = document.getElementById("meeting_start_date").value;
       function isSunday(date) {
-        const givenDate = new Date(date);
-        return givenDate.getDay() === 0;
+        // "Y-m-d" parses as UTC midnight; build a local date so the weekday is right in every timezone
+        const [y, m, d] = String(date).split("-").map(Number);
+        return !!y && new Date(y, m - 1, d).getDay() === 0;
       }
       if (isSunday(meetStartDate)) {
         Swal.fire({
           title: "Are you sure?",
-          text: "Did you like to schedule meeting on sundays",
+          text: "This meeting falls on a Sunday. Schedule it anyway?",
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#3085d6",
@@ -1817,12 +1825,16 @@ if (typeof calendar !== "undefined") {
                   }
                 });
               } else {
-                // Handle error if email sending fails
+                // No invite email was sent: the meeting itself is saved
                 Swal.fire({
-                  title: "Warning",
-                  text: "Meeting scheduled but Email notification failed",
-                  icon: "warning",
+                  title: "Success!",
+                  text: operation === "insert" ? "Meeting scheduled." : "Meeting updated.",
+                  icon: "success",
                   confirmButtonText: "OK",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    window.location.href = window.location.href;
+                  }
                 });
               }
             } else {

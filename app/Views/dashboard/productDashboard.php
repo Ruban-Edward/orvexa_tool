@@ -358,6 +358,40 @@ $runningSprints=$data['runningSprints'] ?? [];
     </div>
 </div>
 
+<?php $burnup = $data['burnup'] ?? null; ?>
+<?php if ($burnup && $burnup['labels'] !== []): ?>
+<div class="container">
+    <div class="row mb-4 g-4">
+        <!-- Sprint burnup: cumulative hours logged on sprint tasks against the sprint's estimated scope -->
+        <div class="col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between flex-wrap gap-2">
+                        <h5 class="card-title">Sprint version - <?= esc($currentSprintDetails['sprint_version'] ?? 'N/A') ?> burnup</h5>
+                        <p class="text-dark mb-0"><strong>Logged:</strong> <?= esc((string) $burnup['total']) ?> h of <?= esc((string) $burnup['scope']) ?> h estimated</p>
+                    </div>
+                    <div class="ox-burnup-wrap"><canvas id="sprintBurnupChart" role="img" aria-label="Sprint burnup: cumulative hours logged against the estimated scope"></canvas></div>
+                    <details class="mt-2">
+                        <summary class="ox-muted">View as table</summary>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm">
+                                <thead><tr><th scope="col">Day</th><th scope="col" class="text-end">Logged (cumulative h)</th><th scope="col" class="text-end">Ideal (h)</th><th scope="col" class="text-end">Scope (h)</th></tr></thead>
+                                <tbody>
+                                <?php foreach ($burnup['labels'] as $i => $label): ?>
+                                    <tr><td><?= esc($label) ?></td><td class="text-end"><?= $burnup['logged'][$i] === null ? '–' : esc((string) $burnup['logged'][$i]) ?></td><td class="text-end"><?= esc((string) $burnup['ideal'][$i]) ?></td><td class="text-end"><?= esc((string) $burnup['scope']) ?></td></tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="application/json" id="sprintBurnupData"><?= json_encode($burnup, JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
+<?php endif; ?>
+
 <div class="container">
     <!-- Current and Upcoming Sprints Table -->
     <h4 class="mb-3">Sprints</h4>

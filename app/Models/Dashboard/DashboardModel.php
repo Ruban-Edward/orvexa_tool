@@ -359,6 +359,28 @@ class DashboardModel extends BaseModel
      * @return array 
      * Purpose: Retrieves total estimated hours grouped by task of a sprint for the product.
      */
+    /**
+     * Burnup data for one sprint: hours logged per day on the sprint's tasks (from the effort log)
+     * between the sprint's start and end dates.
+     *
+     * @return array<string,float> spent_on => hours
+     */
+    public function getSprintLoggedHoursByDay(int $sprintId, int $productId, string $from, string $to): array
+    {
+        $query = "SELECT effort.spent_on, SUM(effort.hours) AS hours
+                  FROM orvexa_effort_log effort
+                  JOIN orvexa_sprint_task sst ON sst.r_task_id = effort.r_task_id
+                  JOIN orvexa_sprint ss ON ss.sprint_id = sst.r_sprint_id
+                  JOIN orvexa_task st ON st.task_id = effort.r_task_id AND st.is_deleted = 'N'
+                  WHERE ss.sprint_id = ? AND ss.r_product_id = ?
+                    AND effort.spent_on BETWEEN ? AND ?
+                  GROUP BY effort.spent_on
+                  ORDER BY effort.spent_on";
+        $rows = $this->query($query, [$sprintId, $productId, $from, $to])->getResultArray();
+
+        return array_column(array_map(static fn ($r) => [$r['spent_on'], (float) $r['hours']], $rows), 1, 0);
+    }
+
     public function getEstimatedSprintHours(array $params): array
     {
         $query = "SELECT sum(st.estimated_hours) AS estimated_hours

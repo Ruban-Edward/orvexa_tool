@@ -24,9 +24,9 @@
   font-weight: bold;
   cursor: pointer;
   margin-top: 5px;
-  background-color: white !important;
+  background-color: var(--ox-surface) !important;
   border: 1px solid var(--ox-brand-700) !important;
-  color: var(--ox-brand-700) !important;
+  color: var(--ox-accent-ink) !important;
   border-radius: 2rem !important;
 }
 
@@ -62,7 +62,7 @@
   z-index: 1;
   top: 0;
   right: -300px; /* Start off-screen */
-  background-color: #f8f9fa;
+  background-color: var(--ox-surface-2);
   overflow-x: hidden;
   transition: transform 0.5s ease-out; /* Smooth transition for transform */
   padding-top: 100px;
@@ -89,11 +89,11 @@
 .multiselect-dropdown span.optext {
   display: block;
   width: fit-content;
-  background-color: white !important;
+  background-color: var(--ox-surface) !important;
   border-radius: 1px solid black;
 }
 .multiselect-dropdown span.placeholder {
-  color: black !important;
+  color: var(--ox-ink) !important;
   background-color: unset !important;
 }
 
@@ -117,13 +117,13 @@ table {
 }
 .header_color th {
   background-color: var(--ox-brand-50);
-  color: black;
+  color: var(--ox-ink);
 }
 td,
 th {
   vertical-align: middle;
   text-align: center;
-  color: black;
+  color: var(--ox-ink);
 }
 thead tr th input {
   align-items: center;
@@ -144,7 +144,7 @@ tr {
   border-top-right-radius:10px  ;
 }
 tbody td {
-  background-color: white !important;
+  background-color: var(--ox-surface) !important;
 }
 tbody{
   position: relative;
@@ -189,7 +189,7 @@ tbody{
   border-radius: 50%;
 }
 .form-label{
-  color:var(--ox-brand-700);
+  color:var(--ox-accent-ink);
   font-weight: bold;
 }
 .placeholder{

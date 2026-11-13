@@ -768,6 +768,19 @@ if (typeof m_sprintView !== 'undefined') {
                     });
                 });
             });
+
+            (backlogItem.directTasks || []).forEach(function (taskItem) {
+                if (!backlogItem.epics.length) {
+                    document.getElementById('backlogName').innerHTML = '<h6>Backlog Name:</h6><span>' + oxEscape(backlogName) + '</span> </h5>';
+                }
+                tableContent += '<tr>';
+                tableContent += '<td class="epic-cell">—</td>';
+                tableContent += '<td class="user-story">—</td>';
+                tableContent += '<td class="user-story-cell"><span class="ox-muted">Direct task</span></td>';
+                tableContent += '<td class="task-cell">' + oxEscape(taskItem.task) + ' - <b>' + oxEscape(taskItem.percentage) + ' %</b></td>';
+                tableContent += `<td class='status-cell'><span class="status">${oxEscape(taskItem.status)}</span></td>`;
+                tableContent += '</tr>';
+            });
         });
 
         tableBody.innerHTML = tableContent;
@@ -891,9 +904,10 @@ if (typeof m_sprintView !== 'undefined') {
 
             return {
                 ...backlogItem,
-                epics: filteredEpics
+                epics: filteredEpics,
+                directTasks: (backlogItem.directTasks || []).filter(taskItem => taskItem.status === status)
             };
-        }).filter(backlogItem => backlogItem.epics.length > 0);
+        }).filter(backlogItem => backlogItem.epics.length > 0 || backlogItem.directTasks.length > 0);
     }
 
     function changePage(page) {
@@ -902,7 +916,7 @@ if (typeof m_sprintView !== 'undefined') {
     }
 
     function countTotalTasks(backlogItem) {
-        var totalTasks = 0;
+        var totalTasks = (backlogItem.directTasks || []).length;
         backlogItem.epics.forEach(function (epicItem) {
             epicItem.userStories.forEach(function (userStoryItem) {
                 totalTasks += userStoryItem.tasks.length;
@@ -918,7 +932,7 @@ if (typeof m_sprintView !== 'undefined') {
     }
 
     function countCompletedTasks(backlogItem) {
-        var completedTasks = 0;
+        var completedTasks = (backlogItem.directTasks || []).filter(t => isCompletedStatus(t.status)).length;
         backlogItem.epics.forEach(function (epicItem) {
             epicItem.userStories.forEach(function (userStoryItem) {
                 userStoryItem.tasks.forEach(function (taskItem) {
@@ -937,6 +951,10 @@ if (typeof m_sprintView !== 'undefined') {
         var completedTasks = 0;
         var totalTasks = 0;
         userData.forEach(backlog => {
+            (backlog.directTasks || []).forEach(task => {
+                totalTasks += 1;
+                if (isCompletedStatus(task.status)) completedTasks += 1;
+            });
             backlog.epics.forEach(epic => {
                 epic.userStories.forEach(userStories => {
                     userStories.tasks.forEach(tasks => {
@@ -954,8 +972,13 @@ if (typeof m_sprintView !== 'undefined') {
         document.getElementById('task-no').innerHTML = completedTasks;
     }
 
+    // Same "completed" statuses the story-task counters use
+    function isCompletedStatus(status) {
+        return ['completed', 'Completed', 'Assign for UAT', 'Assign for Testing', 'Move to Live', 'Move to Prelive'].includes(status);
+    }
+
     function countBacklogRows(backlogItem) {
-        var rowCount = 0;
+        var rowCount = (backlogItem.directTasks || []).length;
         backlogItem.epics.forEach(function (epicItem) {
             epicItem.userStories.forEach(function (userStoryItem) {
                 rowCount += userStoryItem.tasks.length;

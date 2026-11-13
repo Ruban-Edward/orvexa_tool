@@ -13,18 +13,39 @@ $fmtHours = static function ($hours): string {
 $masters = $data['masters'];
 $userId = (int) $data['userId'];
 $rangeLabel = date('d M Y', strtotime($data['from'])) . ' – ' . date('d M Y', strtotime($data['to']));
+$isWeek = $data['view'] === 'week';
+$weekUrl = static fn (string $date): string => ASSERT_PATH . 'efforts?' . http_build_query(['view' => 'week', 'week' => $date]);
 ?>
 <div class="ox-efforts" id="logEfforts">
     <div class="ox-pagebar">
-        <form class="ox-efforts-range" method="get" action="<?= ASSERT_PATH ?>efforts" aria-label="Date range">
-            <label class="visually-hidden" for="effortFrom">From</label>
-            <input type="date" class="form-control" id="effortFrom" name="from" value="<?= esc($data['from'], 'attr') ?>" max="<?= esc($data['today'], 'attr') ?>">
-            <span class="ox-muted" aria-hidden="true">to</span>
-            <label class="visually-hidden" for="effortTo">To</label>
-            <input type="date" class="form-control" id="effortTo" name="to" value="<?= esc($data['to'], 'attr') ?>" max="<?= esc($data['today'], 'attr') ?>">
-            <button type="submit" class="btn btn-secondary">Apply</button>
-        </form>
+        <nav class="ox-efforts-views" aria-label="Efforts view">
+            <a class="btn btn-sm <?= $isWeek ? 'btn-light' : 'btn-secondary' ?>" href="<?= ASSERT_PATH ?>efforts" <?= $isWeek ? '' : 'aria-current="page"' ?>>List</a>
+            <a class="btn btn-sm <?= $isWeek ? 'btn-secondary' : 'btn-light' ?>" href="<?= $weekUrl($data['today']) ?>" <?= $isWeek ? 'aria-current="page"' : '' ?>>Week</a>
+        </nav>
+        <?php if ($isWeek): ?>
+            <div class="ox-efforts-range" aria-label="Week">
+                <a class="btn btn-light" href="<?= $weekUrl(date('Y-m-d', strtotime($data['from'] . ' -7 days'))) ?>" aria-label="Previous week"><i class="icon-chevron-left" aria-hidden="true"></i></a>
+                <strong class="ox-efforts-week-label"><?= esc($rangeLabel) ?></strong>
+                <?php if ($data['to'] < $data['today']): ?>
+                    <a class="btn btn-light" href="<?= $weekUrl(date('Y-m-d', strtotime($data['to'] . ' +1 day'))) ?>" aria-label="Next week"><i class="icon-chevron-right" aria-hidden="true"></i></a>
+                    <a class="btn btn-light" href="<?= $weekUrl($data['today']) ?>">This week</a>
+                <?php endif; ?>
+            </div>
+        <?php else: ?>
+            <form class="ox-efforts-range" method="get" action="<?= ASSERT_PATH ?>efforts" aria-label="Date range">
+                <label class="visually-hidden" for="effortFrom">From</label>
+                <input type="date" class="form-control" id="effortFrom" name="from" value="<?= esc($data['from'], 'attr') ?>" max="<?= esc($data['today'], 'attr') ?>">
+                <span class="ox-muted" aria-hidden="true">to</span>
+                <label class="visually-hidden" for="effortTo">To</label>
+                <input type="date" class="form-control" id="effortTo" name="to" value="<?= esc($data['to'], 'attr') ?>" max="<?= esc($data['today'], 'attr') ?>">
+                <button type="submit" class="btn btn-secondary">Apply</button>
+            </form>
+        <?php endif; ?>
         <div class="ox-pagebar-actions">
+            <button type="button" class="btn btn-light" id="exportEfforts" <?= $data['export'] === [] ? 'disabled' : '' ?>
+                data-file="<?= esc('efforts-' . $data['from'] . '-to-' . $data['to'] . '.xlsx', 'attr') ?>">
+                <i class="icon-download" aria-hidden="true"></i> Export to Excel
+            </button>
             <button type="button" class="btn btn-primary" id="openLogEffort">
                 <i class="icon-plus" aria-hidden="true"></i> Log effort
             </button>
@@ -40,7 +61,53 @@ $rangeLabel = date('d M Y', strtotime($data['from'])) . ' – ' . date('d M Y', 
             </h2>
         </header>
 
-        <?php if ($data['days'] === []): ?>
+        <?php if ($isWeek): ?>
+            <?php $week = $data['week']; ?>
+            <div class="table-responsive">
+                <table class="table ox-efforts-table ox-timesheet">
+                    <caption class="visually-hidden">Hours per day for the week of <?= esc($rangeLabel) ?></caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Work item</th>
+                            <?php foreach ($week['days'] as $day): ?>
+                                <th scope="col" class="text-end<?= $day === $data['today'] ? ' is-today' : '' ?><?= date('N', strtotime($day)) >= 6 ? ' is-weekend' : '' ?>">
+                                    <?= esc(date('D', strtotime($day))) ?><span class="ox-efforts-sub"><?= esc(date('d M', strtotime($day))) ?></span>
+                                </th>
+                            <?php endforeach; ?>
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($week['rows'] === []): ?>
+                            <tr><td colspan="9" class="ox-muted text-center py-4">No effort logged this week.</td></tr>
+                        <?php endif; ?>
+                        <?php foreach ($week['rows'] as $row): ?>
+                            <tr>
+                                <th scope="row" class="ox-efforts-project">
+                                    <span class="ox-efforts-product"><?= esc($row['label']) ?></span>
+                                    <span class="ox-efforts-sub">
+                                        <?php if ($row['kind'] === 'meeting'): ?><i class="icon-users" aria-hidden="true"></i> Meeting<?= $row['product'] !== '' ? ' · ' : '' ?><?php endif; ?><?= esc($row['product']) ?>
+                                    </span>
+                                </th>
+                                <?php foreach ($week['days'] as $day): ?>
+                                    <td class="text-end ox-efforts-hours<?= date('N', strtotime($day)) >= 6 ? ' is-weekend' : '' ?>"><?= $row['hours'][$day] > 0 ? $fmtHours($row['hours'][$day]) : '<span class="ox-muted">–</span>' ?></td>
+                                <?php endforeach; ?>
+                                <td class="text-end"><span class="ox-efforts-total"><?= $fmtHours($row['total']) ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row">Day total</th>
+                            <?php foreach ($week['days'] as $day): ?>
+                                <td class="text-end<?= date('N', strtotime($day)) >= 6 ? ' is-weekend' : '' ?>"><?= $fmtHours($week['dayTotals'][$day]) ?></td>
+                            <?php endforeach; ?>
+                            <td class="text-end"><span class="ox-efforts-total"><?= $fmtHours($week['total']) ?></span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        <?php elseif ($data['days'] === []): ?>
             <div class="ox-empty">
                 <i class="icon-watch" aria-hidden="true"></i>
                 <h4>No effort logged in this range</h4>
@@ -220,3 +287,5 @@ $rangeLabel = date('d M Y', strtotime($data['from'])) . ' – ' . date('d M Y', 
         </div>
     </div>
 </div>
+
+<script type="application/json" id="effortExportData"><?= json_encode($data['export'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?></script>

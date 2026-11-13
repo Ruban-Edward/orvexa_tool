@@ -18,7 +18,7 @@
 }
 
 .nav-item a:hover {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--ox-surface);
 }
 
 .navbar-collapse {
@@ -69,7 +69,7 @@
 
 .section-title {
   font-size: 2rem;
-  color: #333;
+  color: var(--ox-text);
   text-align: left;
   margin: 10px;
   font-weight: 600;
@@ -96,7 +96,7 @@
 }
 
 .navbar-toggler {
-  border-color: #fff;
+  border-color: var(--ox-surface);
   /* White color for toggler icon */
 }
 
@@ -179,14 +179,14 @@
 }
 
 .task-column {
-  background-color: #f8f9fa;
+  background-color: var(--ox-surface-2);
   border-radius: 15px;
   padding: 20px;
   min-height: 300px;
 }
 
 .task-item {
-  background-color: white;
+  background-color: var(--ox-surface);
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 10px;
@@ -196,12 +196,12 @@
 
 .removeBtnstyle {
   border: none;
-  background-color: var(--ox-brand-700);
+  background-color: var(--ox-green-fill);
   color: white;
 }
 
 .removeBtnstyle:hover {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--ox-surface);
 }
 
 .task-item:hover {
@@ -209,7 +209,7 @@
 }
 
 .daily-scrum-entry {
-  background-color: #e9ecef;
+  background-color: var(--ox-surface-3);
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 15px;
@@ -242,12 +242,12 @@
 .label {
   font-weight: bold;
   font-size: 0.9rem;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   margin-bottom: 5px;
 }
 
 .value {
-  color: #666;
+  color: var(--ox-muted);
   font-size: 0.8rem;
 }
 
@@ -264,13 +264,13 @@
 .table-striped tr {
   padding-top: 30px;
   top: 0;
-  background-color: white;
+  background-color: var(--ox-surface);
   /* Background color to make the text stand out */
   z-index: 10;
   /* Ensure the text is above other content */
   padding: 10px;
   /* Add some padding for better appearance */
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--ox-border-strong);
   /* Optional: Add a bottom border for better visibility */
 }
 
@@ -285,11 +285,11 @@ table {
 }
 
 .backlog-thead th {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 
 .formElements td {
-  color: black;
+  color: var(--ox-ink);
   font-weight: 300;
  
 
@@ -297,7 +297,7 @@ table {
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--ox-border);
   padding: 12px;
   font-weight: 300;
   font-size: 0.8rem;
@@ -366,19 +366,19 @@ font-weight: 700;
   border-radius: 4px;
   font-size: 0.7rem;
   background-color: #ffc107;
-  color: #000000;
+  color: var(--ox-ink);
 }
 
 .completion {
   font-size: 15px;
   font-weight: bold;
-  color: #000000;
+  color: var(--ox-ink);
   margin-left: 10px;
 }
 
 .progress-bar {
   height: 10px;
-  background-color: #f0f0f0;
+  background-color: var(--ox-surface-3);
   border-radius: 4px;
   width: 100px;
   border: 1px solid grey;
@@ -405,11 +405,11 @@ font-weight: 700;
 /* Daily Scrum styles */
 .scrum-container {
   max-width: 100%;
-  background-color: #fff;
+  background-color: var(--ox-surface);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  color: #333;
+  color: var(--ox-text);
   width: 90%;
   margin-bottom: 20px;
   /* Margin between sections */
@@ -418,16 +418,16 @@ font-weight: 700;
 }
 
 .scrum-container:hover {
-  background-color: #f0f0f0;
+  background-color: var(--ox-surface-3);
   /* Change background color on hover */
 }
 
 .scrum-item {
-  border: 1px solid #ccc;
+  border: 1px solid var(--ox-border-strong);
   border-radius: 8px;
   margin-bottom: 10px;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: var(--ox-surface-2);
   cursor: pointer;
   transition: background-color 0.3s ease;
   max-height: 300px;
@@ -456,7 +456,7 @@ font-weight: 700;
 .ds_title {
   margin-top: 1rem;
   margin-bottom: 0px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   text-align: left;
   font-weight: 800;
   font-size: 0.9rem;
@@ -468,11 +468,11 @@ font-weight: 700;
 .review,
 .daily-scrum {
   max-width: 100%;
-  background-color: #fff;
+  background-color: var(--ox-surface);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  color: #333;
+  color: var(--ox-text);
   width: 90%;
   margin-bottom: 20px;
   display: flex;
@@ -481,8 +481,8 @@ font-weight: 700;
 
 .scrum-para {
   flex: 1;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
+  background-color: var(--ox-surface);
+  border: 1px solid var(--ox-border-strong);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 20px;
@@ -549,18 +549,18 @@ font-weight: 700;
 .sprint-details td {
   padding: 4px;
   text-align: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--ox-border);
   /* Bottom border for each cell */
 }
 
 .sprint-details th {
-  background-color: #f2f2f2;
-  color: var(--ox-brand-700);
+  background-color: var(--ox-surface-2);
+  color: var(--ox-accent-ink);
   text-align: center;
 }
 
 .sprint-item {
-  background-color: #fff;
+  background-color: var(--ox-surface);
   transition: box-shadow 0.3s ease;
 }
 
@@ -581,22 +581,22 @@ font-weight: 700;
 
 .Not-started {
   color: orange;
-  background-color: #e9f9eb;
+  background-color: var(--ox-surface-2);
 }
 
 .in-progress {
   color: green;
-  background-color: #e0f1fb;
+  background-color: var(--ox-surface-3);
 }
 
 .delayed {
   color: red;
-  background-color: #fbeaea;
+  background-color: var(--ox-surface-3);
 }
 
 .completed {
-  color: var(--ox-brand-800);
-  background-color: #eaf1fb;
+  color: var(--ox-accent-ink-strong);
+  background-color: var(--ox-surface-3);
 }
 
 .content {
@@ -606,8 +606,8 @@ font-weight: 700;
 
 
 .details {
-  background-color: #ffffff;
-  border: 1px solid #ccc;
+  background-color: var(--ox-surface);
+  border: 1px solid var(--ox-border-strong);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
@@ -624,7 +624,7 @@ font-weight: 700;
 }
 
 .details>div strong {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   /* Label text color */
   font-weight: bold;
   font-size: 0.9rem;
@@ -639,8 +639,8 @@ font-weight: 700;
 .suggestions {
   flex: 1;
   margin-right: 20px;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
+  background-color: var(--ox-surface);
+  border: 1px solid var(--ox-border-strong);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 10px;
@@ -652,7 +652,7 @@ font-weight: 700;
 .cons h3,
 .suggestions h3 {
   margin-bottom: 10px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   /* Header text color */
 }
 
@@ -664,7 +664,7 @@ font-weight: 700;
 .cons,
 .suggestions ul li {
   margin-bottom: 10px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-size: 0.8rem;
 }
 
@@ -674,12 +674,12 @@ font-weight: 700;
 }
 
 .details strong {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   margin-right: 10px;
 }
 
 .details span {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-weight: bold;
   font-size: 0.9rem;
 }
@@ -734,14 +734,14 @@ label {
 #task-no,
 #total-backlogs {
   margin: 0;
-  background-color: white;
+  background-color: var(--ox-surface);
   min-height: 30px;
   min-width: 30px;
   padding: 6px 9px;
   font-size: 12px;
   border-radius: 50%;
   font-weight: bold;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   text-align: center;
 }
 
@@ -834,7 +834,7 @@ h1 {
   display: flex;
   align-items: center;
   padding: 4px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--ox-border);
   transition: all 0.3s ease;
 }
 
@@ -874,7 +874,7 @@ h1 {
 
 .data-source {
   font-size: 0.875rem;
-  color: #7f8c8d;
+  color: var(--ox-muted);
 }
 
 .date-header {
@@ -975,7 +975,7 @@ textarea::-webkit-scrollbar {
 }
 
 textarea::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--ox-surface-3);
 }
 
 textarea::-webkit-scrollbar-thumb {
@@ -992,7 +992,7 @@ textarea::-webkit-scrollbar-thumb:hover {
   gap: 10px;
   margin-top: 10px;
   margin-bottom: 0;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 
 .error-container {
@@ -1085,7 +1085,7 @@ textarea {
   display: flex;
   gap: 10px;
   margin-top: 10px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 
 .error-container {
@@ -1129,12 +1129,12 @@ textarea {
   background: none;
   border: none;
   font-size: 24px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   cursor: pointer;
 }
 
 .mic-button:hover {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 
 .mic-button.recording {
@@ -1147,7 +1147,7 @@ textarea {
 }
 
 .select-selected {
-  background-color: white;
+  background-color: var(--ox-surface);
   border: 2px solid var(--ox-brand-700);
   padding: 10px;
   border-radius: 8px;
@@ -1158,7 +1158,7 @@ textarea {
 .select-items {
   display: none;
   position: absolute;
-  background-color: white;
+  background-color: var(--ox-surface);
   top: 100%;
   left: 0;
   right: 0;
@@ -1178,7 +1178,7 @@ textarea {
 }
 
 .select-items label:hover {
-  background-color: #f0f0f0;
+  background-color: var(--ox-surface-3);
 }
 
 .select-show {
@@ -1238,12 +1238,12 @@ textarea {
 }
 
 .card-links a:hover {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--ox-surface);
 }
 
 th {
-  background-color: #f2f2f2;
-  color: var(--ox-brand-700) !important;
+  background-color: var(--ox-surface-2);
+  color: var(--ox-accent-ink) !important;
   /* Dark blue */
   text-align: center;
   font-size: 0.9rem;
@@ -1259,7 +1259,7 @@ th {
 }
 
 .edit:hover {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--ox-surface);
 }
 
 .activity {
@@ -1269,12 +1269,12 @@ th {
 
 .date-filter {
   padding: 15px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--ox-surface-2);
+  border-bottom: 1px solid var(--ox-border);
 }
 
 .cls-filterHeaderContainer {
-  background-color: white;
+  background-color: var(--ox-surface);
   position: sticky;
   top: 0px;
 }
@@ -1287,7 +1287,7 @@ th {
 
 .date-filter input[type="date"] {
   padding: 5px 10px;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--ox-border-strong);
   border-radius: 4px;
   margin-right: 10px;
 }
@@ -1307,9 +1307,9 @@ th {
   position: sticky;
   top: 80px;
   font-weight: bold;
-  color: #495057;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  color: var(--ox-text);
+  background-color: var(--ox-surface-2);
+  border-bottom: 1px solid var(--ox-border);
 }
 
 /* Activity list styles */
@@ -1323,12 +1323,12 @@ th {
   display: flex;
   align-items: center;
   padding: 0px 20px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--ox-border);
 }
 
 .activity-item .time {
   width: 70px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-weight: bold;
 }
 
@@ -1351,7 +1351,7 @@ th {
 }
 
 .activity-item .source {
-  color: #6c757d;
+  color: var(--ox-muted);
   font-size: 0.9em;
 }
 
@@ -1360,16 +1360,16 @@ th {
   display: flex;
   justify-content: space-between;
   padding: 15px 20px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+  background-color: var(--ox-surface-2);
+  border-top: 1px solid var(--ox-border);
 }
 
 .pagination-button {
   padding: 5px 15px;
-  background-color: #e9ecef;
-  border: 1px solid #ced4da;
+  background-color: var(--ox-surface-3);
+  border: 1px solid var(--ox-border-strong);
   border-radius: 4px;
-  color: #495057;
+  color: var(--ox-text);
   cursor: pointer;
 }
 
@@ -1407,16 +1407,16 @@ th {
 }
 
 #resetButton:hover {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 
 .history-date {
   padding: 10px 20px;
   font-size: 16px;
   font-weight: bold;
-  color: #495057;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  color: var(--ox-text);
+  background-color: var(--ox-surface-2);
+  border-bottom: 1px solid var(--ox-border);
   margin-top: 10px;
 }
 
@@ -1428,7 +1428,7 @@ th {
   text-align: center;
   padding: 20px;
   font-size: 16px;
-  color: #6c757d;
+  color: var(--ox-muted);
 }
 
 @media (min-width: 1200px) {
@@ -1555,7 +1555,7 @@ label {
 }
 #total-tasks, #task-no, #total-backlogs {
   margin: 0;
-  background-color: white;
+  background-color: var(--ox-surface);
   min-height: 2px;
   display: flex;
   min-width: 5px;
@@ -1567,7 +1567,7 @@ label {
   border-radius: 50%;
   margin-left: -25px;
   font-weight: bold;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 th{
   font-size: var(--MOBILESMALLHEADER);
@@ -1594,17 +1594,17 @@ th{
   margin-top: 10px;
   font-size: var(--MOBILETEXTSIZE);
   margin-bottom: 0;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 .input-area .radio-group{
   display: flex;
   gap: 10px;
   margin-top: 10px;
   font-size: var(--MOBILETEXTSIZE);
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
 }
 .select-selected {
-  background-color: white;
+  background-color: var(--ox-surface);
   border: 2px solid var(--ox-brand-700);
   padding: 4px;
   border-radius: 8px;
@@ -1626,7 +1626,7 @@ th{
   background: none;
   border: none;
   font-size: 16px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   cursor: pointer;
 }
 .form-select {
@@ -1642,7 +1642,7 @@ th{
 
 .activity-item .time {
   width: 70px;
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-size: var(--MOBILESMALLHEADER);
   font-weight: bold;
 }
@@ -1653,9 +1653,9 @@ th{
 }
 .cls-filterHeaderContainer .date-filter {
   padding: 15px 20px;
-  background-color: #f8f9fa;
+  background-color: var(--ox-surface-2);
   flex-wrap: wrap;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--ox-border);
 }
 .history-date {
   top: 200px;
@@ -1677,12 +1677,12 @@ textarea {
   overflow-y: auto;
 }
 .details>div strong {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-weight: bold;
   font-size: var(--MOBILESMALLHEADER);
 }
 .details span {
-  color: var(--ox-brand-700);
+  color: var(--ox-accent-ink);
   font-weight: bold;
   font-size: var(--MOBILETEXTSIZE);
 }

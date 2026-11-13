@@ -136,7 +136,7 @@ body.ox-app #main .ox-product-card .ox-avatar-square {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    color: var(--ox-brand-700);
+    color: var(--ox-accent-ink);
     font-weight: 600;
 }
 

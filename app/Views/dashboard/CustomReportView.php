@@ -22,7 +22,7 @@
 
     <!-- Filter and Download Options -->
     <div class="filter-container mb-4">
-        <button type="button" class="btn-outline button-secondary" onclick="downloadbtn()" data-bs-toggle='modal'
+        <button type="button" class="btn-outline button-secondary" onclick="showDownloadConfirmation()" data-bs-toggle='modal'
             data-bs-target='#teamModal' class="button" id="downloadBtn">
             <i class="icon-download"> </i> Download
         </button>

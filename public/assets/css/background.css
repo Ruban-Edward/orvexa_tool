@@ -5,9 +5,11 @@
  * Static: never animated. Loaded after shell-glass.css in layout/headerLinks.php.
  */
 :root {
-    --bg-glow-pistachio: color-mix(in srgb, var(--ox-pistachio) 60%, transparent);
-    --bg-glow-fresh: color-mix(in srgb, var(--ox-fresh) 35%, transparent);
-    --bg-glow-sage: color-mix(in srgb, var(--ox-sage) 35%, transparent);
+    --bg-glow-pistachio: color-mix(in srgb, var(--ox-pistachio) 68%, transparent);
+    --bg-glow-fresh: color-mix(in srgb, var(--ox-fresh) 36%, transparent);
+    --bg-glow-sage: color-mix(in srgb, var(--ox-sage) 36%, transparent);
+    --bg-glow-primary: color-mix(in srgb, var(--ox-primary) 16%, transparent);
+    --bg-glow-center: color-mix(in srgb, var(--ox-sage) 26%, transparent);
 }
 
 /* body.ox-app::before is reserved (hidden legacy accent strip), so use ::after */
@@ -18,9 +20,11 @@ body.ox-app::after {
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(60vmax 45vmax at 100% 0%, var(--bg-glow-pistachio), transparent 70%),
-        radial-gradient(50vmax 40vmax at 0% 100%, var(--bg-glow-fresh), transparent 70%),
-        radial-gradient(45vmax 35vmax at 70% 85%, var(--bg-glow-sage), transparent 70%),
+        radial-gradient(50vmax 40vmax at 0% 0%, var(--bg-glow-primary), transparent 72%),
+        radial-gradient(60vmax 45vmax at 55% 45%, var(--bg-glow-center), transparent 70%),
+        radial-gradient(85vmax 65vmax at 100% 0%, var(--bg-glow-pistachio), transparent 72%),
+        radial-gradient(70vmax 55vmax at 0% 100%, var(--bg-glow-fresh), transparent 72%),
+        radial-gradient(65vmax 50vmax at 75% 90%, var(--bg-glow-sage), transparent 72%),
         var(--ox-canvas);
 }
 
