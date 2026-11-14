@@ -728,52 +728,6 @@ body {
     font-weight: 700;
 }
 
-#main .bg-card-1,
-#main .bg-card-2,
-#main .bg-card-3,
-#main .bg-card-4 {
-    border: 1px solid var(--app-border);
-    border-left-width: 4px;
-    background: var(--ox-surface) !important;
-    color: var(--text-color);
-}
-
-#main .bg-card-1 {
-    border-left-color: #48a66b;
-}
-
-#main .bg-card-2 {
-    border-left-color: #d76565;
-}
-
-#main .bg-card-3 {
-    border-left-color: #d99537;
-}
-
-#main .bg-card-4 {
-    border-left-color: #4a99a6;
-}
-
-#main .bg-card-1 h5,
-#main .bg-card-2 h5,
-#main .bg-card-3 h5,
-#main .bg-card-4 h5,
-#main .bg-card-1 .card-text,
-#main .bg-card-2 .card-text,
-#main .bg-card-3 .card-text,
-#main .bg-card-4 .card-text {
-    color: var(--text-color) !important;
-}
-
-#main .bg-card-1 .badge,
-#main .bg-card-2 .badge,
-#main .bg-card-3 .badge,
-#main .bg-card-4 .badge {
-    padding: 5px 9px;
-    background: var(--app-tint);
-    color: var(--app-green-deep);
-}
-
 #main .table-responsive,
 #main .cls-tableview,
 #main .main-page .page {
@@ -945,12 +899,6 @@ body {
 @media (max-width: 767.98px) {
     #main.main-content {
         padding: 20px 16px 32px;
-    }
-
-    #main #card-row > .col-md-3 > .card {
-        height: auto !important;
-        min-height: 0;
-        overflow: visible;
     }
 
     #main .cls-h2,

@@ -113,38 +113,6 @@ body::before {
 .card-header { background: rgba(248, 251, 249, .8); border-bottom: 1px solid var(--pro-border); padding: .9rem 1.1rem; font-weight: 700; color: var(--ox-accent-ink); }
 .card-body { padding: 1.15rem; }
 
-/* Dashboard KPI cards: remove the empty icon column and align label/value rows */
-#card-row .card { height: 100%; overflow: hidden; }
-#card-row .card-body { padding: 1.15rem 1.35rem 1.25rem; }
-#card-row .card-title {
-    font-size: .74rem;
-    font-weight: 700;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    color: var(--pro-muted);
-    margin-bottom: .9rem;
-}
-#card-row .card-body > .row > .col-md-3 { display: none; }
-#card-row .card-body > .row > .col-md-9 { flex: 0 0 100%; max-width: 100%; }
-#card-row .card-body .row.pointer,
-#card-row .card-body .row.mx-0 {
-    padding: .42rem .55rem;
-    margin: 0 -.55rem;
-    border-radius: var(--pro-radius-sm);
-    transition: background-color .15s var(--pro-ease);
-}
-#card-row .card-body .row.pointer:hover { background: var(--app-hover-surface, #f0f6f1); }
-#card-row .card-text { margin: 0; font-size: .92rem; color: var(--pro-ink); }
-#card-row .card-text strong { font-weight: 500; }
-#card-row .cls-span {
-    min-width: 2.2rem;
-    padding: .38rem .6rem;
-    border-radius: 999px;
-    font-size: .85rem;
-    font-weight: 700;
-    background: var(--app-tint, #e8f2eb);
-    color: var(--ox-accent-ink);
-}
 
 /* ---------- Tables -------------------------------------------------------- */
 .table {

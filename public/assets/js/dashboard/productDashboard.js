@@ -10,6 +10,41 @@ const OX_CHART = {
     neutral: '#6f7c74',
     categorical: ['#1f9450', '#2f6fd1', '#b7741a', '#7b5bd6', '#d1495b'],
 };
+
+// Read a theme token (tokens.css switches them for the dark theme)
+function oxToken(name, fallback) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+// Slice and point separators follow the card surface. Scriptable, so the
+// chart.update() that layout/ux.js runs on a theme switch picks up the new colour.
+const oxSurface = () => oxToken('--ox-surface', '#ffffff');
+
+// Message on a chart that has no data: sized to the screen (sharp on HiDPI),
+// muted text colour, redrawn when the canvas resizes or the theme switches.
+function oxChartEmpty(canvas, text) {
+    if (!canvas) return;
+    canvas.style.width = '100%';
+    canvas.style.height = '200px';
+    const draw = () => {
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        if (!w || !h) return;
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = oxToken('--ox-muted', '#5e6e64');
+        ctx.font = '500 14px ' + getComputedStyle(document.body).fontFamily;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, w / 2, h / 2);
+    };
+    draw();
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(draw).observe(canvas);
+    document.addEventListener('ox:themechange', draw);
+}
 if (typeof Chart !== 'undefined') {
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     // Theme-aware: read the tokens (layout/ux.js updates them when the theme switches)
@@ -31,22 +66,6 @@ if(typeof productDashboard !== 'undefined') {
         $('#backlog-submit').on('click', function() {
             $('[data-toggle="tooltip"]').tooltip();
             $(this).submit();
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var cards = document.querySelectorAll('#card-row .card');
-        var maxHeight = 0;
-
-        cards.forEach(function (card) {
-            var cardHeight = card.offsetHeight;
-            if (cardHeight > maxHeight) {
-                maxHeight = cardHeight;
-            }
-        });
-
-        cards.forEach(function (card) {
-            card.style.height = maxHeight + 'px';
         });
     });
 
@@ -101,28 +120,9 @@ if(typeof productDashboard !== 'undefined') {
                 }
             }
         });
-    }  else if (sprintCounts >= 1) {
-        const canvas = document.getElementById('storyCompletionChart');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#333';
-        ctx.textAlign = 'center';
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        ctx.font = ctx.font.replace(/\d+px/, '0.9rem'); 
-        ctx.fillStyle = '#666';
-        ctx.fillText('No sprint is currently active',centerX, centerY - 20);
     } else {
-        const canvas = document.getElementById('storyCompletionChart');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#333';
-        ctx.textAlign = 'center';
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        ctx.font = ctx.font.replace(/\d+px/, '0.9rem'); 
-        ctx.fillStyle = '#666';
-        ctx.fillText('No sprints yet started ',centerX, centerY - 20);
+        oxChartEmpty(document.getElementById('storyCompletionChart'),
+            sprintCounts >= 1 ? 'No sprint is currently active' : 'No sprints yet started');
     }
 
 
@@ -148,8 +148,8 @@ if(typeof productDashboard !== 'undefined') {
                     fill: true,
                     pointRadius: 4,
                     pointBackgroundColor: OX_CHART.green,
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
+                    pointBorderColor: oxSurface,
+                    pointHoverBackgroundColor: oxSurface,
                     pointHoverBorderColor: OX_CHART.green
                 }]
             },
@@ -172,28 +172,9 @@ if(typeof productDashboard !== 'undefined') {
                 }
             }
         });
-    } else if (sprintCounts >= 1) {
-        const canvas = document.getElementById('velocitySprintChart');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#333';
-        ctx.textAlign = 'center';
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        ctx.font = ctx.font.replace(/\d+px/, '0.9rem'); 
-        ctx.fillStyle = '#666';
-        ctx.fillText('Check back after current sprint completion',centerX, centerY - 20);
     } else {
-        const canvas = document.getElementById('velocitySprintChart');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#333';
-        ctx.textAlign = 'center';
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        ctx.font = ctx.font.replace(/\d+px/, '0.9rem'); 
-        ctx.fillStyle = '#666';
-        ctx.fillText('Check back after sprint completion for insights',centerX, centerY - 20);
+        oxChartEmpty(document.getElementById('velocitySprintChart'),
+            sprintCounts >= 1 ? 'Check back after current sprint completion' : 'Check back after sprint completion for insights');
     }      
 
     // Backlog Progress Chart
@@ -205,37 +186,8 @@ if(typeof productDashboard !== 'undefined') {
         const onHoldPercentage = total > 0 ? (backlogCounts.on_hold_backlogs / total) * 100 : 0;
         const inProgressPercentage = total > 0 ? (backlogCounts.in_progress_backlogs / total) * 100 : 0;
 
-        // Create an image object for the background
-        const image = new Image();
-        image.src = 'https://t3.ftcdn.net/jpg/04/96/32/10/360_F_496321057_CzV6zn2b0szdJYOPtvy0Km4L66ucItch.jpg';
-
-        let imageLoaded = false;
-        image.onload = () => {
-            imageLoaded = true;
-            backlogProgressChart.update();
-        };
-        image.onerror = () => {
-            imageLoaded = false;
-        };
-
-        const customCanvasBackgroundImage = {
-            id: 'customCanvasBackgroundImage',
-            beforeDraw: (chart) => {
-                if (imageLoaded) {
-                    const ctx = chart.ctx;
-                    const { top, left, width, height } = chart.chartArea;
-                    const imageWidth = image.width * 0.3;
-                    const imageHeight = image.height * 0.3;
-                    const x = left + width / 2 - imageWidth / 2;
-                    const y = top + height / 2 - imageHeight / 2;
-                    ctx.drawImage(image, x, y, imageWidth, imageHeight);
-                }
-            }
-        };
-
-        
         const backlogProgressCtx = document.getElementById('backlogProgressChart').getContext('2d');
-        const backlogProgressChart = new Chart(backlogProgressCtx, {
+        new Chart(backlogProgressCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Completed', 'In progress', 'Not in progress', 'On hold'],
@@ -248,7 +200,7 @@ if(typeof productDashboard !== 'undefined') {
                     ],
                     // Completed, In progress, Not in progress, On hold
                     backgroundColor: [OX_CHART.green, OX_CHART.blue, OX_CHART.neutral, OX_CHART.amber],
-                    borderColor: '#fff',
+                    borderColor: oxSurface,
                     borderWidth: 2
                 }]
             },
@@ -280,13 +232,10 @@ if(typeof productDashboard !== 'undefined') {
                     }
                 }
             },
-            plugins: [customCanvasBackgroundImage, ChartDataLabels]
+            plugins: [ChartDataLabels]
         });
-    }else {
-            const ctx = document.getElementById('backlogProgressChart').getContext('2d');
-            ctx.font = ctx.font.replace(/\d+px/, '0.9rem'); 
-            ctx.textAlign = 'center';
-            ctx.fillText('Backlog is empty ', ctx.canvas.width / 2, ctx.canvas.height / 3);
+    } else {
+        oxChartEmpty(document.getElementById('backlogProgressChart'), 'Backlog is empty');
     }
 
     // Sprint Hours Chart
@@ -367,29 +316,9 @@ if(typeof productDashboard !== 'undefined') {
                     }
                 }
             });
-        } else if (sprintCounts >= 1) {
-            const canvas = document.getElementById('sprintHoursChart');
-            const SprintErrorctx = canvas.getContext('2d');
-            SprintErrorctx.clearRect(0, 0, canvas.width, canvas.height);
-            SprintErrorctx.fillStyle = '#333';
-            SprintErrorctx.textAlign = 'center';
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            SprintErrorctx.font = SprintErrorctx.font.replace(/\d+px/, '0.9rem'); 
-            SprintErrorctx.fillStyle = '#666';
-            SprintErrorctx.fillText('No sprint is currently active',centerX, centerY - 20);
         } else {
-            const canvas = document.getElementById('sprintHoursChart');
-            const SprintErrorctx = canvas.getContext('2d');
-            SprintErrorctx.clearRect(0, 0, canvas.width, canvas.height);
-            SprintErrorctx.fillStyle = '#333';
-            SprintErrorctx.textAlign = 'center';
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            SprintErrorctx.font = SprintErrorctx.font.replace(/\d+px/, '0.9rem'); 
-            SprintErrorctx.fillStyle = '#666';
-            SprintErrorctx.fillText('No sprints yet started ',centerX +100, centerY  +20);
-
+            oxChartEmpty(document.getElementById('sprintHoursChart'),
+                sprintCounts >= 1 ? 'No sprint is currently active' : 'No sprints yet started');
         }
     });
 
@@ -533,7 +462,7 @@ if(typeof productDashboard !== 'undefined') {
                 datasets: [{
                     data: Object.values(statusCounts),
                     backgroundColor: OX_CHART.categorical,
-                    borderColor: '#fff',
+                    borderColor: oxSurface,
                     borderWidth: 2
                 }]
             },
@@ -710,7 +639,7 @@ const totalPages = Math.ceil(totalRows / rowsPerPage);
 
 // Function to display rows based on current page
 function displayTableRows(page) {
-    const tableBody = document.querySelector('tbody');
+    const tableBody = document.querySelector('#sprintTable tbody');
     tableBody.innerHTML = ''; // Clear previous rows
 
     const start = (page - 1) * rowsPerPage;
@@ -808,7 +737,7 @@ if (sprintRows.length && document.getElementById('pageInfo')) {
                     borderWidth: 2,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderColor: oxSurface,
                     pointHoverBorderWidth: 2,
                     spanGaps: false,
                     tension: 0,

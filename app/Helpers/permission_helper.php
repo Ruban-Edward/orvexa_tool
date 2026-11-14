@@ -28,7 +28,9 @@ if (!function_exists('has_permission')) {
             $permissionModel = model(\App\Models\Admin\PermissionModel::class);
             
             // Get the permission record for the given route URL
-            $permission = $permissionModel->where('LOWER(routes_url)', strtolower($routeUrl), false)
+            // Escape the route ourselves: identifier protection is off for the LOWER() key,
+            // and an unescaped value is sent unquoted (MySQL then reads it as a column).
+            $permission = $permissionModel->where('LOWER(routes_url)', db_connect()->escape(strtolower($routeUrl)), false)
             ->where('is_deleted', 'N')
             ->first();
 
